@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2003, 2007
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2003, 2007, 2008
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -93,7 +93,8 @@ int sqrt_box::compute_metrics(int style)
   printf(".de " TEMP_MACRO "\n"
 	 ".nr " SQRT_WIDTH_FORMAT
 	 " 0\\w" DELIMITER_CHAR "\\*[" SQRT_STRING_FORMAT "]" DELIMITER_CHAR "\n"
-	 ".if \\\\n[rst]-\\\\n[rsb]-%dM<\\n[" TEMP_REG "]"
+	 ".if \\\\n[rst]"
+	 "&(\\\\n[rst]-\\\\n[rsb]-%dM<\\n[" TEMP_REG "])"
 	 "&(\\\\n[.ps]<\\n[" MAX_SIZE_REG "]) \\{"
 	 ".ps +1\n"
 	 "." TEMP_MACRO "\n"

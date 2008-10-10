@@ -53,7 +53,7 @@ roff \- concepts and history of roff typesetting
 .\" --------------------------------------------------------------------
 .
 .I roff
-is the general name for a set of type-setting programs, known under
+is the general name for a set of text formatting programs, known under
 names like
 .BR troff ,
 .BR nroff ,
@@ -63,12 +63,10 @@ etc.
 .
 A
 .I roff
-type-setting system consists of an extensible text formatting language
-and a set of programs for printing and converting to other text
-formats.
+system consists of an extensible text formatting language and a set of
+programs for printing and converting to other text formats.
 .
-Traditionally, it is the main text processing system of Unix; every
-Unix-like operating system still distributes a
+Unix-like operating systems distribute a
 .I roff
 system as a core package.
 .
@@ -76,41 +74,24 @@ system as a core package.
 The most common
 .I roff
 system today is the free software implementation \f[CR]GNU\f[]
-.IR roff ",
+.IR roff ,
 .BR groff (@MAN1EXT@).
 .
-The
-.RI pre- groff
-implementations are referred to as
-.I classical
-(dating back as long as 1973).
-.
 .I groff
-implements the look-and-feel and functionality of its classical
-ancestors, but has many extensions.
+implements the look-and-feel and functionality of its ancestors, with many
+extensions.
 .
 .P
-In some ancient Unix systems, there was a binary called
-.B roff
-that implemented the even more ancient
-.B runoff
-of the
-.I Multics
-operating system, cf.\& section
+The ancestry of
+.I roff
+is described in section
 .BR HISTORY .
 .
-The functionality of this program was very restricted even in
-comparison to ancient
-.IR troff ;
-it is not supported any longer.
-.
-Consequently, in this document, the term
+In this document, the term
 .I roff
-always refers to the general meaning of
-.IR "roff system" ,
-not to the ancient
+always refers to the general class of roff programs, not to the
 .B roff
-binary.
+command provided in early UNIX systems.
 .
 .P
 In spite of its age,
@@ -127,17 +108,15 @@ has the same quality as other free type-setting programs and is better
 than some of the commercial systems.
 .
 .P
-The most popular application of
 .I roff
-is the concept of
+is used to format UNIX
 .IR "manual pages" ,
-or shortly
-.IR "man pages" ;
-this is the standard documentation system on many operating systems.
+(or
+.IR "man pages" ),
+the standard documentation system on many UNIX-derived operating systems.
 .
 .P
-This document describes the historical facts around the development
-of the
+This document describes the history of the development of the
 .IR "roff system" ;
 some usage aspects common to all
 .I roff
@@ -154,117 +133,79 @@ files; and many pointers to further readings.
 .SH "HISTORY"
 .\" --------------------------------------------------------------------
 .
-The
-.I roff
-text processing system has a very long history, dating back to the
-1960s.
+Document formatting by computer dates back to the 1960s.
 .
 The
 .I roff
-system itself is intimately connected to the Unix operating system,
-but its roots go back to the earlier operating systems CTSS and
-Multics.
+system itself is intimately connected to the Unix operating system, but its
+roots go back to the earlier operating systems CTSS and Multics.
 .
 .
 .\" --------------------------------------------------------------------
 .SS "The Predecessor RUNOFF"
 .\" --------------------------------------------------------------------
 .
-.P
-The evolution of
-.I roff
-is intimately related to the history of the operating systems.
-.
-Its predecessor
+.BR roff 's
+ancestor
 .B RUNOFF
-was written by
+was written in the MAD language by
 .I Jerry Saltzer
 for the
-.I CTSS
-operating system
-.RI ( "Compatible Time Sharing System" )
-as early as 1964 \[en] note that CTSS commands were all uppercase.
+.IR "Compatible Time Sharing System (CTSS)" ,
+a project of the Massachusetts Institute of Technology (MIT), in 1963 and
+1964 \[en] note that CTSS commands were all uppercase.
 .
-When CTSS was further developed into the operating system
+.P
+In 1965, MIT's Project MAC teamed with Bell Telephone Laboratories (BTL)
+and General Electric to begin the
 .UR http://\:www.multicians.org
+.I Multics
+system
+.UE .
+.
+A command called
+.B runoff
+was written for Multics in the late 60s in the BCPL language, by
+.IR "Bob Morris" ,
+.IR "Doug McIlroy" ,
+and other members of the Multics team.
+.
+.P
+Like its CTSS ancestor, Multics
+.B runoff
+formatted an input file consisting of text and command lines; commands began
+with a period and were two letters.
+.
+Output from these commands was to terminal devices such as IBM Selectric
+terminals.
+.
 Multics
-.UE ,
-the famous predecessor of Unix from 1963,
-.I runoff
-has been improved further by people from the Massachusetts Institute of
-Technology (MIT) and the Bell Technical Laboratory (BTL), including Dennis
-Ritchie and Joe Ossanna.
-.
-.BR "Multics runoff" ,
-for example, was now able to do two-pass operations; it became the main
-format for documentation and text processing.
-.
-Both operating systems could only be run on very expensive computers
-at that time, so they were mostly used in research and for official
-and military tasks.
+.B runoff
+had additional features added, such as the ability to do two-pass
+formatting; it became the main format for Multics documentation and text
+processing.
 .
 .P
-The possibilities of the
-.I runoff
-language were quite limited as compared to modern
-.IR roff .
-.
-Only text output was possible in the 1960s.
-.
-This could be implemented by a set of requests of length\~2, many of
-which are still identically used in
-.IR roff .
-.
-The language was modelled according to the habits of typesetting in
-the pre-computer age, where lines starting with a dot were used in
-manuscripts to denote formatting requests to the person who would
-perform the typesetting manually later on.
-.
-.P
-The runoff program was written in the
-.I MAD
-language first, later on in
-.I BCPL
-(by
-.IR "Doug McIlroy" ),
-the grandmother of the
-.IR C \~\c
-programming language.
-.
-In the Multics operating system, the help system was handled by
-runoff, similar to
-.IR roff 's
-task to manage the Unix manual pages.
-.
-On the other hand, BCPL and runoff were ported to the GCOS system
-at Bell Labs since BTL left the development of Multics.
-.
-.P
-There are still documents written in the RUNOFF language; for examples
-see Saltzer's home page, cf.\& section
-.BR "SEE ALSO" .
+BCPL and
+.B runoff
+were ported to the GCOS system at Bell Labs when BTL left the development of
+Multics.
 .
 .
 .\" --------------------------------------------------------------------
 .SS "The Classical nroff/troff System"
 .\" --------------------------------------------------------------------
 .
-At the Bell Labs, there was a need to
-drive the Wang
+At BTL, there was a need to drive the
 .I Graphic Systems CAT
-typesetter, a graphical output device from a PDP-11 computer running
-Unix.
-.I Ken Thompson
-rewrote runoff for the PDP-11; however, as runoff was too limited for
-the CAT it was further developed into the more powerful
-.I nroff and
-.I troff
-programs by
+typesetter, a graphical output device from a PDP-11 computer running Unix.
+.
+As
+.B runoff
+was too limited for this task it was further developed into a more
+powerful text formatting system by
 .IR "Joseph F.\& Ossanna" ,
 who already programmed several runoff ports.
-.
-On the hardware side, Ossanna wired the nominal paper-tape reader of
-the CAT straight into the PDP-11.
 .
 .P
 The name
@@ -272,7 +213,7 @@ The name
 was shortened to
 .IR roff .
 .
-The greatly enlarged language of Ossanna's concept included already all
+The greatly enlarged language of Ossanna's version already included all
 elements of a full
 .IR "roff system" .
 .
@@ -326,7 +267,7 @@ The C\~version was released in 1975.
 .
 .P
 The syntax of the formatting language of the
-.BR nroff / troff
+.BR nroff /\: troff
 programs was documented in the famous
 .IR "Troff User's Manual [CSTR\~#54]" ,
 first published in 1976, with further revisions up to 1992 by Brian
@@ -340,14 +281,13 @@ All later
 systems tried to establish compatibility with this specification.
 .
 .P
-After Ossanna had died in 1977 by a heart-attack at the age of about\~50,
-Kernighan went on with developing
+After Ossanna's death in 1977, Kernighan went on with developing
 .IR troff .
 .
-The next milestone was to equip
+In the late 1970s, Kernighan equipped
 .I troff
 with a general interface to support more devices, the intermediate
-output format and the postprocessor system.
+output format, and the postprocessor system.
 .
 This completed the structure of a
 .I "roff system"
@@ -359,9 +299,7 @@ In 1979, these novelties were described in the paper
 .
 This new
 .I troff
-version is the basis for all existing newer
-.I troff
-systems, including
+version is the basis for all existing newer troff systems, including
 .IR groff .
 .
 On some systems, this
@@ -377,28 +315,12 @@ capabilities automatically.
 .
 .
 .\" --------------------------------------------------------------------
-.SS "Commercialization"
+.SS "Availability"
 .\" --------------------------------------------------------------------
 .
-A major degradation occurred when the easily available Unix\~7
-operating system was commercialized.
-.
-A whole bunch of divergent operating systems emerged, fighting each
-other with incompatibilities in their extensions.
-.
-Luckily, the incompatibilities did not fight the original
-.IR troff .
-.
-All of the different commercial
-.I roff
-systems made heavy use of Ossanna/\:Kernighan's open source code and
-documentation, but sold them as \[lq]their\[rq] system \[en] with only
-minor additions.
-.
-.P
 The source code of both the ancient Unix and classical
 .I troff
-wasn't available for two decades.
+weren't available for two decades.
 .
 Meanwhile, it is accessible again (on-line) for non-commercial use,
 cf.\& section
@@ -413,7 +335,9 @@ The most important free
 .I roff
 project was the \f[CR]GNU\f[] implementation of
 .IR troff ,
-written from scratch by James Clark and put under the
+written from scratch by
+.I James Clark
+and put under the
 .UR http://\:www.gnu.org/\:copyleft
 GNU Public License
 .UE .
@@ -438,8 +362,8 @@ but many extensions were added.
 .
 It is the first
 .I roff
-system that is available on almost all operating systems \[en] and it
-is free.
+system that is available on almost all operating systems \[en] and it is
+free.
 .
 This makes
 .I groff
@@ -448,7 +372,8 @@ the de-facto
 standard today.
 .
 .P
-An alternative is Gunnar Ritter's
+An alternative is
+.IR "Gunnar Ritter" 's
 .UR http://\:heirloom.sf.net
 Heirloom Documentation Tools
 .UE
@@ -1150,7 +1075,7 @@ The Multics site
 .UE
 contains a lot of information on the MIT projects, CTSS, Multics,
 early Unix, including
-.IR  runoff ;
+.IR runoff ;
 especially useful are a glossary and the many links to ancient
 documents.
 .
