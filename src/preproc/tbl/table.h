@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2007
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2007, 2008
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -104,6 +104,7 @@ class table {
   int right_separation;
   int allocated_rows;
   void build_span_list();
+  void compute_available_block_width();
   void do_hspan(int r, int c);
   void do_vspan(int r, int c);
   void allocate(int r);

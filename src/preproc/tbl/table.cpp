@@ -737,7 +737,7 @@ void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
 
 void block_entry::do_width()
 {
-  for (int i=start_col; i <= end_col; i++)
+  for (int i = start_col; i <= end_col; i++)
     parent->blockflag[i] = (char)1;
 }
 
@@ -1962,8 +1962,6 @@ void compute_span_width(int start_col, int end_col)
 	  span_left_numeric_width_reg(start_col, end_col),
 	  span_right_numeric_width_reg(start_col, end_col),
 	  span_alphabetic_width_reg(start_col, end_col));
-  printfs(".nr " AVAILABLE_REG " -\\n[%1]\n",
-	  span_width_reg(start_col, end_col));
 }
 
 // Increase the widths of columns so that the width of any spanning entry
@@ -2056,9 +2054,24 @@ void table::build_span_list()
   }
 }
 
+// Compute remaining length for block columns.
+
+void table::compute_available_block_width()
+{
+  printfs(".nr " COLCOUNT_REG " %1\n", as_string(count_block_columns()));
+  prints(".nr " AVAILABLE_REG " \\n[.l]-\\n[.i]");
+  for (int i = 0; i < ncolumns; i++)
+    printfs("-\\n[%1]", span_width_reg(i, i));
+  prints("\n");
+  prints(".if \\n[" AVAILABLE_REG "]<0 \\{"
+	 ".tm warning: page \\n%: table wider than line width\n"
+	 ".nr " AVAILABLE_REG " 0\n"
+	 ".\\}\n");
+}
+
 void table::compute_separation_factor()
 {
-  if (flags & (ALLBOX|BOX|DOUBLEBOX))
+  if (flags & (ALLBOX | BOX | DOUBLEBOX))
     left_separation = right_separation = 1;
   else {
     for (int i = 0; i < nrows; i++) {
@@ -2152,6 +2165,7 @@ void table::compute_widths()
   build_span_list();
   int i;
   horizontal_span *p;
+  // These values get refined later.
   prints(".nr " SEPARATION_FACTOR_REG " 1n\n");
   for (i = 0; i < ncolumns; i++) {
     init_span_reg(i, i);
@@ -2160,29 +2174,26 @@ void table::compute_widths()
   }
   for (p = span_list; p; p = p->next)
     init_span_reg(p->start_col, p->end_col);
+  // Compute all field widths except for blocks.
   table_entry *q;
   for (q = entry_list; q; q = q->next)
     if (!q->mod->zero_width)
       q->do_width();
+  // Compute all span widths, not handling blocks yet.
   for (i = 0; i < ncolumns; i++)
     compute_span_width(i, i);
   for (p = span_list; p; p = p->next)
     compute_span_width(p->start_col, p->end_col);
-  printfs(".nr " COLCOUNT_REG " %1\n", as_string(count_block_columns()));
-  prints(".nr " AVAILABLE_REG " \\n[.l]-\\n[.i]");
-  for (i = 0; i < ncolumns; i++)
-    printfs("-\\n[%1]", span_width_reg(i, i));
-  prints("\n");
-  prints(".if \\n[" AVAILABLE_REG "]<0 \\{"
-	 ".tm warning: page \\n%: table wider than line width\n"
-	 ".nr " AVAILABLE_REG " 0\n"
-	 ".\\}\n");
+  // Making columns equal normally increases the width of some columns.
   make_columns_equal();
   // Note that divide_span keeps equal width columns equal.
+  // This function might increase the width of some columns, too.
   for (p = span_list; p; p = p->next)
     divide_span(p->start_col, p->end_col);
   for (p = span_list; p; p = p->next)
     sum_columns(p->start_col, p->end_col);
+  // Now handle blocks.
+  compute_available_block_width();
   int had_spanning_block = 0;
   int had_equal_block = 0;
   for (q = entry_list; q; q = q->next)
@@ -2194,6 +2205,7 @@ void table::compute_widths()
 	if (equal[i])
 	  had_equal_block = 1;
     }
+  // Second pass.
   if (had_equal_block)
     make_columns_equal();
   if (had_spanning_block)
@@ -2463,7 +2475,7 @@ void table::build_vrule_list()
       }
     }
   }
-  if (flags & (BOX|ALLBOX|DOUBLEBOX)) {
+  if (flags & (BOX | ALLBOX | DOUBLEBOX)) {
     add_vertical_rule(0, nrows - 1, 0, 0);
     add_vertical_rule(0, nrows - 1, ncolumns, 0);
   }
@@ -2507,7 +2519,7 @@ void table::define_bottom_macro()
 	 ".if !\\n[" SUPPRESS_BOTTOM_REG "] \\{"
 	 "." REPEATED_VPT_MACRO " 0\n"
 	 ".mk " SAVED_VERTICAL_POS_REG "\n");
-  if (flags & (BOX|ALLBOX|DOUBLEBOX)) {
+  if (flags & (BOX | ALLBOX | DOUBLEBOX)) {
     prints(".if \\n[T.]&\\n[" NEED_BOTTOM_RULE_REG "] \\{");
     print_single_hline(0);
     prints(".\\}\n");
@@ -2737,7 +2749,7 @@ void table::do_row(int r)
 void table::do_top()
 {
   prints(".fc \002\003\n");
-  if (!(flags & NOKEEP) && (flags & (BOX|DOUBLEBOX|ALLBOX)))
+  if (!(flags & NOKEEP) && (flags & (BOX | DOUBLEBOX | ALLBOX)))
     prints("." TABLE_KEEP_MACRO_NAME "\n");
   if (flags & DOUBLEBOX) {
     prints(".ls 1\n"
@@ -2757,7 +2769,7 @@ void table::do_top()
     prints(".ls\n"
 	   ".vs\n");
   }
-  else if (flags & (ALLBOX|BOX)) {
+  else if (flags & (ALLBOX | BOX)) {
     print_single_hline(0);
   }
   //printfs(".mk %1\n", row_top_reg(0));
@@ -2775,7 +2787,7 @@ void table::do_bottom()
   prints(".nr " NEED_BOTTOM_RULE_REG " 1\n"
 	 ".nr T. 1\n"
 	 ".T#\n");
-  if (!(flags & NOKEEP) && (flags & (BOX|DOUBLEBOX|ALLBOX)))
+  if (!(flags & NOKEEP) && (flags & (BOX | DOUBLEBOX | ALLBOX)))
     prints("." TABLE_RELEASE_MACRO_NAME "\n");
   if (flags & DOUBLEBOX)
     prints(".sp " DOUBLE_LINE_SEP "\n");
