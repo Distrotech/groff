@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
-                 2007
+                 2007, 2008
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -841,26 +841,6 @@ format *process_format(table_input &in, options *opt,
     int success = 1;
     do {
       switch (c) {
-      case 't':
-      case 'T':
-	c = in.get();
-	list->vertical_alignment = entry_modifier::TOP;
-	break;
-      case 'd':
-      case 'D':
-	c = in.get();
-	list->vertical_alignment = entry_modifier::BOTTOM;
-	break;
-      case 'u':
-      case 'U':
-	c = in.get();
-	list->stagger = 1;
-	break;
-      case 'z':
-      case 'Z':
-	c = in.get();
-	list->zero_width = 1;
-	break;
       case '0':
       case '1':
       case '2':
@@ -879,6 +859,21 @@ format *process_format(table_input &in, options *opt,
 	  } while (c != EOF && csdigit(c));
 	  list->separation = w;
 	}
+	break;
+      case 'B':
+      case 'b':
+	c = in.get();
+	list->font = "B";
+	break;
+      case 'd':
+      case 'D':
+	c = in.get();
+	list->vertical_alignment = entry_modifier::BOTTOM;
+	break;
+      case 'e':
+      case 'E':
+	c = in.get();
+	list->equal++;
 	break;
       case 'f':
       case 'F':
@@ -914,8 +909,13 @@ format *process_format(table_input &in, options *opt,
 	  }
 	}
 	break;
-      case 'x':
-      case 'X':
+      case 'I':
+      case 'i':
+	c = in.get();
+	list->font = "I";
+	break;
+      case 'm':
+      case 'M':
 	do {
 	  c = in.get();
 	} while (c == ' ' || c == '\t');
@@ -948,33 +948,6 @@ format *process_format(table_input &in, options *opt,
 	  }
 	}
 	break;
-      case 'v':
-      case 'V':
-	c = in.get();
-	list->vertical_spacing.val = 0;
-	list->vertical_spacing.inc = 0;
-	if (c == '+' || c == '-') {
-	  list->vertical_spacing.inc = (c == '+' ? 1 : -1);
-	  c = in.get();
-	}
-	if (c == EOF || !csdigit(c)) {
-	  error("`v' modifier must be followed by number");
-	  list->vertical_spacing.inc = 0;
-	}
-	else {
-	  do {
-	    list->vertical_spacing.val *= 10;
-	    list->vertical_spacing.val += c - '0';
-	    c = in.get();
-	  } while (c != EOF && csdigit(c));
-	}
-	if (list->vertical_spacing.val > MAX_VERTICAL_SPACING
-	    || list->vertical_spacing.val < -MAX_VERTICAL_SPACING) {
-	  error("unreasonable vertical spacing");
-	  list->vertical_spacing.val = 0;
-	  list->vertical_spacing.inc = 0;
-	}
-	break;
       case 'p':
       case 'P':
 	c = in.get();
@@ -1000,6 +973,43 @@ format *process_format(table_input &in, options *opt,
 	  error("unreasonable point size");
 	  list->point_size.val = 0;
 	  list->point_size.inc = 0;
+	}
+	break;
+      case 't':
+      case 'T':
+	c = in.get();
+	list->vertical_alignment = entry_modifier::TOP;
+	break;
+      case 'u':
+      case 'U':
+	c = in.get();
+	list->stagger = 1;
+	break;
+      case 'v':
+      case 'V':
+	c = in.get();
+	list->vertical_spacing.val = 0;
+	list->vertical_spacing.inc = 0;
+	if (c == '+' || c == '-') {
+	  list->vertical_spacing.inc = (c == '+' ? 1 : -1);
+	  c = in.get();
+	}
+	if (c == EOF || !csdigit(c)) {
+	  error("`v' modifier must be followed by number");
+	  list->vertical_spacing.inc = 0;
+	}
+	else {
+	  do {
+	    list->vertical_spacing.val *= 10;
+	    list->vertical_spacing.val += c - '0';
+	    c = in.get();
+	  } while (c != EOF && csdigit(c));
+	}
+	if (list->vertical_spacing.val > MAX_VERTICAL_SPACING
+	    || list->vertical_spacing.val < -MAX_VERTICAL_SPACING) {
+	  error("unreasonable vertical spacing");
+	  list->vertical_spacing.val = 0;
+	  list->vertical_spacing.inc = 0;
 	}
 	break;
       case 'w':
@@ -1038,24 +1048,14 @@ format *process_format(table_input &in, options *opt,
 	  }
 	}
 	break;
-      case 'e':
-      case 'E':
+      case 'z':
+      case 'Z':
 	c = in.get();
-	list->equal++;
+	list->zero_width = 1;
 	break;
       case '|':
 	c = in.get();
 	list->vline++;
-	break;
-      case 'B':
-      case 'b':
-	c = in.get();
-	list->font = "B";
-	break;
-      case 'I':
-      case 'i':
-	c = in.get();
-	list->font = "I";
 	break;
       case ' ':
       case '\t':
