@@ -2170,7 +2170,7 @@ void table::compute_widths()
   for (i = 0; i < ncolumns; i++) {
     init_span_reg(i, i);
     if (!minimum_width[i].empty())
-      printfs(".nr %1 %2\n", span_width_reg(i, i), minimum_width[i]);
+      printfs(".nr %1 (n;%2)\n", span_width_reg(i, i), minimum_width[i]);
   }
   for (p = span_list; p; p = p->next)
     init_span_reg(p->start_col, p->end_col);
