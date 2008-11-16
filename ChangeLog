@@ -1,3 +1,60 @@
+2008-11-12  Werner LEMBERG  <wl@gnu.org>
+
+	Implement `x' specifier for expanded columns.  Contrary to old DWB
+	tbl, more than a single `x' specifier can be used.  At the same
+	time, remove most of the code from change 2007-02-09 which collides
+	with the new implementation.
+
+	* src/preproc/tbl/main.cpp (format): Add `expand' array.
+	(format::format, format::~format): Updated.
+	(input_entry_format): Add `expand' field.
+	(input_entry_format::input_entry_format): Updated.
+	(input_entry_format::debug_print): Handle `expand'.
+	(process_format): Handle `x' specifier.
+	(process_data): Updated.
+
+	* src/preproc/tbl/table.cpp (AVAILABLE_REG, COLCOUNT_REG): Remove.
+	(EXPAND_REG): New macro.
+	(table_entry::divert, block_entry::divert,
+	alphabetic_block_entry::divert): Add parameter to control whether
+	expanded columns shall be handled.
+	(block_entry::do_width): Remove.
+	(block_entry::do_divert): Add parameter to control whether expanded
+	columns shall be handled.
+	Treat expanded columns like columns with a minimum width.
+	Remove `experimental' code.
+	(table::table, table::~table, table::allocate): Updated.
+	(table::set_expand_column): New function.
+	(table::count_block_columns): Replace with...
+	(table::count_expand_columns): This function.
+	(table::divide_span): Handle expanded columns the same as equal
+	columns.
+	(table::sum_columns): Add parameter to control whether expanded
+	columns shall be handled.
+	(table::compute_available_block_width): Replace with...
+	(table::compute_expand_width): This function.
+	(table::compute_total_separation): New function, taking code from
+	`compute_separation_factor'.
+	(table::compute_separation_factor): Simpler code.  The check for the
+	`EXPAND' flag has been moved to the caller.
+	(table::compute_widths): Add `top-level' changes to handle expanded
+	blocks.
+
+	* src/preproc/tbl/table.h (table): New field `total_separation'.
+	Remove `blockflag' array.
+	Add `expand' array.
+	Update member function declarations.
+
+	* src/preproc/tbl/tbl.man: Document `x' specifier.
+	Expand documentation to cover all aspects of Lesk's tbl reference.
+
+	* NEWS: Document `x' specifier.
+
+2008-11-08  Werner LEMBERG  <wl@gnu.org>
+
+	* src/preproc/tbl/tbl.man: Restructuring.
+	Improve text block documentation.
+
 2008-11-07  Werner LEMBERG  <wl@gnu.org>
 
 	* src/preproc/tbl/table.cpp (table::compute_widths): Use default
@@ -542,7 +599,7 @@
 
 	* src/devices/grohtml/html-table.cpp: Add support for XHTML 1.1.
 	(html_table:: emit_colspan, html_table::emit_td): New methods.
-	(html_table::emit_col):  Use html_table::emit_td.
+	(html_table::emit_col): Use html_table::emit_td.
 	(html_table::emit_table_header): Use html_table::emit_colspan if
 	dialect xhtml is specified.
 	(html_table::finish_row): Updated.
@@ -616,7 +673,7 @@
 
 	* src/roff/groff/groff.cpp (possible_command): New method
 	`clear_name'.
-	(main):  Set eflag if -e is present on command line.
+	(main): Set eflag if -e is present on command line.
 	Set is_xhtml if -Txhtml is present.
 	Pass `-x x' to the HTML pre and post processors.
 	Pass `-e' to the HTML pre processor if required.
@@ -5293,7 +5350,7 @@ Version 1.19.1 released
 	(get_printcode, show_symset): New functions.
 	(main): Remove `debug_flag'.
 	(output_charset): Use `show_symset'.
-	(dump_symbols):  Use `show_symset'.
+	(dump_symbols): Use `show_symset'.
 	Print symsets for all glyphs.
 	(read_map): Actually call `unicode_to_ucode_make' but this time
 	correctly.

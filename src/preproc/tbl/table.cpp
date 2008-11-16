@@ -63,8 +63,7 @@ const int DEFAULT_COLUMN_SEPARATION = 3;
 // this must be one character
 #define COMPATIBLE_REG PREFIX "c"
 
-#define AVAILABLE_REG PREFIX "avail"
-#define COLCOUNT_REG PREFIX "ccount"
+#define EXPAND_REG PREFIX "expand"
 
 #define LEADER_REG PREFIX LEADER
 
@@ -156,7 +155,7 @@ public:
   void set_location();
   table_entry(const table *, const entry_modifier *);
   virtual ~table_entry();
-  virtual int divert(int, const string *, int *);
+  virtual int divert(int, const string *, int *, int);
   virtual void do_width();
   virtual void do_depth();
   virtual void print() = 0;
@@ -294,12 +293,11 @@ public:
 class block_entry : public table_entry {
   char *contents;
 protected:
-  void do_divert(int, int, const string *, int *);
+  void do_divert(int, int, const string *, int *, int);
 public:
   block_entry(const table *, const entry_modifier *, char *);
   ~block_entry();
-  int divert(int, const string *, int *);
-  void do_width();
+  int divert(int, const string *, int *, int);
   void do_depth();
   void position_vertically();
   void print() = 0;
@@ -327,7 +325,7 @@ class alphabetic_block_entry : public block_entry {
 public:
   alphabetic_block_entry(const table *, const entry_modifier *, char *);
   void print();
-  int divert(int, const string *, int *);
+  int divert(int, const string *, int *, int);
 };
 
 table_entry::table_entry(const table *p, const entry_modifier *m)
@@ -340,7 +338,7 @@ table_entry::~table_entry()
 {
 }
 
-int table_entry::divert(int, const string *, int *)
+int table_entry::divert(int, const string *, int *, int)
 {
   return 0;
 }
@@ -664,22 +662,33 @@ void block_entry::position_vertically()
     prints(".sp -.5v\n");
 }
 
-int block_entry::divert(int ncols, const string *mw, int *sep)
+int block_entry::divert(int ncols, const string *mw, int *sep, int do_expand)
 {
-  do_divert(0, ncols, mw, sep);
+  do_divert(0, ncols, mw, sep, do_expand);
   return 1;
 }
 
 void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
-			    int *sep)
+			    int *sep, int do_expand)
 {
+  int i;
+  for (i = start_col; i <= end_col; i++)
+    if (parent->expand[i])
+      break;
+  if (i > end_col) {
+    if (do_expand)
+      return;
+  }
+  else {
+    if (!do_expand)
+      return;
+  }
   printfs(".di %1\n", block_diversion_name(start_row, start_col));
   prints(".if \\n[" SAVED_FILL_REG "] .fi\n"
 	 ".in 0\n");
   prints(".ll ");
-  int i;
   for (i = start_col; i <= end_col; i++)
-    if (mw[i].empty())
+    if (mw[i].empty() && !parent->expand[i])
       break;
   if (i > end_col) {
     // Every column spanned by this entry has a minimum width.
@@ -689,24 +698,20 @@ void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
 	  printfs("+%1n", as_string(sep[j - 1]));
 	prints('+');
       }
-      printfs("(n;%1)", mw[j]);
+      if (parent->expand[j])
+	prints("\\n[" EXPAND_REG "]u");
+      else
+	printfs("(n;%1)", mw[j]);
     }
     printfs(">?\\n[%1]u", span_width_reg(start_col, end_col));
   }
   else
-    if (parent->flags & table::EXPERIMENTAL)
-      // Each column containing a block entry gets 1/n of the remaining
-      // available line width, where n is the number of columns with block
-      // entries.
-      printfs("(u;\\n[%1]+(\\n[" AVAILABLE_REG "]/\\n[" COLCOUNT_REG "]))",
-	      span_width_reg(start_col, end_col));
-    else
-      // Assign each column with a block entry 1/(n+1) of the line
-      // width, where n is the column count.
-      printfs("(u;\\n[%1]>?(\\n[.l]*%2/%3))", 
-	      span_width_reg(start_col, end_col), 
-	      as_string(end_col - start_col + 1),
-	      as_string(ncols + 1));
+    // Assign each column with a block entry 1/(n+1) of the line
+    // width, where n is the column count.
+    printfs("(u;\\n[%1]>?(\\n[.l]*%2/%3))", 
+	    span_width_reg(start_col, end_col), 
+	    as_string(end_col - start_col + 1),
+	    as_string(ncols + 1));
   if (alphabetic)
     prints("-2n");
   prints("\n");
@@ -733,12 +738,6 @@ void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
 	 ".nf\n");
   // the block might have contained .lf commands
   location_force_filename = 1;
-}
-
-void block_entry::do_width()
-{
-  for (int i = start_col; i <= end_col; i++)
-    parent->blockflag[i] = (char)1;
 }
 
 void block_entry::do_depth()
@@ -800,9 +799,10 @@ alphabetic_block_entry::alphabetic_block_entry(const table *p,
 {
 }
 
-int alphabetic_block_entry::divert(int ncols, const string *mw, int *sep)
+int alphabetic_block_entry::divert(int ncols, const string *mw, int *sep,
+				   int do_expand)
 {
-  do_divert(1, ncols, mw, sep);
+  do_divert(1, ncols, mw, sep, do_expand);
   return 1;
 }
 
@@ -1231,15 +1231,18 @@ table::table(int nc, unsigned f, int ls, char dpc)
   vrule_list(0), stuff_list(0), span_list(0),
   entry_list(0), entry_list_tailp(&entry_list), entry(0),
   vline(0), row_is_all_lines(0), left_separation(0), right_separation(0),
-  allocated_rows(0), blockflag(0), flags(f)
+  total_separation(0), allocated_rows(0), flags(f)
 {
   minimum_width = new string[ncolumns];
   column_separation = ncolumns > 1 ? new int[ncolumns - 1] : 0;
   equal = new char[ncolumns];
+  expand = new char[ncolumns];
   int i;
-  for (i = 0; i < ncolumns; i++)
+  for (i = 0; i < ncolumns; i++) {
     equal[i] = 0;
-  for (i = 0; i < ncolumns-1; i++)
+    expand[i] = 0;
+  }
+  for (i = 0; i < ncolumns - 1; i++)
     column_separation[i] = DEFAULT_COLUMN_SEPARATION;
   delim[0] = delim[1] = '\0';
 }
@@ -1252,7 +1255,6 @@ table::~table()
   }
   a_delete entry;
   a_delete vline;
-  a_delete blockflag;
   while (entry_list) {
     table_entry *tem = entry_list;
     entry_list = entry_list->next;
@@ -1261,6 +1263,7 @@ table::~table()
   ad_delete(ncolumns) minimum_width;
   a_delete column_separation;
   a_delete equal;
+  a_delete expand;
   while (stuff_list) {
     stuff *tem = stuff_list;
     stuff_list = stuff_list->next;
@@ -1303,6 +1306,12 @@ void table::set_equal_column(int c)
   equal[c] = 1;
 }
 
+void table::set_expand_column(int c)
+{
+  assert(c >= 0 && c < ncolumns);
+  expand[c] = 1;
+}
+
 void table::add_stuff(stuff *p)
 {
   stuff **pp;
@@ -1338,9 +1347,6 @@ void table::allocate(int r)
 	  allocated_rows = r + 1;
 	entry = new PPtable_entry[allocated_rows];
 	vline = new char*[allocated_rows];
-	blockflag = new char[allocated_rows];
-	for (int i = 0; i < allocated_rows; i++)
-	  blockflag[i] = 0;
       }
       else {
 	table_entry ***old_entry = entry;
@@ -1355,12 +1361,6 @@ void table::allocate(int r)
 	vline = new char*[allocated_rows];
 	memcpy(vline, old_vline, sizeof(char*)*old_allocated_rows);
 	a_delete old_vline;
-	char *old_blockflag = blockflag;
-	blockflag = new char[allocated_rows];
-	memcpy(blockflag, old_blockflag, sizeof(char)*old_allocated_rows);
-	for (int i = old_allocated_rows; i < allocated_rows; i++)
-	  blockflag[i] = 0;
-	a_delete old_blockflag;
       }
     }
     assert(allocated_rows > r);
@@ -1727,11 +1727,11 @@ void table::determine_row_type()
   }
 }
 
-int table::count_block_columns()
+int table::count_expand_columns()
 {
   int count = 0;
   for (int i = 0; i < ncolumns; i++)
-    if (blockflag[i])
+    if (expand[i])
       count++;
   return count;
 }
@@ -1990,7 +1990,7 @@ void table::divide_span(int start_col, int end_col)
 	    span_width_reg(i, i));
   int equal_flag = 0;
   for (i = start_col; i <= end_col && !equal_flag; i++)
-    if (equal[i])
+    if (equal[i] || expand[i])
       equal_flag = 1;
   if (equal_flag) {
     for (i = 0; i < ncolumns; i++)
@@ -2001,13 +2001,25 @@ void table::divide_span(int start_col, int end_col)
   prints(".\\}\n");
 }
 
-void table::sum_columns(int start_col, int end_col)
+void table::sum_columns(int start_col, int end_col, int do_expand)
 {
   assert(end_col > start_col);
+  int i;
+  for (i = start_col; i <= end_col; i++)
+    if (expand[i])
+      break;
+  if (i > end_col) {
+    if (do_expand)
+      return;
+  }
+  else {
+    if (!do_expand)
+      return;
+  }
   printfs(".nr %1 \\n[%2]", 
 	  span_width_reg(start_col, end_col),
 	  span_width_reg(start_col, start_col));
-  for (int i = start_col + 1; i <= end_col; i++)
+  for (i = start_col + 1; i <= end_col; i++)
     printfs("+(%1*\\n[" SEPARATION_FACTOR_REG "])+\\n[%2]",
 	    as_string(column_separation[i - 1]),
 	    span_width_reg(i, i));
@@ -2054,22 +2066,30 @@ void table::build_span_list()
   }
 }
 
-// Compute remaining length for block columns.
-
-void table::compute_available_block_width()
+void table::compute_expand_width()
 {
-  printfs(".nr " COLCOUNT_REG " %1\n", as_string(count_block_columns()));
-  prints(".nr " AVAILABLE_REG " \\n[.l]-\\n[.i]");
-  for (int i = 0; i < ncolumns; i++)
-    printfs("-\\n[%1]", span_width_reg(i, i));
+  int i;
+  int colcount = count_expand_columns();
+  prints(".nr " EXPAND_REG " \\n[.l]-\\n[.i]");
+  for (i = 0; i < ncolumns; i++)
+    if (!expand[i])
+      printfs("-\\n[%1]", span_width_reg(i, i));
+  if (total_separation)
+    printfs("-%1n", as_string(total_separation));
   prints("\n");
-  prints(".if \\n[" AVAILABLE_REG "]<0 \\{"
+  prints(".if \\n[" EXPAND_REG "]<0 \\{"
 	 ".tm warning: page \\n%: table wider than line width\n"
-	 ".nr " AVAILABLE_REG " 0\n"
+	 ".nr " EXPAND_REG " 0\n"
 	 ".\\}\n");
+  if (colcount > 1)
+    printfs(".nr " EXPAND_REG " \\n[" EXPAND_REG "]/%1\n",
+	    as_string(colcount));
+  for (i = 0; i < ncolumns; i++)
+    if (expand[i])
+      printfs(".nr %1 \\n[%1]>?\\n[" EXPAND_REG "]\n", span_width_reg(i, i));
 }
 
-void table::compute_separation_factor()
+void table::compute_total_separation()
 {
   if (flags & (ALLBOX | BOX | DOUBLEBOX))
     left_separation = right_separation = 1;
@@ -2081,25 +2101,25 @@ void table::compute_separation_factor()
 	right_separation = 1;
     }
   }
-  if (flags & EXPAND) {
-    int total_sep = left_separation + right_separation;
-    int i;
-    for (i = 0; i < ncolumns - 1; i++)
-      total_sep += column_separation[i];
-    if (total_sep != 0) {
-      // Don't let the separation factor be negative.
-      prints(".nr " SEPARATION_FACTOR_REG " \\n[.l]-\\n[.i]");
-      for (i = 0; i < ncolumns; i++)
-	printfs("-\\n[%1]", span_width_reg(i, i));
-      printfs("/%1\n", as_string(total_sep));
-      prints(".ie \\n[" SEPARATION_FACTOR_REG "]<=0 \\{"
-	     ".tm warning: page \\n%: column separation set to zero\n"
-	     ".nr " SEPARATION_FACTOR_REG " 0\n"
-	     ".\\}\n"
-	     ".el .if \\n[" SEPARATION_FACTOR_REG "]<1n "
-	     ".tm warning: page \\n%: table squeezed horizontally to fit line length\n");
-    }
-  }
+  total_separation = left_separation + right_separation;
+  int i;
+  for (i = 0; i < ncolumns - 1; i++)
+    total_separation += column_separation[i];
+}
+
+void table::compute_separation_factor()
+{
+  // Don't let the separation factor be negative.
+  prints(".nr " SEPARATION_FACTOR_REG " \\n[.l]-\\n[.i]");
+  for (int i = 0; i < ncolumns; i++)
+    printfs("-\\n[%1]", span_width_reg(i, i));
+  printfs("/%1\n", as_string(total_separation));
+  prints(".ie \\n[" SEPARATION_FACTOR_REG "]<=0 \\{"
+	 ".tm warning: page \\n%: column separation set to zero\n"
+	 ".nr " SEPARATION_FACTOR_REG " 0\n"
+	 ".\\}\n"
+	 ".el .if \\n[" SEPARATION_FACTOR_REG "]<1n "
+	 ".tm warning: page \\n%: table squeezed horizontally to fit line length\n");
 }
 
 void table::compute_column_positions()
@@ -2190,30 +2210,47 @@ void table::compute_widths()
   // This function might increase the width of some columns, too.
   for (p = span_list; p; p = p->next)
     divide_span(p->start_col, p->end_col);
+  compute_total_separation();
   for (p = span_list; p; p = p->next)
-    sum_columns(p->start_col, p->end_col);
-  // Now handle blocks.
-  compute_available_block_width();
+    sum_columns(p->start_col, p->end_col, 0);
+  // Now handle unexpanded blocks.
   int had_spanning_block = 0;
   int had_equal_block = 0;
   for (q = entry_list; q; q = q->next)
     if (q->divert(ncolumns, minimum_width,
-		  (flags & EXPAND) ? column_separation : 0)) {
+		  (flags & EXPAND) ? column_separation : 0, 0)) {
       if (q->end_col > q->start_col)
 	had_spanning_block = 1;
       for (i = q->start_col; i <= q->end_col && !had_equal_block; i++)
 	if (equal[i])
 	  had_equal_block = 1;
     }
-  // Second pass.
+  // Adjust widths.
   if (had_equal_block)
     make_columns_equal();
   if (had_spanning_block)
     for (p = span_list; p; p = p->next)
       divide_span(p->start_col, p->end_col);
-  compute_separation_factor();
-  for (p = span_list; p; p = p->next)
-    sum_columns(p->start_col, p->end_col);
+  compute_expand_width();
+  if ((flags & EXPAND) && total_separation != 0) {
+    compute_separation_factor();
+    for (p = span_list; p; p = p->next)
+      sum_columns(p->start_col, p->end_col, 0);
+  }
+  else {
+    // Handle expanded blocks.
+    for (p = span_list; p; p = p->next)
+      sum_columns(p->start_col, p->end_col, 1);
+    for (q = entry_list; q; q = q->next)
+      if (q->divert(ncolumns, minimum_width, 0, 1)) {
+	if (q->end_col > q->start_col)
+	  had_spanning_block = 1;
+      }
+    // Adjust widths again.
+    if (had_spanning_block)
+      for (p = span_list; p; p = p->next)
+	divide_span(p->start_col, p->end_col);
+  }
   compute_column_positions();
 }
 

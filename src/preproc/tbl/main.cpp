@@ -623,6 +623,7 @@ struct format {
   int *separation;
   string *width;
   char *equal;
+  char *expand;
   entry_format **entry;
   char **vline;
 
@@ -639,8 +640,11 @@ format::format(int nr, int nc) : nrows(nr), ncolumns(nc)
     separation[i] = -1;
   width = new string[ncolumns];
   equal = new char[ncolumns];
-  for (i = 0; i < ncolumns; i++)
+  expand = new char[ncolumns];
+  for (i = 0; i < ncolumns; i++) {
     equal[i] = 0;
+    expand[i] = 0;
+  }
   entry = new entry_format *[nrows];
   for (i = 0; i < nrows; i++)
     entry[i] = new entry_format[ncolumns];
@@ -680,6 +684,7 @@ format::~format()
   a_delete separation;
   ad_delete(ncolumns) width;
   a_delete equal;
+  a_delete expand;
   for (int i = 0; i < nrows; i++) {
     a_delete vline[i];
     ad_delete(ncolumns) entry[i];
@@ -696,6 +701,7 @@ struct input_entry_format : public entry_format {
   int pre_vline;
   int last_column;
   int equal;
+  int expand;
   input_entry_format(format_type, input_entry_format * = 0);
   ~input_entry_format();
   void debug_print();
@@ -709,6 +715,7 @@ input_entry_format::input_entry_format(format_type t, input_entry_format *p)
   vline = 0;
   pre_vline = 0;
   equal = 0;
+  expand = 0;
 }
 
 input_entry_format::~input_entry_format()
@@ -738,6 +745,8 @@ void input_entry_format::debug_print()
   }
   if (equal)
     putc('e', stderr);
+  if (expand)
+    putc('x', stderr);
   if (separation >= 0)
     fprintf(stderr, "%d", separation); 
   for (i = 0; i < vline; i++)
@@ -754,6 +763,7 @@ format *process_format(table_input &in, options *opt,
 		       format *current_format = 0)
 {
   input_entry_format *list = 0;
+  int have_expand = 0;
   int c = in.get();
   for (;;) {
     int pre_vline = 0;
@@ -873,7 +883,9 @@ format *process_format(table_input &in, options *opt,
       case 'e':
       case 'E':
 	c = in.get();
-	list->equal++;
+	list->equal = 1;
+	// `e' and `x' are mutually exclusive
+	list->expand = 0;
 	break;
       case 'f':
       case 'F':
@@ -1047,6 +1059,17 @@ format *process_format(table_input &in, options *opt,
 	    } while (c != EOF && csdigit(c));
 	  }
 	}
+	// `w' and `x' are mutually exclusive
+	list->expand = 0;
+	break;
+      case 'x':
+      case 'X':
+	c = in.get();
+	list->expand = 1;
+	// `x' and `e' are mutually exclusive
+	list->equal = 0;
+	// `x' and `w' are mutually exclusive
+	list->width = "";
 	break;
       case 'z':
       case 'Z':
@@ -1143,7 +1166,7 @@ format *process_format(table_input &in, options *opt,
   col = 0;
   for (tem = list; tem; tem = tem->next) {
     f->entry[row][col] = *tem;
-    if (col < ncolumns-1) {
+    if (col < ncolumns - 1) {
       // use the greatest separation
       if (tem->separation > f->separation[col]) {
 	if (current_format)
@@ -1160,17 +1183,25 @@ format *process_format(table_input &in, options *opt,
       else
 	f->equal[col] = 1;
     }
+    if (tem->expand && !f->expand[col]) {
+      if (current_format)
+	error("cannot change which columns are expanded in continued format");
+      else {
+	f->expand[col] = 1;
+	have_expand = 1;
+      }
+    }
     if (!tem->width.empty()) {
       // use the last width
       if (!f->width[col].empty() && f->width[col] != tem->width)
-	error("multiple widths for column %1", col+1);
+	error("multiple widths for column %1", col + 1);
       f->width[col] = tem->width;
     }
     if (tem->pre_vline) {
       assert(col == 0);
       f->vline[row][col] = tem->pre_vline;
     }
-    f->vline[row][col+1] = tem->vline;
+    f->vline[row][col + 1] = tem->vline;
     if (tem->last_column) {
       row++;
       col = 0;
@@ -1180,7 +1211,7 @@ format *process_format(table_input &in, options *opt,
   }
   free_input_entry_format_list(list);
   for (col = 0; col < ncolumns; col++) {
-    entry_format *e = f->entry[f->nrows-1] + col;
+    entry_format *e = f->entry[f->nrows - 1] + col;
     if (e->type != FORMAT_HLINE
 	&& e->type != FORMAT_DOUBLE_HLINE
 	&& e->type != FORMAT_SPAN)
@@ -1190,6 +1221,10 @@ format *process_format(table_input &in, options *opt,
     error("last row of format is all lines");
     delete f;
     return 0;
+  }
+  if (have_expand && (opt->flags & table::EXPAND)) {
+    error("ignoring global `expand' option because of `x' specifiers");
+    opt->flags &= ~table::EXPAND;
   }
   return f;
 }
@@ -1491,6 +1526,9 @@ table *process_data(table_input &in, format *f, options *opt)
   for (i = 0; i < ncolumns; i++)
     if (f->equal[i])
       tbl->set_equal_column(i);
+  for (i = 0; i < ncolumns; i++)
+    if (f->expand[i])
+      tbl->set_expand_column(i);
   return tbl;
 }
 

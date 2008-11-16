@@ -102,15 +102,17 @@ class table {
   char *equal;
   int left_separation;
   int right_separation;
+  int total_separation;
   int allocated_rows;
   void build_span_list();
-  void compute_available_block_width();
+  void compute_expand_width();
   void do_hspan(int r, int c);
   void do_vspan(int r, int c);
   void allocate(int r);
   void compute_widths();
   void divide_span(int, int);
-  void sum_columns(int, int);
+  void sum_columns(int, int, int);
+  void compute_total_separation();
   void compute_separation_factor();
   void compute_column_positions();
   void do_row(int);
@@ -129,9 +131,8 @@ class table {
   void compute_vrule_top_adjust(int, int, string &);
   void compute_vrule_bot_adjust(int, int, string &);
   void determine_row_type();
-  int count_block_columns();
+  int count_expand_columns();
 public:
-  char *blockflag;
   unsigned flags;
   enum {
     CENTER       = 0x00000001,
@@ -143,6 +144,7 @@ public:
     NOSPACES     = 0x00000040,
     EXPERIMENTAL = 0x80000000	// undocumented; use as a hook for experiments
     };
+  char *expand;
   table(int nc, unsigned flags, int linesize, char decimal_point_char);
   ~table();
 
@@ -157,6 +159,7 @@ public:
   void set_minimum_width(int c, const string &w);
   void set_column_separation(int c, int n);
   void set_equal_column(int c);
+  void set_expand_column(int c);
   void set_delim(char c1, char c2);
   void print_single_hline(int r);
   void print_double_hline(int r);
