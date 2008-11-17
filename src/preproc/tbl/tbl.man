@@ -398,7 +398,9 @@ than vertically centering it (GNU tbl only).
 .TP
 .BR e , E
 Make equally-spaced columns.
-All columns marked with this specifier get the same width.
+All columns marked with this specifier get the same width; this happens
+after the affected column widths have been computed (this means that the
+largest width value rules).
 .
 .TP
 .BR f , F
@@ -504,13 +506,26 @@ option is on \[en] in case of overfull tables this might be zero).
 Default separation is 3n.
 .
 .LP
-The column specifiers
-.BR e ,
-.BR w ,
-and
-.B x
-are mutually exclusive; if specified multiple times for a particular column,
-the last entry takes effect.
+The column
+.RB specifier\~ x
+is mutually exclusive with
+.B e
+.RB and\~ w
+(but
+.B e
+is not mutually exclusive
+.RB with\~ w );
+if specified multiple times for a particular column, the last entry takes
+effect:
+.BR x \~unsets
+both
+.B e
+.RB and\~ w ,
+while either
+.B e
+or
+.B w
+.RB overrides\~ x .
 .
 .
 .SS Table data
