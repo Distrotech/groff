@@ -21,6 +21,13 @@ o XHTML support has been added to grohtml and can be specified by
   in groff.  This has the effect of creating an XHTML validator
   button at the bottom of each page.
 
+o Some options have been added to control a new preprocessor,
+  `preconv' (see below): `-k' activates it, `-K' sets the input
+  encoding, and `-D' sets the default encoding.
+
+o A new environment variable `GROFF_ENCODING' sets the encoding
+  of input files; it implies command option `-k'.
+
 Troff
 -----
 
@@ -82,6 +89,15 @@ Nroff
 o Two new command line options `-w' and `-W' are accepted and passed to
   groff to enable and disable warning messages, respectively.
 
+Preconv
+-------
+
+o This is a new preprocessor to convert various input encodings to something
+  groff understands (this is, ASCII and \[uXXXX] entities, with `XXXX' a
+  hexadecimal number with 4 to 6 digits, representing a Unicode input code).
+  Normally, preconv should be invoked with options `-k' and `-K' of groff.
+  See the preconv man page for details.
+
 Pic
 ---
 
@@ -128,7 +144,7 @@ o The PS font definition files have been regenerated with newer AFM versions
   extended set of kerning values).
 
   For backwards compatibility, the old set of font definition files is still
-  available; for details please read the man page of `grops(1)'.
+  available; for details please read the man page of grops.
 
 Grotty
 ------
