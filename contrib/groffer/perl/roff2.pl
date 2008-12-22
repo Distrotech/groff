@@ -5,10 +5,10 @@
 # Source file position: <groff-source>/contrib/groffer/perl/roff2.pl
 # Installed position: <prefix>/bin/roff2*
 
-# Copyright (C) 2006 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2008 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 10 Nov 2006
+# Last update: 22 Dec 2008
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -168,7 +168,6 @@ if ($Has_Groffer) {
 	}
       }
     }
-    die "$Name$ps2pdf;
     $grog = `grog -Tps @filespec`;
     chomp $grog;
     system("$grog | $ps2pdf");
