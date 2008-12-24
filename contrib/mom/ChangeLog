@@ -20,7 +20,7 @@ o Changed condition generating #NO_BREAK at top of macro COLLATE
   to
     .if ( (\\n[.t]-1) <= \\n[.v] ) \{ .nr #NO_BREAK 1 \}
 
-  (Bottom-of-page trap is tripped 1 unit below last legal
+  (Bottom-of-page trap is tripped 1 unit below last valid
   baseline, not on it.)
 
 * Tue Nov 25 2008
@@ -336,7 +336,7 @@ o Added a test at top of COLLATE to set register #NO_BREAK to 1
   in NEWPAGE to determine whether to do a 'br or .br. (fixes BUG
   that was causing COLLATE, NEWPAGE, and TOC to spit out a blank
   page when the last line of text before them happened to fall on
-  the last legal baseline of the page).
+  the last valid baseline of the page).
 
 o Changed pad marker used to format TOC entries to permit use of
   the pound/number sign (#) in head elements.
@@ -620,7 +620,7 @@ o Addtion of font "styles" to om.tmac, plus changes to the FAMILY
   and FT macros to manage them.  New section in the doc appendices
   on adding fonts and managing the new font styles.
 
-o Mom now uses a "fallback font" whenever there's an illegal call
+o Mom now uses a "fallback font" whenever there's an invalid call
   to FAMILY.
 
 o RW and EW now affect only the font in effect.  A change of family
@@ -804,10 +804,10 @@ o Changed register #DOCHEADER_LEAD_ADJ to string
 *Tue Jun 3 2003
 
 o Added SHIM macro, which, when invoked, calculates and moves to
-  the next "legal" baseline in document processing.
+  the next "valid" baseline in document processing.
 
 o Corrected handling of DOCHEADER OFF <distance> so that the first
-  line of running text falls on a "legal" baseline when <distance>
+  line of running text falls on a "valid" baseline when <distance>
   is given.
 
 *Wed May 21 2003
