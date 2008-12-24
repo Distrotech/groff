@@ -1,3 +1,52 @@
+* Tue Dec 23 2008
+
+o Added a CAPS option to HDRFTR_RECTO and HDRFTR_VERSO to allow
+  capitalization of reserved strings when designing recto and/or
+  verso headers.  Fixed docs accordingly.
+
+* Sun Nov 30 2008
+
+o Added .nr #DIVER_DEPTH 0 to end of PRINT_PAGE_NUMBER to ensure
+  that #DIVER_DEPTH=0
+
+o Moved string definition of $FONT in macro FT to top of macro.
+
+o Moved string definition of $FAMILY in macro FAMILY to top of
+  macro.
+
+o Changed condition generating #NO_BREAK at top of macro COLLATE
+  from
+    .if ( \\n[.t] < \\n[.v] ) \{ .nr #NO_BREAK 1 \}
+  to
+    .if ( (\\n[.t]-1) <= \\n[.v] ) \{ .nr #NO_BREAK 1 \}
+
+  (Bottom-of-page trap is tripped 1 unit below last legal
+  baseline, not on it.)
+
+* Tue Nov 25 2008
+
+o Commented out what appears to be a superfluous and destructive
+  resetting of #VARIABLE_FOOTER_POSITION at line 13347 in FOOTNOTE
+  macro.  For now, fixes the "vanishing first footnote with some
+  overflow" bug.
+
+* Mon Oct 6 2008
+
+o Added a bit to .PP to accommodate .PP_FONT I when PRINTSTYLE is
+  TYPEWRITE and ITALIC_MEANS_ITALIC
+
+* Mon Jun 30 2008
+
+o Removed spurious 'sp |\\n[MN-curr-pos]u from MNbottom-right, prior
+  to re-invoking traps.  Hopefully, fixes vanishing RH margin notes
+  bug.
+
+* Sun Mar 16 2008
+
+o Added missing spaced paras bit in blockquotes.
+
+====================================================================
+
 * Tue Jan 22 2008
 
 o Fixed indent handling of refer items in endnotes.

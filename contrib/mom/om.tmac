@@ -2,7 +2,8 @@
 .ig
 Mom -- a typesetting/document-processing macro set for groff.
 
-Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007,
+2008 Free Software Foundation, Inc.
      Written by Peter Schaffter (pschaffter@magma.ca)
 
 This file is part of groff.
@@ -21,7 +22,7 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-Version 1.5-b
+Version 1.5-c
 -------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
@@ -449,6 +450,7 @@ to a macro means that any argument turns the feature off.
 \#   to $FAMILY.
 \#
 .MAC FAMILY END
+.    ds $FAMILY \\$1
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       fam C
 .       return
@@ -460,7 +462,6 @@ to a macro means that any argument turns the feature off.
 .    if (\\n[.x]\\n[.y]\\n[.Y] >= 1192) \{\
 .       ds $SAVED_STYLE \\n[.sty]
 .    \}
-.    ds $FAMILY \\$1
 .    ft 0
 .    fam \\*[$FAMILY]
 .    if (\\n[.x]\\n[.y]\\n[.Y] >= 1192) \{\
@@ -486,6 +487,7 @@ to a macro means that any argument turns the feature off.
 \#  Stores user supplied font in $FONT and sets .ft to $FONT.
 \#
 .MAC FT END
+.    ds $FONT \\$1
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       ie '\\$1'I' \{\
 .          if \\n[#UNDERLINE_ITALIC]=1 \{\
@@ -501,7 +503,6 @@ to a macro means that any argument turns the feature off.
 .       el \{ .UNDERLINE OFF \}
 .       return
 .    \}
-.    ds $FONT \\$1
 .    ft 0
 .    ft \\*[$FONT]
 .    if (\\n[.x]\\n[.y]\\n[.Y] >= 1192) \{\
@@ -645,7 +646,7 @@ to a macro means that any argument turns the feature off.
 .ds IT   \EfI
 .ds BD   \EfB
 .ds BDI  \Ef(BI
-.ds PREV \EfP
+.ds PREV \Ef[]
 .ds S    \Es
 \#
 \# =====================================================================
@@ -1195,8 +1196,14 @@ to a macro means that any argument turns the feature off.
 .    rr #ARGS_TO_SQ
 .    if \\n[#RESTORE_SQ]=1 \{\
 .       rr #RESTORE_SQ
-.       SMARTQUOTES \\*[$RESTORE_SQ]
-.       return
+.       ie '\\*[$RESTORE_SQ]'' \{\
+.          ds $QUOTE0 \[dq]
+.          ds $QUOTE1 \[dq]
+.       \}
+.       el \{\
+.          SMARTQUOTES \\*[$RESTORE_SQ]
+.          return
+.       \}
 .    \}
 .    ie '\\$1'' \{\
 .       nr #OPEN_CLOSE 0
@@ -5605,7 +5612,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !d$FN_QUAD              \{ .FOOTNOTE_QUAD \\*[$DOC_QUAD]       \}
 .    if !r#FN_RULE              \{ .FOOTNOTE_RULE                      \}
 .    if !r#FN_MARKERS           \{ .FOOTNOTE_MARKERS                   \}
-.    if !\\n[#FN_MARKER_STYLE]  \{ .FOOTNOTE_MARKER_STYLE STAR         \}
+.    if \\n[#FN_MARKERS]=1 \{\
+.       if !\\n[#FN_MARKER_STYLE] \{ .FOOTNOTE_MARKER_STYLE STAR       \}
+.    \}
 .    if !\\n[#EN_MARKER_STYLE]  \{ .ENDNOTE_MARKER_STYLE NUMBER        \}
 .    if !d$EN_PN_STYLE          \{ .ENDNOTES_PAGENUM_STYLE digit       \}
 .    if !d$EN_FAM               \{ .ENDNOTE_FAMILY \\*[$DOC_FAM]       \}
@@ -5878,7 +5887,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !d$QUOTE_FT                  \{ .QUOTE_FONT         I                \}
 .       if !d$QUOTE_SIZE_CHANGE         \{ .QUOTE_SIZE         +0               \}
 .       if !r#Q_OFFSET_VALUE \{\
-.          if '\\*[$Q_OFFSET_VALUE]'' \{ .QUOTE_INDENT 3 \}
+.          if '\\*[$Q_OFFSET_VALUE]''   \{ .QUOTE_INDENT 3 \}
 .       \}
 .\" +Blockquotes
 .\"  Note: the leading for quotes and blockquotes is set after .DEFAULTS in START
@@ -9123,6 +9132,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$1'CENTRE' \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 2 \}
 .    if '\\$1'R'      \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 3 \}
 .    if '\\$1'RIGHT'  \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 3 \}
+.    shift
+.    if '\\$1'CAPS' \{ .nr #HDRFTR_RECTO_CAPS 1 \}
 .    ds $USERDEF_HDRFTR_RECTO \\$2
 .END
 \#
@@ -9148,9 +9159,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$1'CENTRE' \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 2 \}
 .    if '\\$1'R'      \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 3 \}
 .    if '\\$1'RIGHT'  \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 3 \}
+.    shift
+.    if '\\$1'CAPS' \{ .nr #HDRFTR_VERSO_CAPS 1 \}
 .    ds $USERDEF_HDRFTR_VERSO \\$2
 .END
-\#
 \#
 \# PRINT FOOTER ON FIRST PAGE
 \# --------------------------
@@ -9426,7 +9438,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=1 \{ .LEFT   \}
 .          if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=2 \{ .CENTER \}
 .          if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=3 \{ .RIGHT  \}
+.          if \\n[#HDRFTR_RECTO_CAPS]=1 \{ .CAPS \}
 .          PRINT \\*[$USERDEF_HDRFTR_RECTO]
+.          if \\n[#HDRFTR_RECTO_CAPS]=1 \{ .CAPS OFF \}
 .          EOL
 .          if \\n[#FOOTERS_ON] \{\
 .             di NULL
@@ -9440,7 +9454,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             if \\n[#USERDEF_HDRFTR_VERSO_QUAD]=1 \{ .LEFT   \}
 .             if \\n[#USERDEF_HDRFTR_VERSO_QUAD]=2 \{ .CENTER \}
 .             if \\n[#USERDEF_HDRFTR_VERSO_QUAD]=3 \{ .RIGHT  \}
+.             if \\n[#HDRFTR_VERSO_CAPS]=1 \{ .CAPS \}
 .             PRINT \\*[$USERDEF_HDRFTR_VERSO]
+.             if \\n[#HDRFTR_VERSO_CAPS]=1 \{ .CAPS OFF \}
 .             EOL
 .             if \\n[#FOOTERS_ON] \{\
 .                di NULL
@@ -9453,7 +9469,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=1 \{ .LEFT   \}
 .             if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=2 \{ .CENTER \}
 .             if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=3 \{ .RIGHT  \}
+.             if \\n[#HDRFTR_RECTO_CAPS]=1 \{ .CAPS \}
 .             PRINT \\*[$USERDEF_HDRFTR_RECTO]
+.             if \\n[#HDRFTR_RECTO_CAPS]=1 \{ .CAPS OFF \}
 .             EOL
 .             if \\n[#FOOTERS_ON] \{\
 .                di NULL
@@ -9468,7 +9486,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=1 \{ .LEFT   \}
 .       if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=2 \{ .CENTER \}
 .       if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=3 \{ .RIGHT  \}
+.       if \\n[#HDRFTR_RECTO_CAPS]=1 \{ .CAPS \}
 .       PRINT \\*[$USERDEF_HDRFTR_RECTO]
+.       if \\n[#HDRFTR_RECTO_CAPS]=1 \{ .CAPS OFF \}
 .       EOL
 .       if \\n[#FOOTERS_ON] \{\
 .          di NULL
@@ -11104,7 +11124,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Affects all paragraphs.
 \#
 .MAC PP_FONT END
-.    if \\n[#IGNORE] \{ .return \}
+.    if \n[#PRINT_STYLE]=1 \{\
+.       ie \n[#ITALIC_MEANS_ITALIC] \{ .nop \}
+.       el \{ .return \}
+.    \}
 .    br
 .    if \\n[#COLLATE]=1 \{\
 .       if !'\\*[$SAVED_PP_FT]'' \{ .rm $SAVED_PP_FT \}
@@ -11231,6 +11254,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if \\n[#SLANT_ON] \{\
 .             if \\n[#UNDERLINE_SLANT] \{ .UNDERLINE \}
 .          \}
+.          if '\\*[$PP_FT]'I' \{\
+.             if \\n[#ITALIC_MEANS_ITALIC] \{ .FT I \}
+.          \}
 .       \}
 .       el \{\
 .          ie \\n[#ENDNOTE] \{\
@@ -11336,6 +11362,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       el \{\
 .          ti \\n[#PP_INDENT]u/2u
+.          if \\n[#PP_SPACE]=1 \{ .ALD \\n[#DOC_LEAD]u \}
 .       \}
 .       if \\n[#CONDENSE] \{\
 \E*[COND]\c
@@ -11867,7 +11894,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       el \{ .RLD 0-\\n[#Q_LEAD_DIFF]u \}
 .    \}
 .    el \{\
-.       ALD \\n[#Q_SPACE_ADJ]u
+.       if \\n[#PRINT_STYLE]=2 \{ .ALD \\n[#Q_SPACE_ADJ]u \}
 .    \}
 .    if \\n[#QUOTE]=1 \{\
 .       nf
@@ -11880,6 +11907,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       ALD \\n[#DOC_LEAD]u
+.       if !\\n[.v]=\\n[#DOC_LEAD] \{ .SHIM \}
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       ie \\n[#START] \{\
@@ -12267,7 +12295,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #HYPHEN_ADJ \\n[#CAP_HEIGHT]/12
 .    ds $HYPHEN \v'-\En[#HYPHEN_ADJ]u'-\v'\En[#HYPHEN_ADJ]u'
 .    PRINT \m[\\*[$PAGENUM_COLOR]]\\*[$HYPHEN]\|\\n[#PAGENUMBER]\|\\*[$HYPHEN]
-.br
+.    br
 .END
 \#
 \#
@@ -12362,6 +12390,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       el \{ .PRINT "\m[\\*[$PAGENUM_COLOR]]\\n[#PAGENUMBER]" \}
 .    \}
 .    ev
+.    nr #DIVER_DEPTH 0
 .END
 \#
 \# ====================================================================
@@ -13086,8 +13115,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          \}
 .       \}
 .    \}
-.\" If INDENT arg is passed to FOOTNOTE, calculate the indent...
 .    el \{\
+.\" If INDENT arg is passed to FOOTNOTE, calculate the indent...
 .       ie '\\$1'INDENT' \{\
 .          ev FOOTNOTES
 .          if '\\$2'L'     \{ .in (\\$3)  \}
@@ -13133,10 +13162,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .\" Turn off indent possibly set by FOOTNOTE INDENT
 .          in 0
 .\" Restore sentence spacing
-.       if \\n[#PRINT_STYLE]=2 \{\
-.          if d$RESTORE_SS_VAR \{ .SS \\*[$RESTORE_SS_VAR] \}
-.          rm $RESTORE_SS_VAR
-.       \}
+.          if \\n[#PRINT_STYLE]=2 \{\
+.             if d$RESTORE_SS_VAR \{ .SS \\*[$RESTORE_SS_VAR] \}
+.             rm $RESTORE_SS_VAR
+.          \}
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             if \\n[#UNDERLINE_WAS_ON] \{\
 .                UNDERLINE
@@ -13330,7 +13359,13 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .                            \}
 .                         \}
 .                      \}
-.                      nr #VARIABLE_FOOTER_POS -\\n[#VFP_DIFF]
+.\" Not sure what I was thinking with this next line.  As is, it
+.\" moves the already established VFP trap for footnote 1 higher up
+.\" the page, resulting in a VFP that's higher on the page than the
+.\" current page position.  Leaving it in anyway, commented out, in
+.\" case the logic and the conditions under which it should
+.\" apply reveal themselves.
+\#.                    nr #VARIABLE_FOOTER_POS -\\n[#VFP_DIFF]
 .                      nr #FN_DEPTH \\n[#SAVED_FN_DEPTH_1]+\\n[#VFP_DIFF]
 .                   \}
 .                   el \{\
@@ -16075,7 +16110,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   macros that alter mom's behaviour).
 \#
 .MAC COLLATE END
-.    if ( \\n[.t] < \\n[.v] ) \{ .nr #NO_BREAK 1 \}
+.    if ( (\\n[.t]-1) <= \\n[.v] ) \{ .nr #NO_BREAK 1 \}
 .    ds $SAVED_PP_FT \\*[$PP_FT]
 .    nr #COLLATE 1
 .    nr #PRE_COLLATE 1
@@ -18009,7 +18044,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .      nr MN-shifted 1
 .      sp 1v
 .      SHIM
-.      if \\n[#SHIM]u>\\n[MN-spacing] .sp -(1v+\\n[MN-lead-adj]u)
+.      if \\n[#SHIM]>\\n[MN-spacing] .sp -(1v+\\n[MN-lead-adj]u)
 .      tm [mom]: Macro MN: Warning: Left margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .    \}
 .\" If last margin note doesn't fit
@@ -18065,10 +18100,11 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .      nr MN-shifted 1
 .      sp 1v
 .      SHIM
+.      if \\n[#SHIM]>\\n[MN-spacing] .sp -(1v+\\n[MN-lead-adj]u)
 .      tm [mom]: Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .    \}
 .\" If last margin note doesn't fit
-.    if ( (\\n(nl+\\n[MN-div-r-\\n[MN-curr]-depth]) > (\\n(.p+\\n[#VARIABLE_FOOTER_POS]) ) \{\
+.    if ( (\\n(nl+\\n[MN-div-r-\\n[MN-curr]-depth]) > (\\n(.p+\\n[#VARIABLE_FOOTER_POS]-1) ) \{\
 .      if \\n[MN-shifted]=1 \{\
 .        sp -(1v+\\n[#SHIM]u)
 .        rm MN-div-r-\\n[MN-curr]
@@ -18095,7 +18131,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .\}
 .  ev
 .  po
-'  sp |\\n[MN-curr-pos]u
 .  if !\\n[#no-repeat-MN-right]=1 .vpt 1
 ..
 \#

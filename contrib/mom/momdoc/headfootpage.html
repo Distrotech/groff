@@ -566,10 +566,10 @@ well.
 <a name="HDRFTR_RECTOVERSO"></a>
 
 <p>
-<nobr>Macro: <strong>HEADER_RECTO</strong> <kbd>LEFT | CENTER | RIGHT &quot;&lt;header recto string&gt;&quot;</kbd></nobr>
+<nobr>Macro: <strong>HEADER_RECTO</strong> <kbd>LEFT | CENTER | RIGHT [ CAPS ] &quot;&lt;header recto string&gt;&quot;</kbd></nobr>
 <br/>
 
-<nobr>Macro: <strong>HEADER_VERSO</strong> <kbd>LEFT | CENTER | RIGHT &quot;&lt;header verso string&gt;&quot;</kbd></nobr>
+<nobr>Macro: <strong>HEADER_VERSO</strong> <kbd>LEFT | CENTER | RIGHT [ CAPS ] &quot;&lt;header verso string&gt;&quot;</kbd></nobr>
 <br/>
 </p>
 
@@ -587,8 +587,19 @@ The first argument to <strong>HEADER_RECTO</strong> is the
 direction in which you want the header
 <a href="definitions.html#TERMS_QUAD">quadded</a>.
 <kbd>L, C</kbd> and <kbd>R</kbd> may be used in place of <kbd>LEFT,
-CENTER</kbd> and <kbd>RIGHT</kbd>.  The second argument is a string,
-surrounded by double-quotes, containing what you want in the header.
+CENTER</kbd> and <kbd>RIGHT</kbd>.
+
+<p>
+The second argument (optional) tells <strong>mom</strong> to
+capitalize the text of the header.  <strong>Please note:</strong>
+Do NOT attempt to use
+<a href="inlines.html#UC_LC">\*[UC]...\*[LC]</a>
+inside the string passed to <strong>HEADER_RECTO</strong>.
+</p>
+
+<p>
+The final argument is a string, surrounded by
+double-quotes, containing what you want in the header.
 <strong>HEADER_RECTO</strong> disables <strong>mom</strong>'s normal
 3-part headers, therefore anything you want in the headers must be
 entered by hand in the string, including colours (via the
@@ -616,7 +627,8 @@ with inline escapes.
 
 <p>
 To include the current page number in the string, use the
-<kbd>\*[PAGE#]</kbd> inline.
+<kbd>\*[PAGE#]</kbd>
+<a href="definitions.html#TERMS_INLINES">inline escape</a>.
 </p>
 
 <a name="PADDING_HDRFTR"><h4>*<u>Padding the HEADER_RECTO/HEADER_VERSO string</u></h4></a>
