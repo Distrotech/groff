@@ -53,6 +53,9 @@ HTML always denotes XHTML also.
 .cp 0
 .
 .
+.\" for XHTML, we need `/>'
+.ds www-> >\"
+.
 .nr www-html 0
 .if '\*[.T]'html' .nr www-html 1
 .
@@ -125,7 +128,7 @@ HTML always denotes XHTML also.
 .\" --------------------------------------------------------------------
 .\" www:error (<test>...)
 .\"
-.\" Print error message
+.\" Print error message.
 .\"
 .de www-error
 .  tm \\n[.F]:\\n[.c]: macro error: \\$*
@@ -160,15 +163,15 @@ HTML always denotes XHTML also.
 .    www:error .\\$0 expects 1 argument.
 .  if '\\*[\\$1]'' \
 .    return
-.  ds \\$0:r "\\*[\\$1]\""
-.  ds \\$0:s\"
+.  ds \\$0:r "\\*[\\$1]\"
+.  ds \\$0:s
 .  while 1 \{\
-.    ds \\$0:c "\\*[\\$0:r]\""
+.    ds \\$0:c "\\*[\\$0:r]\"
 .    substring \\$0:c 0 0\"
 .    ie '\\*[\\$0:c]' ' \
-.      as \\$0:s " space\""
+.      as \\$0:s " space\"
 .    el \
-.      as \\$0:s " \\*[\\$0:c]\""
+.      as \\$0:s " \\*[\\$0:c]\"
 .    www:lenstr \\$0:n \\$0:r
 .    if (\\n[\\$0:n] <= 1) \{\
 .      break
@@ -198,27 +201,27 @@ HTML always denotes XHTML also.
 .    www:error .\\$0 expects 1 argument.
 .  if !\n[www:substring_ok] \
 .    return
-.  ds \\$0:s "\\*[\\$1]\""
+.  ds \\$0:s "\\*[\\$1]\"
 .  www:splitstr \\$0:s
-.  www:url_breaks_splitted \\$0:s \\*[\\$0:s]
-.  ds \\$1 "\\*[\\$0:s]\""
+.  www:url_breaks_split \\$0:s \\*[\\$0:s]
+.  ds \\$1 "\\*[\\$0:s]\"
 .  rm \\$0:s
 ..
 .
 .\" --------------------------------------------------------------------
-.\" www:url_breaks_splitted (<result> <char> [<char>...])
+.\" www:url_breaks_split (<result> <char> [<char>...])
 .\"
-.\" Add `\:' within URL strings, but arguments are a splitted string.
+.\" Add `\:' within URL strings, but arguments are a split string.
 .\"
 .\" Arguments: >=2: <result> <char> [<char>...]
 .\"
-.de www:url_breaks_splitted
+.de www:url_breaks_split
 .  nr \\$0:min 5             \" minimal number of characters for next line
 .  if (\\n[.$] < 2) \
 .    www:error .\\$0 expects at least 2 arguments.
 .  ds \\$0:res \\$1\"
 .  shift
-.  ds \\$0:s\"
+.  ds \\$0:s
 .  nr \\$0:done 0
 .  while !\\n[\\$0:done] \{\
 .    if (\\n[.$] <= 0) \{\
@@ -226,17 +229,17 @@ HTML always denotes XHTML also.
 .      break
 .    \}
 .    if '\\$1'space' \{\
-.      as \\$0:s " \""
+.      as \\$0:s " \"
 .      shift
 .      continue
 .    \}
 .    if (\\n[.$] < \\n[\\$0:min]) \{\
-.      as \\$0:s "\\$1\""
+.      as \\$0:s "\\$1\"
 .      shift
 .      continue
 .    \}
 .    if !'\\$1'/' \{\
-.      as \\$0:s "\\$1\""
+.      as \\$0:s "\\$1\"
 .      shift
 .      continue
 .    \}
@@ -270,7 +273,7 @@ HTML always denotes XHTML also.
 .\" --------------------------------------------------------------------
 .\" HTML
 .\"
-.\" the main auxiliary macro for the HTML interface
+.\" The main auxiliary macro for the HTML interface.
 .\"
 .de HTML
 .  if \\n[www-html] \{\
@@ -286,14 +289,14 @@ HTML always denotes XHTML also.
 ..
 .
 .\"
-.\" an auxiliary macro for HTML (without following space)
+.\" An auxiliary macro for HTML (without following space).
 .\"
 .de HTML-NS
 .  nop \X^html:\\$*^\c
 ..
 .
 .\"
-.\" emit a HTML tag after shutting down a (possibly open) paragraph
+.\" Emit an HTML tag after shutting down a (possibly open) paragraph.
 .\"
 .de HTML</p>
 .  if \\n[www-html] \{\
@@ -303,7 +306,7 @@ HTML always denotes XHTML also.
 ..
 .
 .\"
-.\" emit an HTML tag.  If text has been written in the paragraph
+.\" Emit an HTML tag.  If text has been written in the paragraph
 .\"                    then do not shut the paragraph down.
 .\"                    If text was not written, remove the empty
 .\"                    paragraph tag and emit the desired html tag.
@@ -313,7 +316,7 @@ HTML always denotes XHTML also.
 ..
 .
 .\"
-.\" emit a MATH tag.  If text has been written in the paragraph
+.\" Emit a MATH tag.  If text has been written in the paragraph
 .\"                   then do not shut the paragraph down.
 .\"                   If text was not written, remove the empty
 .\"                   paragraph tag and emit the desired math tag.
@@ -375,7 +378,7 @@ HTML always denotes XHTML also.
 .
 .\" --------------------------------------------------------------------
 .\" URL url [description] [after]
-.\"     if description is absent then the url becomes the anchor text
+.\"     If description is absent then the url becomes the anchor text.
 .\"
 .de URL
 .  if !'\\$1'' \{\
@@ -507,7 +510,7 @@ HTML always denotes XHTML also.
 .de TAG
 .  HTML <a "name=""\\$1""></a>"
 .  ie '\\$2'' \
-.    ds TAG_\\$1 \\n[PN]
+.    ds TAG_\\$1 \\n[PN]\"
 .  el \
 .    ds TAG_\\$1 \\$2\"
 ..
@@ -539,7 +542,7 @@ HTML always denotes XHTML also.
 .      nr www-height \\$4
 .    HTML <img src="\\$1" alt="Image \\$1" \
            "width=""\\n[www-width]""" \
-           "height=""\\n[www-height]"""></img>
+           "height=""\\n[www-height]""\\*[www->]"
 .  \}
 .  el \
 .    nop \\*[www:open]\f[\\*[www:fontstyle]]\\$1\f[]\\*[www:close]
@@ -586,22 +589,22 @@ HTML always denotes XHTML also.
 .    ie (\\n[www-width] == 0) \{\
 .      ie (\\n[www-height] == 0) \
 .        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
-                                             "alt=""Image \\$1"""></img></p>"
+                                             "alt=""Image \\$1""\\*[www->]</p>"
 .      el \
 .        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
                                              "alt=""Image \\$1""" \
-                                             "height=""\\n[www-height]"""></img></p>
+                                             "height=""\\n[www-height]""\\*[www->]</p>"
 .    \}
 .    el \{\
 .      ie (\\n[www-height] == 0) \
 .        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
                                              "alt=""Image \\$1""" \
-                                             "width=""\\n[www-width]"""></img></p>
+                                             "width=""\\n[www-width]""\\*[www->]</p>"
 .      el \
 .        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
                                              "alt=""Image \\$1""" \
                                              "width=""\\n[www-width]""" \
-                                             "height=""\\n[www-height]"""></img></p>
+                                             "height=""\\n[www-height]""\\*[www->]</p>"
 .    \}
 .  \}
 .  el \{\
@@ -736,7 +739,7 @@ HTML always denotes XHTML also.
 .
 .  nr www-width 1i
 .  nr www-height 1i
-.  ds www-size-specs width=""\\n[www-width]" height="\\n[www-height]"
+.  ds www-size-specs width="\\n[www-width]" height="\\n[www-height]"\"
 .  ie !'\\$2'' \{\
 .    nr www-is-absolute 0
 .    nr www-absolute 0
@@ -747,13 +750,13 @@ HTML always denotes XHTML also.
 .      nr www-width (\\n[www-absolute] * \\n[.l] / 100)
 .      if \\n[www-html] \
 .        nr www-width (\\n[www-width] * 100 / 240)
-.      ds www-size-specs width=\"\\*[www-percentage]"
+.      ds www-size-specs width="\\*[www-percentage]"\"
 .    \}
 .    el \{\
 .      nr www-width \\n[www-absolute]
 .      if \\n[www-html] \
 .        nr www-width (\\n[www-width] * 100 / 240)
-.      ds www-size-specs width=\"\\n[www-width]"
+.      ds www-size-specs width="\\n[www-width]"\"
 .    \}
 .
 .    nr www-height \\n[www-width]
@@ -767,13 +770,13 @@ HTML always denotes XHTML also.
 .        nr www-height (\\n[www-absolute] * \\n[.p] / 100)
 .        if \\n[www-html] \
 .           nr www-height (\\n[www-height] * 100 / 240)
-.        ds www-size-specs "\\*[www-size-specs] height="\\*[www-percentage]"
+.        ds www-size-specs "\\*[www-size-specs] height="\\*[www-percentage]"\"
 .      \}
 .      el \{\
 .        nr www-height \\n[www-absolute]
 .        if \\n[www-html] \
 .           nr www-height (\\n[www-height] * 100 / 240)
-.        ds www-size-specs "\\*[www-size-specs] "height="\\*[www-height]"
+.        ds www-size-specs "\\*[www-size-specs] height="\\*[www-height]"\"
 .      \}
 .    \}
 .  \}
@@ -781,11 +784,11 @@ HTML always denotes XHTML also.
 .    \" height not specified; use width value
 .    ie !\\n[www-is-absolute] \{\
 .       \" percentage value
-.       ds www-size-specs "\\*[www-size-specs] "height="\\*[www-percentage]"
+.       ds www-size-specs "\\*[www-size-specs] height="\\*[www-percentage]"\"
 .       nr www-height \\n[www-width]
 .    \}
 .    el \{\
-.       ds www-size-specs "\\*[www-size-specs] "height="\\*[www-width]"
+.       ds www-size-specs "\\*[www-size-specs] height="\\*[www-width]"\"
 .       nr www-height \\n[www-width]
 .    \}
 .  \}
@@ -795,12 +798,14 @@ HTML always denotes XHTML also.
 .      HTML <img "src=""\\$1""" \
                  "alt=""Image \\$1""" \
                  "hspace=""\\n[www-htmlimage-gap]""" \
-                 "align=""right"" \\*[www-size-specs]"""></img>
+                 align=right \
+                 "\\*[www-size-specs]\\*[www->]"
 .    el \
 .      HTML <img "src=""\\$1""" \
                  "alt=""Image \\$1""" \
                  "hspace=""\\n[www-htmlimage-gap]""" \
-                 "align=""left"" \\*[www-size-specs]"""></img>
+                 align=left \
+                 "\\*[www-size-specs]\\*[www->]"
 .  \}
 .  el \{\
 .    tm www-width is \\n[www-width]
@@ -900,13 +905,13 @@ HTML always denotes XHTML also.
 .\"   Produce a horizontal line.
 .\"
 .de HR
-.  HTML</p> <hr></hr>
+.  HTML</p> <hr\\*[www->]
 ..
 .
 .\" --------------------------------------------------------------------
 .\" NHR
 .\"
-.\"  Suppresses the generation of the top and bottom rules which grohtml
+.\"  Suppress the generation of the top and bottom rules which grohtml
 .\"  emits by default.
 .\"
 .de NHR
@@ -928,7 +933,7 @@ HTML always denotes XHTML also.
 .\"   Generate an HTML title only.  This differs from the -ms .TL macro
 .\"   which generates both an HTML title and an H1 heading.
 .\"
-.\"   This is useful when an author wishes to use a HTML title as search
+.\"   This is useful when an author wishes to use an HTML title as search
 .\"   engine fodder but a graphic title in the document.
 .\"
 .\"   The macro terminates when a space or break is seen (.sp, .br).
@@ -1000,7 +1005,7 @@ HTML always denotes XHTML also.
 .    HTML-NS </\\*[www-ltag\\n[www-depth]]>
 .  if !'\\$1'' \
 .    HTML-NS <\\$1>
-.  ds www-ltag\\n[www-depth] \\$1
+.  ds www-ltag\\n[www-depth] \\$1\"
 ..
 .
 .\"
@@ -1109,8 +1114,8 @@ HTML always denotes XHTML also.
 ..
 .
 .\" --------------------------------------------------------------------
-.\"
 .\" DLS
+.\"
 .\"   Start a definition list.
 .\"
 .de DLS
@@ -1127,8 +1132,8 @@ HTML always denotes XHTML also.
 ..
 .
 .\" --------------------------------------------------------------------
-.\"
 .\" DLE
+.\"
 .\"   End a definition list.
 .\"
 .de DLE
@@ -1252,7 +1257,7 @@ HTML always denotes XHTML also.
 .\" pre-html to generate png images from postscript.
 .
 .\" --------------------------------------------------------------------
-.\" HTML-DO-IMAGE - tells troff to issue an image marker which can be
+.\" HTML-DO-IMAGE - tell troff to issue an image marker which can be
 .\"                 read back by pre-html
 .\"
 .de HTML-DO-IMAGE
@@ -1263,7 +1268,7 @@ HTML always denotes XHTML also.
 ..
 .
 .\" --------------------------------------------------------------------
-.\" HTML-IMAGE-END - terminates an image for html
+.\" HTML-IMAGE-END - terminate an image for html
 .\"
 .de HTML-IMAGE-END
 .  if r ps4html \
@@ -1275,7 +1280,7 @@ HTML always denotes XHTML also.
 .nr www-png-no 0
 .
 .\" --------------------------------------------------------------------
-.\" www-make-unique-name - generates another unique name in string
+.\" www-make-unique-name - generate another unique name in string
 .\"                        `www-unique-name'
 .\"
 .de www-make-unique-name
@@ -1334,7 +1339,7 @@ HTML always denotes XHTML also.
 ..
 .
 .\" --------------------------------------------------------------------
-.\" EQN-HTML-DO-IMAGE - tells troff to issue an image marker which can be
+.\" EQN-HTML-DO-IMAGE - tell troff to issue an image marker which can be
 .\"                     read back by pre-html
 .\"
 .de EQN-HTML-DO-IMAGE
@@ -1350,7 +1355,7 @@ HTML always denotes XHTML also.
 ..
 .
 .\" --------------------------------------------------------------------
-.\" EQN-HTML-IMAGE-END - terminates an image for html
+.\" EQN-HTML-IMAGE-END - terminate an image for html
 .\"
 .de EQN-HTML-IMAGE-END
 .  ie r xhtml \{\
@@ -1408,9 +1413,9 @@ HTML always denotes XHTML also.
 .\" --------------------------------------------------------------------
 .\" HEAD
 .\"
-.\"   Adds information to the <head> </head> section of the html
+.\"   Add information to the <head> </head> section of the html
 .\"   document
-.\" --------------------------------------------------------------------
+.\"
 .de HEAD
 .  DEVTAG .head "\\$*"
 ..
@@ -1440,11 +1445,11 @@ HTML always denotes XHTML also.
 .\"
 .de LNS
 .  HTML</p> <table><tr><td valign=top \
-                           width=\\n[www-nav-width-left]% \
+                           "width=""\\n[www-nav-width-left]%""" \
                            "bgcolor=""\\*[www-nav-colour]"">"
 .  LK
 .  HTML</p> </td><td valign=top \
-                     width=\\n[www-nav-width-right]%>
+                     "width=""\\n[www-nav-width-right]%"">"
 .  nr SH-open 1
 ..
 .
@@ -1515,13 +1520,13 @@ HTML always denotes XHTML also.
 ..
 .
 .\" --------------------------------------------------------------------
-.\"  LINKSTYLE color [fontstyle [openglyph closeglyph]]
+.\" LINKSTYLE color [fontstyle [openglyph closeglyph]]
 .\"
-.\"    Initializes www.tmac so that when this macro set is used with
-.\"    non-HTML devices the urls are rendered the user defined attributes.
-.\"    For example:
+.\"   Initialize www.tmac so that when this macro set is used with
+.\"   non-HTML devices the urls are rendered the user defined attributes.
+.\"   For example:
 .\"
-.\"    LINKSTYLE blue CR < >
+.\"   LINKSTYLE blue CR < >
 .\"
 .de LINKSTYLE
 .  if (\\n[.$] < 1) \
@@ -1546,7 +1551,7 @@ HTML always denotes XHTML also.
 ..
 .
 .\" --------------------------------------------------------------------
-.\" Final Setup
+.\" final setup
 .\" --------------------------------------------------------------------
 .
 .LINKSTYLE blue C \[la] \[ra]
