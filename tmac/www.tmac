@@ -343,18 +343,18 @@ HTML always denotes XHTML also.
 .\" BCL foreground background active not-visited visited
 .\"
 .de BCL
-.  HTML <body text=\\$1 \
-              bgcolor=\\$2 \
-              link=\\$3 \
-              alink=\\$4 \
-              vlink=\\$5>
+.  HTML <body "text=""\\$1""" \
+              "bgcolor=""\\$2""" \
+              "link=""\\$3""" \
+              "alink=""\\$4""" \
+              "vlink=""\\$5"">"
 ..
 .
 .\" --------------------------------------------------------------------
 .\" BGIMG imagefile
 .\"
 .de BGIMG
-.  HTML <body background=\\$1>
+.  HTML <body "background=""\\$1"">"
 ..
 .
 .\" www:url_check_tag str
@@ -540,9 +540,10 @@ HTML always denotes XHTML also.
 .    nr www-height \\n[www-width]
 .    if !'\\$4'' \
 .      nr www-height \\$4
-.    HTML <img src="\\$1" alt="Image \\$1" \
-           "width=""\\n[www-width]""" \
-           "height=""\\n[www-height]""\\*[www->]"
+.    HTML <img "src=""\\$1""" \
+               "alt=""Image \\$1""" \
+               "width=""\\n[www-width]""" \
+               "height=""\\n[www-height]""\\*[www->]"
 .  \}
 .  el \
 .    nop \\*[www:open]\f[\\*[www:fontstyle]]\\$1\f[]\\*[www:close]
@@ -575,11 +576,11 @@ HTML always denotes XHTML also.
 .    shift
 .
 .  ie \\n[www-html] \{\
-.    ds www-htmlalign align=center\"
+.    ds www-htmlalign align="center"\"
 .    if '\\*[www-pic-align]'-R' \
-.      ds www-htmlalign align=right\"
+.      ds www-htmlalign align="right"\"
 .    if '\\*[www-pic-align]'-L' \
-.      ds www-htmlalign align=left\"
+.      ds www-htmlalign align="left"\"
 .    nr www-width 0
 .    nr www-height 0
 .    if !'\\$2'' \
@@ -798,13 +799,13 @@ HTML always denotes XHTML also.
 .      HTML <img "src=""\\$1""" \
                  "alt=""Image \\$1""" \
                  "hspace=""\\n[www-htmlimage-gap]""" \
-                 align=right \
+                 "align=""right""" \
                  "\\*[www-size-specs]\\*[www->]"
 .    el \
 .      HTML <img "src=""\\$1""" \
                  "alt=""Image \\$1""" \
                  "hspace=""\\n[www-htmlimage-gap]""" \
-                 align=left \
+                 "align=""left""" \
                  "\\*[www-size-specs]\\*[www->]"
 .  \}
 .  el \{\
@@ -1444,11 +1445,11 @@ HTML always denotes XHTML also.
 .\" LNS - left navigation start
 .\"
 .de LNS
-.  HTML</p> <table><tr><td valign=top \
+.  HTML</p> <table><tr><td "valign=""top""" \
                            "width=""\\n[www-nav-width-left]%""" \
                            "bgcolor=""\\*[www-nav-colour]"">"
 .  LK
-.  HTML</p> </td><td valign=top \
+.  HTML</p> </td><td "valign=""top""" \
                      "width=""\\n[www-nav-width-right]%"">"
 .  nr SH-open 1
 ..
