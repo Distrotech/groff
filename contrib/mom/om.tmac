@@ -48,6 +48,7 @@ to a macro means that any argument turns the feature off.
 \# ====================================================================
 \#
 \# Check which version of groff is being run
+.if r#PAGINATE .ab
 .if (\n[.x]\n[.y] < 118) \
 .   ab [mom]: You need GNU troff version 1.18 or higher to run this version of mom.
 \# Check that GNU troff is being run
@@ -7409,22 +7410,27 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    EOL
 .    TRAP
 .    NEWPAGE
+.    if \\n[#PAGINATION_WAS_ON]=1 \{ .nr % +1 \}
 .    if \\n[#DOCCOVER_END]=1 \{\
 .       ie \\n[#DOCCOVER_BLANKPAGE]=1 \{\
 .          NEWPAGE
 .          rr #DOCCOVER_BLANKPAGE
+.          if !\\n[#DOCCOVERS_COUNT]=1 \{ .nr % -2 \}
+.       \}
+.       el \{\
 .          if !\\n[#DOCCOVERS_COUNT]=1 \{ .nr #PAGE_NUM_ADJ -1 \}
 .       \}
-.       el \{ . \}
 .       rr #DOCCOVER_END
 .    \}
 .    if \\n[#COVER_END]=1 \{\
 .       ie \\n[#COVER_BLANKPAGE]=1 \{\
 .          NEWPAGE
 .          rr #COVER_BLANKPAGE
+.          if !\\n[#COVERS_COUNT]=1 \{ .nr % -2 \}
+.       \}
+.       el \{\
 .          if !\\n[#COVERS_COUNT]=1 \{ .nr #PAGE_NUM_ADJ -1 \}
 .       \}
-.       el \{ . \}
 .       rr #COVER_END
 .    \}
 .    ev
