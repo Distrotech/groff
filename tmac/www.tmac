@@ -53,12 +53,14 @@ HTML always denotes XHTML also.
 .cp 0
 .
 .
-.\" for XHTML, we need `/>'
-.ds www-> >\"
+.ie r xhtml \
+.  ds www-> />\"
+.el \
+.  ds www-> >\"
 .
 .nr www-html 0
 .if '\*[.T]'html' \
-.    nr www-html 1
+.  nr www-html 1
 .
 .\" set up www-image-template
 .
@@ -301,10 +303,12 @@ HTML always denotes XHTML also.
 .\" Emit an HTML tag after shutting down a (possibly open) paragraph.
 .\"
 .de HTML</p>
-.  if \\n[www-html] \{\
+.  ie \\n[www-html] \{\
 .    \" the `\&' makes the vertical mode leave, so to say
 .    nop \&\X^html</p>:\\$*^
 .  \}
+.  el \
+.    www:paraspace
 ..
 .
 .\"
@@ -373,7 +377,7 @@ HTML always denotes XHTML also.
 .    substring \\$0:tmp 1
 .    ds \\$0:tmp TAG_\\*[\\$0:tmp]\"
 .
-.    ie !'\\*[\\*[\\$0:tmp]]'' \
+.    ie d \\*[\\$0:tmp] \
 .      ds \\$1 \\*[\\*[\\$0:tmp]]\"
 .    el \
 .      ds \\$1 see below\"
