@@ -189,6 +189,31 @@ o New option `-f NAME' to set the internal name of the groff font.
 Macro Packages
 --------------
 
+o Joachim Walsdorff contributed the `hdtbl' package for the generation of
+  tables, using a syntax very similar to the HTML table model.  For
+  example, a table with two cells and two rows looks like this:
+
+    .TBL cols=2
+    .  TR .TD 1*1 .TD 1*2
+    .  TR .TD 2*1 .TD 2*2
+    .ETB
+
+  Here the same table using a more expanded syntax:
+
+    .TBL cols=2
+    .  TR
+    .    TD 1*1
+    .    TD 1*2
+    .  TR
+    .    TD 2*1
+    .    TD 2*2
+    .ETB
+
+  Tables can be nested; `hdtbl' works without a preprocessor so that the
+  full capability of groff's macro engine is available.
+
+  This package currently works with `-Tps' only.
+
 o -mandoc now supports multiple man pages (in either man or mdoc format).
 
 o Fabrice Ménard contributed locales support.  In particular, it is now
