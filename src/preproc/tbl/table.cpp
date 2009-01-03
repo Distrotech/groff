@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2003, 2004, 2007, 2008
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2003, 2004, 2007, 2008,
+                 2009
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -2077,8 +2078,9 @@ void table::compute_expand_width()
   if (total_separation)
     printfs("-%1n", as_string(total_separation));
   prints("\n");
-  prints(".if \\n[" EXPAND_REG "]<0 \\{"
-	 ".tm warning: page \\n%: table wider than line width\n"
+  prints(".if \\n[" EXPAND_REG "]<0 \\{");
+  entry_list->set_location();
+  prints(".tm warning: around line \\n[.c]: table wider than line width\n"
 	 ".nr " EXPAND_REG " 0\n"
 	 ".\\}\n");
   if (colcount > 1)
@@ -2114,12 +2116,15 @@ void table::compute_separation_factor()
   for (int i = 0; i < ncolumns; i++)
     printfs("-\\n[%1]", span_width_reg(i, i));
   printfs("/%1\n", as_string(total_separation));
-  prints(".ie \\n[" SEPARATION_FACTOR_REG "]<=0 \\{"
-	 ".tm warning: page \\n%: column separation set to zero\n"
+  prints(".ie \\n[" SEPARATION_FACTOR_REG "]<=0 \\{");
+  entry_list->set_location();
+  prints(".tm warning: around line \\n[.c]: column separation set to zero\n"
 	 ".nr " SEPARATION_FACTOR_REG " 0\n"
 	 ".\\}\n"
-	 ".el .if \\n[" SEPARATION_FACTOR_REG "]<1n "
-	 ".tm warning: page \\n%: table squeezed horizontally to fit line length\n");
+	 ".el .if \\n[" SEPARATION_FACTOR_REG "]<1n \\{");
+  entry_list->set_location();
+  prints(".tm warning: around line \\n[.c]: table squeezed horizontally to fit line length\n"
+	 ".\\}\n");
 }
 
 void table::compute_column_positions()
