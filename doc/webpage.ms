@@ -10,10 +10,11 @@
 .if '\*[.T]'html' .nr LL 10i
 .if r ps4html .nr LL 10i
 .
+.mso www.tmac
+.
 .HEAD "<link rel=""stylesheet"" type=""text/css"" href=""groff.css"" >"
 .\" .HEAD "<link rel=""icon"" type=""image/png"" href=""http://www.gnu.org/graphics/gnu-mini.png"" >"
 .
-.mso www.tmac
 .ALN "#eeeeee" 30
 .
 .de blm-macro
@@ -85,16 +86,14 @@ User issues lead:
 Technical issues lead:
 .MTO wl@\:gnu.org "Werner Lemberg" .
 .
-.LNE
+.HR
 .
 \s[-4]\f[I]This document was produced using
 .URL http://groff.ffii.org/ groff-\n[.x].\n[.y].\n[.Y] .
 .br
-The image at the top has been contributed by Imogen Mulley (born 1991),
+The image at the top has been contributed by Imogen Mulley,
 based on a similar picture found on the
 .URL http://www.gnu.org "GNU server" .
-.
-.HR
 .
 .SH
 License
@@ -113,12 +112,12 @@ This is the GNU groff document formatting system.
 The version number is given in the file VERSION.
 
 Included in this release are implementations of troff, pic, eqn, tbl,
-grn, refer, \-man, \-mdoc, and \-ms macros, and drivers for PostScript,
-TeX dvi format, HP LaserJet\~4 printers, Canon CAPSL printers, HTML format
-(beta status), and typewriter-like devices.
-Also included is a modified version of the Berkeley \-me macros, an enhanced
-version of the X11 xditview previewer, and an implementation of the \-mm
-macros contributed by
+grn, refer, \-man, \-mdoc, \-mom, and \-ms macros, and drivers for
+PostScript, TeX dvi format, HP LaserJet\~4 printers, Canon CAPSL printers,
+HTML and XHTML formats (beta status), and typewriter-like devices.
+Also included is a modified version of the Berkeley \-me macros, the enhanced
+version gxditview of the X11 xditview previewer, and an implementation of the
+\-mm macros contributed by
 .MTO jh@\:axis.se "J\[:o]rgen H\[:a]gg" .
 
 See the file INSTALL for installation instructions.
@@ -131,7 +130,7 @@ See the file COPYING for copying permission.
 
 The file PROBLEMS describes various problems that have been encountered in
 compiling, installing, and running groff.
-
+.
 .SH
 CVS and FTP access
 .LP
@@ -148,13 +147,10 @@ executing the commands
 .nf
 .ft C
 cd ~/cvswork
-cvs -d:pserver:anoncvs@savannah.gnu.org:/cvsroot/groff login
-cvs -d:pserver:anoncvs@savannah.gnu.org:/cvsroot/groff -z5 co groff
+cvs -d:pserver:anonymous@cvs.savannah.gnu.org/sources/groff -z5 co groff
 .ft P
 .fi
 .in
-
-When asked for a password during the `login' call, simply press Enter.
 
 This creates a subdirectory, ~/cvswork/groff, with a `checked out'
 copy of the CVS repository.
@@ -201,6 +197,7 @@ gunzip -c ../groff-\[la]version\[ra]-current.diff.gz | patch -p1
 .ft P
 .fi
 .in
+.
 .SH
 Groff dependencies
 .LP
@@ -221,9 +218,9 @@ Note that texinfo and bison or byacc are required only for building from
 CVS sources (either a checked out working copy, or a daily snapshot).
 They are not required for building from a stable release tarball.
 Also note that the version numbers stated are the minimum supported.
-No version of texinfo < 4.8 work, and the original release of bison
+No version of texinfo < 4.8 works, and the original release of bison
 1.875 is known not to work; you \fImay\fP find that bison releases < 1.875
-do work, but in case of difficulty, please update to a later version
+work, but in case of difficulty, please update to a later version
 \fIbefore\fP posting a bug report.
 
 For \fIall\fP sources, you need ghostscript for creation of either PDF or
@@ -232,6 +229,16 @@ output.
 If you don't intend to produce output in either of these formats, then
 these packages are unnecessary.
 
+In Linux Debian, the installation of texinfo is dangerous, for it creates a
+file install-info that blocks the system installation.
+So the created /usr/local/bin/install-info must be renamed.
+
+The groff configure script searches for the X11 headers and libraries Xaw
+and Xmu.
+So the corresponding developer packages of your system must be installed,
+otherwise groff does not install gxditview and the -TX* devices.
+In Debian, the developer packages are libxaw7-dev and libxmu-dev.
+.
 .SH
 Bug reports
 .LP
@@ -242,7 +249,7 @@ all the information that it asks for.
 Even if you are not sure that something is a bug, report it using
 BUG-REPORT: this enables us to determine whether it really is a bug or
 not.
-
+.
 .SH
 Mailing lists
 .LP
@@ -262,10 +269,6 @@ for general discussion of groff
 a read-only list showing commitments to the CVS repository
 .ULE
 
-You can post mails directly to the `bug-groff' list, without subscribing
-(this fact makes the list contain many spam files); to post mails to the
-`groff' list you must subscribe to it.
-
 To subscribe, send e-mail to \[la]list\[ra]-request@\[la]domain\[ra]
 (example:
 .MTO groff-request@\:gnu.org groff-request@\:gnu.org
@@ -283,7 +286,394 @@ Alternatively, you may subscribe by visiting the web pages at
 
 Each of these web pages also provides a link to a browseable archive of
 postings to the corresponding mailing list.
+.
+.
+.SH
+NEWS VERSION 1.20
+.LP
+.SH 2
+groff
 
+.ULS
+.LI
+XHTML support has been added to grohtml and can be specified by
+\-Txhtml.
+This option also utilizes the MathML capability of
+eqn and combines the outputs of both in the final XHTML file.
+Users can also specify the `\-P\-V' option together with `\-Txhtml'
+in groff.
+This has the effect of creating an XHTML validator
+button at the bottom of each page.
+
+.LI
+Some options have been added to control a new preprocessor,
+`preconv' (see below): `\-k' activates it, `\-K' sets the input
+encoding, and `\-D' sets the default encoding.
+
+.LI
+A new environment variable `GROFF_ENCODING' sets the encoding
+of input files; it implies command option `\-k'.
+.ULE
+.
+.
+.SH 2
+troff
+
+.ULS
+.LI
+Two new requests `device' and `devicem' have been added which are
+equivalents to the \eX and \eY escapes, respectively.
+
+.LI
+A new read-only number register `.br' is available which is set to\~1
+if a macro is called as .foo and to\~0 if called as 'foo.
+This allows to reliably modify requests.
+
+.in 2m
+.nf
+.ft C 
+\&.als bp@orig bp
+\&.de bp
+\&.  tm before bp
+\&.  ie \e\en[.br] .bp@orig
+\&.  el 'bp@orig
+\&.  tm after bp
+\&..
+.ft P
+.fi
+.in
+
+.LI
+A new request `fzoom' has been added to adjust the optical size of a
+font in relation to the others.
+The zoom factor is given in integer multiples of 1/1000th.
+In the following example, the CR font is magnified by 10% (the zoom
+factor is 1.1).
+
+.in 2m
+.nf
+.ft C
+\&.fam P
+\&.fzoom CR 1100
+\&.ps 12
+\&Palatino and \ef[CR]Courier\ef[]
+.ft P
+.fi
+.in
+
+The new number register `.zoom' holds the zoom value of the current font,
+in multiples of 1/1000th.
+
+.LI
+The `cflags' request has been extended with a new flag value 64, to be
+used in combination with values\~2 (break before character) and\~4 (break
+after character).
+If set, the hyphenation codes of the surrounding characters are ignored.
+
+.LI
+A new debugging request, `pev', has been added to print all of the current
+known environments to stderr.
+It first prints the state of the current environment, then iterates
+through all of the known environments, printing each except the one that
+is current.
+
+.LI
+A new escape `\e$^' has been added.
+It represents the parameters of a macro as if they were an argument to
+the `ds' request.
+This is used by `trace.tmac'.
+
+.LI
+A new read-only number register `.O' is available which returns the
+current suppression level as set by the `\eO' escape.
+
+.LI
+The space width emitted by the `\e|' and `\e^' escape sequences can be
+controlled on a per-font basis.
+If there is a glyph named `\e|' or `\e^', respectively (note the leading
+backslash), defined in the current font file, use this glyph's width
+instead of the default value.
+
+This behaviour is not new, but hasn't been documented before.
+.ULE
+.
+.
+.SH 2
+nroff
+
+.ULS
+.LI
+Two new command line options `\-w' and `\-W' are accepted and passed to
+groff to enable and disable warning messages, respectively.
+.ULE
+.
+.
+.SH 2
+preconv
+
+.ULS
+.LI
+This is a new preprocessor to convert various input encodings to something
+groff understands (this is, ASCII and \e[uXXXX] entities, with `XXXX' a
+hexadecimal number with 4 to 6 digits, representing a Unicode input code).
+Normally, preconv should be invoked with options `\-k' and `\-K' of groff.
+See the preconv man page for details.
+.ULE
+.
+.
+.SH 2
+pic
+
+.ULS
+.LI
+int(x) now really behaves as documented: It truncates the non-integer part
+of\~x, this is, it rounds towards zero and not towards the next integer
+less than or equal to\~x.
+
+.LI
+Pic now supports up to 32 macro arguments (and up to 16 on EBCDIC
+platforms).
+
+.LI
+Heinz-Jürgen Örtel contributed code for two new keywords, `xslanted' and
+`yslanted', which can change the shape of boxes into arbitrary
+parallelograms.
+.ULE
+.
+.
+.SH 2
+tbl
+
+.ULS
+.LI
+Latest versions of DWB tbl introduced an `x' column specifier for a single
+column expanded to the line width.
+GNU tbl has now been extended to support even multiple `x' specifiers
+within a table.
+
+.LI
+To avoid collision with the new `x' specifier, a block formatting macro
+must now be selected with specifier letter `m'.
+.ULE
+.
+.
+.SH 2
+eqn
+
+.ULS
+.LI
+Eric S. Raymond has added a new device type to eqn, MathML.
+When \-TMathML is enabled, eqn now emits MathML formula markup rather than
+groff commands.
+The new groff \-Txhtml device uses this.
+.ULE
+.
+.
+.SH 2
+chem
+
+.ULS
+.LI
+The preprocessor `chem' was added.
+`chem' is a roff language to generate chemical structure diagrams.
+It generates `pic' output.
+.ULE
+.
+.
+.SH 2
+grops
+
+.ULS
+.LI
+The PS font definition files have been regenerated with newer AFM versions
+from Adobe's 35 core fonts as present in most Level\~2 PS printers.
+The changes are minor (most notably, the addition of the `Euro' glyph and an
+extended set of kerning values).
+
+For backwards compatibility, the old set of font definition files is still
+available; for details please read the man page of grops.
+.ULE
+.
+.
+.SH 2
+grotty
+
+.ULS
+.LI
+\eD'p...' is now supported if the polygon consists entirely of horizontal
+and vertical lines.
+.ULE
+.
+.
+.SH 2
+grohtml
+
+.ULS
+.LI
+XHTML support has been added.
+
+.LI
+New command line option `\-V' (to be used in XHTML mode) to produce an
+XHTML validator button.
+
+.LI
+New command line option `\-y' to produce a right-justified groff signature
+at the end of the document (in combination with option `\-V').
+.ULE
+.
+.
+.SH 2
+gxditview
+
+.ULS
+.LI
+Support for keyboard navigation has been improved.
+
+.LI
+Similar to other X11 applications, there are now two resource files,
+`GXditview' and `GXditview-color'.
+.ULE
+.
+.
+.SH 2
+groffer
+
+.ULS
+.LI
+`groffer' version 1.* exists now in a shell and a Perl version.
+.ULE
+.
+.
+.SH 2
+afmtodit
+
+.ULS
+.LI
+New option `\-c' to output more font information as comments.
+
+.LI
+New option `\-k' to suppress output of kerning data.
+
+.LI
+New option `\-f NAME' to set the internal name of the groff font.
+.ULE
+.
+.
+.SH 2
+macro packages
+
+.ULE
+.LI
+Joachim Walsdorff contributed the `hdtbl' package for the generation of
+tables, using a syntax very similar to the HTML table model.
+For example, a table with two cells and two rows looks like this:
+
+.in 2m
+.nf
+.ft C 
+\&.TBL cols=2
+\&.  TR .TD 1*1 .TD 1*2
+\&.  TR .TD 2*1 .TD 2*2
+\&.ETB
+.ft P
+.fi
+.in
+
+Here the same table using a more expanded syntax:
+
+
+.in 2m
+.nf
+.ft C 
+\&.TBL cols=2
+\&.  TR
+\&.    TD 1*1
+\&.    TD 1*2
+\&.  TR
+\&.    TD 2*1
+\&.    TD 2*2
+\&.ETB
+.ft P
+.fi
+.in
+
+Tables can be nested; `hdtbl' works without a preprocessor so that the
+full capability of groff's macro engine is available.
+
+This package currently works with `-Tps' only.
+
+.LI
+\-mandoc now supports multiple man pages (in either man or mdoc format).
+
+.LI
+Fabrice Ménard contributed locales support.
+In particular, it is now possible to get French localization of the main
+macro packages (\-ms, \-mm, \-me, and \-mom, but not \-man and \-mdoc
+which are localized differently) by appending `-mfr' to the list of macro
+packages.
+Example:
+
+.in 2m
+.ft C
+.nf
+groff \-ms \-mfr foo > foo.ps
+.fi
+.ft P
+.in
+
+Note that latin-9 input encoding is used for French (to support the `oe'
+ligature).
+
+.LI
+Swedish macro localization (with `\-msv') has been added.
+
+.LI
+German macro localization (with `\-mde' and `\-mden' for traditional and
+new orthography, respectively) has been added.
+
+.LI
+Czech macro localization (with `\-mcs') has been added.
+
+Note that latin-2 input encoding is used for Czech.
+
+.LI
+A new macro `Dx' has been added to the mdoc package which identifies the
+DragonFly OS.
+
+.LI
+If mdoc is used to print multiple man pages (together with the \-rcR=0
+command line option), each man page now starts a new page.
+
+.LI
+\-mtrace has been considerably improved, now showing number and string
+register assignments, among other things.
+See the groff_trace man page for details.
+
+.LI
+The PSPIC macro now works with all devices (producing a hollow
+rectangle on devices which don't support inclusion of PS images) and
+is loaded in troffrc at start-up.
+
+.LI
+A new auxiliary macro package `62bit' has been added which provides some
+macros for adding, multiplying, and dividing signed 62bit integers (mainly
+to handle normal groff number operations without risking overflow errors).
+
+.LI
+For \-ms, Eric S. Raymond contributed support for ancient Bell Labs
+localisms `.SC', `.UC', `.P1', and `.P2'.
+The latter three are enabled only after .SC is called.
+
+.LI
+A new string, `SN-STYLE', has been added to the ms macros, controlling
+the formatting of section numbers in headings defined by `.NH'.
+
+.LI
+The new macro package `ptx' provides a template definition for the `.xx'
+macro as needed by GNU ptx (for creating permuted indices).
+.ULE
+.
+.
 .SH
 NEWS VERSION 1.19.2
 .LP
