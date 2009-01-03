@@ -5,7 +5,7 @@
 # Source file position: <groff-source>/contrib/chem/chem.pl
 # Installed position: <prefix>/bin/chem
 
-# Copyright (C) 2006 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2009 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
 # This file is part of `chem', which is part of `groff'.
@@ -31,11 +31,11 @@
 ########################################################################
 
 my $Program_Version = '0.3.1';
-my $Last_Update = '11 Nov 2006';
+my $Last_Update = '03 Jan 2009';
 
 # this setting of the groff version is only used before make is run,
 # otherwise @VERSION@ will set it.
-my $Groff_Version_Preset='1.19.3preset';
+my $Groff_Version_Preset='1.20preset';
 
 # test on Perl version
 require v5.6;
