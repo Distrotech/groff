@@ -562,7 +562,7 @@ New option `\-f NAME' to set the internal name of the groff font.
 .SH 2
 macro packages
 
-.ULE
+.ULS
 .LI
 Joachim Walsdorff contributed the `hdtbl' package for the generation of
 tables, using a syntax very similar to the HTML table model.
