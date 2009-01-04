@@ -43,7 +43,7 @@ M4MACROS = \
 distfiles: configure
 
 $(srcdir)/configure: configure.ac $(srcdir)/aclocal.m4
-	cd $(srcdir) && autoconf
+	cd $(srcdir) && autoconf && rm -rf autom4te.cache
 
 $(srcdir)/aclocal.m4: $(M4MACROS)
 	cd $(srcdir) && aclocal -I m4

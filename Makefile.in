@@ -745,12 +745,12 @@ dist:
 	done
 	srcdir=`cd $(srcdir); pwd`; \
 	cd tmp; \
-	$(LN_S) ../Makefile .; \
-	$(LN_S) $$srcdir/* . 2>/dev/null || true; \
+	cp ../Makefile .; \
+	cp $$srcdir/* . 2>/dev/null || true; \
 	rm -rf CVS; \
 	for d in $(DISTDIRS); do \
 	  (cd $$d; \
-	   $(LN_S) $$srcdir/$$d/* . 2>/dev/null; \
+	   cp $$srcdir/$$d/* . 2>/dev/null; \
 	   rm -rf CVS || true); \
 	done; \
 	$(MAKE) srcdir=. VPATH=. distfiles; \
@@ -764,7 +764,7 @@ dist:
 	   fi); \
 	done; \
 	rm -f Makefile; \
-	$(LN_S) $$srcdir/Makefile.init Makefile
+	cp $$srcdir/Makefile.init Makefile
 	mv tmp groff-$(version)$(revision)
 	tar cfh - groff-$(version)$(revision) | \
 	  gzip -c >groff-$(version)$(revision).tar.gz
