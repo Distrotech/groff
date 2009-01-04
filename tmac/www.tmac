@@ -1406,22 +1406,34 @@ HTML always denotes XHTML also.
 .\"
 .if !d TS \{\
 .  de TS
-.    nop \\*[HTML-IMAGE]\\
+.    HTML-IMAGE \\$@
+.    if \\n[www-html] \{\
+.      nr www-TS-ll \\n[.l]
+.      ll 1000n
+.    \}
 .  .
 .\}
 .if !d TE \{\
 .  de TE
-.    nop \\*[HTML-IMAGE-END]\\
+.    if \\n[www-html] \
+.      ll \\n[www-TS-ll]u
+.    HTML-IMAGE-END \\$@
 .  .
 .\}
 .if !d EQ \{\
 .  de EQ
-.    nop \\*[EQN-HTML-IMAGE]\\
+.    EQN-HTML-IMAGE \\$@
+.    if \\n[www-html] \{\
+.      nr www-EQ-ll \\n[.l]
+.      ll 1000n
+.    \}
 .  .
 .\}
 .if !d EN \{\
 .  de EN
-.    nop \\*[EQN-HTML-IMAGE-END]\\
+.    if \\n[www-html] \
+.      ll \\n[www-EQ-ll]u
+.    EQN-HTML-IMAGE-END \\$@
 .  .
 .\}
 .
