@@ -4,8 +4,8 @@ Rem This file is part of groff.
 Rem
 Rem groff is free software; you can redistribute it and/or modify it under
 Rem the terms of the GNU General Public License as published by the Free
-Rem Software Foundation; either version 2, or (at your option) any later
-Rem version.
+Rem Software Foundation; either version 3 of the License, or (at your option)
+Rem any later version.
 Rem
 Rem groff is distributed in the hope that it will be useful, but WITHOUT ANY
 Rem WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -13,8 +13,7 @@ Rem FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 Rem for more details.
 Rem
 Rem You should have received a copy of the GNU General Public License along
-Rem with groff; see the file COPYING.  If not, write to the Free Software
-Rem Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
+Rem with this program. If not, see <http://www.gnu.org/licenses/>.
 Rem
 Rem This script runs groff without requiring that it be installed.
 
