@@ -8,11 +8,11 @@
 # This file should not be run independently.  It is called by
 # `groffer.sh' in the source or by the installed `groffer' program.
 
-# Copyright (C) 2001,2002,2003,2004,2005,2006
+# Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2009
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 7 Nov 2006
+# Last update: 5 Jan 2009
 
 # This file is part of `groffer', which is part of `groff'.
 

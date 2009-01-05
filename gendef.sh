@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Copyright (C) 1991, 2000
+# Copyright (C) 1991, 2000, 2009
 #   Free Software Foundation, Inc.
 # 
 # This file is part of groff.

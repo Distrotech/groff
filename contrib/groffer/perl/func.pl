@@ -5,10 +5,10 @@
 # Source file position: <groff-source>/contrib/groffer/perl/func.pl
 # Installed position: <prefix>/lib/groff/groffer/func.pl
 
-# Copyright (C) 2006 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2009 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 7 Nov 2006
+# Last update: 5 Jan 2009
 
 # This file is part of `groffer', which is part of `groff'.
 

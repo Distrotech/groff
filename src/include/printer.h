@@ -2,12 +2,13 @@
 
 // <groff_src_dir>/src/include/printer.h
 
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2006
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2006,
+                 2009
    Free Software Foundation, Inc.
 
    Written by James Clark (jjc@jclark.com)
 
-   Last update: 11 Feb 2006
+   Last update: 5 Jan 2009
 
    This file is part of groff.
 

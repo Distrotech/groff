@@ -24,9 +24,9 @@ are written in the `chem' language.  The file names end with .chem.
 
 ####### License
 
-Last update: 6 Nov 2006
+Last update: 5 Jan 2009
 
-Copyright (C) 2006 Free Software Foundation, Inc.
+Copyright (C) 2006, 2009 Free Software Foundation, Inc.
 Written by Bernd Warken.
 
 This file is part of `chem', which is part of `groff'.

@@ -1,6 +1,6 @@
 .ig
 
-Copyright (C) 1991-2000
+Copyright (C) 1991-2000, 2009
   Free Software Foundation, Inc.
 mgm is written by Jörgen Hägg <jh@axis.com>
 

@@ -5,10 +5,10 @@
 # Source file position: <groff-source>/contrib/groffer/perl/roff2.pl
 # Installed position: <prefix>/bin/roff2*
 
-# Copyright (C) 2006, 2008 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2008, 2009 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 22 Dec 2008
+# Last update: 5 Jan 2009
 
 # This file is part of `groffer', which is part of `groff'.
 

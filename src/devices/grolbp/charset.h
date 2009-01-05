@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2003
+/* Copyright (C) 2000, 2003, 2009
    Free Software Foundation, Inc.
      Written by Francisco Andrés Verdú <pandres@dragonet.es> with many ideas
      taken from the other groff drivers.

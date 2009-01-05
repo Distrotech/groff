@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003, 2004, 2006
+/* Copyright (C) 2002, 2003, 2004, 2006, 2009
    Free Software Foundation, Inc.
      Written by Werner Lemberg <wl@gnu.org>
 

@@ -5,10 +5,10 @@
 # Source file position: <groff-source>/contrib/groffer/perl/perl_test.sh
 # Installed position: <prefix>/lib/groff/groffer/perl_test.sh
 
-# Copyright (C) 2006 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2009 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 02 Sep 2006
+# Last update: 5 Jan 2009
 
 # This file is part of `groffer', which is part of `groff'.
 

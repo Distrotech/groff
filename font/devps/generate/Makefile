@@ -1,4 +1,5 @@
-# Copyright (C) 1989-2000, 2002, 2003, 2006 Free Software Foundation, Inc.
+# Copyright (C) 1989-2000, 2002, 2003, 2006, 2009
+#   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
 # This file is part of groff.

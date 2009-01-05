@@ -1,5 +1,5 @@
 #! /bin/sh
-# Copyright (C) 2004, 2005 Free Software Foundation, Inc.
+# Copyright (C) 2004, 2005, 2009 Free Software Foundation, Inc.
 # Written by Mike Bianchi <MBianchi@Foveal.com <mailto:MBianchi@Foveal.com>>
 
 # This file is part of the gdiffmk utility, which is part of groff.

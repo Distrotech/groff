@@ -5,7 +5,7 @@
 # Source file position: <groff-source>/src/roff/grog/grog.sh
 # Installed position: <prefix>/bin/grog
 
-# Copyright (C) 1993, 2006 Free Software Foundation, Inc.
+# Copyright (C) 1993, 2006, 2009 Free Software Foundation, Inc.
 # Written by James Clark, maintained by Werner Lemberg.
 # Rewritten by and put under GPL Bernd Warken.
 
@@ -25,7 +25,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################
-Last_Update='6 Nov 2006'
+Last_Update='5 Jan 2009'
 ########################################################################
 
 soelim=@g@soelim

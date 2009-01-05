@@ -3,7 +3,7 @@
 #
 # Function: Format PDF Output from groff Markup
 #
-# Copyright (C) 2005, 2006, Free Software Foundation, Inc.
+# Copyright (C) 2005, 2006, 2009 Free Software Foundation, Inc.
 # Written by Keith Marshall (keith.d.marshall@ntlworld.com)
 # 
 # This file is part of groff.

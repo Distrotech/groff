@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 # -*- Perl -*-
-# Copyright (C) 1989, 2005
+# Copyright (C) 1989, 2005, 2009
 # Free Software Foundation, Inc.
 #
 # This file is part of groff.
