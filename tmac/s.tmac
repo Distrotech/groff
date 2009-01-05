@@ -3,7 +3,8 @@
 
 s.tmac
 
-Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2006, 2007
+Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2006, 2007,
+              2009
   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -1694,6 +1695,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\}
 .di eqn*div
 .in 0
+.if '\*(.T'html' \{\
+.	nr eqn*ll \\n[.l]
+.	ll 1000n
+.\}
 .if \\n[eqn*type]=0 .EQN-HTML-IMAGE-LEFT
 .if \\n[eqn*type]=1 \{\
 .   if '\*(.T'html' .RS
@@ -1759,6 +1764,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .		if '\*(.T'html' .RE
 .	\}
 .	if \\n[eqn*type]=2 .EQN-HTML-IMAGE-END
+.	if '\*(.T'html' \
+.		ll \\n[eqn*ll]u
 .\}
 ..
 .
@@ -1776,6 +1783,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .de @TS
 .sp \\n[DD]u
 .if '\\$1'H' .di tbl*header-div
+.if '\*(.T'html' \{\
+.	nr tbl*ll \\n[.l]
+.	ll 1000n
+.\}
 .HTML-IMAGE
 ..
 .de tbl@top-hook
@@ -1821,6 +1832,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .       if !'\*(.T'html' .sp \\n[DD]u
 .\}
 .HTML-IMAGE-END
+.if '\*(.T'html' \
+.	ll \\n[tbl*ll]u
 .\" reset tabs
 .TA
 ..

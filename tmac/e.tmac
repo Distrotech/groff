@@ -1060,6 +1060,11 @@
 .do if \\n[need_eo_h]>0 .do DEVTAG-EO-H
 .do nr need_eo_h 0
 .ec
+.if "\*(.T"html" \
+\{\
+.	do nr e-EQ-ll \\n(.l
+.	ll 1000n
+.\}
 .do HTML-IMAGE
 .if !\\n(?e \
 \{\
@@ -1076,6 +1081,8 @@
 .de EN			\" *** equation end
 .br
 .do HTML-IMAGE-END
+.if "\*(.T"html" \
+.	do ll \\n[e-EQ-ll]u
 .ie "\\$1"C" \
 \{\
 .	nr ?e 1
@@ -1128,6 +1135,11 @@
 .\"
 .de TS			\" *** table start
 .sp \\n(bsu
+.if "\*(.T"html" \
+\{\
+.	do nr e-TS-ll \\n(.l
+.	ll 1000n
+.\}
 .do HTML-IMAGE
 .@C 1
 .fi				\" drop into fill mode for text boxes
@@ -1165,6 +1177,8 @@
 .	ch @f \\n(nlu+\n(.Vu
 .ev
 .do HTML-IMAGE-END
+.if "\*(.T"html" \
+.	do ll \\n[e-TS-ll]u
 .sp \\n(bsu+\\n(.Lv-1v
 .re
 ..
