@@ -10,7 +10,7 @@ Copyright (C) 2004, 2005, 2006, 2009 Free Software Foundation, Inc.
 written by Keith Marshall <keith.d.marshall@ntlworld.com>
 
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1 or
+under the terms of the GNU Free Documentation License, Version 1.3 or
 any later version published by the Free Software Foundation; with no
 Front-Cover Texts, no Back-Cover Texts, and the following Invariant
 Sections:--
