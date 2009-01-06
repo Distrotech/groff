@@ -92,6 +92,9 @@ GROFF_LIBC
 GROFF_LIBM
 AM_ICONV
 
+# we need LIBEXT
+AC_SUBST([LIBEXT],[$acl_libext])
+
 # checks for functions
 AC_FUNC_MMAP
 saved_libs="$LIBS"
