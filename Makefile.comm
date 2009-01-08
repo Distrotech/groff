@@ -37,11 +37,11 @@ YTABH=
 YTABC=
 GRAM=
 LIBCLEAN=
-CLEANADD=
-CLEANDIRADD=
-CLEANNOTSRCDIRADD=
+MOSTLYCLEANADD=
+MOSTLYCLEANDIRADD=
+MOSTLYCLEANNOTSRCDIRADD=
 MOSTLYCLEANFILES=$(MANCLEAN) $(PROG) $(OBJS) $(GENSRCS) $(GENHDRS) \
-  depend.temp core y.output $(CLEANADD)
+  depend.temp core y.output $(MOSTLYCLEANADD)
 CLEANFILES=$(LIBCLEAN)
 DISTCLEANFILES=TAGS Makefile Makefile.dep
 REALCLEANFILES=$(YTABC) $(YTABH)
@@ -66,11 +66,11 @@ fonts:
 
 mostlyclean:
 	-rm -f $(MOSTLYCLEANFILES)
-	-rm -rf $(CLEANDIRADD)
+	-rm -rf $(MOSTLYCLEANDIRADD)
 	-@if test `cd $(srcdir); pwd` = `pwd`; then \
 	  :; \
 	else \
-	  rm -f $(CLEANNOTSRCDIRADD); \
+	  rm -f $(MOSTLYCLEANNOTSRCDIRADD); \
 	fi
 
 clean: mostlyclean
