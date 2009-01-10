@@ -130,6 +130,9 @@ See the file COPYING for copying permission.
 
 The file PROBLEMS describes various problems that have been encountered in
 compiling, installing, and running groff.
+
+The file MORE.STUFF contains information about add-on packages useful for
+groff.
 .
 .SH
 CVS and FTP access
@@ -286,6 +289,13 @@ Alternatively, you may subscribe by visiting the web pages at
 
 Each of these web pages also provides a link to a browseable archive of
 postings to the corresponding mailing list.
+.
+.
+.SH
+NEWS VERSION 1.20.1
+.LP
+A packaging error made it necessary to publish this release.
+No user-visible changes.
 .
 .
 .SH

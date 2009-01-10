@@ -72,8 +72,7 @@ EXAMPLEFILES=\
 
 PROCESSEDEXAMPLEFILES=\
   webpage.ps \
-  grnexmpl.ps \
-  gnu.eps
+  grnexmpl.ps
 
 HTMLEXAMPLEFILES=\
   webpage.html
@@ -104,10 +103,9 @@ MOSTLYCLEANDIRADD=\
 MOSTLYCLEANNOTSRCDIRADD=\
   groff.css \
   grnexmpl.g \
-  groff \
-  groff-* \
-  gnu.eps \
-  gnu.png
+  groff.info \
+  groff-*.info \
+  gnu.eps
 
 .SUFFIXES: .me .ms .ps .html
 
@@ -148,15 +146,12 @@ gnu.eps: gnu.xpm
 	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 | \
           $(pnmtops_nosetpage) -noturn -rle >$@
 
-gnu.png: gnu.xpm
-	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 | pnmtopng >$@
-
 pic.html: pic.ms
 	$(GROFF) -P-p -P-I`basename $< | sed -e 's|.ms$$||'` \
                  -P-D$(imagedir) -P-j`basename $< | sed -e 's|.ms$$||'` \
                  -Thtml -P-V -ms >$@
 
-webpage.html: webpage.ms gnu.png groff.css
+webpage.html: webpage.ms gnu.eps groff.css
 	$(GROFF) -P-j`basename $< | sed -e 's|.ms$$||'` \
                  -P-nrpb -P-I`basename $< | sed -e 's|.ms$$||'` \
                  -P-D$(imagedir) -Thtml -ms >$@
@@ -165,13 +160,13 @@ webpage.ps: gnu.eps
 
 grnexmpl.ps: grnexmpl.me grnexmpl.g
 
-distfiles: groff.info gnu.eps gnu.png
+distfiles: groff.info gnu.eps
 
-install_data: groff.info $(DOCFILES) $(PROCESSEDDOCFILES) $(make_install_html) \
-              $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
-	-test -d $(DESTDIR)$(infodir) || $(mkinstalldirs) $(DESTDIR)$(infodir)
+install_data: groff.info gnu.eps $(DOCFILES) $(PROCESSEDDOCFILES) \
+              $(make_install_html) $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
 # Prefer info files in builddir over srcdir; we test for
 # the existence of `groff.info'.
+	-test -d $(DESTDIR)$(infodir) || $(mkinstalldirs) $(DESTDIR)$(infodir)
 	d=.; \
 	  test -f "groff.info" || d=$(srcdir); \
 	  for p in $$d/groff.info `ls $$d/groff.info*`; do \
@@ -190,8 +185,13 @@ install_data: groff.info $(DOCFILES) $(PROCESSEDDOCFILES) $(make_install_html) \
 	  rm -f $(DESTDIR)$(docdir)/$$f; \
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(docdir)/$$f; \
 	done
+# Prefer gnu.eps in builddir over srcdir.
 	-test -d $(DESTDIR)$(exampledir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)
+	d=.; \
+	  test -f "gnu.eps" || d=$(srcdir); \
+	  rm -f $(DESTDIR)$(exampledir)/gnu.eps; \
+	  $(INSTALL_DATA) $$d/gnu.eps $(DESTDIR)$(exampledir)/gnu.eps
 	for f in $(EXAMPLEFILES); do \
 	  rm -f $(DESTDIR)$(exampledir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(exampledir)/$$f; \
