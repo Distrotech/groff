@@ -1557,6 +1557,9 @@ void ps_printer::special(char *arg, const environment *env, char type)
   }
   for (unsigned int i = 0; i < sizeof(proc_table)/sizeof(proc_table[0]); i++)
     if (strncmp(command, proc_table[i].name, p - command) == 0) {
+      flush_sbuf();
+      if (sbuf_color != *env->col)
+	set_color(env->col);
       (this->*(proc_table[i].proc))(p, env);
       return;
     }
@@ -1583,7 +1586,6 @@ static int check_line_lengths(const char *p)
 
 void ps_printer::do_exec(char *arg, const environment *env)
 {
-  flush_sbuf();
   while (csspace(*arg))
     arg++;
   if (*arg == '\0') {
@@ -1609,7 +1611,6 @@ void ps_printer::do_exec(char *arg, const environment *env)
 
 void ps_printer::do_file(char *arg, const environment *env)
 {
-  flush_sbuf();
   while (csspace(*arg))
     arg++;
   if (*arg == '\0') {
@@ -1636,7 +1637,6 @@ void ps_printer::do_file(char *arg, const environment *env)
 
 void ps_printer::do_def(char *arg, const environment *)
 {
-  flush_sbuf();
   while (csspace(*arg))
     arg++;
   if (!check_line_lengths(arg))
@@ -1652,7 +1652,6 @@ void ps_printer::do_def(char *arg, const environment *)
 
 void ps_printer::do_mdef(char *arg, const environment *)
 {
-  flush_sbuf();
   char *p;
   int n = (int)strtol(arg, &p, 10);
   if (n == 0 && p == arg) {
@@ -1677,7 +1676,6 @@ void ps_printer::do_mdef(char *arg, const environment *)
 
 void ps_printer::do_import(char *arg, const environment *env)
 {
-  flush_sbuf();
   while (*arg == ' ' || *arg == '\n')
     arg++;
   char *p;
