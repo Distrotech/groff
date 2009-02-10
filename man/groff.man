@@ -3439,6 +3439,11 @@ results from request calls.
 .PD 0
 .
 .TPx
+.REG $$
+The process ID of 
+.BR troff .
+.
+.TPx
 .REG .$
 Number of arguments in the current macro or string.
 .
@@ -3455,6 +3460,12 @@ if option
 .option \-A
 is used; always\~1 in
 .BR nroff .
+.
+.TPx
+.REG .b
+The emboldening offset while
+.request .bd
+is active.
 .
 .TPx
 .REG .br
@@ -3510,6 +3521,10 @@ The name or number of the current environment (string-valued).
 .TPx
 .REG .f
 Current font number.
+.
+.TPx
+.REG .F
+The name of the current input file (string-valued).
 .
 .TPx
 .REG .fam
@@ -3591,12 +3606,26 @@ Positive if last output line contains
 .esc c .
 .
 .TPx
+.REG .j
+The current adjustment mode.
+It can be stored and used to set adjustment.
+(n=1, b=1, l=0, r=5, c=3).
+.
+.TPx
+.REG .k
+The current horizontal output position (relative to the current indentation).
+.TPx
 .REG .kern
 1\~if pairwise kerning is enabled, 0\~otherwise.
 .
 .TPx
 .REG .l
 Current line length.
+.
+.TPx
+.REG .L
+The current line spacing setting as set by
+.request .ls .
 .
 .TPx
 .REG .lg
@@ -3650,8 +3679,19 @@ Useful in conjunction with
 Current page offset.
 .
 .TPx
+.REG .O
+The suppression nesting level (see
+.esc O ).
+.
+.TPx
 .REG .p
 Current page length.
+.
+.TPx
+.REG .P
+1\~if the current page is being printed, 0\~otherwise (as determined by the
+.option \-o
+command line option).
 .
 .TPx
 .REG .pe
@@ -3674,6 +3714,11 @@ The last-requested point size in scaled points.
 .TPx
 .REG .pvs
 The current post-vertical line spacing.
+.
+.TPx
+.REG .R
+The number of unused number registers.
+Always 10000 in GNU troff.
 .
 .TPx
 .REG .rj
@@ -3869,6 +3914,21 @@ Current month (1-12).
 .TPx
 .REG nl
 Vertical position of last printed text base-line.
+.
+.TPx
+.REG opmaxx
+.TPx
+.REG opmaxy
+.TPx
+.REG opminx
+.TPx
+.REG opminy
+These four registers mark the top left and bottom right hand corners of a box
+which encompasses all written glyphs.
+They are reset to \-1 by
+.escarg O 0
+or
+.escarg O 1 .
 .
 .TPx
 .REG rsb
