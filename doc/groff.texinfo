@@ -4751,9 +4751,11 @@ with the blank line macro request @code{blm}.  @xref{Blank Line Traps}.
 
 @cindex fill mode
 @cindex mode, fill
+@cindex leading spaces macro (@code{lsm})
 A line that begins with a space causes a break and the space is output
 at the beginning of the next line.  Note that this space isn't adjusted,
-even in fill mode.
+even in fill mode; however, the behaviour can be modified with the
+leading spaces macro request @code{lsm}.  @xref{Leading Spaces Traps}.
 
 The end of file also causes a break -- otherwise the last line of the
 document may vanish!
@@ -12043,6 +12045,7 @@ executed.
 * Diversion Traps::
 * Input Line Traps::
 * Blank Line Traps::
+* Leading Spaces Traps::
 * End-of-input Traps::
 @end menu
 
@@ -12338,7 +12341,7 @@ of already processed lines.
 
 @c ---------------------------------------------------------------------
 
-@node Blank Line Traps, End-of-input Traps, Input Line Traps, Traps
+@node Blank Line Traps, Leading Spaces Traps, Input Line Traps, Traps
 @subsection Blank Line Traps
 @cindex blank line traps
 @cindex traps, blank line
@@ -12351,7 +12354,32 @@ encounters a blank line in the input file.
 
 @c ---------------------------------------------------------------------
 
-@node End-of-input Traps,  , Blank Line Traps, Traps
+@node Leading Spaces Traps, End-of-input Traps, Blank Line Traps, Traps
+@subsection Leading Spaces Traps
+@cindex leading spaces traps
+@cindex traps, leading spaces
+
+@DefreqList {lsm, macro}
+@DefregItem {lsn}
+@DefregListEnd {lss}
+@cindex leading spaces macro (@code{lsm})
+Set a leading spaces trap.  @code{gtroff} executes @var{macro} when it
+encounters leading spaces in an input line; the implicit line break
+which normally happens in this case is suppressed.  A line consisting
+of spaces only, however, is treated as an empty line, possibly subject
+to an empty line macro set with the @code{blm} request.
+
+Leading spaces are removed from the input line before calling the
+leading spaces macro.  The number of removed spaces is stored in
+register @code{lsn}; the horizontal space which would be emitted if
+there was no leading space macro is stored in register @code{lss}.
+Note that @code{lsn} and @code{lss} are available even if no leading
+space macro has been set.
+@endDefreq
+
+@c ---------------------------------------------------------------------
+
+@node End-of-input Traps,  , Leading Spaces Traps, Traps
 @subsection End-of-input Traps
 @cindex end-of-input traps
 @cindex traps, end-of-input

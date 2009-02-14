@@ -1,3 +1,21 @@
+2009-02-14  Werner LEMBERG  <wl@gnu.org>
+
+	Implement a leading spaces macro request, `lsm', in analogy to
+	`blm'.
+	Implement two new number registers, \n[lsn] and \n[lss], which hold
+	the number of spaces and the horizontal space, respectively, which
+	would be inserted if the macro registered by `lsm' wasn't called.
+
+	* src/roff/troff/input.cpp (leading_spaces_macro_name,
+	leading_spaces_number, leading_spaces_space): New global
+	variables.
+	(leading_spaces_macro): New function.
+	(process_input_stack) <token::TOKEN_SPACE>: Handle `lsm'.
+	(init_input_requests): Register `lsm', \n[lsn], and \n[lss].
+
+	* NEWS, man/groff_diff.man, man/groff.man, doc/groff.texinfo
+	(Leading Spaces Traps): Document new requests and registers.
+
 2009-02-10  Denis M. Wilson  <dmw@oxytropis.plus.com>
 
 	* man/groff.man: Document missing number registers (`$$', `.b',

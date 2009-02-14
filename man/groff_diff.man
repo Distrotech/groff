@@ -1767,6 +1767,19 @@ read-only number register
 is set to\~1 if in line-tabs mode, and 0 otherwise.
 .
 .TP
+.BI .lsm\  xx
+Set the leading spaces macro to
+.IR xx .
+If there are leading spaces in an input line, it is invoked instead of
+the usual troff behaviour; the leading spaces are removed.
+Registers
+.B \[rs]n[lsn]
+and
+.B \[rs]n[lss]
+hold the number of removed leading spaces and the corresponding
+horizontal space, respectively.
+.
+.TP
 .BI .mso\  file
 The same as the
 .B so
@@ -2900,7 +2913,7 @@ Zero if no magnification.
 .B \[rs]n[urx]
 .TQ
 .B \[rs]n[ury]
-These four registers are set by the
+These four read/\:write registers are set by the
 .B psbb
 request and contain the bounding box values (in PostScript units) of a
 given PostScript image.
@@ -2950,6 +2963,14 @@ Initialized at start-up.
 .TP
 .B \[rs]n[hp]
 The current horizontal position at input line.
+.
+.TP
+.B \[rs]n[lsn]
+.TQ
+.B \[rs]n[lss]
+If there are leading spaces in an input line, these registers
+hold the number of leading spaces and the corresponding
+horizontal space, respectively.
 .
 .TP
 .B \[rs]n[minutes]
