@@ -12375,6 +12375,16 @@ register @code{lsn}; the horizontal space which would be emitted if
 there was no leading space macro is stored in register @code{lss}.
 Note that @code{lsn} and @code{lss} are available even if no leading
 space macro has been set.
+
+The first thing a leading space macro sees is a token.  However, some
+escapes like @code{\f} or @code{\m} are handled on the fly (see
+@ref{Gtroff Internals}, for a complete list) without creating a token
+at all.  Consider that a line starts with two spaces followed by
+@code{\fIfoo}.  While skipping the spaces @code{\fI} is handled too so
+that groff's current font is properly set to @samp{I}, but the leading
+space macro only sees @code{foo}, without the preceding @code{\fI}.
+If the macro should see the font escape you have to `protect' it with
+something which creates a token, for example with @code{\&\fIfoo}.
 @endDefreq
 
 @c ---------------------------------------------------------------------
