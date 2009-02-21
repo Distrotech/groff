@@ -13132,6 +13132,8 @@ for the specified @var{file} in the same directories as macro files for
 the the @option{-m} command line option.  If the file name to be
 included has the form @file{@var{name}.tmac} and it isn't found,
 @code{mso} tries to include @file{tmac.@var{name}} and vice versa.
+If the file does not exist, a warning of type @samp{file} is emitted.
+@xref{Debugging}, for information about warnings.
 @endDefreq
 
 @DefreqList {trf, file}
@@ -14181,6 +14183,11 @@ conditions that are errors when they do not occur in ignored text.
 @item color
 @itemx 524288
 Color related warnings.
+
+@item file
+@itemx 1048576
+Missing files.  The @code{mso} request gives this warning when the
+requested macro file does not exist.  This is enabled by default.
 
 @item all
 All warnings except @samp{di}, @samp{mac} and @samp{reg}.  It is

@@ -59,7 +59,7 @@ extern "C" {
 #ifndef DEFAULT_WARNING_MASK
 // warnings that are enabled by default
 #define DEFAULT_WARNING_MASK \
-     (WARN_CHAR|WARN_NUMBER|WARN_BREAK|WARN_SPACE|WARN_FONT)
+     (WARN_CHAR|WARN_NUMBER|WARN_BREAK|WARN_SPACE|WARN_FONT|WARN_FILE)
 #endif
 
 // initial size of buffer for reading names; expanded as necessary
@@ -7367,7 +7367,7 @@ void macro_source()
       a_delete path;
     }
     else
-      error("can't find macro file `%1'", nm.contents());
+      warning(WARN_FILE, "can't find macro file `%1'", nm.contents());
     tok.next();
   }
 }
@@ -8153,6 +8153,7 @@ static struct {
   { "reg", WARN_REG },
   { "ig", WARN_IG },
   { "color", WARN_COLOR },
+  { "file", WARN_FILE },
   { "all", WARN_TOTAL & ~(WARN_DI | WARN_MAC | WARN_REG) },
   { "w", WARN_TOTAL },
   { "default", DEFAULT_WARNING_MASK },
