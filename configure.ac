@@ -20,8 +20,30 @@
 #
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT
-AC_PREREQ(2.59)
+dnl Use `VERSION' and `REVISION' files to get version.
+m4_define([GROFF_VERSION_DATA], m4_include([VERSION]))
+m4_define([GROFF_REVISION_DATA], m4_include([REVISION]))
+
+dnl Strip off newline characters.
+m4_define([GROFF_VERSION],
+          m4_substr(GROFF_VERSION_DATA,
+                    [0], m4_decr(m4_len(GROFF_VERSION_DATA))))
+m4_define([GROFF_REVISION],
+          m4_substr(GROFF_REVISION_DATA,
+                    [0], m4_decr(m4_len(GROFF_REVISION_DATA))))
+
+dnl Don't use revision if it is zero.
+m4_define([GROFF_VERSION_STRING],
+          m4_if(m4_eval(GROFF_REVISION[ > 0]),
+                [1],
+                GROFF_VERSION[.]GROFF_REVISION,
+                GROFF_VERSION))
+
+AC_INIT([groff],
+        GROFF_VERSION_STRING,
+        [bug-groff@gnu.org],
+        [groff-]GROFF_VERSION_STRING)
+AC_PREREQ([2.59])
 
 AC_CONFIG_HEADERS([src/include/config.h:src/include/config.hin])
 AC_CONFIG_SRCDIR([src/roff/groff/groff.cpp])
