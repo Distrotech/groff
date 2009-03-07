@@ -4,7 +4,7 @@ Mom -- a typesetting/document-processing macro set for groff.
 
 Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
   Free Software Foundation, Inc.
-     Written by Peter Schaffter (pschaffter@magma.ca)
+     Written by Peter Schaffter (pschaffter@sympatico)
 
 This file is part of groff.
 
@@ -1291,8 +1291,8 @@ to a macro means that any argument turns the feature off.
 .    \}
 .END
 \#
-.ds $QUOTE0 \[dq]
-.ds $QUOTE1 \[dq]
+.ds $QUOTE0 \[lq]
+.ds $QUOTE1 \[rq]
 \#
 \# Strings for foot and inch marks
 \#
@@ -5466,6 +5466,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'COVER_MISC_QUAD'          .ds $COVER_MISC_QUAD \\$1
 .    if '\\$0'DOC_COVER_COPYRIGHT_QUAD' .ds $DOC_COVER_COPYRIGHT_QUAD \\$1
 .    if '\\$0'DOC_COVER_MISC_QUAD'      .ds $DOC_COVER_MISC_QUAD \\$1
+.    if '\\$0'DOCHEADER_QUAD'           .ds $DOCHEADER_QUAD \\$1
 .    if '\\$0'DOC_QUAD' \{\
 .        ds $DOC_QUAD \\$1
 .        QUAD \\*[$DOC_QUAD]
@@ -6036,7 +6037,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    el \{\
 .       if \\n[#COLLATE] \{\
 .          if !\\n[#PRINT_STYLE]=1 \{\
-.             if \\n[#RERUN_TRAPS] \{ .TRAPS \}
+.             if \\n[#RERUN_TRAPS] \{\
+.                TRAPS
+.                rr #RERUN_TRAPS
+.             \}
 .          \}
 .       \}
 .    \}
@@ -6091,22 +6095,18 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \# Next, some utility macros for various routines to prevent repetition
 \#
-.    if '\\$1'DOC_COVER' \{\
-.       shift
-.       nr #AUTHOR_DOCCOVER_NUM 0 1
-.       while \\n[#NUM_ARGS]>\\n[#AUTHOR_DOCCOVER_NUM] \{\
-.       ds $AUTHOR_DOCCOVER_\\n+[#AUTHOR_DOCCOVER_NUM] \\$\\n[#AUTHOR_DOCCOVER_NUM]
-.\}
-.       return
+.MAC DOC_HEADER_QUAD END
+.    ie !'\\*[$DOCHEADER_QUAD]'' \{\
+.       if '\\*[$DOCHEADER_QUAD]'L'      \{ .LEFT   \}
+.       if '\\*[$DOCHEADER_QUAD]'LEFT'   \{ .LEFT   \}
+.       if '\\*[$DOCHEADER_QUAD]'R'      \{ .RIGHT  \}
+.       if '\\*[$DOCHEADER_QUAD]'RIGHT'  \{ .RIGHT  \}
+.       if '\\*[$DOCHEADER_QUAD]'C'      \{ .RIGHT  \}
+.       if '\\*[$DOCHEADER_QUAD]'CENTER' \{ .CENTER \}
+.       if '\\*[$DOCHEADER_QUAD]'CENTRE' \{ .CENTER \}
 .    \}
-.    if '\\$1'COVER' \{\
-.       shift
-.       nr #AUTHOR_COVER_NUM 0 1
-.       while \\n[#NUM_ARGS]>\\n[#AUTHOR_COVER_NUM] \{\
-.       ds $AUTHOR_COVER_\\n+[#AUTHOR_COVER_NUM] \\$\\n[#AUTHOR_COVER_NUM]
-.\}
-.       return
-.    \}
+.    el \{ .CENTER \}
+.END
 \#
 .MAC PRINT_AUTHORS END
 .    ie r#DOING_COVER \{\
@@ -6170,8 +6170,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 .MAC DEFAULT_DOCHEADER END
+.    DOC_HEADER_QUAD
 .    if !'\\*[$TITLE_1]'' \{\
-.       CENTER
 .       FAMILY  \\*[$TITLE_FAM]
 .       FT      \\*[$TITLE_FT]
 .       PT_SIZE \\*[$TITLE_PT_SIZE]
@@ -6216,7 +6216,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC CHAPTER_DOCHEADER END
-.    CENTER
+.    DOC_HEADER_QUAD
 .    FAMILY  \\*[$TITLE_FAM]
 .    FT      \\*[$TITLE_FT]
 .    PT_SIZE \\*[$TITLE_PT_SIZE]
@@ -6275,7 +6275,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC NAMED_DOCHEADER END
-.    CENTER
+.    DOC_HEADER_QUAD
 .    FAMILY  \\*[$TITLE_FAM]
 .    FT      \\*[$TITLE_FT]
 .    PT_SIZE \\*[$TITLE_PT_SIZE]
@@ -6882,9 +6882,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                if \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u \}
 .             \}
 .             el \{\
-.                FAMILY  \\*[$DOC_COVER_CHAPTER_TITLE_FAM]
-.                FT      \\*[$DOC_COVER_CHAPTER_TITLE_FT]
-.                PT_SIZE \\*[$DOC_COVER_CHAPTER_TITLE_PT_SIZE]
+.                fam \\*[$DOC_COVER_CHAPTER_TITLE_FAM]
+.                ft  \\*[$DOC_COVER_CHAPTER_TITLE_FT]
+.                ps  \\*[$DOC_COVER_CHAPTER_TITLE_PT_SIZE]
 .                nr #ARG_NUM 0 1
 .                ALD \\n[.v]u/4u \"Put a little space before the chapter title
 .                while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
@@ -6917,9 +6917,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       if !\\n[#DOC_TYPE]=2 \{\
 .          if \\n[#DOC_COVER_SUBTITLE]=1 \{\
-.             FAMILY  \\*[$DOC_COVER_SUBTITLE_FAM]
-.             FT      \\*[$DOC_COVER_SUBTITLE_FT]
-.             PT_SIZE \\*[$DOC_COVER_SUBTITLE_PT_SIZE]
+.             fam \\*[$DOC_COVER_SUBTITLE_FAM]
+.             ft  \\*[$DOC_COVER_SUBTITLE_FT]
+.             ps  \\*[$DOC_COVER_SUBTITLE_PT_SIZE]
 .             if \\n[#PRINT_STYLE]=1 \{\
 .                TYPEWRITER
 .                ie \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u/2u \}
@@ -6957,9 +6957,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .       \}
 .       if \\n[#DOC_COVER_AUTHOR]=1 \{\
-.          FAMILY  \\*[$DOC_COVER_AUTHOR_FAM]
-.          FT      \\*[$DOC_COVER_AUTHOR_FT]
-.          PT_SIZE \\*[$DOC_COVER_AUTHOR_PT_SIZE]
+.          fam \\*[$DOC_COVER_AUTHOR_FAM]
+.          ft  \\*[$DOC_COVER_AUTHOR_FT]
+.          ps  \\*[$DOC_COVER_AUTHOR_PT_SIZE]
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             TYPEWRITER
 .             ie \\n[#SINGLE_SPACE]=1 \{ .vs \\n[#DOC_LEAD]u \}
@@ -6982,9 +6982,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .          PRINT_AUTHORS
 .       \}
-.       FAMILY  \\*[$DOC_COVER_DOCTYPE_FAM]
-.       FT      \\*[$DOC_COVER_DOCTYPE_FT]
-.       PT_SIZE \\*[$DOC_COVER_DOCTYPE_PT_SIZE]
+.       fam \\*[$DOC_COVER_DOCTYPE_FAM]
+.       ft  \\*[$DOC_COVER_DOCTYPE_FT]
+.       ps  \\*[$DOC_COVER_DOCTYPE_PT_SIZE]
 .       SP
 .       if \\n[#DOC_TYPE]=3 \{\
 .          if \\n[#DOC_COVER_DOCTYPE]=1 \{\
@@ -7015,8 +7015,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          el \{ .vs \\n[#DOC_LEAD]u/2u \}
 .       \}
 .       el \{\
-.          FAMILY  \\*[$DOC_COVER_COPYRIGHT_FAM]
-.          FT      \\*[$DOC_COVER_COPYRIGHT_FT]
+.          fam \\*[$DOC_COVER_COPYRIGHT_FAM]
+.          ft  \\*[$DOC_COVER_COPYRIGHT_FT]
 .          AUTOLEAD 2
 .          PT_SIZE \\*[$DOC_COVER_COPYRIGHT_PT_SIZE]
 .       \}
@@ -7093,13 +7093,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#COVER_COLOR]=1 \{\
 .          nf
 \m[\\*[$COVER_COLOR]]
-.          EOL
 .       \}
 .       CENTER
-.       FAMILY  \\*[$COVER_TITLE_FAM]
-.       FT      \\*[$COVER_TITLE_FT]
-.       PT_SIZE \\*[$COVER_TITLE_PT_SIZE]
-.       LS      \\n[#COVER_LEAD]u
+.       fam \\*[$COVER_TITLE_FAM]
+.       ft  \\*[$COVER_TITLE_FT]
+.       ps  \\*[$COVER_TITLE_PT_SIZE]
+.       vs      \\n[#COVER_LEAD]u
 .       if \\n[#PRINT_STYLE]=1 \{ .TYPEWRITER \}
 .       if \\n[#COVER_TITLE]=1 \{\
 .          ie \\n[#PRINT_STYLE]=1 \{\
@@ -7209,9 +7208,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                if \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u \}
 .             \}
 .             el \{\
-.                FAMILY  \\*[$COVER_CHAPTER_TITLE_FAM]
-.                FT      \\*[$COVER_CHAPTER_TITLE_FT]
-.                PT_SIZE \\*[$COVER_CHAPTER_TITLE_PT_SIZE]
+.                fam \\*[$COVER_CHAPTER_TITLE_FAM]
+.                ft  \\*[$COVER_CHAPTER_TITLE_FT]
+.                ps  \\*[$COVER_CHAPTER_TITLE_PT_SIZE]
 .                ALD \\n[.v]u/4u \"Put a little space before the chapter title
 .                nr #ARG_NUM 0 1
 .                while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
@@ -7244,9 +7243,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       if !\\n[#DOC_TYPE]=2 \{\
 .          if \\n[#COVER_SUBTITLE]=1 \{\
-.             FAMILY  \\*[$COVER_SUBTITLE_FAM]
-.             FT      \\*[$COVER_SUBTITLE_FT]
-.             PT_SIZE \\*[$COVER_SUBTITLE_PT_SIZE]
+.             fam \\*[$COVER_SUBTITLE_FAM]
+.             ft  \\*[$COVER_SUBTITLE_FT]
+.             ps  \\*[$COVER_SUBTITLE_PT_SIZE]
 .             if \\n[#PRINT_STYLE]=1 \{\
 .                TYPEWRITER
 .                if \\n[#PRINT_STYLE]=1 \{\
@@ -7287,9 +7286,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .       \}
 .       if \\n[#COVER_AUTHOR]=1 \{\
-.          FAMILY  \\*[$COVER_AUTHOR_FAM]
-.          FT      \\*[$COVER_AUTHOR_FT]
-.          PT_SIZE \\*[$COVER_AUTHOR_PT_SIZE]
+.          fam \\*[$COVER_AUTHOR_FAM]
+.          ft  \\*[$COVER_AUTHOR_FT]
+.          ps  \\*[$COVER_AUTHOR_PT_SIZE]
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             TYPEWRITER
 .             ie \\n[#SINGLE_SPACE]=1 \{ .vs \\n[#DOC_LEAD]u \}
@@ -7312,9 +7311,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .          PRINT_AUTHORS
 .       \}
-.       FAMILY  \\*[$COVER_DOCTYPE_FAM]
-.       FT      \\*[$COVER_DOCTYPE_FT]
-.       PT_SIZE \\*[$COVER_DOCTYPE_PT_SIZE]
+.       fam \\*[$COVER_DOCTYPE_FAM]
+.       ft  \\*[$COVER_DOCTYPE_FT]
+.       ps  \\*[$COVER_DOCTYPE_PT_SIZE]
 .       SP
 .       if \\n[#DOC_TYPE]=3 \{\
 .          if \\n[#COVER_DOCTYPE]=1 \{\
@@ -7345,8 +7344,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          el \{ .vs \\n[#DOC_LEAD]u/2u \}
 .       \}
 .       el \{\
-.          FAMILY  \\*[$COVER_COPYRIGHT_FAM]
-.          FT      \\*[$COVER_COPYRIGHT_FT]
+.          fam  \\*[$COVER_COPYRIGHT_FAM]
+.          ft      \\*[$COVER_COPYRIGHT_FT]
 .          AUTOLEAD 2
 .          PT_SIZE \\*[$COVER_COPYRIGHT_PT_SIZE]
 .       \}
@@ -7843,48 +7842,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC CLEANUP_DEFAULTS END
 .    nr #START 1
-.\" Family strings for docheader
-.    rm $AUTHOR_FAM
-.    rm $CHAPTER_TITLE_FAM
-.    rm $DOCTYPE_FAM
-.    rm $SUBTITLE_FAM
-.    rm $TITLE_FAM
-.\" Family strings for cover
-.    rm $COVER_AUTHOR_FAM
-.    rm $COVER_CHAPTER_TITLE_FAM
-.    rm $COVER_COPYRIGHT_FAM
-.    rm $COVER_DOCTYPE_FAM
-.    rm $COVER_LEAD_ADJ
-.    rm $COVER_SUBTITLE_FAM
-.    rm $COVER_TITLE_FAM
-.\" Family strings for doc cover
-.    rm $DOC_COVER_AUTHOR_FAM
-.    rm $DOC_COVER_CHAPTER_TITLE_FAM
-.    rm $DOC_COVER_COPYRIGHT_FAM
-.    rm $DOC_COVER_DOCTYPE_FAM
-.    rm $DOC_COVER_LEAD_ADJ
-.    rm $DOC_COVER_SUBTITLE_FAM
-.    rm $DOC_COVER_TITLE_FAM
-.\" Quad args to copyright and misc
-.    rm $COVER_COPYRIGHT_QUAD
-.    rm $COVER_MISC_QUAD
-.    rm $DOC_COVER_COPYRIGHT_QUAD
-.    rm $DOC_COVER_MISC_QUAD
-.\" Miscellaneous strings
 .    rm $TOC_TITLE_ITEM
 .    rm $DOCHEADER_LEAD_ADJ
 .\" Various registers
-.    rr #ADJ_DOC_LEAD
-.    rr #ADVANCE_FROM_TOP
-.    rr #COVER_LEAD
-.    rr #DEPTH_1
-.    rr #DEPTH_2
-.    rr #DOC_COVER_LEAD
 .    if \\n[#DOC_HEADER]=1 \{ .nr #DOC_HEADER 2 \}
-.    rr #DOCHEADER_ADVANCE
-.    rr #DOCHEADER_EXTRA_SPACE
-.    rr #DOCHEADER_LEAD
-.    rr #DOCHEADER_SPACE_ADJ
 .    rr #MISC_NUM
 .    rr #MISCS
 .    rr #NEXT_AUTHOR
@@ -17177,6 +17138,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   COVER_MISC_QUAD            _QUAD
 .ALIAS   DOC_COVER_COPYRIGHT_QUAD   _QUAD
 .ALIAS   DOC_COVER_MISC_QUAD        _QUAD
+.ALIAS   DOCHEADER_QUAD             _QUAD
 .ALIAS   DOC_QUAD                   _QUAD
 .ALIAS   ENDNOTE_QUAD               _QUAD
 .ALIAS   ENDNOTE_STRING_QUAD        _QUAD
