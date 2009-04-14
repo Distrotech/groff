@@ -12409,8 +12409,9 @@ used.
 
 @Example
 .de approval
-.  ne 5v
-.  sp |(\\n[.t] - 6v)
+\c
+.  ne 3v
+.  sp (\\n[.t]u - 3v)
 .  in +4i
 .  lc _
 .  br
@@ -12421,6 +12422,56 @@ Date:\t\t\a
 .
 .em approval
 @endExample
+
+The @code{\c} in the above example needs explanation.  For historical
+reasons (and for compatibility with @acronym{AT&T} @code{troff}), the
+end macro exits as soon as it causes a page break and no remaining
+data is in the partially collected line.
+
+Let us assume that there is no @code{\c} in the above @code{approval}
+macro, and that the page is full and has been ended with, say, a
+@code{br} request.  The @code{ne} request now causes the start of a new
+page, which in turn makes @code{troff} exit immediately for the reasons
+just described.  In most situations this is not intended.
+
+To always force processing the whole end macro independently of this
+behaviour it is thus advisable to insert something which starts an
+empty partially filled line (@code{\c}) whenever there is a chance that
+a page break can happen.  In the above example, the call of the
+@code{ne} request assures that the remaining code stays on the same
+page, so we have to insert @code{\c} only once.
+
+The next example shows how to append three lines, then starting a new
+page unconditionally.  Since @w{@samp{.ne 1}} doesn't give the desired
+effect -- there is always one line available or we are already at the
+beginning of the next page -- we temporarily increase the page length
+by one line so that we can use @w{@samp{.ne 2}}.
+
+@Example
+.de EM
+.pl +1v
+\c
+.ne 2
+line one
+.br
+\c
+.ne 2
+line two
+.br
+\c
+.ne 2
+line three
+.br
+.pl -1v
+\c
+'bp
+..
+.em EM
+@endExample
+
+Note that this specific feature affects only the first potential page
+break caused by the end macro; further page breaks emitted by the end
+macro are handled normally.
 @endDefreq
 
 
