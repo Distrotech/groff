@@ -1,3 +1,18 @@
+2009-05-07  Werner LEMBERG  <wl@gnu.org>
+
+	Accept \0 and friends within \o.
+	Reported by Doug McIlroy <doug@cs.dartmouth.edu>.
+
+	* src/roff/troff/token.h (token): Add TOKEN_HORIZONTAL_SPACE
+	enumeration value together with `horizontal_space' member function.
+	Add `do_overstrike' as a friend.
+
+	* src/roff/troff/input.cpp: Use TOKEN_HORIZONTAL_SPACE for \0, \|,
+	\^, and \h.
+	Update all affected places.
+	(do_overstrike): Remove `static' attribute.
+	Accept all escapes which produce a fixed horizontal space.
+
 2009-04-24  Werner LEMBERG  <wl@gnu.org>
 
 	Use straight quotes where appropriate.

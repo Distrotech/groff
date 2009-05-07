@@ -1434,7 +1434,7 @@ static void define_color()
   skip_line();
 }
 
-static node *do_overstrike()
+node *do_overstrike()
 {
   token start;
   overstrike_node *on = new overstrike_node;
@@ -1450,11 +1450,21 @@ static node *do_overstrike()
     if (tok == start
 	&& (compatible_flag || input_stack::get_level() == start_level))
       break;
-    charinfo *ci = tok.get_char(1);
-    if (ci) {
-      node *n = curenv->make_char_node(ci);
-      if (n)
-	on->overstrike(n);
+    if (tok.horizontal_space())
+      on->overstrike(tok.nd->copy());
+    else if (tok.unstretchable_space())
+    {
+      node *n = new hmotion_node(curenv->get_space_width(),
+				 curenv->get_fill_color());
+      on->overstrike(n);
+    }
+    else {
+      charinfo *ci = tok.get_char(1);
+      if (ci) {
+	node *n = curenv->make_char_node(ci);
+	if (n)
+	  on->overstrike(n);
+      }
     }
   }
   return on;
@@ -1799,13 +1809,13 @@ void token::next()
 	goto handle_escape_char;
       case ESCAPE_BAR:
       ESCAPE_BAR:
-	type = TOKEN_NODE;
+	type = TOKEN_HORIZONTAL_SPACE;
 	nd = new hmotion_node(curenv->get_narrow_space_width(),
 			      curenv->get_fill_color());
 	return;
       case ESCAPE_CIRCUMFLEX:
       ESCAPE_CIRCUMFLEX:
-	type = TOKEN_NODE;
+	type = TOKEN_HORIZONTAL_SPACE;
 	nd = new hmotion_node(curenv->get_half_narrow_space_width(),
 			      curenv->get_fill_color());
 	return;
@@ -1926,7 +1936,7 @@ void token::next()
       case '0':
 	nd = new hmotion_node(curenv->get_digit_width(),
 			      curenv->get_fill_color());
-	type = TOKEN_NODE;
+	type = TOKEN_HORIZONTAL_SPACE;
 	return;
       case '|':
 	goto ESCAPE_BAR;
@@ -2061,7 +2071,7 @@ void token::next()
       case 'h':
 	if (!get_delim_number(&x, 'm'))
 	  break;
-	type = TOKEN_NODE;
+	type = TOKEN_HORIZONTAL_SPACE;
 	nd = new hmotion_node(x, curenv->get_fill_color());
 	return;
       case 'H':
@@ -2216,7 +2226,7 @@ void token::next()
       case 'z':
 	{
 	  next();
-	  if (type == TOKEN_NODE)
+	  if (type == TOKEN_NODE || type == TOKEN_HORIZONTAL_SPACE)
 	    nd = new zero_width_node(nd);
 	  else {
   	    charinfo *ci = get_char(1);
@@ -2346,6 +2356,7 @@ int token::delimiter(int err)
   case TOKEN_SPACE:
   case TOKEN_STRETCHABLE_SPACE:
   case TOKEN_UNSTRETCHABLE_SPACE:
+  case TOKEN_HORIZONTAL_SPACE:
   case TOKEN_TAB:
   case TOKEN_NEWLINE:
     if (err)
@@ -2402,6 +2413,8 @@ const char *token::description()
     return "`\\~'";
   case TOKEN_UNSTRETCHABLE_SPACE:
     return "`\\ '";
+  case TOKEN_HORIZONTAL_SPACE:
+    return "a horizontal space";
   case TOKEN_TAB:
     return "a tab character";
   case TOKEN_TRANSPARENT:
@@ -2951,6 +2964,7 @@ void process_input_stack()
     case token::TOKEN_EOF:
       return;
     case token::TOKEN_NODE:
+    case token::TOKEN_HORIZONTAL_SPACE:
       {
 	if (possibly_handle_first_page_transition())
 	  ;
@@ -6796,6 +6810,7 @@ int token::add_to_node_list(node **pp)
     set_number_reg(nm, curenv->get_input_line_position().to_units());
     break;
   case TOKEN_NODE:
+  case TOKEN_HORIZONTAL_SPACE:
     n = nd;
     nd = 0;
     break;
@@ -6888,6 +6903,7 @@ void token::process()
     curenv->newline();
     break;
   case TOKEN_NODE:
+  case TOKEN_HORIZONTAL_SPACE:
     curenv->add_node(nd);
     nd = 0;
     break;

@@ -54,6 +54,7 @@ class token {
     TOKEN_SPREAD,		// \p -- break and spread output line 
     TOKEN_STRETCHABLE_SPACE,	// \~
     TOKEN_UNSTRETCHABLE_SPACE,	// `\ '
+    TOKEN_HORIZONTAL_SPACE,	// \|, \^, \0, \h
     TOKEN_TAB,			// tab
     TOKEN_TRANSPARENT,		// \!
     TOKEN_TRANSPARENT_DUMMY,	// \)
@@ -73,6 +74,7 @@ public:
   int space();			// is the current token a space?
   int stretchable_space();	// is the current token a stretchable space?
   int unstretchable_space();	// is the current token an unstretchable space?
+  int horizontal_space();	// is the current token a horizontal space?
   int white_space();		// is the current token space or tab?
   int special();		// is the current token a special character?
   int newline();		// is the current token a newline?
@@ -99,6 +101,7 @@ public:
   const char *description();
 
   friend void process_input_stack();
+  friend node *do_overstrike();
 };
 
 extern token tok;		// the current token
@@ -153,6 +156,11 @@ inline int token::stretchable_space()
 inline int token::unstretchable_space()
 {
   return type == TOKEN_UNSTRETCHABLE_SPACE;
+}
+
+inline int token::horizontal_space()
+{
+  return type == TOKEN_HORIZONTAL_SPACE;
 }
 
 inline int token::special()
