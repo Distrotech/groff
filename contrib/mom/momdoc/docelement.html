@@ -1482,8 +1482,9 @@ to introduce paragraphs below heads or subheads.  If you wish,
 By default, paraheads are joined to the body of a paragraph,
 slightly indented (provided the paragraph is not a
 &quot;first&quot; paragraph as defined in
-<a href="#PARA_INDENT_FIRST">Indenting initial paragraphs</a>).
-In
+<a href="#PARA_INDENT_FIRST">Indenting initial paragraphs</a>)
+and separated from the body of the paragraph by a small amount of
+horizontal space.  In
 <a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>,
 they are set bold italic, slightly larger than paragraph text.  In
 <a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
@@ -1493,6 +1494,20 @@ they are underlined.
 <p>
 If these defaults don't suit you, you can change them with the
 parahead control macros.
+</p>
+
+<p>
+<strong>Tip:</strong> If you really need a heading level below
+subhead (a sub-subhead) that isn't joined to the body of a
+paragraph, you can trick <strong>PARAHEAD</strong> into giving you
+one by creating a paragraph that contains only a parahead, like this:
+
+<pre>
+    .PP
+    .PARAHEAD "My Sub-Subhead"
+    .PP
+    &lt;text&gt;
+</pre>
 </p>
 
 <!-- -PARAHEAD- -->
@@ -1532,6 +1547,7 @@ there are macros to manage parahead numbering.
 <ol>
     <li><a href="#PARAHEAD_GENERAL">Family/font/size/color</a></li>
     <li><a href="#PARAHEAD_INDENT">Indent</a></li>
+    <li><a href="#PARAHEAD_SPACE">Horizontal space</a></li>
     <li><a href="#NUMBER_PARAHEADS">Numbering</a></li>
     <li><a href="#RESET_PARAHEAD_NUMBER">Reset parahead numbering</a></li>
 </ol>
@@ -1596,7 +1612,40 @@ are not indented unless you turn
 on.
 </p>
 
-<a name="NUMBER_PARAHEADS"><h4><u>3. Number paraheads &mdash; NUMBER_PARAHEADS</u></h4></a>
+<a name="PARAHEAD_SPACE"><h4><u>3. Horizontal space</u></h4></a>
+
+<p>
+The default amount of horizontal space between a parahead and the
+text that begins the body of a paragraph is 2/3 of an
+<a href="definitions.html#TERMS_EM">em</a>
+for 
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>)
+and 1
+<a href="definitions.html#TERMS_FIGURESPACE">figure space</a>
+for
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>).
+</p>
+
+<p>
+The default for <strong>TYPEWRITE</strong> is fixed, but if the
+default for <strong>TYPESET</strong> doesn't suit you, you can
+change it with the macro, <strong>PARAHEAD_SPACE</strong>.
+</p>
+<p>
+<strong>PARAHEAD_SPACE</strong> takes just one argument: the amount
+of space you want, with a
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
+appended.  Thus, if you want the horizontal space between a parahead
+and the start of paragraph text to be 6
+<a href="definitions.html#TERMS_PICASPOINTS">points</a>,
+you'd do:
+
+<pre>
+    .PARAHEAD_SPACE 6p
+</pre>
+</p>
+
+<a name="NUMBER_PARAHEADS"><h4><u>4. Number paraheads &mdash; NUMBER_PARAHEADS</u></h4></a>
 
 <p>
 If you'd like your paraheads numbered, simply invoke
@@ -1627,7 +1676,7 @@ if you'd like chapter numbers prepended to the paragraph head
 numbers.
 </p>
 
-<a name="RESET_PARAHEAD_NUMBER"><h4><u>4. Reset paragraph head numbering &mdash; RESET_PARAHEAD_NUMBER</u></h4></a>
+<a name="RESET_PARAHEAD_NUMBER"><h4><u>5. Reset paragraph head numbering &mdash; RESET_PARAHEAD_NUMBER</u></h4></a>
 
 <p>
 Should you wish to reset the parahead number to &quot;1&quot;, invoke

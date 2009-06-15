@@ -49,6 +49,7 @@ nearly indispensable) routines to simplify typesetting.
     <li><a href="#CAPS">CAPS</a> (convert to upper case)</li>
     <li><a href="#STRING">STRING</a> (user-definable strings)</li>
     <li><a href="#ESC_CHAR">ESC_CHAR</a> (change to escape character to something other than a backslash)</li>
+    <li><a href="#SIZESPECS">SIZESPECS</a> (get cap-height, x-height and descender depth of a font)</li>
     <li><strong>Underscore/underline</strong></li>
     <ul>
         <li><a href="#UNDERSCORE">UNDERSCORE</a> (single underscore)</li>
@@ -149,6 +150,21 @@ either can be used.
 Note that in <strong>ALIAS</strong>, you do NOT include the period
 (dot) that precedes the macro when it's a
 <a href="definitions.html#TERMS_CONTROLLINES">control line</a>.
+</p>
+
+<p>
+<strong>Tip:</strong> A particularly good candidate for
+<strong>ALIAS</strong> is the macro,
+<a href="typesetting.html#PS">PT_SIZE</a>.
+A more natural name for it (at least to old-school phototypesetters)
+would simply be PS, but PS conflicts with the <strong>eqn</strong>
+equation preprocessor and thus <strong>mom</strong> uses the longer
+form.  However, if you're not using <strong>eqn</strong>, you can
+happily rename <strong>PT_SIZE</strong> to <strong>PS</strong>:
+
+<pre>
+    .ALIAS PS PT_SIZE
+</pre>
 </p>
 
 <p>
@@ -584,6 +600,46 @@ character to the backslash.
 <p>
 <strong>Experts</strong>: <strong>ESC_CHAR</strong> is an alias of
 <kbd>.ec</kbd>.  Mix 'n' match the two with impunity.
+</p>
+
+<!-- -SIZESPECS- -->
+
+<hr width="33%" align="left"/>
+
+<a name="SIZESPECS"><h3><u>Get cap-height, x-height and descender depth of a font</u></h3></a>
+
+<p>
+<nobr>Macro: <strong>SIZESPECS</strong></nobr>
+</p>
+
+<p>
+Whenever you need to get the
+<a href="definitions.html#TERMS_CAPHEIGHT">cap-height</a>,
+<a href="definitions.html#TERMS_XHEIGHT">x-height</a>
+or
+<a href="definitions.html#TERMS_DESCENDER">descender</a>
+depth of type at the current point size, invoke
+<kbd>.SIZESPECS</kbd>, which takes no argument.  The dimensions are
+stored in the string registers <strong>\*[$CAP_HEIGHT]</strong>,
+<strong>\*[$X_HEIGHT]</strong> and <strong>\*[$DESCENDER]</strong>,
+respectively, in
+<a href="definitions.html#TERMS_UNITS">machine units</a>
+to which the
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>,
+<strong>u</strong>, is already appended.
+</p>
+
+<p>
+Thus, if you wanted to advance 2 inches from your current position
+on the page plus the cap-height of the current point size of type
+
+<pre>
+    .PT_SIZE &lt;n&gt;
+    .SIZESPECS
+    .ALD 2i+\*[$CAP_HEIGHT]
+</pre>
+
+would do the trick.
 </p>
 
 <!-- -UNDERSCORE- -->
@@ -1354,7 +1410,7 @@ smaller.
 
 <p>
 If you'd like your drop cap colourized, simply invoke
-<strong>DROPCAP_COLOR</strong> with the name of a colour you've already
+<kbd>.DROPCAP_COLOR</kbd> with the name of a colour you've already
 created (&quot;initialized&quot;) with
 <a href="color.html#NEWCOLOR">NEWCOLOR</a>
 or
@@ -1424,6 +1480,27 @@ I'm neither a mathematician nor a chemist, so I don't need them.
 Of course, anyone who wishes to contribute a subscript routine to
 <strong>mom</strong> will receive eternal blessings not only in this
 lifetime, but in all lifetimes to come.
+</p>
+
+<h4><a name="SUP_RAISE"><u>SUPERSCRIPT RAISE AMOUNT</u></a></h4>
+
+<p>
+By default, <strong>mom</strong> raises superscripts 1/3 of an
+<a href="definitions.html#TERMS_EMS">em</a>
+above the baseline.  If you're not happy with this default, you can
+change it by invoking <strong>SUPERSCRIPT_RAISE_AMOUNT</strong> with
+the amount you want them raised.  A
+<a name="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
+must be appended directly to the amount.  Thus, you want
+superscripts raised by 3
+<a href="definitions.html#TERMS_PICASPOINTS">points</a>
+instead of 1/3 em, you'd
+do
+
+<pre>
+    .SUPERSCRIPT_RAISE_AMOUNT 3p
+</pre>
+and all subsequent superscripts would be raised by 3 points.
 </p>
 
 <hr/>

@@ -21,7 +21,7 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-Version 1.5-c
+Version 1.5-d
 -------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
@@ -874,6 +874,10 @@ to a macro means that any argument turns the feature off.
 .       ie \\n[#JUSTIFY]=1 \{ .brp \}
 .       el \{ .br \}
 .    \}
+.    rr #EW
+.    rm $EW
+.    nr #RW 1
+.    ds $RW \\$1
 .    tkf \\n(.f 1 -\\$1 1 -\\$1
 .END
 \#
@@ -883,6 +887,10 @@ to a macro means that any argument turns the feature off.
 .       ie \\n[#JUSTIFY]=1 \{ .brp \}
 .       el \{ .br \}
 .    \}
+.    rr #RW
+.    rm $RW
+.    nr #EW 1
+.    ds $EW \\$1
 .    tkf \\n(.f 1 \\$1 1 \\$1
 .END
 \#
@@ -1744,6 +1752,11 @@ to a macro means that any argument turns the feature off.
 .    br
 .    rr #TAB_ACTIVE
 .    rr #IN_TAB
+.    nr #LOOP 0 1
+.    while \\n+[#LOOP]<20 \{\
+.       rm $ST\\n[#LOOP]_FILL
+.\}
+.    rr #LOOP
 .    po \\n[#L_MARGIN]u
 .    ll \\n[#L_LENGTH]u
 .    ta \\n(.lu
@@ -2355,36 +2368,54 @@ to a macro means that any argument turns the feature off.
 .ds $UNDERSCORE_GAP           2p
 \#
 \#
-\# SUPERSCRIPT INLINES
-\# -------------------
+\# SUPERSCRIPT
+\# -----------
 \# *Function:
-\#   Prints everything after invocation as superscript.
+\#   Prints everything after inline invocation as superscript.
 \# *Notes:
 \#   \*[SUP] and \*[SUPX] turn superscript on and off respectively.
 \#   If running type is pseudo-condensed/expanded, invoke the superscript
 \#   strings as \*[CONDSUP] or \*[EXTSUP] and turn off with \*[CONDSUPX]
 \#   and \*[EXTSUPX] respectively.
 \#
+\# Default raise/lower amount
+.ds $SUP_RAISE \v'-.3m'
+.ds $SUP_LOWER \v'.3m'
+\#
+\# SUPERSCRIPT RAISE
+\# -----------------
+\# *Argument:
+\#   <amount to raise superscript>
+\# *Function:
+\#   Defines strings $SUP_RAISE and $SUP_LOWER for use with \*[SUP],
+\#   \*[CONDSUP] and \*[EXTSUP].
+\#
+.MAC SUPERSCRIPT_RAISE_AMOUNT END
+.    ds $SUP_RAISE_AMOUNT \\$1
+.    ds $SUP_RAISE \v'-\\*[$SUP_RAISE_AMOUNT]'
+.    ds $SUP_LOWER \v'\\*[$SUP_RAISE_AMOUNT]'
+.END
+\#
 .ds SUP \
 \R'#PT_SIZE_IN_UNITS \En[.ps]'\
 \R'#SUP_PT_SIZE \En[#PT_SIZE_IN_UNITS]u*6u/10u'\
-\s[\En[#PT_SIZE_IN_UNITS]u]\v'-.26m'\s[\En[#SUP_PT_SIZE]u]
+\s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_RAISE]\s[\En[#SUP_PT_SIZE]u]
 \#
-.ds SUPX \s[\En[#PT_SIZE_IN_UNITS]u]\v'.26m'
+.ds SUPX \s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_LOWER]
 \#
 .ds CONDSUP \
 \R'#PT_SIZE_IN_UNITS \En[.ps]'\
 \R'#SUP_PT_SIZE \En[#PT_SIZE_IN_UNITS]u*6u/10u'\
-\s[\En[#PT_SIZE_IN_UNITS]u]\v'-.3m'\s[\En[#SUP_PT_SIZE]u]\E*[COND_FOR_SUP]
+\s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_RAISE]\s[\En[#SUP_PT_SIZE]u]\E*[COND_FOR_SUP]
 \#
-.ds CONDSUPX \s[\En[#PT_SIZE_IN_UNITS]u]\v'.3m'\E*[COND]
+.ds CONDSUPX \s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_LOWER]\E*[COND]
 \#
 .ds EXTSUP \
 \R'#PT_SIZE_IN_UNITS \En[.ps]'\
 \R'#SUP_PT_SIZE \En[#PT_SIZE_IN_UNITS]u*6u/10u'\
-\s[\En[#PT_SIZE_IN_UNITS]u]\v'-.3m'\s[\En[#SUP_PT_SIZE]u]\E*[EXT_FOR_SUP]
+\s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_RAISE]\s[\En[#SUP_PT_SIZE]u]\E*[EXT_FOR_SUP]
 \#
-.ds EXTSUPX \s[\En[#PT_SIZE_IN_UNITS]u]\v'.3m'\E*[EXT]
+.ds EXTSUPX \s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_LOWER]\E*[EXT]
 \#
 \#
 \# SLANT
@@ -2751,9 +2782,9 @@ to a macro means that any argument turns the feature off.
 .    \}
 .    if \\n[#DOCS] \{\
 .       if \\n[#PRINT_STYLE]=1 \{\
-.       PRINT \\$1\c
-.       return
-.    \}
+.          PRINT \\$1\c
+.          return
+.       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
 .          if \\n[#PP_STYLE]=2 \{\
 .             PRINT \\$1\c
@@ -2797,30 +2828,37 @@ to a macro means that any argument turns the feature off.
 .       nr #GET_DC_HEIGHT \\n[#CAP_HEIGHT]
 .\}
 .    if d$DC_ADJUST \{ .ps \\*[$DC_ADJUST]p \}
-.    mk x
-.    sp \\n[#DC_LINES]v
-.    if \\n[#DOCS]=1 \{ .SHIM \}
+.    nr #DC_LINES +1
 .    ie \\n[#DC_COLOR]=1 \{\
 .       ie !'\\$3'' \{\
-.          ie '\\$3'COND' \{ .PRINT \m[\\*[$DC_COLOR]]\\*[COND]\\*[$DROPCAP]\\*[CONDX]\m[] \}
-.          el \{ .PRINT \m[\\*[$DC_COLOR]]\\*[EXT]\\*[$DROPCAP]\\*[EXTX]\m[] \}
+.          ie '\\$3'COND' \{ .PRINT \\*[DOWN \\n[#DC_LINES]v]\m[\\*[$DC_COLOR]]\\*[COND]\\*[$DROPCAP]\\*[CONDX]\m[]\\*[UP \\n[#DC_LINES]v] \}
+.          el \{ .PRINT \\*[DOWN \\n[#DC_LINES]v]\m[\\*[$DC_COLOR]]\\*[EXT]\\*[$DROPCAP]\\*[EXTX]\m[]\\*[UP \\n[#DC_LINES]v] \}
 .       \}
-.       el \{ .PRINT \m[\\*[$DC_COLOR]]\\*[$DROPCAP]\m[] \}
+.       el \{ .PRINT \\*[DOWN \\n[#DC_LINES]v]\m[\\*[$DC_COLOR]]\\*[$DROPCAP]\m[]\\*[UP \\n[#DC_LINES]v] \}
 .    \}
 .    el \{\
 .       ie !'\\$3'' \{\
-.          ie '\\$3'COND' \{ .PRINT \\*[COND]\\*[$DROPCAP]\\*[CONDX] \}
-.          el \{ .PRINT \\*[EXT]\\*[$DROPCAP]\\*[EXTX] \}
+.          ie '\\$3'COND' \{ .PRINT \\*[DOWN \\n[#DC_LINES]v]\\*[COND]\\*[$DROPCAP]\\*[CONDX]\\*[UP \\n[#DC_LINES]v] \}
+.          el \{ .PRINT \\*[DOWN \\n[#DC_LINES]v]\\*[EXT]\\*[$DROPCAP]\\*[EXTX]\\*[UP \\n[#DC_LINES]v] \}
 .       \}
-.       el \{ .PRINT \m[\\*[$DC_COLOR]]\\*[$DROPCAP]\m[] \}
+.       el \{ .PRINT \\*[DOWN \\n[#DC_LINES]v]\m[\\*[$DC_COLOR]]\\*[$DROPCAP]\m[]\\*[UP \\n[#DC_LINES]v] \}
 .    \}
 .    if '\\$3'COND' \{ \E*[COND] \}
 .    if '\\$3'EXT'  \{ \E*[EXT]  \}
-.    ie \\n(.i \{ .in +\w'\\*[$DROPCAP]'u+\\n[#DC_GUT]u \}
-.    el        \{ .in \w'\\*[$DROPCAP]'u+\\n[#DC_GUT]u \}
+.    ie \\n(.i \{\
+.       vs 0
+.       br
+.       in +\w'\\*[$DROPCAP]'u+\\n[#DC_GUT]u
+.       vs
+.    \}
+.    el \{\
+.       vs 0
+.       br
+.       in \w'\\*[$DROPCAP]'u+\\n[#DC_GUT]u
+.       vs
+.    \}
 .    if '\\$3'COND' \{ \E*[CONDX]\c \}
 .    if '\\$3'EXT'  \{ \E*[EXTX]\c \}
-.    rt \\nxu
 .    FAM \\*[$RESTORE_FAM]
 .    FT  \\*[$RESTORE_FT]
 .    ps \\n[#RESTORE_PT_SIZE]u
@@ -2851,6 +2889,7 @@ to a macro means that any argument turns the feature off.
 \#
 .MAC DROPCAP_OFF END
 '    in \\n[#RESTORE_INDENT]u
+.    ch DROPCAP_OFF
 .END
 \#
 \# =====================================================================
@@ -4158,6 +4197,9 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 e\\R'#X_HEIGHT \\n[.cht]'
 y\\R'#DESCENDER \\n[.cdp]'
 .    br
+.    ds $CAP_HEIGHT \\n[#CAP_HEIGHT]u
+.    ds $X_HEIGHT \\n[#X_HEIGHT]u
+.    ds $DESCENDER \\n[#DESCENDER]u
 .    di
 .END
 \#
@@ -5710,10 +5752,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !r#FN_RULE_LENGTH        \{ .FOOTNOTE_RULE_LENGTH 2i  \}
 .\" +Paragraph heads
 .       if !r#PH_INDENT    \{ .PARAHEAD_INDENT \\n[#PP_INDENT]u/2u \}
+.       if !d$PH_SPACE     \{ .PARAHEAD_SPACE .6m                  \}
 .\" +Endnotes
 .       if !r#EN_PP_INDENT \{ .ENDNOTE_PARA_INDENT \\n[#PP_INDENT] \}
 .\" +Footnotes
-.       if !r#FN_RULE_ADJ           \{ .FOOTNOTE_RULE_ADJ  6p    \}
+.       if !r#FN_RULE_ADJ  \{ .FOOTNOTE_RULE_ADJ  6p \}
 .\" +Slant stuff
 .       if !r#SLANT_MEANS_SLANT \{\
 .          ie \\n[#UNDERLINE_SLANT]=1 \{ .UNDERLINE_SLANT \}
@@ -7071,8 +7114,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .\}
 .          \}
 .       \}
-.       if \\n[#DOCCOVERS_COUNT]=1 \{ .nr #PAGE_NUM_ADJ +1 \}
-.       nr #DOCCOVER_END 1
+        nr #DOCCOVER_END 1
 .       END_COVER
 .    \}
 .\" Cover
@@ -7395,7 +7437,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .\}
 .          \}
 .       \}
-.       if \\n[#COVERS_COUNT]=1 \{ .nr #PAGE_NUM_ADJ +1 \}
 .       nr #COVER_END 1
 .       END_COVER
 .    \}
@@ -9098,8 +9139,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$1'R'      \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 3 \}
 .    if '\\$1'RIGHT'  \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 3 \}
 .    shift
-.    if '\\$1'CAPS' \{ .nr #HDRFTR_RECTO_CAPS 1 \}
-.    ds $USERDEF_HDRFTR_RECTO \\$2
+.    ie '\\$1'CAPS' \{\
+.       nr #HDRFTR_RECTO_CAPS 1
+.       ds $USERDEF_HDRFTR_RECTO \\$2
+.    \}
+.   el \{\
+.      ds $USERDEF_HDRFTR_RECTO \\$1
+.   \}
 .END
 \#
 \#
@@ -9124,9 +9170,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$1'CENTRE' \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 2 \}
 .    if '\\$1'R'      \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 3 \}
 .    if '\\$1'RIGHT'  \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 3 \}
-.    shift
-.    if '\\$1'CAPS' \{ .nr #HDRFTR_VERSO_CAPS 1 \}
-.    ds $USERDEF_HDRFTR_VERSO \\$2
+.    ie '\\$1'CAPS' \{\
+.       nr #HDRFTR_VERSO_CAPS 1
+.       ds $USERDEF_HDRFTR_VERSO \\$2
+.    \}
+.   el \{\
+.      ds $USERDEF_HDRFTR_VERSO \\$1
+.   \}
 .END
 \#
 \# PRINT FOOTER ON FIRST PAGE
@@ -10843,6 +10893,19 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #PH_INDENT (\\$1)
 .END
 \#
+\# PARAHEAD SPACE
+\# --------------
+\# *Argument:
+\#   <amount of horizontal space between parahead and paragraph text>
+\# *Function:
+\#   Creates or modifies string $PH_SPACE.
+\# *Notes:
+\#   Default is .6m for TYPESET and \0 (1 digit space) for TYPEWRITE.
+\#
+.MAC PARAHEAD_SPACE END
+.    ds $PH_SPACE \\$1
+.END
+\#
 \#
 \# PARAHEAD
 \# --------
@@ -10961,7 +11024,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       FAM     \\*[$PH_FAM]
 .       FT      \\*[$PH_FT]
-.       PT_SIZE \\*[$PH_SIZE_CHANGE]
+.       PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$PH_SIZE_CHANGE]
 .       if \\n[#PH_COLOR]=1 \{ .COLOR \\*[$PH_COLOR] \}
 .          ie \\n[#NUMBER_PH] \{\
 .             ie \\n[#PREFIX_CH_NUM]=1 \{\
@@ -10972,25 +11035,25 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             \}
 .             if \\n[#NUMBER_HEAD] \{\
 .                ie \\n[#NUMBER_SH] \{\
-.                   PRINT "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                   PRINT "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'\\*[$PH_SPACE]'\c"
 .                \}
 .                el \{\
-.                   PRINT "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                   PRINT "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#PH_NUM].\0\\$1\h'\\*[$PH_SPACE]'\c"
 .                \}
 .             \}
 .             ie \\n[#NUMBER_SH] \{\
 .                if !\\n[#NUMBERED] \{\
-.                   PRINT "\\*[$CH_NUM]\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                   PRINT "\\*[$CH_NUM]\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'\\*[$PH_SPACE]'\c"
 .                \}
 .             \}
 .             el \{\
 .                if !\\n[#NUMBERED] \{\
-.                   PRINT "\\*[$CH_NUM]\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                   PRINT "\\*[$CH_NUM]\\n+[#PH_NUM].\0\\$1\h'\\*[$PH_SPACE]'\c"
 .                \}
 .             \}
 .          \}
 .          el \{\
-.             PRINT "\\$1\h'.6m'\c"
+.             PRINT "\\$1\h'\\*[$PH_SPACE]'\c"
 .          \}
 .       \}
 .    FAMILY  \\*[$DOC_FAM]
@@ -17151,18 +17214,19 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 \# Support aliases
 \#
-.ALIAS   COL_BREAK             COL_NEXT
-.ALIAS   DOC_COVER_ADVANCE     COVER_ADVANCE
-.ALIAS   DOC_COVER             COVER
-.ALIAS   DOC_COVERS            COVERS
-.ALIAS   DOC_COVER_LEAD        COVER_LEAD
-.ALIAS   DOC_COVERTITLE        COVERTITLE
-.ALIAS   DO_DOC_COVER          DO_COVER
-.ALIAS   PRINT_FOOTNOTE_RULE   FOOTNOTE_RULE
+.ALIAS   COL_BREAK               COL_NEXT
+.ALIAS   DOC_COVER_ADVANCE       COVER_ADVANCE
+.ALIAS   DOC_COVER               COVER
+.ALIAS   DOC_COVER_COUNTS_PAGES  COVER_COUNTS_PAGES
+.ALIAS   DOC_COVERS              COVERS
+.ALIAS   DOC_COVER_LEAD          COVER_LEAD
+.ALIAS   DOC_COVERTITLE          COVERTITLE
+.ALIAS   DO_DOC_COVER            DO_COVER
+.ALIAS   PRINT_FOOTNOTE_RULE     FOOTNOTE_RULE
 \#
 \# Miscellaneous aliases
-.ALIAS  SECTION       LINEBREAK
-.ALIAS  SECTION_CHAR  LINEBREAK_CHAR
+.ALIAS   SECTION       LINEBREAK
+.ALIAS   SECTION_CHAR  LINEBREAK_CHAR
 \#
 \# Miscellaneous macros to take care of backward compatibility
 \# -----------------------------------------------------------

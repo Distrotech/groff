@@ -201,6 +201,8 @@ RW               Reduce white -- tighten overall line kern
 SILENT           Don't print lines till SILENT OFF
 SIZESPECS        Get cap-height, x-height and descender depth for
                  current point size
+SUPERSCRIPT_RAISE_AMOUNT
+                 Change default vertical displacement of superscripts
 TRAP             Turn traps off or on
 
 +++DIVERSIONS+++
@@ -248,6 +250,7 @@ c                       column mark
 #DC_LINES               Number of lines for dropcap
 #DEGREES                # of degrees slant for pseudo-italic
 #ENUMERATOR&lt;n&gt;          Number register enumerator for depth &lt;n&gt; in lists 
+#EW                     Is EW in effect? (boolean)
 #EXT_WIDTH              Width of pseudo-extended type
                         (pointsize x $EXT_PERCENT)
 #EXTEND                 Are we in pseudo-extend mode? (boolean)
@@ -341,6 +344,7 @@ p                       Output line horiz position at end of
 #RLD                    RLD value
 #RULE_WEIGHT            Weight given to RULE_WEIGHT
 #RULE_WEIGHT_ADJ        RULE_WEIGHT/2
+#RW                     Is RW in effect? (boolean)
 #SHIFT_LIST&lt;n&gt;          Value to add to #LIST_INDENT&lt;n&gt; for shifted lists
 #SILENT                 Is silent on? (boolean)
 #SIZE_FOR_PAD           Used to ensure that the size in effect prior
@@ -408,6 +412,7 @@ $DC_FT               Drop cap font
 $DROPCAP             The dropcap letter
 $ENUMERATOR&lt;n&gt;       String enumerator for depth &lt;n&gt; in lists 
 $ENUMERATOR_TYPE&lt;n&gt;  Type of enumerator used in LIST&lt;n&gt;
+$EW                  Value passed to EW
 $EXT_PERCENT         Percentage by which to pseudo-extend type
 $FAMILY              Family
 $FAMILY_FOR_PAD      Used to ensure that the family in effect prior
@@ -439,6 +444,7 @@ $RESTORE_QUAD_VALUE  Quad value for use in restoring L, R, C, J
                      (after tabs)
 $RESTORE_SQ          The smartquoting string last passed to SMARTQUOTES
 $RULE_GAP            Distance between underscore rules
+$RW                  Value passed to RW
 $SAVED_STYLE         Current style, if there is one (used in FAMILY)
 $SAVED_UNDERSCORE_GAP Temporarily holds string in $UNDERSCORE_GAP
 $SEPARATOR&lt;n&gt;        Separator for depth &lt;n&gt; in lists
@@ -447,6 +453,9 @@ $ST&lt;n&gt;_FILL          Always QUAD if QUAD passed to ST &lt;n&gt;
 ST\n[#LOOP]          Used to initialize string tab markers (1-19)
 ST\n[#LOOP]X         Used to initialize string tab markers (1-19)
 $ST&lt;n&gt;_QUAD_DIR      Quad direction supplied to ST for &lt;n&gt;
+$SUP_LOWER           Vertical displacement amount of superscripts
+$SUP_RAISE           Vertical displacement amount of superscripts
+$SUP_RAISE_AMOUNT    Argument passed to SUPERSCRIPT_RAISE_AMOUNT
 $TAB_NUMBER          Argument passed to TAB macro to call TAB# macro
                      created in TAB_SET
 $UNDERSCORE_GAP      Distance between text and underscore rule
@@ -2256,6 +2265,11 @@ $PAGE_NUM_SIZE_CHANGE            ps in/decrease of page numbers
 $PAPER                           Paper size (LETTER, A4, LEGAL);
                                  default=LETTER
 $PH_COLOR                        Parahead color
+$PH_FAM                          Parahead family
+$PH_FT                           Parahead font
+$PH_SIZE_CHANGE                  ps in/decrease of paraheads
+$PH_SPACE                        Amount of horizontal space between a parahead
+                                 and the start of paragraph text
 $PP_FT                           Font used in paragraphs
 $RESTORE_PAGENUM_STYLE           Hold previous page numbering style
 $ROMAN_WIDTH&lt;n&gt;                     The digit(s) appended by user to ROMAN or
