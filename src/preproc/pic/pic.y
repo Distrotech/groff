@@ -17,6 +17,7 @@ for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>. */
+
 %{
 #include "pic.h"
 #include "ptable.h"
@@ -61,6 +62,7 @@ char *do_sprintf(const char *form, const double *v, int nv);
 
 %}
 
+%expect 2
 
 %union {
 	char *str;
@@ -253,7 +255,7 @@ works */
 %right '!'
 %right '^'
 
-%type <x> expr any_expr text_expr
+%type <x> expr expr_lower_than expr_not_lower_than any_expr text_expr
 %type <by> optional_by
 %type <pair> expr_pair position_not_place
 %type <if_data> simple_if
@@ -1205,12 +1207,13 @@ position_not_place:
 		  $$.x = (1.0 - $2)*$4.x + $2*$6.x;
 		  $$.y = (1.0 - $2)*$4.y + $2*$6.y;
 		}
-	| expr '<' position ',' position '>'
+	/* the next two rules cause harmless shift/reduce warnings */
+	| expr_not_lower_than '<' position ',' position '>'
 		{
 		  $$.x = (1.0 - $1)*$3.x + $1*$5.x;
 		  $$.y = (1.0 - $1)*$3.y + $1*$5.y;
 		}
-	| '(' expr '<' position ',' position '>' ')'
+	| '(' expr_not_lower_than '<' position ',' position '>' ')'
 		{
 		  $$.x = (1.0 - $2)*$4.x + $2*$6.x;
 		  $$.y = (1.0 - $2)*$4.y + $2*$6.y;
@@ -1481,6 +1484,18 @@ corner:
 	;
 
 expr:
+	expr_lower_than
+		{ $$ = $1; }
+	| expr_not_lower_than
+		{ $$ = $1; }
+	;
+
+expr_lower_than:
+	expr '<' expr
+		{ $$ = ($1 < $3); }
+	;
+
+expr_not_lower_than:
 	VARIABLE
 		{
 		  if (!lookup_variable($1, & $$)) {
@@ -1642,8 +1657,6 @@ expr:
 		  $$ = 0;
 		  srand((unsigned int)$3);
 		}
-	| expr '<' expr
-		{ $$ = ($1 < $3); }
 	| expr LESSEQUAL expr
 		{ $$ = ($1 <= $3); }
 	| expr '>' expr

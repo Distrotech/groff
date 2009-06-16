@@ -1,3 +1,16 @@
+2009-05-29  Werner LEMBERG  <wl@gnu.org>
+
+	pic: Fix handling of nested positions.
+	Reported by Doug McIlroy <doug@cs.dartmouth.edu>.
+
+	* src/preproc/pic/pic.y: Split `expr' into `expr_lower_than' and
+	`expr_not_lower_than' so that we can handle
+
+	  (1/3)<(1/2)<foo,bar>,baz>
+
+	correctly.  Without the patch, `(1/3)<(1/2)' is handled prematurely
+	as a comparison.
+
 2009-05-07  Werner LEMBERG  <wl@gnu.org>
 
 	Accept \0 and friends within \o.
