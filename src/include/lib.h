@@ -22,6 +22,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 #include <config.h>
 #endif
 
+#if defined(__INTERIX) && !defined(_ALL_SOURCE)
+#define _ALL_SOURCE
+#endif
+
 extern "C" {
 #ifndef HAVE_STRERROR
   char *strerror(int);

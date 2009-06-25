@@ -43,10 +43,12 @@ AC_INIT([groff],
         GROFF_VERSION_STRING,
         [bug-groff@gnu.org],
         [groff-]GROFF_VERSION_STRING)
-AC_PREREQ([2.59])
+AC_PREREQ([2.62])
 
 AC_CONFIG_HEADERS([src/include/config.h:src/include/config.hin])
 AC_CONFIG_SRCDIR([src/roff/groff/groff.cpp])
+
+AC_USE_SYSTEM_EXTENSIONS
 
 # checks for programs
 AC_PROG_CC
