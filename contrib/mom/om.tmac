@@ -5134,9 +5134,29 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    br
 .    nr #CLOSING 1
 .    di CLOSING
-.    LEFT
 .END
 \#
+\# CLOSING INDENT
+\# --------------
+\# *Argument:
+\#   <amount to indent closing from left margin>
+\# *Function:
+\#   Defines string $CLOSE_INDENT for use in macro, ALL_DONE.
+\#
+.MAC CLOSING_INDENT END
+.    ds $CLOSE_INDENT \\$1
+.END
+\#
+\# SIGNATURE_SPACE
+\# ---------------
+\# *Argument:
+\#   <amount of space to leave for signature>
+\# *Function:
+\#   Defines string $SIG_SPACE for use in macro, ALL_DONE.
+\#
+.MAC SIGNATURE_SPACE END
+.    ds $SIG_SPACE \\$1
+.END
 \#
 \# NO SUITE
 \# --------
@@ -16597,18 +16617,18 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    FOOTERS OFF
 .    PAGINATION OFF
 .    if \\n[#DOC_TYPE]=4 \{\
-.       br
 .       if !'\\n(.z'' \{ .di \}
 .       IQ CLEAR
 .       TQ
-.       TAB_SET 1 \\n[#DOC_L_LENGTH]u/2u \\n[#DOC_L_LENGTH]u/2u LEFT
-.       ALD \\n[#DOC_LEAD]u*2u
-.       TAB 1
+.       ie !'\\*[$CLOSE_INDENT]'' \{ .IL \\*[$CLOSE_INDENT] \}
+.       el \{ .IL \\n[#DOC_L_LENGTH]u/2u \}
+.       SP
 .       if \\n[#CLOSING] \{\
-.          nf
 .          CLOSING
+.          br
 .       \}
-.       ALD \\n[#DOC_LEAD]u*3u
+.       ie !'\\*[$SIG_SPACE]'' \{ .ALD \\*[$SIG_SPACE] \}
+.       el \{ .SP 3v \}
 .       PRINT \\*[$AUTHOR_1]
 .    \}
 .    DO_FOOTER
