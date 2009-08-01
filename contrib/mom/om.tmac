@@ -3665,6 +3665,7 @@ to a macro means that any argument turns the feature off.
 .       in \\n[#L_INDENT]u
 .       ta \\n(.lu-\\n[#L_INDENT]u
 .    \}
+.    if \\n[#IN_ITEM] .nr #IN_ITEM_L_INDENT +(\\$1)
 .END
 \#
 \#
@@ -3674,7 +3675,7 @@ to a macro means that any argument turns the feature off.
 .    if \\n[#INDENT_STYLE_BOTH] \{ .IBX \}
 .    nr #INDENT_STYLE_RIGHT   1
 .    nr #INDENT_ACTIVE        1
-.    nr #INDENT_RIGHT_ACTIVE 1
+.    nr #INDENT_RIGHT_ACTIVE  1
 .    ie '\\$1'' \{\
 .       br
 .       ie \\n[#TAB_ACTIVE] \{\
@@ -3774,9 +3775,12 @@ to a macro means that any argument turns the feature off.
 \# +++INDENTS OFF+++
 \#
 .MAC ILX END
-.    br
-.    in 0
-.    rr #INDENT_LEFT_ACTIVE
+.    ie \\n[#IN_ITEM] \{ .nr #L_INDENT -\\n[#IN_ITEM_L_INDENT] \}
+.    el \{\
+.       br
+.       in 0
+.       rr #INDENT_LEFT_ACTIVE
+.    \}
 .    if '\\$1'CLEAR' \{\
 .       rr #L_INDENT
 .       rr #INDENT_STYLE_LEFT
@@ -5602,7 +5606,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !r#FOOTER_MARGIN     \{ .FOOTER_MARGIN 3P \}
 .    if !r#FOOTER_GAP        \{ .FOOTER_GAP    3P \}
 .    if !r#B_MARGIN          \{ .B_MARGIN \\n[#FOOTER_MARGIN]u+\\n[#FOOTER_GAP]u \}
-.    if (\\n[#FOOTER_MARGIN]+\\n(.v)>\\n[#B_MARGIN] \{\
+.    if (\\n[#FOOTER_MARGIN]+\\n[.v]>=\\n[#B_MARGIN] \{\
 .       tm1 "[mom]: Your chosen bottom margin for running text is too close to the footer margin.
 .       tm1 "       No footers or bottom-of-page page numbers will be printed.
 .       tm1 "       Please reset B_MARGIN or FOOTER_MARGIN to allow enough space.
@@ -9163,9 +9167,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #HDRFTR_RECTO_CAPS 1
 .       ds $USERDEF_HDRFTR_RECTO \\$2
 .    \}
-.   el \{\
-.      ds $USERDEF_HDRFTR_RECTO \\$1
-.   \}
+.    el \{\
+.       ds $USERDEF_HDRFTR_RECTO \\$1
+.    \}
 .END
 \#
 \#
@@ -10160,13 +10164,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .   if \\\\n[#HDRFTR_BOTH]=1 \{\
 .      if \\n[#FOOTERS_ON]=1 \{\
 .         if !\\\\n[#COLLATE]=1 \{\
-.         HEADER_RECTO \\*[$HDR_RECTO_QUAD] "\\*[$HDR_RECTO_STRING]"
-.         HEADER_VERSO \\*[$HDR_VERSO_QUAD] "\\*[$HDR_VERSO_STRING]"
-.         rr #FOOTERS_ON
-.         nr #HEADERS_ON 1
-.         ie \\\\n[#HEADER_RULE]=1 \{ .HEADER_RULE \}
-.         el \{ .HEADER_RULE OFF \}
-.      \}
+.            HEADER_RECTO \\*[$HDR_RECTO_QUAD] "\\*[$HDR_RECTO_STRING]"
+.            HEADER_VERSO \\*[$HDR_VERSO_QUAD] "\\*[$HDR_VERSO_STRING]"
+.            rr #FOOTERS_ON
+.            nr #HEADERS_ON 1
+.            ie \\\\n[#HEADER_RULE]=1 \{ .HEADER_RULE \}
+.            el \{ .HEADER_RULE OFF \}
+.         \}
 .      \}
 .      if \\n[#HEADERS_ON]=1 \{\
 .         FOOTER_RECTO \\*[$FTR_RECTO_QUAD] "\\*[$FTR_RECTO_STRING]"
@@ -15706,7 +15710,9 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       nr #KERN_WAS_ON 1
 .       KERN OFF
 .    \}
+.    rr #IN_ITEM
 .    IL
+.    nr #IN_ITEM 1
 .    ll \\n[#CURRENT_L_LENGTH]u \" Set ll again because IL turns IB off.
 .    TRAP OFF
 .    HI \\n[#HL_INDENT\\n[#DEPTH]]u
@@ -16115,6 +16121,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .   rr #RESTORE_PREV_INDENT
 .   rr #ORIG_L_LENGTH
 .   rr #CURRENT_L_LENGTH
+.   rr #IN_ITEM
+.   rr #IN_ITEM_L_INDENT
 .END
 \#
 \#
