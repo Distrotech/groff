@@ -597,7 +597,7 @@
   $SAY >&2 $n "Writing PDF output ..$c"
   if test -z "$PDFROFF_POSTPROCESSOR_COMMAND"
   then
-    PDFROFF_POSTPROCESSOR_COMMAND="$GS -dQUIET -dBATCH -dNOPAUSE
+    PDFROFF_POSTPROCESSOR_COMMAND="$GS -dQUIET -dBATCH -dNOPAUSE -dSAFER
       -sDEVICE=pdfwrite -sOutputFile="${PDF_OUTPUT-"-"}
 
   elif test -n "$PDF_OUTPUT"
