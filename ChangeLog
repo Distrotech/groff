@@ -1,4 +1,19 @@
-2009-08-14  Roger Leigh <rleigh@debian.org>
+2009-09-01  Michael Cain  <mcain6925@comcast.net>
+
+	[pic] Fix a border case for arc computation.
+
+	* src/preproc/pic/object.cpp (object_spec::make_arc): It can happen
+	that test `radius < d' in the loop is satisfied, but the difference
+	in the two values is on the order of 1e-10.  If `radius' is small,
+	doubling the value can lead to a fairly gross error.
+
+	The original code appears to have been intended to deal with the
+	situation when radius is orders of magnitude less than `d'.  The
+	replacement code simply assigns `radius' the smallest value that
+	avoids problems with the floating point code further on in the
+	routine.
+
+2009-08-14  Roger Leigh  <rleigh@debian.org>
 
 	* man/groff_char.man: Fix white heart and diamond unicode values.
 

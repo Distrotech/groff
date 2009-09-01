@@ -1830,8 +1830,8 @@ linear_object *object_spec::make_arc(position *curpos, direction *dirp)
     if (radius <= 0)
       radius = .25;
     // make the radius big enough
-    while (radius < d)
-      radius *= 2.0;
+    if (radius < d)
+      radius = d;
     double alpha = acos(d/radius);
     double theta = atan2(h.y, h.x);
     if (cw)
