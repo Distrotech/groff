@@ -2343,7 +2343,7 @@ void kern_pair_node::vertical_extent(vunits *min, vunits *max)
 
 node *kern_pair_node::add_discretionary_hyphen()
 {
-  tfont *tf = n2->get_tfont();
+  tfont *tf = n1->get_tfont();
   if (tf) {
     if (tf->contains(soft_hyphen_char)) {
       color *gcol = n2->get_glyph_color();

@@ -1,3 +1,13 @@
+2009-09-08  Werner LEMBERG  <wl@gnu.org>
+
+	[troff]: Fix hyphenation problem with kerned letters.
+	Problem reported by Steve Izma <sizma@golden.net>.
+
+	* src/roff/troff/node.cpp
+	(kern_pair_node::add_discretionary_hyphen): Compute `tf' using the
+	first node, `n1'.  `n2' might be another kerning node, and the
+	`get_tfont' member function isn't defined then.
+
 2009-09-01  Michael Cain  <mcain6925@comcast.net>
 
 	[pic] Fix a border case for arc computation.
