@@ -21,7 +21,7 @@
 
 cmd=$( basename $0 )
 
-function Usage {
+Usage () {
 	if test "$#" -gt 0
 	then
 		echo >&2 "${cmd}:  $@"
@@ -60,7 +60,7 @@ OPTIONS:
 }
 
 
-function Exit {
+Exit () {
 	exitcode=$1
 	shift
 	for arg
@@ -75,7 +75,7 @@ function Exit {
 #
 #	Check for existence and readability of given file name.
 #	If not found or not readable, print message and exit with EXIT_CODE.
-function FileRead {
+FileRead () {
 	case "$2" in
 	-)
 		return
@@ -97,7 +97,7 @@ function FileRead {
 #
 #	Create the given filename if it doesn't exist.
 #	If unable to create or write, print message and exit with EXIT_CODE.
-function FileCreate {
+FileCreate () {
 	case "$2" in
 	-)
 		return
@@ -115,7 +115,7 @@ function FileCreate {
 	fi
 }
 
-function WouldClobber {
+WouldClobber () {
 	case "$2" in
 	-)
 		return
@@ -136,7 +136,7 @@ DELETEMARK='*'
 MARK1='[['
 MARK2=']]'
 
-function RequiresArgument {
+RequiresArgument () {
 	#	Process flags that take either concatenated or
 	#	separated values.
 	case "$1" in
