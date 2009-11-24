@@ -531,6 +531,8 @@ void input_stack::check_end_diversion(input_iterator *t)
 {
   if (t->is_diversion) {
     div_level--;
+    if (diversion_state)
+      delete diversion_state;
     diversion_state = t->diversion_state;
   }
 }
@@ -4398,6 +4400,7 @@ static void interpolate_arg(symbol nm)
 	  args += c;
       if (i != limit)
 	args += ' ';
+      delete p;
     }
     if (limit > 0) {
       args += '\0';
@@ -4419,6 +4422,7 @@ static void interpolate_arg(symbol nm)
       args += '"';
       if (i != limit)
 	args += ' ';
+      delete p;
     }
     if (limit > 0) {
       args += '\0';
@@ -4438,6 +4442,7 @@ static void interpolate_arg(symbol nm)
       }
       if (input_stack::space_follows_arg(i))
 	args += ' ';
+      delete p;
     }
     if (limit > 0) {
       args += '\0';

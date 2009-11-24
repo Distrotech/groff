@@ -390,8 +390,6 @@ void mtsm::pop_state()
 #endif
     if (sp == 0)
       fatal("empty state machine stack");
-    if (sp->state)
-      delete sp->state;
     sp->state = 0;
     stack *t = sp;
     sp = sp->next;

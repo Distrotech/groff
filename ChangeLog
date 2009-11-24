@@ -1,3 +1,13 @@
+2009-11-24  Maurice van der Pot  <griffon26@kfk4ever.com>
+
+	Fix double frees and memory leaks.
+
+	* src/roff/troff/env.cpp (environment::make_tag): Use local object.
+	* src/roff/troff/input.cpp (input_stack::check_end_diversion): Free
+	`diversion_state' here.
+	(interpolate_arg): Fix memory leaks.
+	* src/roff/troff/mtsm.cpp (mtsm::pop_state): Don't free `sp->state'.
+
 2009-11-20  Paulo Ricardo Zanoni  <pzanoni@mandriva.com>
 
 	* */*.cpp: Replace `printf(string);' with `printf("%s", string);'.

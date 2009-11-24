@@ -2213,14 +2213,15 @@ node *environment::make_tag(const char *nm, int i)
      */
     if (curdiv == topdiv && topdiv->before_first_page)
       topdiv->begin_page();
-    macro *m = new macro;
-    m->append_str("devtag:");
+
+    macro m;
+    m.append_str("devtag:");
     for (const char *p = nm; *p; p++)
       if (!invalid_input_char((unsigned char)*p))
-	m->append(*p);
-    m->append(' ');
-    m->append_int(i);
-    return new special_node(*m);
+	m.append(*p);
+    m.append(' ');
+    m.append_int(i);
+    return new special_node(m);
   }
   return 0;
 }
