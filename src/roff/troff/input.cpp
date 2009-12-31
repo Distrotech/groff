@@ -6602,7 +6602,7 @@ static void init_charset_table()
 static void init_hpf_code_table()
 {
   for (int i = 0; i < 256; i++)
-    hpf_code_table[i] = i;
+    hpf_code_table[i] = cmlower(i);
 }
 
 static void do_translate(int translate_transparent, int translate_input)
