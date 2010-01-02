@@ -462,7 +462,7 @@ void troff_output::text(const position &center, text_piece *v, int n,
       fputs("\n.sp -1\n", stdout);
     }
   if (rotate_flag)
-    printf(".if '\\*(.T'ps' \\{\\\n"
+    printf(".if \\n(" GROPS_REG " \\{\\\n"
 	   "\\X'ps: exec grestore'\n.sp -1\n"
 	   ".\\}\n");
 }
