@@ -5,7 +5,7 @@ hdtbl.tmac
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2005, 2006, 2009 Free Software Foundation, Inc.
+Copyright (C) 2005, 2006, 2009, 2010 Free Software Foundation, Inc.
 written by Joachim Walsdorff <Joachim.Walsdorff@urz.uni-heidelberg.de>.
 
 groff is free software; you can redistribute it and/or modify it under
@@ -35,14 +35,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .mso hdmisc.tmac
 .mso 62bit.tmac
 .
-.wh 0 HM	\"	comment this out if a page header macro exists
-.wh -1i BM	\"	comment this out if a bottom margin macro exists
-.
-.\" replace `HM' with the name of your pageheader macro, e.g., `pg@top' for MS
-.am HM
-.  t*hm
-..
-.
 .
 .\"	*****************************************************************
 .\"	*		default values for some arguments		*
@@ -71,11 +63,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             ".pv 1.4 1.4" \
             ".ad l" \
             "\m[\\*[t*fgc]]Table \\n+[t*cptn]:\0\c\k*"\"
-.
-.
-.\"			Running title, running footer
-.ds t*HM //arbitrary text for pageheader, except on the first page//\"
-.ds t*BM //arbitrary text for pagefooter, except on the last page/\\n[%]/\"
 .
 .
 .\" %beginstrip%
@@ -979,6 +966,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 ..
 .
 .
+.\" Append to your page header macro ('pg@top' for MS)
+.\" to enable tables to span pages.
 .de t*hm
 .  ev t*tbl
 .  nr ** \\n[.t]
