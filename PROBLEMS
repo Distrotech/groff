@@ -22,19 +22,19 @@ Generic Problems
   only gives garbage.
 
 groff by default now uses SGR escape sequences (`ANSI color') to
-control the display attributes (bold, underlined, colour) on TTYs. 
+control the display attributes (bold, underlined, colour) on TTYs.
 Some terminals (e.g. `kterm') don't understand SGR, and some pagers
 (e.g. older versions of `less' or `less' without the -R option) don't
-understand SGR either.  There are three solutions to fix this, in order
-of preference; please read the grotty man page for more details.
+understand SGR either.  There are three solutions to fix this, in
+order of preference; please read the grotty man page for more details.
 
 The fourth and probably best option is to update your terminal program
 and pager to versions which can handle SGR.
 
   1. Set the GROFF_NO_SGR environment variable.
 
-  2. Pass option `-c' to grotty (this is, add `-P-c' to groff's command
-     line options).
+  2. Pass option `-c' to grotty (this is, add `-P-c' to groff's
+     command line options).
 
   3. Append the following fragment to the `troffrc' file:
 
@@ -103,9 +103,9 @@ and pager to versions which can handle SGR.
 
 The used Unicode characters (U+2212 for the minus sign and U+2010 for
 the hyphen) are the correct ones, but many programs can't search them
-properly.  The same is true for the right quote (U+201D).  To map those
-characters back to the ASCII characters, insert the following code
-snippet into the `troffrc' configuration file:
+properly.  The same is true for the right quote (U+201D).  To map
+those characters back to the ASCII characters, insert the following
+code snippet into the `troffrc' configuration file:
 
 .if '\*[.T]'utf8' \{\
 .  char \- \N'45'
@@ -142,10 +142,10 @@ or, if you want to be portable to older troff versions, as follows:
 * groff can't handle my troff document.  It works fine with AT&T
   troff.
 
-Read the section on incompatibilities in groff_diff(7).  Try using
-the -C option.  Alternatively there's the sed script
-`tmac/fixmacros.sed' which attempts to edit a file of macros so
-that it can be used with groff without the -C flag.
+Read the section on incompatibilities in groff_diff(7).  Try using the
+-C option.  Alternatively there's the sed script `tmac/fixmacros.sed'
+which attempts to edit a file of macros so that it can be used with
+groff without the -C flag.
 
 ----------------------------------------------------------------------
 
@@ -166,8 +166,8 @@ arguments.  The use of compatibility mode is strongly discouraged.
 
 Yes, it does.  You may need to compile fonts with Metafont at these
 magnifications.  The CompileFonts script in the devdvi/generate
-directory may help you to do this.  (It takes a *long* time on
-slow computers.)
+directory may help you to do this.  (It takes a *long* time on slow
+computers.)
 
 ----------------------------------------------------------------------
 
@@ -211,8 +211,8 @@ line and the name of a macro or request).  For example, in Unix troff
   .ps	\" restore the previous point size
 
 (with a tab after the .ps) does NOT restore the previous point-size;
-instead it is silently ignored.  Since this is very likely to be
-an error, gtroff can give a warning about it.  If you want to align
+instead it is silently ignored.  Since this is very likely to be an
+error, gtroff can give a warning about it.  If you want to align
 comments, you can do it like this:
 
   .ev\"				\" a comment
@@ -222,8 +222,8 @@ comments, you can do it like this:
 * I don't like the page headers and footers produced by groff -man.
 
 There seem to be many different styles of page header and footer
-produced by different versions of the -man macros.  You need to
-put modified macros from tmac/an-old.tmac into man.local.  More
+produced by different versions of the -man macros.  You need to put
+modified macros from tmac/an-old.tmac into man.local.  More
 information is available in groff_man(7).
 
 ----------------------------------------------------------------------
@@ -244,9 +244,9 @@ You need version 1.42 or newer.
 
 \n(st and \n(sb aren't supposed to give the height and depth of the
 string rather they give the minimum and maximum vertical displacement
-of the baseline.  For example for \v'2u'\v'-3u', \n(st is 1 and
-\n(sb is -2.  The height and depth of the string is available in
-the \n[rst] and \n[rsb] registers: these are groff extensions.
+of the baseline.  For example for \v'2u'\v'-3u', \n(st is 1 and \n(sb
+is -2.  The height and depth of the string is available in the \n[rst]
+and \n[rsb] registers: these are groff extensions.
 
 ----------------------------------------------------------------------
 
@@ -421,10 +421,10 @@ format.  (This is available from the Adobe file server; send a message
 with a body of `help' to ps-file-server@adobe.com.)
 
 If an EPS file to be included via \X'ps: import' does not start with
-`%!PS-Adobe-...', gtroff still includes the file, but grops does
-not add any fonts to the generated output file that are listed in the
-EPS file, even though the files are listed in the `download' file and
-are available in the devps directory.
+`%!PS-Adobe-...', gtroff still includes the file, but grops does not
+add any fonts to the generated output file that are listed in the EPS
+file, even though the files are listed in the `download' file and are
+available in the devps directory.
 
 ----------------------------------------------------------------------
 
@@ -460,11 +460,12 @@ Make sure that the paper size is `letter'.  See groff_tmac(5).
 This error means you haven't correctly installed the application
 defaults file, GXditview.ad; `make install' does this for you
 automatically, so either you didn't do `make install', or you haven't
-passed a good `--appresdir=<DIR>' argument to groff's configure script.
+passed a good `--appresdir=<DIR>' argument to groff's configure
+script.
 
-See the X(7) man page for information how and where application resource
-files have to be located.  Look for the XAPPLRESDIR and XUSERFILESEARCHPATH
-environment variables.
+See the X(7) man page for information how and where application
+resource files have to be located.  Look for the XAPPLRESDIR and
+XUSERFILESEARCHPATH environment variables.
 
 ----------------------------------------------------------------------
 
@@ -532,8 +533,8 @@ You have at least 3 options:
 In fact groff generates only level 2 PostScript (or rather level 1
 with some extensions; see grops(1) for more information how to disable
 them).  The `%!PS-Adobe-3.0' comment at the beginning of PostScript
-output generated by groff indicates that the file conforms to
-version 3.0 of the Adobe Document Structuring Conventions.  The output
+output generated by groff indicates that the file conforms to version
+3.0 of the Adobe Document Structuring Conventions.  The output
 generated by groff should be printable on any PostScript printer.
 Problems with groff output's not printing are most often caused by the
 spooling system.
@@ -640,13 +641,13 @@ From David Hinds <dhinds@allegro.stanford.edu> (some of these steps
 are unnecessary if you install with the `g' Makefile variable defined
 as empty):
 
-Create a script called 'eqn':
+Create a script called `eqn':
 
  > #! /bin/sh
  > if [ ${1:-""} = /usr/pub/eqnchar ] ; then shift ; fi
  > geqn $*
 
-and a script called 'neqn':
+and a script called `neqn':
 
  > #! /bin/sh
  > if [ ${1:-""} = /usr/pub/eqnchar ] ; then shift ; fi
@@ -661,8 +662,8 @@ and edit the end of the gnroff script to be:
  > rest=`echo ${1+"$@"} | sed -e 's+/usr/lib/tmac+/usr/local/lib/groff/tmac+'`
  > exec groff -Wall -mtty-char $T $opts $rest
 
-To get PostScript output from 'man -t', you also need to create a
-'psroff' script similar to 'nroff'.  Here are the context diffs:
+To get PostScript output from `man -t', you also need to create a
+`psroff' script similar to `nroff'.  Here are the context diffs:
 
 *** /usr/local/bin/nroff        Sat Feb 13 15:51:09 1993
 --- /usr/local/bin/psroff       Sat Feb 13 17:45:46 1993
@@ -753,13 +754,13 @@ before starting the configure script.
 [This has been fixed in z/OS V1R3 (aka OS/390 R13).]
 
 There is a bug in the Language Environment (LE) whereby the test
-program for static destructors fails.  You see the message
-`configure: error: a working C++ compiler is required'.
+program for static destructors fails.  You see the message `configure:
+error: a working C++ compiler is required'.
 
 Applying PTF UQ42006 is supposed to fix this, but the test program is
 still returning the wrong value (1).  To work around this problem, you
-can comment out the following in the configure script (near line 2029).
-This effectively bypasses the test (static constructors and
+can comment out the following in the configure script (near line
+2029).  This effectively bypasses the test (static constructors and
 destructors do actually work properly):
 
 #if { (eval echo "$as_me:2029: \"$ac_link\"") >&5
@@ -922,21 +923,36 @@ Makefile.  If that doesn't solve the problem, define INT_MIN as
 * In MacOS X, I want to completely replace the groff that came with
   the system.
 
-Use ./configure --prefix=/usr --mandir=/usr/share/man  then make
-and make install. Note that subsequent system updates may replace
-your groff.
+Use
+
+  ./configure --prefix=/usr --mandir=/usr/share/man
+
+then
+
+  make
+  make install
+
+Note that subsequent system updates may replace your groff.
 
 ----------------------------------------------------------------------
 
-* When compiling on MacOS X 10.2, groff compiles but does not run well,
-  especially `eqn', causing many `can't break line' messages.
+* When compiling on MacOS X 10.2, groff compiles but does not run
+  well, especially `eqn', causing many `can't break line' messages.
 
-Use  ./configure CXX=g++2  then make as usual.
+Use
+
+  ./configure CXX=g++2
+
+then
+
+  make
+
+as usual.
 
 ----------------------------------------------------------------------
 
-* When compiling on MacOS X 10.4 with gcc 4.0.1, the build errors
-  out with the following message:
+* When compiling on MacOS X 10.4 with gcc 4.0.1, the build errors out
+  with the following message:
 
   g++ -g -O2  -o troff dictionary.o div.o env.o input.o majorminor.o
   mtsm.o node.o number.o reg.o ...groff/src/libs/libgroff/libgroff.a -lm
@@ -947,4 +963,4 @@ Locate the line in src/roff/troff/node.cpp:
 
   inline node::~node()
 
-Remove the "inline" keyword, save, and make again.
+Remove the `inline' keyword, save, and make again.
