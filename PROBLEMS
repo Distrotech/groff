@@ -1,4 +1,4 @@
-    Copyright 1989-2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+    Copyright 1989-2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009, 2010
       Free Software Foundation, Inc.
 
     Copying and distribution of this file, with or without modification,
@@ -919,7 +919,32 @@ Makefile.  If that doesn't solve the problem, define INT_MIN as
 
 ----------------------------------------------------------------------
 
-* When compiling on MacOS X, groff compiles but does not run well,
+* In MacOS X, I want to completely replace the groff that came with
+  the system.
+
+Use ./configure --prefix=/usr --mandir=/usr/share/man  then make
+and make install. Note that subsequent system updates may replace
+your groff.
+
+----------------------------------------------------------------------
+
+* When compiling on MacOS X 10.2, groff compiles but does not run well,
   especially `eqn', causing many `can't break line' messages.
 
 Use  ./configure CXX=g++2  then make as usual.
+
+----------------------------------------------------------------------
+
+* When compiling on MacOS X 10.4 with gcc 4.0.1, the build errors
+  out with the following message:
+
+  g++ -g -O2  -o troff dictionary.o div.o env.o input.o majorminor.o
+  mtsm.o node.o number.o reg.o ...groff/src/libs/libgroff/libgroff.a -lm
+  /usr/bin/ld: Undefined symbols:
+  node::~node()
+
+Locate the line in src/roff/troff/node.cpp:
+
+  inline node::~node()
+
+Remove the "inline" keyword, save, and make again.
