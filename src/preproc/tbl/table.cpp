@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2003, 2004, 2007, 2008,
-                 2009
+                 2009, 2010
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -2079,7 +2079,8 @@ void table::compute_expand_width()
   prints("\n");
   prints(".if \\n[" EXPAND_REG "]<0 \\{");
   entry_list->set_location();
-  prints(".tm warning: around line \\n[.c]: table wider than line width\n"
+  prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
+         ".tm1 \"  table wider than line width\n"
 	 ".nr " EXPAND_REG " 0\n"
 	 ".\\}\n");
   if (colcount > 1)
@@ -2117,12 +2118,14 @@ void table::compute_separation_factor()
   printfs("/%1\n", as_string(total_separation));
   prints(".ie \\n[" SEPARATION_FACTOR_REG "]<=0 \\{");
   entry_list->set_location();
-  prints(".tm warning: around line \\n[.c]: column separation set to zero\n"
+  prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
+         ".tm1 \"  column separation set to zero\n"
 	 ".nr " SEPARATION_FACTOR_REG " 0\n"
 	 ".\\}\n"
 	 ".el .if \\n[" SEPARATION_FACTOR_REG "]<1n \\{");
   entry_list->set_location();
-  prints(".tm warning: around line \\n[.c]: table squeezed horizontally to fit line length\n"
+  prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
+         ".tm1 \"  table squeezed horizontally to fit line length\n"
 	 ".\\}\n");
 }
 
