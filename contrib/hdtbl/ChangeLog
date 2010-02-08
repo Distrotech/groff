@@ -1,3 +1,35 @@
+2010-02-08  Larry Kollar  <kollar@alltel.net>
+
+	Fix last patch and use `t*' prefix for all non-public stuff.
+	Other minor fixes.
+
+	* hdmisc.tmac (getarg, index, SP, P1, \n[s], \n[v], \n[hy], pv, DI):
+	Rename to...
+	(t*getarg, t*index, t*SP, t*P1, \n[t*s], \n[t*v], \n[t*hy], t*pv,
+	t*DI): This.
+	Update all callers.
+	(t*EM): New auxiliary macro (using stuff from
+	`examples/common.roff'.
+
+	* hdtbl.tmac (\n[t*v], \n[t*s], \n[t*hy], \n[t*l]): Initialize.
+	(\n[t*FN], \n[t*LN]): New number registers.
+
+	* examples/*.roff: Updated.
+	* examples/common.roff: Load `hdtbl.tmac' earlier.
+	Reinstall `HM' and `BM' traps.
+	Provide `SP' macros if not defined by other macro package.
+	(\n[p], \n[o]): Initialize.
+	(\*[t*HM], \*[t*BM]): Initialize.
+	(EM): Use `t*EM'.
+	Updated.
+
+	* examples/fonts_n.in, examples/fonts_x.in: Load
+	`examples/common.roff'.
+	Updated.
+
+	* groff_hdtbl.man: Document setup of default values.
+	Document `t*EM'.
+
 2010-01-23  Larry Kollar  <kollar@alltel.net>
 
 	Break out example formatting to a separate file.

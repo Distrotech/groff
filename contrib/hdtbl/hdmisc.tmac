@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .
 .\" %beginstrip%
 .
-.if d getarg \
+.if d t*getarg \
 .  nx
 .
 .
@@ -68,7 +68,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
 .\"		sets string `ddd' to value `=', and `args' contains
 .\"		`aaa=xxx bbb eee'.
-.de getarg
+.de t*getarg
 .  ds \\$1
 .  ds args
 .
@@ -146,12 +146,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"	Utility macro:	.index <string1> <string2>
 .\"
 .\"		Check whether <string2> is a substring of <string1> and
-.\"		return its position in number register `index', starting
+.\"		return its position in number register `t*index', starting
 .\"		with 1.  If not found, return 0.  If <string2> is empty,
-.\"		set `index' to -999.
-.de index
+.\"		set `t*index' to -999.
+.de t*index
 .  if "\\$2"" \{\
-.    nr index -999
+.    nr t*index -999
 .    return
 .  \}
 .
@@ -168,23 +168,23 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  \}
 .
 .  ie (\\n[*] == \\n[**]) \
-.    nr index 0
+.    nr t*index 0
 .  el \
-.    nr index (\\n[*] + 1)
+.    nr t*index (\\n[*] + 1)
 ..
 .
 .
 .\"	******************************************************************
-.\"	********	non-accumulating space .SP [v]		**********
+.\"	********	non-accumulating space .t*SP [v]	**********
 .\"	**                                                              **
 .\"	**	nl vor erster Seite -1, oben auf Seite 0 resp. tH	**
 .\"	**	.k nach .sp oder .br 0,					**
 .\"	**		sonst Laenge der angefangenen Zeile		**
-.\"	**	Der Merker M# fuer vorangegangenes .SP wird in .HM am	**
+.\"	**	Der Merker M# fuer vorangegangenes .t*SP wird in .HM am	**
 .\"	**	Seitenanfang zurueckgesetzt.				**
 .\"	**	ganz richtig ist .sp + .br = .br + .sp = .sp		**
 .\"	******************************************************************
-.de SP
+.de t*SP
 .  if (\\n[nl] < 0) \
 .    br			\"	start very first page
 .  nr * \\n[.p]		\"	save current page length
@@ -194,7 +194,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  el \
 .    pl +\\$1		\"	otherwise use \\$1
 .
-.  nr ** (\\n[.p] - \\n[*])	\" ** now holds arg for .SP in base units
+.  nr ** (\\n[.p] - \\n[*])	\" ** now holds arg for .t*SP in base units
 .  pl \\n[*]u		\"	restore page length
 .
 .  \" we do nothing at start of new page or column
@@ -205,7 +205,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .    \}
 .    el \{\
 .      if (\\n[**] - \\n[S#]) \{\
-.        sp (\\n[**]u - \\n[S#]u)\"	emit difference to previous .SP
+.        sp (\\n[**]u - \\n[S#]u)\"	emit difference to previous .t*SP
 .        nr S# \\n[**]	\"	store ** in S#
 .    \}\}
 .
@@ -218,7 +218,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"	**		Perform all arguments once			**
 .\"	**			P1 is nestable				**
 .\"	******************************************************************
-.de P1
+.de t*P1
 .  \" `while' command is about five times faster than recursion!
 .  while \\n[.$] \{\
 .    nop \\$1
@@ -229,22 +229,27 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .
 .\"	******************************************************************
 .\"	**	Hilfsmakro zum Einstellen von Schriftgroesse und	**
-.\"	**	Zeilenabstand, bezogen auf Anfangswerte \n[s] und \n[v]	**
-.\"	**	sowie fuer Hyphenation:					**
+.\"	**	Zeilenabstand, bezogen auf Anfangswerte \n[t*s]		**
+.\"	**	und \n[t*v] sowie fuer Hyphenation:			**
 .\"	**		.pv s v hy# hart;  macht .br			**
 .\"	**	Bei 4. Argument setzen der Register s und v und hy.	**
 .\"	**	Fuer angefangene Zeile die vorgefundenen Einstellungen	**
+.\"	**								**
+.\"	**   Auxiliary macro to set internal registers for font size	**
+.\"	**   and line spacing, relative to initial values \n[t*s] and	**
+.\"	**   \n[t*v]. Optionally sets hyphenation. A fourth argument	**
+.\"	**   initializes internal registers to global default values.	**
 .\"	******************************************************************
-.de pv
+.de t*pv
 .  br
 .
 .  if \\n[.$] \
-.    ps (\\n[s]u * \\$1z / 1z)
+.    ps (\\n[t*s]u * \\$1z / 1z)
 .
 .  ie (\\n[.$] - 1) \
-.    vs (\\n[v]u * \\$2p / 1p)
+.    vs (\\n[t*v]u * \\$2p / 1p)
 .  el \{\
-.    vs (\\n[v]u * \\$1p / 1p)
+.    vs (\\n[t*v]u * \\$1p / 1p)
 .    return
 .  \}
 .
@@ -252,9 +257,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .    hy \\$3
 .
 .  if !""\\$4" \{\
-.    nr v \\n[.v]
-.    nr s \\n[.ps]
-.    nr hy \\n[.hy]
+.    nr t*v \\n[.v]
+.    nr t*s \\n[.ps]
+.    nr t*hy \\n[.hy]
 .  \}
 ..
 .
@@ -289,15 +294,32 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .
 .
 .\"	******************************************************************
-.\"	**		processs diversion				**
+.\"	**		process diversion				**
 .\"	******************************************************************
-.de DI
+.de t*DI
 .  nr * \\n[.u]
 .  nf		\"	diversion is already formatted - output it unchanged
 .  \\$1		\"	output the diversion ...
 .  rm \\$1	\"	... and remove it
 .  if \\n[*] \
 .    fi		\"	reactivate formatting
+..
+.
+.\"	******************************************************************
+.\"	**		error checking at end				**
+.\"	******************************************************************
+.de t*EM
+.
+.  if !"\\*[t*kept]"" \{\
+.    tm1 "hdtbl: Not all tables have been printed.
+.    tm1 "       Add `.bp' at the end of your document.
+.  \}
+.  if !"\\*[t*held]"" \{\
+.    tm1 "hdtbl: There are held tables which haven't been printed.
+.    tm1 "       Add `.t*free' at the end of your document.
+.  \}
+.  if \\n[t*#] \
+.    tm hdtbl: Missing `.ETB' macro; last .TBL in \\*[t*FN] at line \\*[t*LN].
 ..
 .
 .\" EOF

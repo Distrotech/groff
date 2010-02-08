@@ -55,12 +55,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .nr t*csp .5n
 .nr t*b .1n
 .nr t*cols 1
+.nr t*v \n[.v]
+.nr t*s \n[.ps]
+.nr t*hy \n[.hy]
+.nr t*l \n[.ll]
 .
 .
 .\"			defaults for table captions
 .nr t*cptn 0 1
 .ds t*cptn "".sp .4" \
-            ".pv 1.4 1.4" \
+            ".t*pv 1.0 1.0" \
             ".ad l" \
             "\m[\\*[t*fgc]]Table \\n+[t*cptn]:\0\c\k*"\"
 .
@@ -107,7 +111,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  \}
 .  nr t*# +1
 .
-.  getarg cols \\$@\"	from here string `args' contains the rest of \\$@
+.  \" Save current location for error checking at end
+.  ds t*FN \\[.F]
+.  ds t*LN \\[.c]
+.
+.  t*getarg cols \\$@\"	from here string `args' contains the rest of \\$@
 .  ie "\\*[cols]"" \
 .    nr t*cols\\n[t*#] \\n[t*cols]
 .  el \{\
@@ -117,7 +125,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .      tm \\n[.F]:\\n[.c]: Invalid number of columns value `\\*[cols]'.
 .  \}
 .
-.  getarg cpd \\*[args]                 \"	cell padding
+.  t*getarg cpd \\*[args]                 \"	cell padding
 .  ie "\\*[cpd]"" \
 .    nr t*cpd\\n[t*#] \\n[t*cpd]
 .  el \{\
@@ -127,7 +135,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .      tm \\n[.F]:\\n[.c]: Invalid cell padding value `\\*[cpd]'.
 .  \}
 .
-.  getarg csp \\*[args]                 \"	cell spacing
+.  t*getarg csp \\*[args]                 \"	cell spacing
 .  ie "\\*[csp]"" \
 .    nr t*csp\\n[t*#] \\n[t*csp]
 .  el \{\
@@ -137,7 +145,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .      tm \\n[.F]:\\n[.c]: Invalid cell spacing value `\\*[csp]'.
 .  \}
 .
-.  getarg border \\*[args]              \"	border thickness
+.  t*getarg border \\*[args]              \"	border thickness
 .  ie "\\*[border]"=" \
 .    nr t*b\\n[t*#] 0-1
 .  el \{\
@@ -150,7 +158,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .        tm \\n[.F]:\\n[.c]: Invalid border thickness value `\\*[border]'.
 .  \}\}
 .
-.  getarg bc \\*[args]                  \"	border color
+.  t*getarg bc \\*[args]                  \"	border color
 .  ds t*bc\\n[t*#] \\*[t*bc]\"
 .  if !"\\*[bc]"" \{\
 .    ie m\\*[bc] \
@@ -170,14 +178,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .      ds t*bc\\n[t*#] \\*[bc]\"
 .  \}
 .
-.  getarg width \\*[args]               \"	table/col widths
+.  t*getarg width \\*[args]               \"	table/col widths
 .  if "\\*[width]"=" \
 .    ds width
 .
 .  nr b/2\\n[t*#] (\\n[t*b\\n[t*#]] / 2)\"	shortcut
 .  nr cscp\\n[t*#] (\\n[t*csp\\n[t*#]] + \\n[t*cpd\\n[t*#]])\"  aux. register
 .
-.  getarg height \\*[args]              \"	table outline height
+.  t*getarg height \\*[args]              \"	table outline height
 .  ie "\\*[height]"" \
 .    nr t*height\\n[t*#] 0
 .  el \{\
@@ -192,7 +200,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  t*cl \\*[width]                      \"	get cell widths and offsets
 .  t*args \\n[t*#]                      \"	look for common arguments
 .
-.  getarg tal \\*[args]                 \"	table horizontal alignment
+.  t*getarg tal \\*[args]                 \"	table horizontal alignment
 .  if "\\*[tal]"" \
 .    ds tal \\*[t*tal]\"
 .  ie "\\*[tal]"l" \
@@ -211,7 +219,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  nr t*r#\\n[t*#] 0		        \"	initialize row index
 .  mk toptbl\\n[t*#]
 .
-.  P1 \\*[args]
+.  t*P1 \\*[args]
 ..
 .
 .
@@ -228,14 +236,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .      return
 .    \}
 .
-.  getarg val \\$@
+.  t*getarg val \\$@
 .  ds args\\n[t*#] "\\*[args]\"
 .
-.  index "\\*[args]" .TR
-.  ie \\n[index] \{\
+.  t*index "\\*[args]" .TR
+.  ie \\n[t*index] \{\
 .    ds *a\\n[t*#] "\\*[args]\"
-.    substring args\\n[t*#] 0 \\n[index]
-.    substring *a\\n[t*#] \\n[index]-2 -1
+.    substring args\\n[t*#] 0 \\n[t*index]
+.    substring *a\\n[t*#] \\n[t*index]-2 -1
 .  \}
 .  el \
 .    ds *a\\n[t*#]
@@ -249,15 +257,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  el \{\
 .    ll (\\n[ll\\n[t*#]]u + \\n[in\\n[t*#]]u)
 .    in \\n[in\\n[t*#]]u
-.    P1 \\*[t*cptn]
+.    t*P1 \\*[t*cptn]
 '    in +\\n[*]u
-.    P1 \\*[args\\n[t*#]]
-.    pv 1 1
+.    t*P1 \\*[args\\n[t*#]]
+.    t*pv 1 1
 .    in
 .    mk toptbl\\n[t*#]
 .  \}
 .
-.  P1 \\*[*a\\n[t*#]]
+.  t*P1 \\*[*a\\n[t*#]]
 ..
 .
 .als *CPTN CPTN
@@ -283,7 +291,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  nr c#\\*[#t#r] 0 1			\"	clear cell counter
 .  nr dntr\\*[#t#r] 0 1			\"	clear accumulated row height
 .
-.  getarg height \\$@
+.  t*getarg height \\$@
 .  ie "\\*[height]"" \
 .    nr t*height\\*[#t#r] 0
 .  el \{\
@@ -297,7 +305,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  \"	is too high by 3/2 b, independent of the number of TR with `height'.
 .  t*args \\*[#t#r] \\n[t*#]            \"	look for common arguments
 .
-.  P1 \\*[args]
+.  t*P1 \\*[args]
 ..
 .
 .
@@ -309,15 +317,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"		else like .TD
 .de TH
 .  ft 1
-.  getarg hal \\$@
+.  t*getarg hal \\$@
 .  if "\\*[hal]"" \
 .    ds hal c\"
 .
-.  getarg val \\*[args]
+.  t*getarg val \\*[args]
 .  if "\\*[val]"" \
 .    ds val m\"
 .
-.  getarg fst \\*[args]
+.  t*getarg fst \\*[args]
 .  if "\\*[fst]"" \
 .    ds fst B\"
 .
@@ -336,7 +344,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  ds *#trc* \\*[#t#r]*\\n[c#\\*[#t#r]]\"	table cell identifier
 .					\"	(<level>*<row>*<column>)
 .
-.  getarg rowspan \\$@
+.  t*getarg rowspan \\$@
 .  nr rowspan 1
 .  if !"\\*[rowspan]"" \{\
 .    ie \B\\*[rowspan] \{\
@@ -347,7 +355,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .      tm \\n[.F]:\\n[.c]: Invalid value of `rowspan' keyword.
 .  \}
 .
-.  getarg colspan \\*[args]
+.  t*getarg colspan \\*[args]
 .  nr colspan 1
 .  if !"\\*[colspan]"" \{\
 .    ie \B\\*[colspan] \
@@ -421,9 +429,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  ad \\*[t*hal\\*[#trc]]
 .  fam \\*[t*ff\\*[#trc]]
 .  ft \\*[t*fst\\*[#trc]]
-.  pv \\*[t*fsz\\*[#trc]]
+.  t*pv \\*[t*fsz\\*[#trc]]
 .
-.  P1 \\*[args]
+.  t*P1 \\*[args]
 ..
 .
 .
@@ -454,14 +462,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  in 0                          \"	reset indent
 .  gcolor \\*[t*m\\n[t*#]]       \"	reset previous fgc
 .
-.  getarg hold \\$@
+.  t*getarg hold \\$@
 .  if !\\n[t*#] \{\
 .    sp .5
 .    di
 .    in \\n[t*i]u
 .    ie "\\*[hold]"" \{\
 .      ie (\\n[.t] - \\n[dn]) \
-.        DI t*tbl0
+.        t*DI t*tbl0
 .      el \{\
 .        rn t*tbl0 t*tbl\\n+[t*numb]
 .        ds t*kept \\*[t*kept] t*tbl\\n[t*numb] \\n[dn]\"
@@ -476,7 +484,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .    ev				\"	restore previous environment
 .  \}
 .
-.  P1 \\*[args]
+.  t*P1 \\*[args]
 ..
 .
 .
@@ -513,7 +521,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .
 .    ie (\\n[.t] - \\n[*]) \{\
 .      ev t*tbl
-.      DI \\*[*]
+.      t*DI \\*[*]
 .      ev
 .    \}
 .    el \{\
@@ -536,7 +544,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"		Nested tables are processed from inside to outside.
 .
 .de t*divs
-.  ll (\\n[l]u + 1c)			\"	avoid warning `can't break line'
+.  ll (\\n[t*l]u + 1c)			\"	avoid warning `can't break line'
 .  nf
 .
 .  nr b/2 \\n[b/2\\n[t*#]]		\"	some abbreviations
@@ -886,7 +894,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg bgc \\*[args]         \"	background color
+.  t*getarg bgc \\*[args]         \"	background color
 .  if !"\\*[bgc]"" \{\
 .    ie m\\*[bgc] \
 .      ds t*bgc\\$1 \\*[bgc]\"
@@ -899,7 +907,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg fgc \\*[args]         \"	foreground color
+.  t*getarg fgc \\*[args]         \"	foreground color
 .  if !"\\*[fgc]"" \{\
 .    ie m\\*[fgc] \
 .      ds t*fgc\\$1 \\*[fgc]\"
@@ -912,22 +920,22 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg hl \\*[args]          \"	horizontal line between cells
+.  t*getarg hl \\*[args]          \"	horizontal line between cells
 .  if !"\\*[hl]"" \
 .    ds t*hl\\$1 \\*[hl]\"
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg vl \\*[args]          \"	vertical line between cells
+.  t*getarg vl \\*[args]          \"	vertical line between cells
 .  if !"\\*[vl]"" \
 .    ds t*vl\\$1 \\*[vl]\"
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg hal \\*[args]         \"	horizontal table cell alignment
+.  t*getarg hal \\*[args]         \"	horizontal table cell alignment
 .  if !"\\*[hal]"" \{\
-.    index bcrl \\*[hal]
-.    ie \\n[index] \
+.    t*index bcrl \\*[hal]
+.    ie \\n[t*index] \
 .      ds t*hal\\$1 \\*[hal]\"
 .    el \{\
 .      tmc \\n[.F]:\\n[.c]: Invalid horizontal alignment `\\*[hal]':
@@ -936,10 +944,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg val \\*[args]         \"	vertical table cell alignment
+.  t*getarg val \\*[args]         \"	vertical table cell alignment
 .  if !"\\*[val]"" \{\
-.    index tmb \\*[val]
-.    ie \\n[index] \
+.    t*index tmb \\*[val]
+.    ie \\n[t*index] \
 .      ds t*val\\$1 \\*[val]\"
 .    el \{\
 .      tmc \\n[.F]:\\n[.c]: Invalid vertical alignment `\\*[val]':
@@ -948,19 +956,19 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg ff \\*[args]          \"	font family
+.  t*getarg ff \\*[args]          \"	font family
 .  if !"\\*[ff]"" \
 .    ds t*ff\\$1 \\*[ff]\"
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg fst \\*[args]         \"	font style
+.  t*getarg fst \\*[args]         \"	font style
 .  if !"\\*[fst]"" \
 .    ds t*fst\\$1 \\*[fst]\"
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg fsz \\*[args]         \"	font size and spacing factor
+.  t*getarg fsz \\*[args]         \"	font size and spacing factor
 .  if !"\\*[fsz]"" \
 .    ds t*fsz\\$1 \\*[fsz]\"
 ..
@@ -987,7 +995,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .      break
 .    \}
 .
-.    DI \\*[*]
+.    t*DI \\*[*]
 .  \}
 .  ev
 ..

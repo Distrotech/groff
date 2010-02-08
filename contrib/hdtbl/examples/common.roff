@@ -24,6 +24,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 ..
 .
 .
+.mso hdtbl.tmac\"			load table macros
+.
 .\"	******************************************************************
 .\"	**	Some macros and the page setup used by the examples	**
 .\"	******************************************************************
@@ -50,7 +52,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
        tal=c \
        "width=(\\n[*w*]+4n)<?\n[.l]"
 .  TR .TD
-.  P1 \\$*
+.  t*P1 \\$*
 .  ETB
 .  SP
 ..
@@ -101,7 +103,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .  shift
 .
 .  while \\n-[PN\\n[*pn]] \
-.    P1 \\$@
+.    t*P1 \\$@
 .
 .  nr *pn -1
 ..
@@ -282,9 +284,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .
 .nr s \n[.ps]
 .nr v \n[.v]
+.nr p \n[.p]
+.nr o \n[.o]
 .pv 1.2 1.2 "" X
 .nr l 6.6i				\"	set text width
-.ll \n[l]u
+.ll \n[t*l]u
 .nr o 2c				\"	set offset
 .po \n[o]u
 .nr p 29.7c				\"	set paper length (A4)
@@ -292,8 +296,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .nr tH 1i				\"	set top margin
 .sp |\n[tH]u
 .
+.ds t*HM //arbitrary text for page header, except on the first page//\"
+.ds t*BM //arbitrary text for page footer, except on the last page/\\n[%]/\"
+.
 .ev 99
-.lt \n[l]u
+.lt \n[t*l]u
 .ev
 .
 .
@@ -315,27 +322,21 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 .
 .de EM
 .  rm BM			\"	no page number at bottom of last page
-.
-.  if !"\\*[t*kept]"" \{\
-.    tm1 "hdtbl: Not all tables have been printed.
-.    tm1 "       Add `.bp' at the end of your document.
-.  \}
-.  if !"\\*[t*held]"" \{\
-.    tm1 "hdtbl: There are held tables which haven't been printed.
-.    tm1 "       Add `.t*free' at the end of your document.
-.  \}
-.  if \\n[t*#] \
-.    tm hdtbl: Missing `.ETB' macro at end of document.
+.  t*EM
 ..
 .
 .
+.wh 0 HM
+.wh 0-1.5i BM
 .em EM
+.
+.\" Some packages (-mm) define their own .SP macro.
+.\" Use ours if another one isn't already available.
+.if !d SP .als SP t*SP
 .
 .if "\n[.m]"" \
 .  gcolor black
 .if "\n[.M]"" \
 .  fcolor white
-.
-.mso hdtbl.tmac\"			load table macros
 .
 .\" EOF
