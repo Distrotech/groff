@@ -91,7 +91,8 @@ MOSTLYCLEANADD=\
 .SUFFIXES: .roff .in .ps
 
 .roff.ps:
-	$(GROFF) -Tps -dfontpath=$(top_srcdir)/font -mhdtbl $< >$@
+	$(GROFF) -Tps -dfontpath=$(top_srcdir)/font -dsopath=$(srcdir)/ \
+		 -mhdtbl $< >$@
 
 .in.roff:
 	sed -e "s|@fontdir@|$(fontdir)|" $< >$@
