@@ -2079,10 +2079,11 @@ void table::compute_expand_width()
   prints("\n");
   prints(".if \\n[" EXPAND_REG "]<0 \\{");
   entry_list->set_location();
-  prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
-         ".tm1 \"  table wider than line width\n"
-	 ".nr " EXPAND_REG " 0\n"
-	 ".\\}\n");
+  if (!(flags & NOWARN))
+    prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
+	   ".tm1 \"  table wider than line width\n"
+	   ".nr " EXPAND_REG " 0\n");
+  prints(".\\}\n");
   if (colcount > 1)
     printfs(".nr " EXPAND_REG " \\n[" EXPAND_REG "]/%1\n",
 	    as_string(colcount));
@@ -2118,15 +2119,17 @@ void table::compute_separation_factor()
   printfs("/%1\n", as_string(total_separation));
   prints(".ie \\n[" SEPARATION_FACTOR_REG "]<=0 \\{");
   entry_list->set_location();
-  prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
-         ".tm1 \"  column separation set to zero\n"
-	 ".nr " SEPARATION_FACTOR_REG " 0\n"
-	 ".\\}\n"
+  if (!(flags & NOWARN))
+    prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
+	   ".tm1 \"  column separation set to zero\n"
+	   ".nr " SEPARATION_FACTOR_REG " 0\n");
+  prints(".\\}\n"
 	 ".el .if \\n[" SEPARATION_FACTOR_REG "]<1n \\{");
   entry_list->set_location();
-  prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
-         ".tm1 \"  table squeezed horizontally to fit line length\n"
-	 ".\\}\n");
+  if (!(flags & NOWARN))
+    prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
+	   ".tm1 \"  table squeezed horizontally to fit line length\n");
+  prints(".\\}\n");
 }
 
 void table::compute_column_positions()

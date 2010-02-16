@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
-                 2007, 2008, 2009
+                 2007, 2008, 2009, 2010
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -497,6 +497,11 @@ options *process_options(table_input &in)
       if (arg)
 	error("`nospaces' option does not take an argument");
       opt->flags |= table::NOSPACES;
+    }
+    else if (strieq(p, "nowarn")) {
+      if (arg)
+	error("`nowarn' option does not take an argument");
+      opt->flags |= table::NOWARN;
     }
     else if (strieq(p, "decimalpoint")) {
       if (!arg)
