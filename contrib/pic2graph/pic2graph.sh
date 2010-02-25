@@ -86,7 +86,7 @@ if test -z "$tmp"; then
     { (exit 1); exit 1; }
 fi
 
-trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' 0 2 15 
+trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' EXIT INT TERM
 
 # Here goes:
 # 1. Wrap the input in dummy .PS/PE macros (and add possibly null .EQ/.EN)
