@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009,
+ *               2010
  * Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote post-html.cpp
@@ -4660,6 +4661,8 @@ static const char *get_html_entity (unsigned int code)
       case 0x2663: return "&clubs;";
       case 0x2665: return "&hearts;";
       case 0x2666: return "&diams;";
+      case 0x27E8: return "&lang;";
+      case 0x27E9: return "&rang;";
       default: return to_unicode(code);
     }
   }
