@@ -5971,7 +5971,6 @@ The argument to @code{\R} usually has to be enclosed in quotes.
 The @code{\R} escape doesn't produce an input token in @code{gtroff};
 in other words, it vanishes completely after @code{gtroff} has
 processed it.
-@endDefreq
 
 For example, the following two lines are equivalent:
 
@@ -5980,6 +5979,43 @@ For example, the following two lines are equivalent:
 \R'a (((17 + (3 * 4))) % 4)'
     @result{} 1
 @endExample
+
+Note that the complete transparency of @code{\R} can cause surprising
+effects if you use number registers like @code{.k} which get evaluated
+at the time they are accessed.
+
+@Example
+.ll 1.6i
+.
+aaa bbb ccc ddd eee fff ggg hhh\R':k \n[.k]'
+.tm :k == \n[:k]
+    @result{} :k == 126950
+.
+.br
+.
+aaa bbb ccc ddd eee fff ggg hhh\h'0'\R':k \n[.k]'
+.tm :k == \n[:k]
+    @result{} :k == 15000
+@endExample
+
+If you process this with the PostScript device (@code{-Tps}), there
+will be a line break eventually after @code{ggg} in both input lines. 
+However, after processing the space after @code{ggg}, the partially
+collected line is not overfull yet, so @code{troff} continues to
+collect input until it sees the space (or in this case, the newline)
+after @code{hhh}.  At this point, the line is longer than the line
+length, and the line gets broken.
+
+In the first input line, since the @code{\R} escape leaves no traces,
+the check for the overfull line hasn't been done yet at the point where
+@code{\R} gets handled, and you get a value for the @code{.k} number
+register which is even greater than the current line length.
+
+In the second input line, the insertion of @code{\h'0'} to emit an
+invisible zero-width space forces @code{troff} to check the line length
+which in turn causes the start of a new output line.  Now @code{.k}
+returns the expected value.
+@endDefreq
 
 Both @code{nr} and @code{\R} have two additional special forms to
 increment or decrement a register.
