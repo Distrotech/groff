@@ -3,13 +3,13 @@
 // <groff_src_dir>/src/libs/libdriver/input.cpp
 
 /* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2005,
-                 2006, 2008, 2009
+                 2006, 2008, 2009, 2010
    Free Software Foundation, Inc.
 
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 5 Jan 2009
+   Last update: 9 May 2010
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -790,7 +790,7 @@ get_integer_arg(void)
     c = get_char();
   }
   if (!isdigit((int) c))
-    error("integer argument expected");
+    fatal("integer argument expected");
   while (isdigit((int) c)) {
     buf.append(c);
     c = get_char();
@@ -879,6 +879,7 @@ get_possibly_integer_args()
       break;
     default:
       error("integer argument expected");
+      done = true;
       break;
     }
   }
@@ -946,7 +947,7 @@ next_arg_begin(void)
     case '\n':
     case EOF:
       error("missing argument");
-      break;
+      return c;
     default:			// first essential character
       return c;
     }
