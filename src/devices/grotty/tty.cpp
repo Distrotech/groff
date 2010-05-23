@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2009
+/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2009,
+                 2010
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -196,7 +197,6 @@ void tty_glyph::operator delete(void *p)
 }
 
 class tty_printer : public printer {
-  int is_utf8;
   tty_glyph **lines;
   int nlines;
   int cached_v;
@@ -219,7 +219,7 @@ class tty_printer : public printer {
   void draw_line(int *, int, const environment *);
   void draw_polygon(int *, int, const environment *);
 public:
-  tty_printer(const char *);
+  tty_printer();
   ~tty_printer();
   void set_char(glyph *, font *, const environment *, int, const char *);
   void draw(int, int *, int, const environment *);
@@ -273,10 +273,9 @@ int tty_printer::tty_color(unsigned int r,
   return unknown_color;
 }
 
-tty_printer::tty_printer(const char *dev) : cached_v(0)
+tty_printer::tty_printer() : cached_v(0)
 {
-  is_utf8 = !strcmp(dev, "utf8");
-  if (is_utf8) {
+  if (font::is_unicode) {
     hline_char = 0x2500;
     vline_char = 0x2502;
   }
@@ -603,7 +602,7 @@ void tty_printer::line(int hpos, int vpos, int dx, int dy,
 
 void tty_printer::put_char(output_character wc)
 {
-  if (is_utf8 && wc >= 0x80) {
+  if (font::is_unicode && wc >= 0x80) {
     char buf[6 + 1];
     int count;
     char *p = buf;
@@ -719,7 +718,7 @@ void tty_printer::end_page(int page_length)
       if (nextp && p->hpos == nextp->hpos) {
 	if (p->draw_mode() == HDRAW_MODE &&
 	    nextp->draw_mode() == VDRAW_MODE) {
-	  if (is_utf8)
+	  if (font::is_unicode)
 	    nextp->code =
 	      crossings[((p->mode & (START_LINE|END_LINE)) >> 4)
 			+ ((nextp->mode & (START_LINE|END_LINE)) >> 6)];
@@ -844,7 +843,7 @@ font *tty_printer::make_font(const char *nm)
 
 printer *make_printer()
 {
-  return new tty_printer(device);
+  return new tty_printer();
 }
 
 static void update_options()

@@ -1,3 +1,20 @@
+2010-05-22  Werner LEMBERG  <wl@gnu.org>
+
+	Use DESC's `unicode' keyword for grotty.
+
+	Consequently, no longer check directly for the `utf8' device name
+	which prevented the creation of arbitrarily called output device
+	directories like `devunicode'.
+
+	Problem reported by Christopher Yeleighton <giecrilj@stegny.2a.pl>
+	in Savannah bug #29895.
+
+	* src/devices/grotty/tty.cpp (tty_printer): Remove `is_utf8' member.
+	Replace all ocurrences with `font::is_unicode'.
+	(tty_printer::tty_printer): Remove argument.
+
+	* src/devices/grotty/grotty.man: Document `unicode' keyword.
+
 2010-05-19  Werner LEMBERG  <wl@gnu.org>
 
 	Update symbol tables for devps font generation.
