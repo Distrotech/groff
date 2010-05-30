@@ -1,3 +1,32 @@
+Sun May 30 07:14:15 2010  Larry Jones  <lawrence.jones@siemens.com>
+
+	* m.tmac (P, nP): Fix handling of short paragraphs.
+	Otherwise,
+
+	  .H 1 Bug
+	  .P
+	  one
+	  .P
+	  two
+	  .P
+	  three
+
+	results in:
+
+	  1.  Bug
+
+	  one two three
+
+	whereas it should, of course, produce:
+
+	  1.  Bug
+
+	  one
+
+	  two
+
+	  three
+
 Sat Jan  3 08:55:15 2009  Werner LEMBERG  <wl@gnu.org>
 
 	* groff_mm.man: Use new `x' table modifier for all tables which use
