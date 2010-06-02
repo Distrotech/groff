@@ -1233,8 +1233,11 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .		ie d TP .TP
 .		el \{\
 '			sp 3
+.			ds hd*format \\g[P]
+.			af P 0
 .			ie ((\\n[P]=1)&((\\n[N]=1):(\\n[N]=2))) .sp
 .			el .tl \\*[pg*header]
+.			af P \\*[hd*format]
 .			ie o .tl \\*[pg*odd-header]
 .			el .tl \\*[pg*even-header]
 '			sp 2
@@ -1302,17 +1305,20 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" print the footer and eject new page
 .ev pg*tl-ev
 .pg@set-env
+.vpt 0
 .\" user defined end-of-page macro
 .ie d EOP .EOP
 .el \{\
-.	vpt 0
 .	ie o .tl \\*[pg*odd-footer]
 .	el .tl \\*[pg*even-footer]
+.	ds hd*format \\g[P]
+.	af P 0
 .	ie (\\n[P]=1)&(\\n[N]=1) .tl \\*[pg*header]
 .	el .tl \\*[pg*footer]
+.	af P \\*[hd*format]
 .	tl ''\\*[Pg_type!\\n[@copy_type]]''
-.	vpt 1
 .\}
+.vpt 1
 .ev
 .\" be sure that floating displays and footnotes will be
 .\" printed at the end of the document.
