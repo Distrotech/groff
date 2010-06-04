@@ -1,7 +1,7 @@
 #! /usr/bin/perl -w
 # -*- Perl -*-
 # Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008,
-#               2009
+#               2009, 2010
 # Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
@@ -30,10 +30,10 @@ $prog =~ s@.*/@@;
 my $groff_sys_fontdir = "@FONTDIR@";
 
 use Getopt::Std;
-getopts('a:cd:e:f:i:kmnsvx');
+getopts('a:cd:e:f:i:kmno:svx');
 
-our ($opt_a, $opt_c, $opt_d, $opt_e, $opt_f, $opt_i,
-     $opt_k, $opt_m, $opt_n, $opt_s, $opt_v, $opt_x);
+our ($opt_a, $opt_c, $opt_d, $opt_e, $opt_f, $opt_i, $opt_k,
+     $opt_m, $opt_n, $opt_o, $opt_s, $opt_v, $opt_x);
 
 if ($opt_v) {
     print "GNU afmtodit (groff) version @VERSION@\n";
@@ -42,12 +42,13 @@ if ($opt_v) {
 
 if ($#ARGV != 2) {
     die "usage: $prog [-ckmnsvx] [-a angle] [-d DESC] [-e encoding]\n" .
-	"       [-f name] [-i n] afmfile mapfile font\n";
+	"       [-f name] [-i n] [-o outfile] afmfile mapfile font\n";
 }
 
 my $afm = $ARGV[0];
 my $map = $ARGV[1];
 my $font = $ARGV[2];
+my $outfile = $opt_o || $font;
 my $desc = $opt_d || "DESC";
 my $sys_map = $groff_sys_fontdir . "/devps/generate/" . $map;
 my $sys_desc = $groff_sys_fontdir . "/devps/" . $desc;
@@ -416,7 +417,7 @@ while (my ($lig, $components) = each %default_ligatures) {
 
 # print it all out
 
-open(FONT, ">$font") || die "$prog: can't open \`$font' for output: $!\n";
+open(FONT, ">$outfile") || die "$prog: can't open \`$outfile' for output: $!\n";
 select(FONT);
 
 print("# This file has been generated with " .
