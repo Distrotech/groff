@@ -5128,6 +5128,32 @@ requests).@footnote{Note that, for example, @samp{!(-1)} evaluates to
 `true' because @code{gtroff} treats both negative numbers and zero as
 `false'.}  See below for the use of unary operators in motion requests.
 
+@cindex logical not, limitation in expression
+@cindex expression, limitation of logical not in
+The logical not operator,
+as described above,
+works only within @code{if} and @code{while} requests.
+Furthermore, it may appear
+only at the beginning of an expression,
+and negates the entire expression.
+Attempting to insert the @samp{!} operator
+within the expression results in a
+@samp{numeric expression expected} warning.  This
+maintains bug-compatibility
+with old versions of @code{troff}.
+
+Example:
+
+@Example
+.nr X 1
+.nr Y 0
+.\" This does not work as expected
+.if (\n[X])&(!\n[Y]) .nop X only
+.
+.\" Use this construct instead
+.if (\n[X]=1)&(\n[Y]=0) .nop X only
+@endExample
+
 @item
 @cindex extremum operators (@code{>?}, @code{<?})
 @cindex operators, extremum (@code{>?}, @code{<?})
