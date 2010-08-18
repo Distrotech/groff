@@ -2,9 +2,9 @@
 .ig
 Mom -- a typesetting/document-processing macro set for groff.
 
-Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
   Free Software Foundation, Inc.
-     Written by Peter Schaffter (pschaffter@ncf.ca)
+     Written by Peter Schaffter (peter@schaffter.ca)
 
 This file is part of groff.
 
@@ -21,7 +21,7 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-Version 1.5-d
+Version 1.5-e
 -------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
@@ -612,7 +612,7 @@ to a macro means that any argument turns the feature off.
 \#   AUTOLEAD is turned off.
 \# *Notes:
 \#   With the optional FACTOR argument, the current point size is
-\#   multiplied by #AUTOLEAD_VALUE instead of the two being added
+\#   multiplied by #AUTOLEAD_VALUE/1000 instead of the two being added
 \#   together.
 \#
 .MAC AUTOLEAD END
@@ -1291,11 +1291,11 @@ to a macro means that any argument turns the feature off.
 .          ds $QUOTE1 \\[Fc]
 .          ds $RESTORE_SQ \\$1
 .       \}
-.       if !r#ARGS_TO_SQ \{\
-.          ds $QUOTE0 \\[dq]
-.          ds $QUOTE1 \\[dq]
-.          nr #RESTORE_SQ 1
-.       \}
+.    \}
+.    if !r#ARGS_TO_SQ \{\
+.       ds $QUOTE0 \\[dq]
+.       ds $QUOTE1 \\[dq]
+.       nr #RESTORE_SQ 1
 .    \}
 .END
 \#
@@ -5200,6 +5200,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'COVER_COPYRIGHT_FAMILY'         .ds $COVER_COPYRIGHT_FAM \\$1
 .    if '\\$0'COVER_DOCTYPE_FAMILY'           .ds $COVER_DOCTYPE_FAM \\$1
 .    if '\\$0'COVER_FAMILY'                   .ds $COVER_FAM \\$1
+.    if '\\$0'COVER_MISC_FAMILY'              .ds $COVER_MISC_FAM \\$1
 .    if '\\$0'COVER_SUBTITLE_FAMILY'          .ds $COVER_SUBTITLE_FAM \\$1
 .    if '\\$0'COVER_TITLE_FAMILY'             .ds $COVER_TITLE_FAM \\$1
 .    if '\\$0'DOC_COVER_AUTHOR_FAMILY'        .ds $DOC_COVER_AUTHOR_FAM \\$1
@@ -5207,6 +5208,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'DOC_COVER_COPYRIGHT_FAMILY'     .ds $DOC_COVER_COPYRIGHT_FAM \\$1
 .    if '\\$0'DOC_COVER_DOCTYPE_FAMILY'       .ds $DOC_COVER_DOCTYPE_FAM \\$1
 .    if '\\$0'DOC_COVER_FAMILY'               .ds $DOC_COVER_FAM \\$1
+.    if '\\$0'DOC_COVER_MISC_FAMILY'          .ds $DOC_COVER_MISC_FAM \\$1
 .    if '\\$0'DOC_COVER_SUBTITLE_FAMILY'      .ds $DOC_COVER_SUBTITLE_FAM \\$1
 .    if '\\$0'DOC_COVER_TITLE_FAMILY'         .ds $DOC_COVER_TITLE_FAM \\$1
 .    if '\\$0'DOCHEADER_FAMILY'               .ds $DOCHEADER_FAM \\$1
@@ -5258,12 +5260,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'COVER_CHAPTER_TITLE_FONT'     .ds $COVER_CHAPTER_TITLE_FT \\$1
 .    if '\\$0'COVER_COPYRIGHT_FONT'         .ds $COVER_COPYRIGHT_FT \\$1
 .    if '\\$0'COVER_DOCTYPE_FONT'           .ds $COVER_DOCTYPE_FT \\$1
+.    if '\\$0'COVER_MISC_FONT'              .ds $COVER_MISC_FT \\$1
 .    if '\\$0'COVER_SUBTITLE_FONT'          .ds $COVER_SUBTITLE_FT \\$1
 .    if '\\$0'COVER_TITLE_FONT'             .ds $COVER_TITLE_FT \\$1
 .    if '\\$0'DOC_COVER_AUTHOR_FONT'        .ds $DOC_COVER_AUTHOR_FT \\$1
 .    if '\\$0'DOC_COVER_CHAPTER_TITLE_FONT' .ds $DOC_COVER_CHAPTER_TITLE_FT \\$1
 .    if '\\$0'DOC_COVER_COPYRIGHT_FONT'     .ds $DOC_COVER_COPYRIGHT_FT \\$1
 .    if '\\$0'DOC_COVER_DOCTYPE_FONT'       .ds $DOC_COVER_DOCTYPE_FT \\$1
+.    if '\\$0'DOC_COVER_MISC_FONT'          .ds $DOC_COVER_MISC_FT \\$1
 .    if '\\$0'DOC_COVER_SUBTITLE_FONT'      .ds $DOC_COVER_SUBTITLE_FT \\$1
 .    if '\\$0'DOC_COVER_TITLE_FONT'         .ds $DOC_COVER_TITLE_FT \\$1
 .    if '\\$0'DOCTYPE_FONT'                 .ds $DOCTYPE_FT \\$1
@@ -5305,12 +5309,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'COVER_CHAPTER_TITLE_SIZE'     .ds $COVER_CHAPTER_TITLE_SIZE_CHANGE \\$1
 .    if '\\$0'COVER_COPYRIGHT_SIZE'         .ds $COVER_COPYRIGHT_SIZE_CHANGE \\$1
 .    if '\\$0'COVER_DOCTYPE_SIZE'           .ds $COVER_DOCTYPE_SIZE_CHANGE \\$1
+.    if '\\$0'COVER_MISC_SIZE'              .ds $COVER_MISC_SIZE_CHANGE \\$1
 .    if '\\$0'COVER_SUBTITLE_SIZE'          .ds $COVER_SUBTITLE_SIZE_CHANGE \\$1
 .    if '\\$0'COVER_TITLE_SIZE'             .ds $COVER_TITLE_SIZE_CHANGE \\$1
 .    if '\\$0'DOC_COVER_AUTHOR_SIZE'        .ds $DOC_COVER_AUTHOR_SIZE_CHANGE \\$1
 .    if '\\$0'DOC_COVER_CHAPTER_TITLE_SIZE' .ds $DOC_COVER_CHAPTER_TITLE_SIZE_CHANGE \\$1
 .    if '\\$0'DOC_COVER_COPYRIGHT_SIZE'     .ds $DOC_COVER_COPYRIGHT_SIZE_CHANGE \\$1
 .    if '\\$0'DOC_COVER_DOCTYPE_SIZE'       .ds $DOC_COVER_DOCTYPE_SIZE_CHANGE \\$1
+.    if '\\$0'DOC_COVER_MISC_SIZE'          .ds $DOC_COVER_MISC_SIZE_CHANGE \\$1
 .    if '\\$0'DOC_COVER_SUBTITLE_SIZE'      .ds $DOC_COVER_SUBTITLE_SIZE_CHANGE \\$1
 .    if '\\$0'DOC_COVER_TITLE_SIZE'         .ds $DOC_COVER_TITLE_SIZE_CHANGE \\$1
 .    if '\\$0'DOCTYPE_SIZE'                 .ds $DOCTYPE_SIZE_CHANGE \\$1
@@ -5366,6 +5372,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'CHAPTER_TITLE_COLOR' \{\
 .       nr #CHAPTER_TITLE_COLOR 1
 .       ds $CHAPTER_TITLE_COLOR \\$1
+.    \}
+.    if '\\$0'CODE_COLOR' \{\
+.       nr #CODE_COLOR 1
+.       ds $CODE_COLOR \\$1
 .    \}
 .    if '\\$0'COVER_ATTRIBUTE_COLOR' \{\
 .       nr #COVER_ATTRIBUTE_COLOR 1
@@ -5503,6 +5513,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #QUOTE_COLOR 1
 .       ds $QUOTE_COLOR \\$1
 .    \}
+.    if '\\$0'SECTION_COLOR' \{\
+.       nr #LINEBREAK_COLOR 1
+.       ds $LINEBREAK_COLOR \\$1
+.    \}
 .    if '\\$0'SUBHEAD_COLOR' \{\
 .       nr #SH_COLOR 1
 .       ds $SH_COLOR \\$1
@@ -5530,8 +5544,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'CITE_QUAD'                .ds $BQUOTE_QUAD \\$1
 .    if '\\$0'COVER_COPYRIGHT_QUAD'     .ds $COVER_COPYRIGHT_QUAD \\$1
 .    if '\\$0'COVER_MISC_QUAD'          .ds $COVER_MISC_QUAD \\$1
+.    if '\\$0'COVER_QUAD'               .ds $COVER_QUAD \\$1
 .    if '\\$0'DOC_COVER_COPYRIGHT_QUAD' .ds $DOC_COVER_COPYRIGHT_QUAD \\$1
 .    if '\\$0'DOC_COVER_MISC_QUAD'      .ds $DOC_COVER_MISC_QUAD \\$1
+.    if '\\$0'DOC_COVER_QUAD'           .ds $DOC_COVER_QUAD \\$1
 .    if '\\$0'DOCHEADER_QUAD'           .ds $DOCHEADER_QUAD \\$1
 .    if '\\$0'DOC_QUAD' \{\
 .        ds $DOC_QUAD \\$1
@@ -5834,9 +5850,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       if !d$COVER_COPYRIGHT_FT          \{ .COVER_COPYRIGHT_FONT R  \}
 .       if !d$COVER_COPYRIGHT_SIZE_CHANGE \{ .COVER_COPYRIGHT_SIZE -2 \}
+.\" (misc)
+.       if !d$COVER_MISC_FAM         \{ .COVER_MISC_FAMILY \\*[$DOC_FAM] \}
+.       if !d$COVER_MISC_FT          \{ .COVER_MISC_FONT R               \}
+.       if !d$COVER_MISC_SIZE_CHANGE \{ .COVER_MISC_SIZE -2              \}
+.       if !r#COVER_MISC_AUTOLEAD    \{ .COVER_MISC_AUTOLEAD 2           \}
 .\" +Doc cover
-.       if !d$DOC_COVER_LEAD_ADJ \{ .DOC_COVER_LEAD +0 \}
-.       if !d$DOC_COVER_FAM \{ .DOC_COVER_FAMILY \\*[$DOC_FAM] \}
+.       if !d$DOC_COVER_LEAD_ADJ \{ .DOC_COVER_LEAD +0              \}
+.       if !d$DOC_COVER_FAM      \{ .DOC_COVER_FAMILY \\*[$DOC_FAM] \}
 .\" (title)
 .       if !d$DOC_COVER_TITLE_FAM \{\
 .          ie !d$DOC_COVER_FAM \{ .DOC_COVER_TITLE_FAMILY \\*[$DOC_FAM] \}
@@ -5879,6 +5900,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       if !d$DOC_COVER_COPYRIGHT_FT          \{ .DOC_COVER_COPYRIGHT_FONT R  \}
 .       if !d$DOC_COVER_COPYRIGHT_SIZE_CHANGE \{ .DOC_COVER_COPYRIGHT_SIZE -2 \}
+.\" (misc)
+.       if !d$DOC_COVER_MISC_FAM         \{ .DOC_COVER_MISC_FAMILY \\*[$DOC_FAM] \}
+.       if !d$DOC_COVER_MISC_FT          \{ .DOC_COVER_MISC_FONT R               \}
+.       if !d$DOC_COVER_MISC_SIZE_CHANGE \{ .DOC_COVER_MISC_SIZE -2              \}
+.       if !r#DOC_COVER_MISC_AUTOLEAD    \{ .DOC_COVER_MISC_AUTOLEAD 2           \}
 .\" +Docheader
 .       if !d$DOCHEADER_FAM \{ .DOCHEADER_FAMILY \\*[$DOC_FAM] \}
 .       if !d$TITLE_FAM \{\
@@ -6143,6 +6169,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ds $DOC_COVER_CHAPTER_TITLE_PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$DOC_COVER_CHAPTER_TITLE_SIZE_CHANGE]
 .ds $DOC_COVER_COPYRIGHT_PT_SIZE     \\n[#DOC_PT_SIZE]u\\*[$DOC_COVER_COPYRIGHT_SIZE_CHANGE]
 .ds $DOC_COVER_DOCTYPE_PT_SIZE       \\n[#DOC_PT_SIZE]u\\*[$DOC_COVER_DOCTYPE_SIZE_CHANGE]
+.ds $DOC_COVER_MISC_PT_SIZE          \\n[#DOC_PT_SIZE]u\\*[$DOC_COVER_MISC_SIZE_CHANGE]
 .ds $DOC_COVER_SUBTITLE_PT_SIZE      \\n[#DOC_PT_SIZE]u\\*[$DOC_COVER_SUBTITLE_SIZE_CHANGE]
 .ds $DOC_COVER_TITLE_PT_SIZE         \\n[#DOC_PT_SIZE]u\\*[$DOC_COVER_TITLE_SIZE_CHANGE]
 \# Cover
@@ -6150,6 +6177,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ds $COVER_CHAPTER_TITLE_PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$COVER_CHAPTER_TITLE_SIZE_CHANGE]
 .ds $COVER_COPYRIGHT_PT_SIZE     \\n[#DOC_PT_SIZE]u\\*[$COVER_COPYRIGHT_SIZE_CHANGE]
 .ds $COVER_DOCTYPE_PT_SIZE       \\n[#DOC_PT_SIZE]u\\*[$COVER_DOCTYPE_SIZE_CHANGE]
+.ds $COVER_MISC_PT_SIZE          \\n[#DOC_PT_SIZE]u\\*[$COVER_MISC_SIZE_CHANGE]
 .ds $COVER_SUBTITLE_PT_SIZE      \\n[#DOC_PT_SIZE]u\\*[$COVER_SUBTITLE_SIZE_CHANGE]
 .ds $COVER_TITLE_PT_SIZE         \\n[#DOC_PT_SIZE]u\\*[$COVER_TITLE_SIZE_CHANGE]
 \# Docheader
@@ -6163,17 +6191,25 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# Next, some utility macros for various routines to prevent repetition
 \#
 .MAC DOC_HEADER_QUAD END
-.    ie !'\\*[$DOCHEADER_QUAD]'' \{\
-.       if '\\*[$DOCHEADER_QUAD]'L'      \{ .LEFT   \}
-.       if '\\*[$DOCHEADER_QUAD]'LEFT'   \{ .LEFT   \}
-.       if '\\*[$DOCHEADER_QUAD]'R'      \{ .RIGHT  \}
-.       if '\\*[$DOCHEADER_QUAD]'RIGHT'  \{ .RIGHT  \}
-.       if '\\*[$DOCHEADER_QUAD]'C'      \{ .RIGHT  \}
-.       if '\\*[$DOCHEADER_QUAD]'CENTER' \{ .CENTER \}
-.       if '\\*[$DOCHEADER_QUAD]'CENTRE' \{ .CENTER \}
+.    if '\\$0'DOC_HEADER_QUAD' .ds $CALLING_MACRO DOCHEADER
+.    if '\\$0'COVER_H_POS'     .ds $CALLING_MACRO COVER
+.    if '\\$0'DOC_COVER_H_POS' .ds $CALLING_MACRO DOC_COVER
+.    ie !'\\*[$\\*[$CALLING_MACRO]_QUAD]'' \{\
+.       if '\\*[$\\*[$CALLING_MACRO]_QUAD]'L'      \{ .LEFT   \}
+.       if '\\*[$\\*[$CALLING_MACRO]_QUAD]'LEFT'   \{ .LEFT   \}
+.       if '\\*[$\\*[$CALLING_MACRO]_QUAD]'R'      \{ .RIGHT  \}
+.       if '\\*[$\\*[$CALLING_MACRO]_QUAD]'RIGHT'  \{ .RIGHT  \}
+.       if '\\*[$\\*[$CALLING_MACRO]_QUAD]'C'      \{ .RIGHT  \}
+.       if '\\*[$\\*[$CALLING_MACRO]_QUAD]'CENTER' \{ .CENTER \}
+.       if '\\*[$\\*[$CALLING_MACRO]_QUAD]'CENTRE' \{ .CENTER \}
 .    \}
 .    el \{ .CENTER \}
 .END
+\#
+\# Aliases for DOC_HEADER_QUAD
+\#
+.ALIAS COVER_H_POS      DOC_HEADER_QUAD
+.ALIAS DOC_COVER_H_POS  DOC_HEADER_QUAD
 \#
 .MAC PRINT_AUTHORS END
 .    ie r#DOING_COVER \{\
@@ -6539,6 +6575,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .END
 \#
+\# MISCs get treated similarly to QUOTEs and BLOCKQUOTEs with respect to
+\# leading
+\#
+.MAC MISC_AUTOLEAD END
+.    if '\\$0'DOC_COVER_MISC_AUTOLEAD' \{ .nr #DOC_COVER_MISC_AUTOLEAD \\$1 \}
+.    if '\\$0'COVER_MISC_AUTOLEAD'     \{ .nr #COVER_MISC_AUTOLEAD \\$1 \}
+.END
+\#
+.ALIAS DOC_COVER_MISC_AUTOLEAD  MISC_AUTOLEAD
+.ALIAS COVER_MISC_AUTOLEAD      MISC_AUTOLEAD
+\#
 \#
 \# COVER PAGE START POSITION
 \# -------------------------
@@ -6584,6 +6631,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if '\\$0'DOC_COVER_UNDERLINE'            \{ .nr #DOCCOVER_UNDERLINE   1 \}
 .       if '\\$0'DOCTYPE_UNDERLINE'              \{ .nr #DOCTYPE_UNDERLINE    1 \}
 .       if '\\$0'HEAD_UNDERLINE'                 \{ .nr #HEAD_UNDERLINE       1 \}
+.       if '\\$0'HEAD_UNDERSCORE'                \{ .nr #HEAD_UNDERLINE       1 \}
 .       if '\\$0'ENDNOTE_STRING_UNDERLINE'       \{ .nr #EN_STRING_UNDERLINE  1 \}
 .       if '\\$0'ENDNOTE_STRING_UNDERSCORE'      \{ .nr #EN_STRING_UNDERLINE  1 \}
 .       if '\\$0'ENDNOTE_TITLE_UNDERLINE'        \{ .nr #EN_TITLE_UNDERLINE   1 \}
@@ -6601,6 +6649,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                if '\\$0'DOC_COVER_UNDERLINE'            \{ .DOCCOVER_UNDERLINE_WEIGHT            \\$1 \}
 .                if '\\$0'DOCTYPE_UNDERLINE'              \{ .DOCTYPE_UNDERLINE_WEIGHT             \\$1 \}
 .                if '\\$0'HEAD_UNDERLINE'                 \{ .HEAD_UNDERLINE_WEIGHT                \\$1 \}
+.                if '\\$0'HEAD_UNDERSCORE'                \{ .HEAD_UNDERLINE_WEIGHT                \\$1 \}
 .                if '\\$0'ENDNOTE_STRING_UNDERLINE'       \{ .ENDNOTE_STRING_UNDERLINE_WEIGHT      \\$1 \}
 .                if '\\$0'ENDNOTE_STRING_UNDERSCORE'      \{ .ENDNOTE_STRING_UNDERLINE_WEIGHT      \\$1 \}
 .                if '\\$0'ENDNOTE_TITLE_UNDERLINE'        \{ .ENDNOTE_TITLE_UNDERLINE_WEIGHT       \\$1 \}
@@ -6620,6 +6669,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             if '\\$0'DOC_COVER_UNDERLINE'      \{ .nr #DOCCOVER_UNDERLINE  0 \}
 .             if '\\$0'DOCTYPE_UNDERLINE'        \{ .nr #DOCTYPE_UNDERLINE   0 \}
 .             if '\\$0'HEAD_UNDERLINE'           \{ .nr #HEAD_UNDERLINE      0 \}
+.             if '\\$0'HEAD_UNDERSCORE'          \{ .nr #HEAD_UNDERLINE      0 \}
 .             if '\\$0'ENDNOTE_STRING_UNDERLINE' \{\
 .                ie '\\$1'DOUBLE' \{ .nr #EN_STRING_UNDERLINE 2 \}
 .                el \{ .nr #EN_STRING_UNDERLINE 0 \}
@@ -6680,6 +6730,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                HEAD_UNDERLINE_WEIGHT  \\$1
 .                ds $HEAD_UNDERLINE_GAP \\$2
 .             \}
+.             if '\\$0'HEAD_UNDERSCORE' \{\
+.                nr #HEAD_UNDERLINE 1
+.                HEAD_UNDERLINE_WEIGHT  \\$1
+.                ds $HEAD_UNDERLINE_GAP \\$2
+.             \}
 \# ENDNOTE_STRING_UNDERLINE and ENDNOTE_STRING_UNDERSCORE are identical;
 \# the _UNDERSCORE version is left in for backward compatibility.
 .             if '\\$0'ENDNOTE_STRING_UNDERLINE' \{\
@@ -6733,6 +6788,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS DOC_COVER_UNDERLINE            _UNDERLINE
 .ALIAS DOCTYPE_UNDERLINE              _UNDERLINE
 .ALIAS HEAD_UNDERLINE                 _UNDERLINE
+.ALIAS HEAD_UNDERSCORE                _UNDERLINE
 .ALIAS ENDNOTE_STRING_UNDERLINE       _UNDERLINE
 .ALIAS ENDNOTE_STRING_UNDERSCORE      _UNDERLINE
 .ALIAS ENDNOTE_TITLE_UNDERLINE        _UNDERLINE
@@ -6835,7 +6891,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \m[\\*[$DOC_COVER_COLOR]]
 .          EOL
 .       \}
-.       CENTER
+.       DOC_COVER_H_POS
 .       FAMILY  \\*[$DOC_COVER_TITLE_FAM]
 .       FT      \\*[$DOC_COVER_TITLE_FT]
 .       PT_SIZE \\*[$DOC_COVER_TITLE_PT_SIZE]
@@ -7084,8 +7140,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       el \{\
 .          fam \\*[$DOC_COVER_COPYRIGHT_FAM]
 .          ft  \\*[$DOC_COVER_COPYRIGHT_FT]
-.          AUTOLEAD 2
 .          PT_SIZE \\*[$DOC_COVER_COPYRIGHT_PT_SIZE]
+.          AUTOLEAD \\n[#DOC_COVER_MISC_AUTOLEAD]
 .       \}
 .       if \\n[#DOC_COVER_COPYRIGHT]=1 \{\
 .          if !'\\*[$COPYRIGHT_DOCCOVER]'' \{\
@@ -7099,12 +7155,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          el \{ .PRINT \\*[$COPYRIGHT] \}
 .          ds $COPYRIGHT \\*[$SAVED_COPYRIGHT]
 .       \}
-.       sp |\\n[#VISUAL_B_MARGIN]u+\\n[#DOC_LEAD]u
+.       br
 .       if \\n[#DOC_COVER_MISC]=1 \{\
+.          if \\n[#PRINT_STYLE]=2 \{\
+.             fam \\*[$DOC_COVER_MISC_FAM]
+.             ft  \\*[$DOC_COVER_MISC_FT]
+.             PT_SIZE \\*[$DOC_COVER_MISC_PT_SIZE]
+.          \}
 .          QUAD \\*[$DOC_COVER_MISC_QUAD]
 .          ie !'\\*[$MISC_DOCCOVER_1]'' \{\
 .             nr #MISCS \\n[#MISC_DOCCOVER_NUM]
-.             sp -\\n[#MISCS]+1
+.             sp -\\n[#MISCS]
 .             nr #NEXT_MISC 0 1
 .             while \\n[#MISCS]>\\n[#NEXT_MISC] \{\
 .                ie \\n[#DOC_COVER_MISC_COLOR]=1 \{\
@@ -7124,7 +7185,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .          el \{\
 .             nr #MISCS \\n[#MISC_NUM]
-.             sp -\\n[#MISCS]+1
+.             sp -\\n[#MISCS]
 .             nr #NEXT_MISC 0 1
 .             while \\n[#MISCS]>\\n[#NEXT_MISC] \{\
 .                ie \\n[#DOC_COVER_MISC_COLOR]=1 \{\
@@ -7160,7 +7221,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          nf
 \m[\\*[$COVER_COLOR]]
 .       \}
-.       CENTER
+.       COVER_H_POS
 .       fam \\*[$COVER_TITLE_FAM]
 .       ft  \\*[$COVER_TITLE_FT]
 .       ps  \\*[$COVER_TITLE_PT_SIZE]
@@ -7412,8 +7473,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       el \{\
 .          fam  \\*[$COVER_COPYRIGHT_FAM]
 .          ft      \\*[$COVER_COPYRIGHT_FT]
-.          AUTOLEAD 2
 .          PT_SIZE \\*[$COVER_COPYRIGHT_PT_SIZE]
+.          AUTOLEAD \\n[#COVER_MISC_AUTOLEAD]
 .       \}
 .       if \\n[#COVER_COPYRIGHT]=1 \{\
 .          if !'\\*[$COPYRIGHT_COVER]'' \{\
@@ -7427,12 +7488,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          el \{ .PRINT \\*[$COPYRIGHT] \}
 .          ds $COPYRIGHT \\*[$SAVED_COPYRIGHT]
 .       \}
-.       sp |\\n[#VISUAL_B_MARGIN]u+\\n[#DOC_LEAD]u
+.       br
 .       if \\n[#COVER_MISC]=1 \{\
 .          QUAD \\*[$COVER_MISC_QUAD]
+.          if \\n[#PRINT_STYLE]=2 \{\
+.             fam \\*[$COVER_MISC_FAM]
+.             ft  \\*[$COVER_MISC_FT]
+.             PT_SIZE \\*[$COVER_MISC_PT_SIZE]
+.          \}
 .          ie !'\\*[$MISC_COVER_1]'' \{\
 .             nr #MISCS \\n[#MISC_COVER_NUM]
-.             sp -\\n[#MISCS]+1
+.             sp -\\n[#MISCS]
 .             nr #NEXT_MISC 0 1
 .             while \\n[#MISCS]>\\n[#NEXT_MISC] \{\
 .                ie \\n[#COVER_MISC_COLOR]=1 \{\
@@ -7447,7 +7513,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .          el \{\
 .             nr #MISCS \\n[#MISC_NUM]
-.             sp -\\n[#MISCS]+1
+.             sp -\\n[#MISCS]
 .             nr #NEXT_MISC 0 1
 .             while \\n[#MISCS]>\\n[#NEXT_MISC] \{\
 .                ie \\n[#COVER_MISC_COLOR]=1 \{\
@@ -9715,7 +9781,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .          po \\n[#Q_OFFSET]u
 .       \}
-.       if \\n[#PRINTSTYLE]=2 \{ .ALD \\n[#Q_LEAD_DIFF]u \}
+.       if \\n[#PRINT_STYLE]=2 \{ .ALD \\n[#Q_LEAD_DIFF]u \}
 .    \}
 .    if \\n[#EPIGRAPH] \{\
 .       ie \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
@@ -11630,47 +11696,68 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# *Arguments:
 \#   <none [ BR | BREAK | SPREAD ]> | <anything [ BR | BREAK | SPREAD ]>
 \# *Function:
-\#   Takes care of admistrivia associated with setting code snippets.
+\#   Takes care of administrivia associated with setting code snippets.
 \#
 .MAC CODE END
 \c
 .    if '\\$1'BR' \{\
 .       br
 .       shift
-.     \}
+.    \}
 .    if '\\$1'BREAK' \{\
 .       br
 .       shift
-.     \}
+.    \}
 .    if '\\$1'SPREAD' \{\
 .       brp
 .       shift
-.     \}
+.    \}
 .    ie '\\$1'' \{\
-.       ds $PRE_CODE_FAM \\n[.fam]
-.       ds $PRE_CODE_FT \\n[.sty]
-.       if !\\n[#PRINT_STYLE]=1 \{\
+.       ie \\n[#PRINT_STYLE]=1 \{\
+.          CODE_FAMILY C
+.          ie \\n[#CODE_FT]=1 \{ .ft \\*[$CODE_FT] \}
+.          el \{\
+.             CODE_FONT R
+.             ft R
+.             char ' \[aq]
+.          \}
+.          if \\n[#UNDERLINE_QUOTES]=1 \{\
+.             nr #RESTORE_UNDERLINE 1
+.             UNDERLINE_QUOTES OFF
+.             FT \\*[$CODE_FT]
+.             char ' \[aq]
+.          \}
+.       \}
+.       el \{\
 .          ie \\n[#CODE_FAM]=1 \{ .fam \\*[$CODE_FAM] \}
-.          el \{ .fam C \}
-.       \}
-.       ft  R
-.       if \\n[#UNDERLINE_QUOTES]=1 \{\
-.           nr #RESTORE_UNDERLINE 1
-.           UNDERLINE_QUOTES OFF
-.           FT R
-.       \}
-.       if \\n[#PRINT_STYLE]=2 \{\
-.          tr `'
-.       \}
-.       if \\n[#RESTORE_SQ]=1 \{\
-.          nr #SQ_WAS_ON 1
-.          SMARTQUOTES OFF
+.          el \{\
+.             CODE_FAMILY C
+.             fam \\*[$CODE_FAM]
+.          \}
+.          ie \\n[#CODE_FT]=1 \{ .ft \\*[$CODE_FT] \}
+.          el \{\
+.             CODE_FONT R
+.             ft \\*[CODE_FT]
+.          \}
+.          if \\n[#CODE_COLOR]=1 \{\
+.             COLOR \\*[$CODE_COLOR]
+.          \}
+.          char ' \[aq]
+.          if !\\n[#CODE_SIZE_ADJ]=0 \{\
+.          ps \\n[#PT_SIZE]u*\\n[#CODE_SIZE_ADJ]u/100u
+.          \}
+.          if \\n[#RESTORE_SQ]=1 \{\
+.             nr #SQ_WAS_ON 1
+.             SMARTQUOTES OFF
+.          \}
 .       \}
 .    \}
 .    el \{\
-.       fam \\*[$PRE_CODE_FAM]
-.       ft  \\*[$PRE_CODE_FT]
-.       rr $RESTORE_FT
+.       fam
+.       ft
+.       ps
+.       rchar '
+.       gcolor
 .       if \\n[#RESTORE_UNDERLINE]=1 \{\
 .          rr #RESTORE_UNDERLINE
 .          UNDERLINE_QUOTES
@@ -11679,9 +11766,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          rr #SQ_WAS_ON
 .          SMARTQUOTES
 .       \}
-.       if \\n[#PRINT_STYLE]=2 \{\
-.          tr ``
-.       \}
+.       if \\n[#QUOTE] \{ .RLD 1v \}
 .    \}
 .    if \\n[#NUM_ARGS]=2 \{\
 .       if '\\$2'BR'     \{ .br  \}
@@ -11702,6 +11787,30 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ds $CODE_FAM \\$1
 .END
 \#
+\# CODE_FONT
+\# ---------
+\# *Arguments:
+\#   <font>
+\# *Function:
+\#   Creates register #CODE_FT and string $CODE_FT for use by CODE.
+\#
+.MAC CODE_FONT END
+.    nr #CODE_FT 1
+.    ds $CODE_FT \\$1
+.END
+\#
+\# CODE_SIZE
+\# ---------
+\# *Arguments:
+\#   <percentage to zoom code font>
+\# *Function:
+\#   Creates register #CODE_SIZE_ADJ, used in CODE to zoom the
+\#   CODE_FONT to a percentage of the current point size.
+\#
+.MAC CODE_SIZE END
+. nr #CODE_SIZE_ADJ \\$1
+.END
+\#
 \#
 \# ---Blockquotes---
 \#
@@ -11718,7 +11827,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   how much space to put before and after.
 \#
 \#   .PP after blockquote is optional if there's only one para,
-\#   but REQUIRED if there's more than one.
+\#   but required if there's more than one.
 \#
 .MAC BLOCKQUOTE END
 .    br
@@ -14715,6 +14824,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    ds $BIB_STRING \\$1
 .END
 \#
+.MAC BIBLIOGRAPHY_STRING_ADVANCE END
+.    nr #BIB_STRING_ADVANCE (\\$1)
+.END
+\#
 .MAC BIBLIOGRAPHY_STRING_CAPS END
 .   ie '\\$1'' \{ .nr #BIB_STRING_CAPS 1 \}
 .   el \{ .rr #BIB_STRING_CAPS \}
@@ -14916,12 +15029,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \!.     PT_SIZE \\n[#TOC_PS]u\\*[$TOC_TITLE_SIZE_CHANGE]
 .    \}
 \!.  TRAP OFF
+\!.  PAD_MARKER ^
 .    ie \\n[#PRINT_STYLE]=1 \{\
 \!.     PAD "\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN_TYPEWRITE]"
 .    \}
 .    el \{\
 \!.     PAD "\\h'\\n[#TOC_TITLE_INDENT]u'\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN]"
 .    \}
+\!.  PAD_MARKER #
 \!.  EOL
 \!.  ST 100 L
 \!.  ST 101 R
@@ -14953,7 +15068,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       el \{ .DOC_LEAD \\n[#BIB_LEAD]u \}
 .    \}
 .    PRINT \&
-.    ie r#BIB_TITLE_SPACE \{ .sp |\\n[#BIB_TITLE_SPACE]u \}
+.    ie r#BIB_STRING_ADVANCE \{ .sp |\\n[#BIB_STRING_ADVANCE]u \}
 .    el \{ .sp |\\n[#T_MARGIN]u \}
 .    mk ec
 .    if \\n[#SLANT_ON] \{\
@@ -17057,6 +17172,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   COVER_COPYRIGHT_FAMILY           _FAMILY
 .ALIAS   COVER_DOCTYPE_FAMILY             _FAMILY
 .ALIAS   COVER_FAMILY                     _FAMILY
+.ALIAS   COVER_MISC_FAMILY                _FAMILY
 .ALIAS   COVER_SUBTITLE_FAMILY            _FAMILY
 .ALIAS   COVER_TITLE_FAMILY               _FAMILY
 .ALIAS   DOC_COVER_AUTHOR_FAMILY          _FAMILY
@@ -17064,6 +17180,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   DOC_COVER_COPYRIGHT_FAMILY       _FAMILY
 .ALIAS   DOC_COVER_DOCTYPE_FAMILY         _FAMILY
 .ALIAS   DOC_COVER_FAMILY                 _FAMILY
+.ALIAS   DOC_COVER_MISC_FAMILY            _FAMILY
 .ALIAS   DOC_COVER_SUBTITLE_FAMILY        _FAMILY
 .ALIAS   DOC_COVER_TITLE_FAMILY           _FAMILY
 .ALIAS   DOCHEADER_FAMILY                 _FAMILY
@@ -17105,12 +17222,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   COVER_CHAPTER_TITLE_FONT       _FONT
 .ALIAS   COVER_COPYRIGHT_FONT           _FONT
 .ALIAS   COVER_DOCTYPE_FONT             _FONT
+.ALIAS   COVER_MISC_FONT                _FONT
 .ALIAS   COVER_SUBTITLE_FONT            _FONT
 .ALIAS   COVER_TITLE_FONT               _FONT
 .ALIAS   DOC_COVER_AUTHOR_FONT          _FONT
 .ALIAS   DOC_COVER_CHAPTER_TITLE_FONT   _FONT
 .ALIAS   DOC_COVER_COPYRIGHT_FONT       _FONT
 .ALIAS   DOC_COVER_DOCTYPE_FONT         _FONT
+.ALIAS   DOC_COVER_MISC_FONT            _FONT
 .ALIAS   DOC_COVER_SUBTITLE_FONT        _FONT
 .ALIAS   DOC_COVER_TITLE_FONT           _FONT
 .ALIAS   DOCTYPE_FONT                   _FONT
@@ -17147,12 +17266,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   COVER_CHAPTER_TITLE_SIZE       _SIZE
 .ALIAS   COVER_COPYRIGHT_SIZE           _SIZE
 .ALIAS   COVER_DOCTYPE_SIZE             _SIZE
+.ALIAS   COVER_MISC_SIZE                _SIZE
 .ALIAS   COVER_SUBTITLE_SIZE            _SIZE
 .ALIAS   COVER_TITLE_SIZE               _SIZE
 .ALIAS   DOC_COVER_AUTHOR_SIZE          _SIZE
 .ALIAS   DOC_COVER_CHAPTER_TITLE_SIZE   _SIZE
 .ALIAS   DOC_COVER_COPYRIGHT_SIZE       _SIZE
 .ALIAS   DOC_COVER_DOCTYPE_SIZE         _SIZE
+.ALIAS   DOC_COVER_MISC_SIZE            _SIZE
 .ALIAS   DOC_COVER_SUBTITLE_SIZE        _SIZE
 .ALIAS   DOC_COVER_TITLE_SIZE           _SIZE
 .ALIAS   DOCTYPE_SIZE                   _SIZE
@@ -17185,6 +17306,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   AUTHOR_COLOR                    _COLOR
 .ALIAS   BLOCKQUOTE_COLOR                _COLOR
 .ALIAS   CHAPTER_TITLE_COLOR             _COLOR
+.ALIAS   CODE_COLOR                      _COLOR
 .ALIAS   COVER_ATTRIBUTE_COLOR           _COLOR
 .ALIAS   COVER_AUTHOR_COLOR              _COLOR
 .ALIAS   COVER_CHAPTER_TITLE_COLOR       _COLOR
@@ -17219,6 +17341,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   PAGENUM_COLOR                   _COLOR
 .ALIAS   PARAHEAD_COLOR                  _COLOR
 .ALIAS   QUOTE_COLOR                     _COLOR
+.ALIAS   SECTION_COLOR                   _COLOR
 .ALIAS   SUBHEAD_COLOR                   _COLOR
 .ALIAS   SUBTITLE_COLOR                  _COLOR
 .ALIAS   TITLE_COLOR                     _COLOR
@@ -17228,8 +17351,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   BLOCKQUOTE_QUAD            _QUAD
 .ALIAS   COVER_COPYRIGHT_QUAD       _QUAD
 .ALIAS   COVER_MISC_QUAD            _QUAD
+.ALIAS   COVER_QUAD                 _QUAD
 .ALIAS   DOC_COVER_COPYRIGHT_QUAD   _QUAD
 .ALIAS   DOC_COVER_MISC_QUAD        _QUAD
+.ALIAS   DOC_COVER_QUAD             _QUAD
 .ALIAS   DOCHEADER_QUAD             _QUAD
 .ALIAS   DOC_QUAD                   _QUAD
 .ALIAS   ENDNOTE_QUAD               _QUAD
@@ -17254,8 +17379,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   PRINT_FOOTNOTE_RULE     FOOTNOTE_RULE
 \#
 \# Miscellaneous aliases
-.ALIAS   SECTION       LINEBREAK
-.ALIAS   SECTION_CHAR  LINEBREAK_CHAR
+.ALIAS   SECTION        LINEBREAK
+.ALIAS   SECTION_CHAR   LINEBREAK_CHAR
 \#
 \# Miscellaneous macros to take care of backward compatibility
 \# -----------------------------------------------------------
