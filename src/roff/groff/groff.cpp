@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-                 2008, 2009
+                 2008, 2009, 2010
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -157,7 +157,7 @@ int main(int argc, char **argv)
       Pargs += '\0';
       break;
     case 'D':
-      commands[PRECONV_INDEX].set_name(command_prefix, "preconv");
+      commands[PRECONV_INDEX].set_name("preconv");
       commands[PRECONV_INDEX].append_arg("-D", optarg);
       break;
     case 'K':
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
       Kflag = 1;
       // fall through
     case 'k':
-      commands[PRECONV_INDEX].set_name(command_prefix, "preconv");
+      commands[PRECONV_INDEX].set_name("preconv");
       break;
     case 't':
       commands[TBL_INDEX].set_name(command_prefix, "tbl");
@@ -314,7 +314,7 @@ int main(int argc, char **argv)
     }
   }
   if (encoding) {
-    commands[PRECONV_INDEX].set_name(command_prefix, "preconv");
+    commands[PRECONV_INDEX].set_name("preconv");
     if (!Kflag && *encoding)
       commands[PRECONV_INDEX].append_arg("-e", encoding);
   }
