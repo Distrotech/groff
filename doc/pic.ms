@@ -3022,7 +3022,7 @@ _
 .sp 2p
 .TH
 boxht@0.5@Default height of a box
-boxwid@0.75@Default height of a box
+boxwid@0.75@Default width of a box
 lineht@0.5@Default length of vertical line
 linewid@0.75@Default length of horizontal line
 arcrad @0.25@Default radius of an arc
