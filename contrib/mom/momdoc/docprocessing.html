@@ -1417,15 +1417,20 @@ and revision information in the headers) or a final copy.
 <h3 id="index-docstyle" class="macro-list">Docstyle macros</h3>
 <ul class="macro-list">
   <li><a href="#doctype">DOCTYPE</a>
-  <ul class="sublist"> 
-    <li><a href="#doctype-underline">DOCTYPE_UNDERLINE</a> &ndash; control DOCTYPE <kbd>NAMED</kbd> underlining</li>      
+  <ul style="margin-left: -.5em; list-style-type: disc;"> 
+    <li><a href="#doctype-underline">DOCTYPE_UNDERLINE</a> &ndash; how to control DOCTYPE <kbd>NAMED</kbd> underlining</li>      
   </ul></li>
   <li><a href="#printstyle">PRINTSTYLE</a> &ndash; non-optional macro required for document processing
-  <ul class="sublist" style="line-height: 140%;">
+  <ul style="margin-left: -.5em; list-style-type: disc;">
     <li><a href="#typeset-defaults">Defaults for PRINTSTYLE TYPESET</a></li>
     <li><a href="#typewrite-defaults">Defaults for PRINTSTYLE TYPEWRITE</a>
-    <ul class="sublist sub">
-      <li><a href="#typewrite-control">PRINTSTYLE TYPEWRITE control macros</a> &ndash; underlining</li>
+    <ul style="margin-left: -.5em; list-style-type: circle;">
+      <li><a href="#typewrite-control">PRINTSTYLE TYPEWRITE control macros</a>
+      <ul style="margin-left: -1.5em; list-style-type: square;">
+        <li><a href="#typewriter-family">Family</a></li>
+        <li><a href="#typewriter-size">Point size</a></li>
+        <li><a href="#typewriter-underlining">Underlining of italics</a></li>
+      </ul></li>
     </ul></li>
   </ul></li>
   <li><a href="#copystyle">COPYSTYLE</a></li>
@@ -1736,18 +1741,6 @@ If, for some reason, you would prefer the output of
 <kbd>TYPEWRITE</kbd> the optional argument, <kbd>SINGLESPACE</kbd>.
 </p>
 
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-If you absolutely must have a leading other than typewriter double-
-or singlespaced, the only way to get it is with the
-<a href="#doc-lead">DOC_LEAD</a>
-macro, and then only if DOC_LEAD is set <i>before</i> you invoke the
-<a href="#start">START</a>
-macro.
-</p>
-</div>
-
 <div class="defaults-container">
 <h3 id="typeset-defaults" class="docs defaults" style="margin-top: 0;">PRINTSTYLE TYPESET defaults</h3>
 <span class="pre defaults">
@@ -1786,7 +1779,39 @@ macro.
 </div>
 
 <div class="box-tip" style="margin-top: 1.5em;">
-<h3 id="typewrite-control" class="docs control">PRINTSTYLE TYPEWRITE control macros (underlining)</h3>
+<h3 id="typewrite-control" class="docs control">PRINTSTYLE TYPEWRITE control macros</h3>
+
+<h4 id="typewriter-family" class="docs">Family</h4>
+
+<p style="margin-top: .5em;">
+If you&#8217;d prefer a monospace
+<a href="definitions.html#family">family</a>
+for PRINTSTYLE <kbd>TYPEWRITE</kbd> other than than mom's default,
+Courier, you can change it with
+<kbd>.TYPEWRITER_FAMILY&nbsp;&lt;family&gt;</kbd> (or
+<kbd>.TYPEWRITER_FAM</kbd>).  Since groff ships with only the
+Courier family, you will have to install any other monospace family
+yourself.  See
+<a href="appendices.html#fonts">Adding PostScript fonts to
+groff</a>.
+</p>
+
+<h4 id="typewriter-size" class="docs">Point size</h4>
+
+<p style="margin-top: .5em;">
+If you&#8217;d like a smaller or larger point size for
+for PRINTSTYLE <kbd>TYPEWRITE</kbd> (mom&#8217;s default is 12-point),
+you can change it with
+<kbd>.TYPEWRITER_SIZE&nbsp;&lt;size&gt;</kbd>.  There&#8217;s no need to
+add a
+<a href="definitions.html#unitofmeasure">unit of measure</a>
+to the <kbd>&lt;size&gt;</kbd> argument; points is assumed.  Be
+aware, however, that regardless of point size, mom&#8217;s
+leading/linespacing for <kbd>TYPEWRITE</kbd> is fixed at 24-point
+for double-spaced, and 12-point for single-spaced.
+</p>
+
+<h4 id="typewriter-underlining" class="docs">Underlining of italics</h4>
 
 <p>
 In PRINTSTYLE <kbd>TYPEWRITE</kbd>, mom, by default, underlines
@@ -1796,7 +1821,7 @@ anything that looks like italics.  This includes the
 for pseudo-italics.
 </p>
 
-<p>
+<p id="printstyle-italics">
 If you&#8217;d prefer that mom were less bloody-minded
 about pretending to be a typewriter (i.e. you&#8217;d like italics and
 pseudo-italics to come out as italics), use the control macros
@@ -2123,7 +2148,7 @@ below have the following meanings:
 </p>
 </div>
 
-<p>
+<p style="margin-top: -.75em;">
 Other macros that deal with type style, or refinements thereof
 (<b>KERN, LIGATURES, HY, WS, SS,</b> etc.), behave normally.
 It is not recommended that you set up tabs or indents prior to
@@ -2158,7 +2183,7 @@ you must do so immediately after invoking the tag.  Furthermore,
 the change affects <i>only</i> the current invocation of the tag.
 Subsequent invocations of the same tag for which you want the same
 change require that you invoke <kbd>.LEFT</kbd>, <kbd>.RIGHT</kbd>
-or <kbd> CENTER</kbd> immediately after every invocation of the tag.
+or <kbd>.CENTER</kbd> immediately after every invocation of the tag.
 </p>
 
 <!-- -INCLUDE- -->

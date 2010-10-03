@@ -740,6 +740,7 @@ mom uses, along with brief descriptions of their functions.
                                  endnotes
   ENDNOTE_PARA_SPACE           Whether to space paras in multi-para endnotes
   ENDNOTE_PT_SIZE              Base point size for endnotes page
+  FOOTNOTE_SPACING             Post endnotenote item spacing
   ENDNOTE_STRING               Endnotes page head
   ENDNOTE_STRING_ADVANCE       Distance of title string "ENDNOTES" from top
                                  edge of page
@@ -1391,7 +1392,6 @@ mom uses, along with brief descriptions of their functions.
   #FN_RULE_LENGTH            Length of footnote separator rule
   #FN_RULE_WEIGHT            Weight of the footnote separator rule
   #FN_RULE_WEIGHT_ADJ        FN_RULE_WEIGHT/2
-  #FN_SPACE                  Post footnote space
   #FN_WAS_DEFERED            Tells HEADER about a deferred footnote
   #FOOTER_DIFF               In TRAPS, the difference between the
                                original #B_MARGIN and #VISUAL_B_MARGIN
@@ -1835,13 +1835,16 @@ mom uses, along with brief descriptions of their functions.
   #TOC_TITLE_SIZE_CHANGE     ps in/decrease of toc doc title entries
   #TOTAL_FIELDS              Total number of letter header fields
   #TRAP                      \n[.t]-1 (used in DO_QUOTE)
+  #UNADJUSTED_DOC_LEAD       Argument passed to DOC_LEAD prior to
+                             adjusting (set in TRAPS)
   #UNDERLINE_ITALIC          For TYPEWRITE. (boolean)
   #UNDERLINE_ON              Was UNDERLINE called? (boolean)
   #UNDERLINE_QUOTES          Was UNDERLINE_QUOTES called? (boolean)
   #UNDERLINE_QUOTE           Underline pquotes? (boolean)
   #UNDERLINE_SLANT           For TYPEWRITE. (boolean)
-  #UNDERLINE_WAS_ON          In HEADER to re-enable running text
-                               UNDERLINE (boolean)
+  #UNDERLINE_WAS_ON          Was underlining on prior to the
+                             invocation of current macro? (boolean)
+  #UNDERLINE_WAS_ON_FN       As above, but for footnotes only
   #USER_DEF_HDRFTR_CENTER    Has user defined hdrftr center? (boolean)
   #USER_DEF_HDRFTR_LEFT      Has user defined hdrftr left? (boolean)
   #USER_DEF_HDRFTR_RIGHT     Has user defined hdrftr right? (boolean)
@@ -2151,6 +2154,7 @@ mom uses, along with brief descriptions of their functions.
                                      footnotes
   $FN_QUAD                         Quad used in footnotes
   $FN_SIZE_CHANGE                  ps in/decrease of footnotes
+  $FN_SPACE                        Post footnote space
   $FOOTNOTE_COLOR                  Footnote color
   $FTR_RECTO_QUAD                  Quad direction of footer recto
   $FTR_RECTO_STRING                String for footer recto
@@ -2276,6 +2280,8 @@ mom uses, along with brief descriptions of their functions.
                                      endnotes
   $REF_FN_INDENT                   2nd line indent value for references in
                                      footnotes
+  $REF_STYLE                       MLA bibliography-style or footnote/endnote
+                                     style; used in ref*add-&lt;x&gt;
   $RESTORE_SS_VAR                  Saves \*[$SS_VAR] for use with ref*build
   #REVISION                        The revision number (string valued)
   $REVISION_STRING                 What to print whenever the word

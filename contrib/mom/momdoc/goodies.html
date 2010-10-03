@@ -61,12 +61,11 @@ nearly indispensable) routines to simplify typesetting.
   <ul class="sublist sub">
     <li class="list-head-goodies text-color"><a href="#underscore-weight">Controlling the weight of underscores</a></li>
     <li class="list-head-goodies text-color"><a href="#underscore-color">Colorizing underscores</a></li>
-    <li class="list-head-goodies text-color"><a href="#underscore-notes">Notes on underscoring</a></li>
   </ul></li>
   <li class="list-head-goodies text-color"><a href="#underscore2">UNDERSCORE2</a> <span class="normal-smaller">&ndash; double underscore</span></li>
-  <li class="list-head-goodies text-color"><a href="#underline">UNDERLINE</a> <span class="normal-smaller">&ndash; fixed-width fonts only</span>
+  <li class="list-head-goodies text-color"><a href="#underline">UNDERLINE</a>
   <ul class="sublist sub">
-    <li class="list-head-goodies text-color"><a href="#ul">\*[UL]</a> <span class="normal-sub-sub">&ndash; inline escape to underline; fixed-width fonts only</span></li>
+    <li class="list-head-goodies text-color"><a href="#ul">\*[UL]</a> <span class="normal-sub-sub">&ndash; inline escape to underline</span></li>
   </ul></li>
 </ul></li>
 <li class="list-head-goodies no-anchor"><span style="font-size: 90%;">Padding</span>
@@ -137,9 +136,9 @@ to feel welcome.  Consequently, she tries for easy-to-grasp,
 self-explanatory macro names.  However, mom knows that people have
 their own ways of thinking, their own preferences, their own habits.
 Some of her macro names may not suit you; they might be too long,
-or aren&#8217;t what you automatically think of when you want to do
-a particular thing, or might conflict with habits you've developed
-over the years.
+or aren&#8217;t what you automatically think of when you want to
+do a particular thing, or might conflict with habits you&#8217;ve
+developed over the years.
 </p>
 
 <p>
@@ -195,9 +194,9 @@ creating an aliases file of the form
 Put the file someplace convenient and source it (include it) at the
 beginning of your documents with the
 <a href="docprocessing.html#include">INCLUDE</a>
-macro.  Assuming that you've created an aliases file called
+macro.  Assuming that you&#8217;ve created an aliases file called
 <b>mom-aliases</b> in your home directory under a directory called
-<b>Mom</b>, you'd source it by placing
+<b>Mom</b>, you&#8217;d source it by placing
 <br/>
 <span class="pre-in-pp">
   .INCLUDE /home/&lt;username&gt;/Mom/mom-aliases
@@ -278,8 +277,8 @@ The same applies to tabs
 (<a href="typesetting.html#tab-set">typesetting</a>
 or
 <a href="typesetting.html#st">string</a>)
-to which you've passed the J or QUAD argument.  You must insert
-<kbd>.BR</kbd> yourself, or risk a portion of your text
+to which you&#8217;ve passed the J or QUAD argument.  You must
+insert <kbd>.BR</kbd> yourself, or risk a portion of your text
 disappearing into a black hole.
 </p>
 </div>
@@ -523,7 +522,7 @@ Macro: <b>STRING</b> <kbd class="macro-args">&lt;name&gt; &lt;what you want in t
 
 <p>
 You may find sometimes that you have to type out portions of text
-repeatedly.  If you'd like not to wear out your fingers, you can
+repeatedly.  If you&#8217;d like not to wear out your fingers, you can
 define a string that, whenever you call it by name, outputs whatever
 you put into it.
 </p>
@@ -677,7 +676,7 @@ The string must be enclosed in double-quotes, like this:
   .UNDERSCORE "Unmonitored monopolies breed high prices and poor products."&nbsp;
 </span>
 If you wish to change the distance of the rule from the baseline,
-use the optional argumen
+use the optional argument
 <kbd>&lt;distance&nbsp;below&nbsp;baseline&gt;</kbd>
 (with a unit of measure).
 <br/>
@@ -688,11 +687,22 @@ The above places upper edge of the underscore 3 points below the
 <a href="definitions.html#baseline">baseline</a>.
 </p>
 
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+UNDERSCORE does not work across line breaks in output copy, which is
+to say that you can&#8217;t underscore a multi-line passage simply
+by putting the text of the whole thing in the string you pass to
+UNDERSCORE.  If you need to several lines of type, use
+<a href="#underline">UNDERLINE</a>.
+</p>
+</div>
+
 <h3 id="underscore-weight" class="docs">Controlling the weight of underscores</h3>
 <p>
 The weight (thickness) of underscores may be controlled with the
 macro, UNDERSCORE_WEIGHT.  Thus, if you want underscores with a
-weight of 1-1/2 points, you'd invoke:
+weight of 1-1/2 points, you&#8217;d invoke:
 <br/>
 <span class="pre-in-pp">
   .UNDERSCORE_WEIGHT 1.5
@@ -742,56 +752,6 @@ text in red, underscore in blue, and prevailing type in black:
   .UNDERSCORE "\*[red]text to underscore\*[blue]"
   .COLOR black
 </span>
-</p>
-
-<h3 id="underscore-notes" class="docs">Notes on underscoring</h3>
-<p>
-UNDERSCORE does not work across line breaks in output copy, which is
-to say that you can&#8217;t underscore a multi-line passage simply
-by putting the text of the whole thing in the string you pass to
-UNDERSCORE.  Each
-<a href="definitions.html#outputline">output line</a>
-or portion of an output line you want underscored must be plugged
-separately into UNDERSCORE.  Bear in mind, though, that underscoring
-should at best be an occasional effect in typeset copy.  If you want
-to emphasize an entire passage, it&#8217;s much, much better to
-change fonts (e.g. to italic or bold).
-</p>
-
-<p>
-You can easily and successfully underline entire passages in
-simulated typewriter-style copy (i.e. if your font is a monospaced
-one, like Courier, or you&#8217;re using the document processing
-macro
-<a href="#printstyle">PRINTSTYLE TYPEWRITE</a>),
-with the
-<a href="#underline">UNDERLINE</a>
-macro. UNDERLINE is designed specifically for this purpose, but
-works only with the monspaced fonts.
-</p>
-
-<p>
-Mom doesn&#8217;t always get the position and length of the
-underscore precisely right in
-<a href="definitions.html#just">justified</a>
-copy, although she&#8217;s fine with all the other
-<a href="definitions.html#filled">fill modes</a>,
-as well as with the no-fill modes.  The reason is that when text is
-justified, the word spacing may expand to fill the line, but that
-doesn&#8217;t happen until <i>after</i> the line has been processed
-in all other respects&mdash;including establishing how long to make
-an underscore.  A workaround is to prepend the backslash character
-(<kbd>\</kbd>) to each word space in the string passed
-to UNDERSCORE.  The word spacing of the underscored string may be
-slightly smaller than the word space of the remainder of the line,
-but in most cases, the difference isn&#8217;t visually noticeable.
-</p>
-
-<p>
-UNDERSCORE tends to confuse <b>gxditview</b>, even though the
-output, when printed, looks fine.  Generally, I recommend using
-<b>gv</b> to preview files anyway.  See the section on
-<a href="using.html#using-previewing">previewing</a>.
 </p>
 
 <!-- -UNDERSCORE2- -->
@@ -853,20 +813,9 @@ the macro
 (q.v).
 </p>
 
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-The same restrictions and caveats apply to UNDERSCORE2 as to
-UNDERSCORE.  See the
-<a href="#underscore-notes">NOTES</a>
-for UNDERSCORE.
-</p>
-</div>
-
-<!-- -UNDERLINE- -->
-
+<!-- -UNDERLINE- --> 
 <div class="macro-id-overline">
-<h3 id="underline" class="macro-id">Underline text &mdash; monospaced fonts only</h3>
+<h3 id="underline" class="macro-id">Underline</h3>
 </div>
 
 <div class="box-macro-args">
@@ -874,70 +823,73 @@ Macro: <b>UNDERLINE</b> <kbd class="macro-args">toggle</kbd>
 </div>
 
 <p>
-If your font is monospaced, like Courier, or you&#8217;re using the
-document processing macro
-<a href="#printstyle">PRINTSTYLE TYPEWRITE</a>,
-UNDERLINE allows you to underline words and passages that, in
-typeset copy, would be italicized.  You invoke UNDERLINE as you do
-with all toggle macros &mdash; by itself (i.e. with no argument) to
-initiate underlining, and with any argument (OFF, QUIT, X, etc) to
-turn underlining off.
+The distinction between underscoring and underlining is that
+underscoring is suitable for occasional effects (a word here, a word
+there), whereas underlining underlines whole passages of type.
+Furthermore, you cannot colorize underlining, and there&#8217;s a
+special macro,
+<a href="#underline-specs">UNDERLINE_SPECS</a>,
+to control the weight and distance from the baseline of the
+underline.
 </p>
 
 <p>
-When on, UNDERLINE underlines letters, words and numbers, but not
-punctuation or spaces.  This makes for more readable copy than a
-solid underline.
+UNDERLINE is a toggle macro, therefore you invoke it by itself (i.e.
+with no argument) to initiate underlining, and with any argument
+(<kbd>OFF, QUIT, X,</kbd> etc) to turn it off.
 </p>
 
 <div class="box-tip">
-<p class="tip">
+<p class="tip-top">
 <span class="note">Note:</span>
 Underlining may also be turned on and off
 <a href="definitions.html#inlines">inline</a>
 with the escapes
 <kbd><a href="#ul">\*[UL]...\*[ULX]</a></kbd>.
 </p>
+
+<p class="tip-bottom">
+<span class="additional-note">Additional note:</span>
+Neither <kbd>.UNDERLINE</kbd> nor <kbd>\*[UL]</kbd> persist past the
+current document element tag.  For example, if you turn underlining
+on in a paragraph
+(<kbd><a href="docelement.html#pp">.PP</a></kbd>),
+your next paragraph will not be underlined (nor your next head,
+subhead, etc), regardless of whether you explicitly turn underlining
+off.
+</p>
 </div>
+
+<h4 id="underline-specs" class="docs">UNDERLINE_SPECS</h4>
+
+<p>
+The weight of underlining and the distance from the baseline is
+set with
+<br/>
+<span class="pre-in-pp">
+  .UNDERLINE_SPECS &lt;weight&gt; &lt;distance&gt;
+</span>
+The <kbd>&lt;weight&gt;</kbd> argument can be expressed in any
+<a href="definitions.html#unitofmeasure">unit of measure</a>
+you like, but points is the most usual.  Mom&#8217;s default is 1/2 point
+(.5p).  The same holds for the <kbd>&lt;distance&gt;</kbd> argument;
+mom&#8217;s default is 1-1/4 points (1.25p).
+</p>
 
 <!-- -UL- -->
 
-<div class="macro-id-overline">
-<h3 id="ul" class="macro-id">Inline escape for underlining &mdash; monospaced fonts only</h3>
-</div>
-
-<div class="box-macro-args">
-Inline: <b>\*[UL]...\*[ULX]</b>
-</div>
+<h4 id="ul" class="docs">INLINE ESCAPE FOR UNDERLINING</h4>
 
 <p>
-If your font is a monospaced one, like Courier, or you&#8217;re
-using the document processing macro
-<a href="#printstyle">PRINTSTYLE TYPEWRITE</a>,
-<kbd>\*[UL]...\*[ULX]</kbd> underlines words and
-passages that, in typeset copy, would be italicized.
-</p>
-
-<p>
-<kbd>\*[UL]</kbd> underlines all letters, words and numbers
-following it, but not punctuation or spaces.  This makes for more
-readable copy than a solid underline.  When you no longer want
-underlining, <kbd>\*[ULX]</kbd> turns underlining off.
-</p>
-
-<p>
-The macro
-<kbd><a href="#underline">UNDERLINE</a></kbd>
-and the inline escape <kbd>\*[UL]</kbd> are functionally
-identical, hence
+The macro pair,
+<kbd><a href="#underline">.UNDERLINE</a></kbd> /
+<kbd>.UNDERLINE&nbsp;OFF</kbd>, and the inline escapes,
+<kbd>\*[UL]</kbd> / <kbd>\*[ULX]</kbd>, are functionally identical,
+hence, in
+<a href="definitions.html#filled">fill</a>
+modes
 <br/>
 <span class="pre-in-pp">
-  .FAM     C
-  .FT      R
-  .PT_SIZE 12
-  .LS      24
-  .SS      0
-  .QUAD    LEFT
   Which should I heed?
   .UNDERLINE
   Just do it
@@ -950,12 +902,6 @@ identical, hence
 produces the same result as
 <br/>
 <span class="pre-in-pp">
-  .FAM     C
-  .FT      R
-  .PT_SIZE 12
-  .LS      24
-  .SS      0
-  .QUAD    LEFT
   Which should I heed? \*[UL]Just do it\*[ULX] or \*[UL]just say no?\*[ULX]
 </span>
 </p>
@@ -1006,7 +952,7 @@ The
 <a href="goodies.html#pad-marker">pad marker</a>
 (see below) is <kbd>#</kbd> (the pound or number sign
 on your keyboard) and can be used multiple times in a line.  With
-that in mind, here&#8217;s how you'd input the Date/Signature line
+that in mind, here&#8217;s how you&#8217;d input the Date/Signature line
 (assuming a length of 30 picas):
 <br/>
 <span class="pre">
@@ -1099,7 +1045,7 @@ marker with
 <kbd><a href="#pad-marker">PAD_MARKER</a></kbd>.
 Also, be aware that <kbd>#</kbd> as a pad marker
 only applies within the PAD macro; at all other times it prints
-literally, just as you'd expect.
+literally, just as you&#8217;d expect.
 </p>
 
 <p class="tip-bottom">
@@ -1138,7 +1084,7 @@ changes the pad marker to <kbd>@</kbd>.
 </p>
 
 <p>
-Once you've changed the pad marker, the new marker remains in effect
+Once you&#8217;ve changed the pad marker, the new marker remains in effect
 for every instance of
 <a href="#pad">PAD</a>
 until you change it again (say, back to the pound sign).
@@ -1393,9 +1339,9 @@ smaller.
 
 <h3 id="dropcap-color" class="control-macro">&bull;&nbsp;DROPCAP_COLOR</h3>
 <p style="margin-left: .66em;">
-If you'd like your drop cap colourized, simply invoke
-<kbd>.DROPCAP_COLOR&nbsp;&lt;color&gt;</kbd> with the name of a colour you've already
-created (&#8220;initialized&#8221;) with
+If you&#8217;d like your drop cap colourized, simply invoke
+<kbd>.DROPCAP_COLOR&nbsp;&lt;color&gt;</kbd> with the name of a
+colour you&#8217;ve already created (&#8220;initialized&#8221;) with
 <a href="color.html#newcolor">NEWCOLOR</a>
 or
 <a href="color.html#xcolor">XCOLOR</a>.
@@ -1467,15 +1413,14 @@ blessings not only in this lifetime, but in all lifetimes to come.
 <p>
 By default, mom raises superscripts 1/3 of an
 <a href="definitions.html#ems">em</a>
-above the baseline.  If you&#8217;re not happy with this default, you can
-change it by invoking SUPERSCRIPT_RAISE_AMOUNT with
-the amount you want them raised.  A
+above the baseline.  If you&#8217;re not happy with this default,
+you can change it by invoking SUPERSCRIPT_RAISE_AMOUNT with the
+amount you want them raised.  A
 <a href="definitions.html#unitofmeasure">unit of measure</a>
 must be appended directly to the amount.  Thus, you want
 superscripts raised by 3
 <a href="definitions.html#picaspoints">points</a>
-instead of 1/3 em, you'd
-do
+instead of 1/3 em, you&#8217;d do
 <br/>
 <span class="pre-in-pp">
   .SUPERSCRIPT_RAISE_AMOUNT 3p

@@ -2129,21 +2129,18 @@ on, invoke the macro without an argument.
 <h2 id="blank-pages" class="macro-group">Inserting blank pages into a document</h2>
 
 <div class="box-macro-args">
-Macro: <b>BLANKPAGE</b> <kbd class="macro-args">&lt;# of blank pages to insert&gt; &lt;NULL&gt;</kbd>
+Macro: <b>BLANKPAGE</b> <kbd class="macro-args">&lt;# of blank pages to insert&gt; [DIVIDER [NULL]]</kbd>
 </div>
 
 <p>
 This one does exactly what you&#8217;d expect&mdash;inserts a blank
-page into the document.  Unless you give the optional argument,
+page (or pages) into a document.  Unless you give the optional argument,
 <kbd>NULL</kbd>, mom silently increments the page number of every
 blank page and keeps track of
 <a href="rectoverso.html#recto-verso">recto/verso</a>
-stuff, but otherwise does nothing.  It&#8217;s up to you, the user,
-to figure out what to do with this feature.  However, it&#8217;s
-worth noting that without it, inserting completely blank pages,
-to use a vernacular Québécois phrase, <i>c'est pas
-évident</i>. (Somewhere between <i>it isn&#8217;t easy, it
-isn&#8217;t obvious</i> and <i>it isn&#8217;t fun</i>).
+stuff, but otherwise does nothing.  This is useful for forcing new
+sections of a document onto recto pages, but may have other
+applications as well.
 </p>
 
 <p>
@@ -2154,7 +2151,16 @@ one blank page, you have to tell mom:
 <span class="pre-in-pp">
   .BLANKPAGE 1
 </span>
-The optional argument, <kbd>NULL</kbd>, allows you to output the
+The optional argument, <kbd>DIVIDER</kbd>, must be given if
+you&#8217;re inserting a blank page before the start of any new
+document section (i.e. a new chapter, or endnotes, a bibliography,
+or table of contents).  Without the <kbd>DIVIDER</kbd> argument, mom
+simply inserts the blank pages and prepares the next page to receive
+<a href="definitions.html#running">running text</a>.
+</p>
+
+<p>
+<kbd>NULL</kbd>, which is also optional, allows you to output the
 specified number of pages without mom incrementing the page number
 for each blank page.  She will, however, continue to keep track
 of which pages are recto/verso if recto/verso printing has been

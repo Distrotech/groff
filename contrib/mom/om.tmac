@@ -21,8 +21,8 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-Version 1.5-e
--------------
+Version 1.6
+-----------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
 nothing left to take away.
@@ -89,7 +89,52 @@ to a macro means that any argument turns the feature off.
 \# Instruct grops to use square linecaps and joins.
 \# This instruction is also executed in DO_B_MARGIN, NEWPAGE, and HEADER
 \#
+.if !n \{\
 \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
+.\}
+\#
+\# The following PostScript, provided by Tadziu Hoffmann, permits
+\# no-fail underlining
+\#
+.de ul*ps
+ps: def
+grops begin
+/decornone { grops begin /X { } def /Y { } def /y2 -1 def end } def
+/decorline { grops begin u neg /uld exch def u /ulw exch def
+             /X { currentpoint /y0 exch def /x0 exch def } def
+             /Y { currentpoint /y1 exch def /x1 exch def
+                  drawline /x2 x1 def /y2 y1 def } def end } def
+/drawline { gsave ulw setlinewidth 0 setlinecap x1 y1 uld sub moveto
+            y2 y0 eq { x2 y2 } { x0 y0 } ifelse uld sub lineto stroke
+            grestore } def
+decornone
+/uld 0 def
+/ulw 0 def
+/A { X show Y } def
+/B { 0 SC 3 -1 roll X widthshow Y } def
+/C { 0 exch X ashow Y } def
+/D { 0 exch 0 SC 5 2 roll X awidthshow Y } def
+/E { 0 rmoveto X show Y } def
+/F { 0 rmoveto 0 SC 3 -1 roll X widthshow Y } def
+/G { 0 rmoveto 0 exch X ashow Y } def
+/H { 0 rmoveto 0 exch 0 SC 5 2 roll X awidthshow Y } def
+/I { 0 exch rmoveto X show Y } def
+/J { 0 exch rmoveto 0 SC 3 -1 roll X widthshow Y } def
+/K { 0 exch rmoveto 0 exch X ashow Y } def
+/L { 0 exch rmoveto 0 exch 0 SC 5 2 roll X awidthshow Y } def
+/M { rmoveto X show Y } def
+/N { rmoveto 0 SC 3 -1 roll X widthshow Y } def
+/O { rmoveto 0 exch X ashow Y } def
+/P { rmoveto 0 exch 0 SC 5 2 roll X awidthshow Y } def
+/Q { moveto X show Y } def
+/R { moveto 0 SC 3 -1 roll X widthshow Y } def
+/S { moveto 0 exch X ashow Y } def
+/T { moveto 0 exch 0 SC 5 2 roll X awidthshow Y } def
+end
+..
+.if !n \{\
+\Y[ul*ps]
+.\}
 \#
 \# ====================================================================
 \#
@@ -326,7 +371,7 @@ to a macro means that any argument turns the feature off.
 .    nr #T_MARGIN_LEAD_ADJ \\n[#LEAD]-12000
 .    ev B_MARGIN
 .    bp
-.    nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
+.    if !n \{ .nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap' \}
 .    ev
 .END
 \#
@@ -354,7 +399,7 @@ to a macro means that any argument turns the feature off.
 .       ie !\\n[#DOCS]=1 \{\
 .          ev NP
 .          bp
-.          nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
+.          if !n \{ .nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap' \}
 .          ev
 .       \}
 .       el \{\
@@ -451,11 +496,11 @@ to a macro means that any argument turns the feature off.
 .MAC FAMILY END
 .    ds $FAMILY \\$1
 .    if \\n[#PRINT_STYLE]=1 \{\
-.       fam C
+.       fam \\*[$TYPEWRITER_FAM]
 .       return
 .    \}
 .    if \\n[#IGNORE] \{\
-.       fam C
+.       fam \\*[$TYPEWRITER_FAM]
 .       return
 .    \}
 .    if (\\n[.x]\\n[.y]\\n[.Y] >= 1192) \{\
@@ -499,7 +544,11 @@ to a macro means that any argument turns the feature off.
 .             return
 .          \}
 .       \}
-.       el \{ .UNDERLINE OFF \}
+.       el \{\
+.          ev 1
+.          UNDERLINE OFF
+.          ev
+.       \}
 .       return
 .    \}
 .    ft 0
@@ -1204,8 +1253,8 @@ to a macro means that any argument turns the feature off.
 .    if \\n[#RESTORE_SQ]=1 \{\
 .       rr #RESTORE_SQ
 .       ie '\\*[$RESTORE_SQ]'' \{\
-.          ds $QUOTE0 \[dq]
-.          ds $QUOTE1 \[dq]
+.          ds $QUOTE0 \[lq]
+.          ds $QUOTE1 \[rq]
 .       \}
 .       el \{\
 .          SMARTQUOTES \\*[$RESTORE_SQ]
@@ -1293,8 +1342,8 @@ to a macro means that any argument turns the feature off.
 .       \}
 .    \}
 .    if !r#ARGS_TO_SQ \{\
-.       ds $QUOTE0 \\[dq]
-.       ds $QUOTE1 \\[dq]
+.       ds $QUOTE0 \\[lq]
+.       ds $QUOTE1 \\[rq]
 .       nr #RESTORE_SQ 1
 .    \}
 .END
@@ -1861,153 +1910,56 @@ to a macro means that any argument turns the feature off.
 \# *Arguments:
 \#   <none> | <anything>
 \# *Function:
-\#   When on, underlines all letters, words, and digits in a passage,
-\#   ignoring punctuation and spaces.
+\#   Simulates typewriter-style underlining of italic passages.
 \# *Notes:
-\#   Only for use when the font family is COURIER, to simulate
-\#   typewriter-style underlining of italic  passages.
+\#   Defaults for rule weight and distance from baseline are below.
+\#   UNDERLINE_SPECS lets user change them
+\#
+.nr _w 500
+.nr _d 1250
+\#
+.MAC UNDERLINE_SPECS END
+.    ie \B'\\$1' \{ .nr _w (u;\\$1) \}
+.    el \{\
+.       ie '\\$1'DEFAULT' \{ .nr _w 500 \}
+.       el \{\
+.          nr _w 500
+.          tm1 "[mom]: The first argument to \\$0 must be a numeric
+.          tm1 "       argument with a unit of measure appended, or DEFAULT.
+.          tm1 "       Setting underline weight to DEFAULT.
+.       \}
+.    \}
+.    shift
+.    ie \B'\\$1' \{ .nr _d (u;\\$1) \}
+.    el \{\
+.       ie '\\$1'DEFAULT' \{ .nr _d 1250 \}
+.       el \{\
+.          nr _d 1250
+.          tm1 "[mom]: The second argument to \\$0 must be a numeric
+.          tm1 "       argument with a unit of measure appended, or DEFAULT.
+.          tm1 "       Setting underline distance from baseline to DEFAULT.
+.       \}
+.    \}
+.END
 \#
 .MAC UNDERLINE END
+\c
+.    ds $SAVED_SS_VAR \\*[$SS_VAR]
 .    ie '\\$1'' \{\
 .       nr #UNDERLINE_ON 1
-.       char A _A
-.       char B _B
-.       char C _C
-.       char D _D
-.       char E _E
-.       char F _F
-.       char G _G
-.       char H _H
-.       char I _I
-.       char J _J
-.       char K _K
-.       char L _L
-.       char M _M
-.       char N _N
-.       char O _O
-.       char P _P
-.       char Q _Q
-.       char R _R
-.       char S _S
-.       char T _T
-.       char U _U
-.       char V _V
-.       char W _W
-.       char X _X
-.       char Y _Y
-.       char Z _Z
-.       char \[`A] _\[`A]
-.       char \[^A] _\[^A]
-.       char \['A] _\['A]
-.       char \[:A] _\[:A]
-.       char \[oA] _\[oA]
-.       char \[~A] _\[~A]
-.       char \[AE] _\[AE]
-.       char \[`E] _\[`E]
-.       char \[^E] _\[^E]
-.       char \['E] _\['E]
-.       char \[:E] _\[:E]
-.       char \[`I] _\[`I]
-.       char \[^I] _\[^I]
-.       char \['I] _\['I]
-.       char \[:I] _\[:I]
-.       char \[`O] _\[`O]
-.       char \[^O] _\[^O]
-.       char \['O] _\['O]
-.       char \[:O] _\[:O]
-.       char \[~O] _\[~O]
-.       char \[/O] _\[/O]
-.       char \[`U] _\[`U]
-.       char \[^U] _\[^U]
-.       char \['U] _\['U]
-.       char \[:U] _\[:U]
-.       char \[,C] _\[,C]
-.       char \[-D] _\[-D]
-.       char \[~N] _\[~N]
-.       char \[TP] _\[TP]
-.       char \['Y] _\['Y]
-.       char \[:Y] _\[:Y]
-.       char a _a
-.       char b _b
-.       char c _c
-.       char d _d
-.       char e _e
-.       char f _f
-.       char g _g
-.       char h _h
-.       char i _i
-.       char j _j
-.       char k _k
-.       char l _l
-.       char m _m
-.       char n _n
-.       char o _o
-.       char p _p
-.       char q _q
-.       char r _r
-.       char s _s
-.       char t _t
-.       char u _u
-.       char v _v
-.       char w _w
-.       char x _x
-.       char y _y
-.       char z _z
-.       char \[`a] _\[`a]
-.       char \[^a] _\[^a]
-.       char \['a] _\['a]
-.       char \[:a] _\[:a]
-.       char \[oa] _\[oa]
-.       char \[~a] _\[~a]
-.       char \[ae] _\[ae]
-.       char \[`e] _\[`e]
-.       char \[^e] _\[^e]
-.       char \['e] _\['e]
-.       char \[:e] _\[:e]
-.       char \[`i] _\[`i]
-.       char \[^i] _\[^i]
-.       char \['i] _\['i]
-.       char \[:i] _\[:i]
-.       char \[`o] _\[`o]
-.       char \[^o] _\[^o]
-.       char \['o] _\['o]
-.       char \[:o] _\[:o]
-.       char \[~o] _\[~o]
-.       char \[/o] _\[/o]
-.       char \[`u] _\[`u]
-.       char \[^u] _\[^u]
-.       char \['u] _\['u]
-.       char \[:u] _\[:u]
-.       char \[,c] _\[,c]
-.       char \[Sd] _\[Sd]
-.       char \[~n] _\[~n]
-.       char \[Tp] _\[Tp]
-.       char \['y] _\['y]
-.       char \[:y] _\[:y]
-.       char \[ss] _\[ss]
-.       char ' _'
-.       char 1 _1
-.       char 2 _2
-.       char 3 _3
-.       char 4 _4
-.       char 5 _5
-.       char 6 _6
-.       char 7 _7
-.       char 8 _8
-.       char 9 _9
-.       char 0 _0
+.       ss \\n[.ss] (\\n[.ss]-\\n[.ss])
+.       ie !n \{\
+.          nop \X'ps: exec \\n[_w] \\n[_d] decorline'\c
+.       \}
+.       el \{ .ul 1000 \}
 .    \}
 .    el \{\
 .       nr #UNDERLINE_ON 0
-.       rchar A B C D E F G H I J K L M N O P Q R S T U V W X Y Z \
-        a b c d e f g h i j k l m n o p q r s t u v w x y z \
-        \[`A] \[^A] \['A] \[:A] \[oA] \[~A] \[AE] \[`E] \[^E] \['E] \[:E] \
-        \[`I] \[^I] \['I] \[:I] \[`O] \[^O] \['O] \[:O] \[~O] \[/O] \[`U] \
-        \[^U] \['U] \[:U] \[,C] \[-D] \[~N] \[TP] \['Y] \[:Y] \
-        \[`a] \[^a] \['a] \[:a] \[oa] \[~a] \[ae] \[`e] \[^e] \['e] \[:e] \[`i] \
-        \[^i] \['i] \[:i] \[`o] \[^o] \['o] \[:o] \[~o] \[/o] \[`u] \[^u] \['u] \
-        \[:u] \[,c] \[Sd] \[~n] \[Tp] \['y] \[:y] \[ss] \
-        ' 1 2 3 4 5 6 7 8 9 0
+.       SS \\*[$SAVED_SS_VAR]
+.       ie !n \{\
+.          nop \X'ps: exec decornone'\c
+.       \}
+.       el \{ .ul 0 \}
 .    \}
 .END
 \#
@@ -2017,156 +1969,64 @@ to a macro means that any argument turns the feature off.
 \# *Arguments:
 \#   <none>
 \# *Function:
-\#   Underscores all letters, words, and digits in a passage,
-\#   ignoring punctuation and spaces.
+\#   Simulates typewriter-style underlining of italic passages.
 \# *Notes:
 \#   Intended to be called with inline escapes \*[UL] (underline
-\#   on) and \*[ULX] (underline off).  Only works when the font family
-\#   is fixed width, to simulate typewriter-style underlining of italic
-\#   passages.
+\#   on) and \*[ULX] (underline off).
 \#
 .MAC UL END
-\c\R'#UNDERLINE_ON 1'
-.       char A _A
-.       char B _B
-.       char C _C
-.       char D _D
-.       char E _E
-.       char F _F
-.       char G _G
-.       char H _H
-.       char I _I
-.       char J _J
-.       char K _K
-.       char L _L
-.       char M _M
-.       char N _N
-.       char O _O
-.       char P _P
-.       char Q _Q
-.       char R _R
-.       char S _S
-.       char T _T
-.       char U _U
-.       char V _V
-.       char W _W
-.       char X _X
-.       char Y _Y
-.       char Z _Z
-.       char \[`A] _\[`A]
-.       char \[^A] _\[^A]
-.       char \['A] _\['A]
-.       char \[:A] _\[:A]
-.       char \[oA] _\[oA]
-.       char \[~A] _\[~A]
-.       char \[AE] _\[AE]
-.       char \[`E] _\[`E]
-.       char \[^E] _\[^E]
-.       char \['E] _\['E]
-.       char \[:E] _\[:E]
-.       char \[`I] _\[`I]
-.       char \[^I] _\[^I]
-.       char \['I] _\['I]
-.       char \[:I] _\[:I]
-.       char \[`O] _\[`O]
-.       char \[^O] _\[^O]
-.       char \['O] _\['O]
-.       char \[:O] _\[:O]
-.       char \[~O] _\[~O]
-.       char \[/O] _\[/O]
-.       char \[`U] _\[`U]
-.       char \[^U] _\[^U]
-.       char \['U] _\['U]
-.       char \[:U] _\[:U]
-.       char \[,C] _\[,C]
-.       char \[-D] _\[-D]
-.       char \[~N] _\[~N]
-.       char \[TP] _\[TP]
-.       char \['Y] _\['Y]
-.       char \[:Y] _\[:Y]
-.       char a _a
-.       char b _b
-.       char c _c
-.       char d _d
-.       char e _e
-.       char f _f
-.       char g _g
-.       char h _h
-.       char i _i
-.       char j _j
-.       char k _k
-.       char l _l
-.       char m _m
-.       char n _n
-.       char o _o
-.       char p _p
-.       char q _q
-.       char r _r
-.       char s _s
-.       char t _t
-.       char u _u
-.       char v _v
-.       char w _w
-.       char x _x
-.       char y _y
-.       char z _z
-.       char \[`a] _\[`a]
-.       char \[^a] _\[^a]
-.       char \['a] _\['a]
-.       char \[:a] _\[:a]
-.       char \[oa] _\[oa]
-.       char \[~a] _\[~a]
-.       char \[ae] _\[ae]
-.       char \[`e] _\[`e]
-.       char \[^e] _\[^e]
-.       char \['e] _\['e]
-.       char \[:e] _\[:e]
-.       char \[`i] _\[`i]
-.       char \[^i] _\[^i]
-.       char \['i] _\['i]
-.       char \[:i] _\[:i]
-.       char \[`o] _\[`o]
-.       char \[^o] _\[^o]
-.       char \['o] _\['o]
-.       char \[:o] _\[:o]
-.       char \[~o] _\[~o]
-.       char \[/o] _\[/o]
-.       char \[`u] _\[`u]
-.       char \[^u] _\[^u]
-.       char \['u] _\['u]
-.       char \[:u] _\[:u]
-.       char \[,c] _\[,c]
-.       char \[Sd] _\[Sd]
-.       char \[~n] _\[~n]
-.       char \[Tp] _\[Tp]
-.       char \['y] _\['y]
-.       char \[:y] _\[:y]
-.       char \[ss] _\[ss]
-.       char ' _'
-.       char 1 _1
-.       char 2 _2
-.       char 3 _3
-.       char 4 _4
-.       char 5 _5
-.       char 6 _6
-.       char 7 _7
-.       char 8 _8
-.       char 9 _9
-.       char 0 _0
+\c
+.    ds $SAVED_SS_VAR \\*[$SS_VAR]
+.    ss \\n[.ss] (\\n[.ss]-\\n[.ss])
+.    ie !'\\n[.z]'' 
+\c
+.       ie !n \{\
+\?\h'-\w'\\n[.ss]'u'\?
+\?\R'#UNDERLINE_ON 1'\X'ps: exec \\n[_w] \\n[_d] decorline'\?\c
+.       \}
+.       el \{\
+\?\R'#UNDERLINE_ON 1'\?\c
+.          ul 1000
+.       \}
+.    el \{\
+.       ie !n \{\
+\h'-\w'\\n[.ss]'u'
+.          nr #UNDERLINE_ON 1
+.          nop \X'ps: exec \\n[_w] \\n[_d] decorline'\c
+.       \}
+.       el \{\
+\h'-\w'\\n[.ss]'u'
+.          nr #UNDERLINE_ON 1
+.          ul 1000
+.       \}
+.    \}
 .END
 \#
 \#
 .MAC ULX END
-\c\R'#UNDERLINE_ON 0'
-.    rchar A B C D E F G H I J K L M N O P Q R S T U V W X Y Z \
-     a b c d e f g h i j k l m n o p q r s t u v w x y z \
-     \[`A] \[^A] \['A] \[:A] \[oA] \[~A] \[AE] \[`E] \[^E] \['E] \[:E] \
-     \[`I] \[^I] \['I] \[:I] \[`O] \[^O] \['O] \[:O] \[~O] \[/O] \[`U] \
-     \[^U] \['U] \[:U] \[,C] \[-D] \[~N] \[TP] \['Y] \[:Y] \
-     \[`a] \[^a] \['a] \[:a] \[oa] \[~a] \[ae] \[`e] \[^e] \['e] \[:e] \[`i] \
-     \[^i] \['i] \[:i] \[`o] \[^o] \['o] \[:o] \[~o] \[/o] \[`u] \[^u] \['u] \
-     \[:u] \[,c] \[Sd] \[~n] \[Tp] \['y] \[:y] \[ss] \
-     ' 1 2 3 4 5 6 7 8 9 0
+\c
+.    SS \\*[$SAVED_SS_VAR]
+.    rm $SAVED_SS_VAR
+.    ie !'\\n[.z]'' \{\
+\c
+.       ie !n \{\
+\?\R'#UNDERLINE_ON 0'\X'ps: exec decornone'\?\c
+.       \}
+.       el \{\
+\?\R'#UNDERLINE_ON 0'\?\c
+.          ul 0
+.       \}
+.    \}
+.    el \{\
+.       ie !n \{\
+.          nr #UNDERLINE_ON 0
+.          nop \X'ps: exec decornone'\c
+.       \}
+.       el \{\
+.          nr #UNDERLINE_ON 0
+.          ul 0
+.       \}
+.    \}
 .END
 \#
 \#
@@ -2399,23 +2259,23 @@ to a macro means that any argument turns the feature off.
 .ds SUP \
 \R'#PT_SIZE_IN_UNITS \En[.ps]'\
 \R'#SUP_PT_SIZE \En[#PT_SIZE_IN_UNITS]u*6u/10u'\
-\s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_RAISE]\s[\En[#SUP_PT_SIZE]u]
+\s[\En[#PT_SIZE_IN_UNITS]u]\E*[$SUP_RAISE]\s[\En[#SUP_PT_SIZE]u]
 \#
-.ds SUPX \s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_LOWER]
+.ds SUPX \s[\En[#PT_SIZE_IN_UNITS]u]\E*[$SUP_LOWER]
 \#
 .ds CONDSUP \
 \R'#PT_SIZE_IN_UNITS \En[.ps]'\
 \R'#SUP_PT_SIZE \En[#PT_SIZE_IN_UNITS]u*6u/10u'\
-\s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_RAISE]\s[\En[#SUP_PT_SIZE]u]\E*[COND_FOR_SUP]
+\s[\En[#PT_SIZE_IN_UNITS]u]\E*[$SUP_RAISE]\s[\En[#SUP_PT_SIZE]u]\E*[COND_FOR_SUP]
 \#
-.ds CONDSUPX \s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_LOWER]\E*[COND]
+.ds CONDSUPX \s[\En[#PT_SIZE_IN_UNITS]u]\E*[$SUP_LOWER]\E*[COND]
 \#
 .ds EXTSUP \
 \R'#PT_SIZE_IN_UNITS \En[.ps]'\
 \R'#SUP_PT_SIZE \En[#PT_SIZE_IN_UNITS]u*6u/10u'\
-\s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_RAISE]\s[\En[#SUP_PT_SIZE]u]\E*[EXT_FOR_SUP]
+\s[\En[#PT_SIZE_IN_UNITS]u]\E*[$SUP_RAISE]\s[\En[#SUP_PT_SIZE]u]\E*[EXT_FOR_SUP]
 \#
-.ds EXTSUPX \s[\En[#PT_SIZE_IN_UNITS]u]\\*[$SUP_LOWER]\E*[EXT]
+.ds EXTSUPX \s[\En[#PT_SIZE_IN_UNITS]u]\E*[$SUP_LOWER]\E*[EXT]
 \#
 \#
 \# SLANT
@@ -2601,7 +2461,7 @@ to a macro means that any argument turns the feature off.
 .    if !d$PAD_MARKER .ds $PAD_MARKER #
 .    char \\*[$PAD_MARKER] \R'#PAD_COUNT \En[#PAD_COUNT]+1'
 .    ds $FAMILY_FOR_PAD \\n[.fam]
-.    fp \\n[.fp] \\n[.sty]
+.    if !n \{ .fp \\n[.fp] \\n[.sty] \}
 .    ds $FONT_FOR_PAD   \\*[$FONT]
 .    nr #SIZE_FOR_PAD   \\n[.ps]
 .    ds $PAD_STRING \\$1
@@ -3550,11 +3410,11 @@ to a macro means that any argument turns the feature off.
 \#   \n[.sss] holds the current sentence space value.
 \#
 .MAC SS END
+.    ds $SS_VAR \\$1
 .    ie '\\$1'0' \{ .ss \\n[.ss] (\\n[.ss]-\\n[.ss]) \}
 .    el \{\
 .       ie '\\$1'DEFAULT' \{ .ss \\n[.ss] \}
 .       el \{\
-.          ds $SS_VAR \\$1
 .          ss \\n[.ss] (0\\*[$SS_VAR])
 .       \}
 .    \}
@@ -4334,6 +4194,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          nr #PRINT_STYLE 1
 .          if !\\n[#DOC_TYPE]=4 \{ .L_MARGIN 6P \}
 .          if !\\n[#DOC_TYPE]=4 \{ .R_MARGIN 6P \}
+.          ds $TYPEWRITER_FAM     C
+.          ds $TYPEWRITER_PS      12
 .          TYPEWRITER
 .          color 0
 .          ie '\\$2'SINGLESPACE' \{\
@@ -4369,6 +4231,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          nr #HEAD_UNDERLINE_WEIGHT 500
 .          char \(em --
 .          tr `'
+.          tr \(lq"
+.          tr \(rq"
 .       \}
 .       if '\\$1'TYPESET' \{\
 .          nr #PRINT_STYLE 2
@@ -4397,14 +4261,22 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
-\# Macros to control behaviour of PRINTSTYLE TYPEWRITE
+\# PRINTSTYLE TYPEWRITE control.
 \#
-\# First, a little utility macro.
+.MAC TYPEWRITER_FAMILY END
+.    ds $TYPEWRITER_FAM \\$1
+.END
+\#
+.ALIAS TYPEWRITER_FAM TYPEWRITER_FAMILY
+\#
+.MAC TYPEWRITER_SIZE END
+.    ds $TYPEWRITER_PS \\$1
+.END
 \#
 .MAC TYPEWRITER END
-.    fam C
+.    fam \\*[$TYPEWRITER_FAM]
 .    ft  R
-.    ps  12
+.    ps  \\*[$TYPEWRITER_PS]
 .END
 \#
 \#
@@ -4428,7 +4300,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       rm PREV
 .       ds ROM  \EfR
 .       ds IT   \EfI
-.       ds PREV \EfR
+.       ds PREV \Ef[]
 .    \}
 .END
 \#
@@ -5689,15 +5561,18 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#HDRFTR_RIGHT_CAPS]=0 \{\
 .       if !d$HDRFTR_RIGHT_SIZE_CHANGE \{ .HDRFTR_RIGHT_SIZE +0 \}
 .    \}
-.    if !d$FN_FAM               \{ .FOOTNOTE_FAMILY \\*[$DOC_FAM]      \}
-.    if !d$FN_FT                \{ .FOOTNOTE_FONT R                    \}
-.    if !d$FN_QUAD              \{ .FOOTNOTE_QUAD \\*[$DOC_QUAD]       \}
-.    if !r#FN_RULE              \{ .FOOTNOTE_RULE                      \}
-.    if !r#FN_MARKERS           \{ .FOOTNOTE_MARKERS                   \}
+.    if !d$FN_FAM                 \{ .FOOTNOTE_FAMILY \\*[$DOC_FAM]   \}
+.    if !d$FN_FT                  \{ .FOOTNOTE_FONT R                 \}
+.    if !d$FN_QUAD                \{ .FOOTNOTE_QUAD \\*[$DOC_QUAD]    \}
+.    if !r#FN_RULE                \{ .FOOTNOTE_RULE                   \}
+.    if !r#FN_MARKERS             \{ .FOOTNOTE_MARKERS                \}
 .    if \\n[#FN_MARKERS]=1 \{\
-.       if !\\n[#FN_MARKER_STYLE] \{ .FOOTNOTE_MARKER_STYLE STAR       \}
+.       if \\n[#FN_REF]=1 \{\
+.          if !\\n[#FN_MARKER_STYLE] \{ .FOOTNOTE_MARKER_STYLE NUMBER \}
+.       \}
+.       if !\\n[#FN_MARKER_STYLE] \{ .FOOTNOTE_MARKER_STYLE STAR      \}
 .    \}
-.    if !\\n[#EN_MARKER_STYLE]  \{ .ENDNOTE_MARKER_STYLE NUMBER        \}
+.    if !r#EN_MARKER_STYLE      \{ .ENDNOTE_MARKER_STYLE SUPERSCRIPT   \}
 .    if !d$EN_PN_STYLE          \{ .ENDNOTES_PAGENUM_STYLE digit       \}
 .    if !d$EN_FAM               \{ .ENDNOTE_FAMILY \\*[$DOC_FAM]       \}
 .    if !d$EN_FT                \{ .ENDNOTE_FONT R                     \}
@@ -5720,16 +5595,19 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .       el \{ .ENDNOTE_TITLE "\\*[$TITLE]" \}
 .    \}
-.    if !d$EN_TITLE_FAM          \{ .ENDNOTE_TITLE_FAMILY \\*[$EN_FAM]      \}
-.    if !d$EN_TITLE_QUAD         \{ .ENDNOTE_TITLE_QUAD LEFT                \}
-.    if !r#EN_TITLE_UNDERLINE    \{ .nr #EN_TITLE_UNDERLINE 1               \}
-.    if !d$EN_NUMBER_FAM         \{ .ENDNOTE_NUMBER_FAMILY \\*[$EN_FAM]     \}
-.    if !d$EN_LN_FAM             \{ .ENDNOTE_LINENUMBER_FAMILY \\*[$EN_FAM] \}
+.    if !d$EN_TITLE_FAM          \{ .ENDNOTE_TITLE_FAMILY \\*[$EN_FAM]        \}
+.    if !d$EN_TITLE_QUAD         \{ .ENDNOTE_TITLE_QUAD LEFT                  \}
+.    if !r#EN_TITLE_UNDERLINE    \{ .nr #EN_TITLE_UNDERLINE 1                 \}
+.    if !d$EN_NUMBER_FAM         \{ .ENDNOTE_NUMBER_FAMILY \\*[$EN_FAM]       \}
+.    if !d$EN_LN_FAM             \{ .ENDNOTE_LINENUMBER_FAMILY \\*[$EN_FAM]   \}
 .    if !r#EN_NUMBERS_ALIGN_LEFT \{\
-.       if !r#EN_NUMBERS_ALIGN_RIGHT \{ .ENDNOTE_NUMBERS_ALIGN_RIGHT 2  \}
+.       if !r#EN_NUMBERS_ALIGN_RIGHT \{\
+.          ie !\\n[#EN_MARKER_STYLE]=2  \{ .ENDNOTE_NUMBERS_ALIGN RIGHT 2 \}
+.          el \{ .ENDNOTE_NUMBERS_ALIGN RIGHT 4 \}
+.       \}
 .    \}
-.    if !d$EN_LN_GAP             \{ .ENDNOTE_LINENUMBER_GAP 1.5n        \}
-.    if !r#EN_ALLOWS_HEADERS     \{ .ENDNOTES_ALLOWS_HEADERS            \}
+.    if !r#EN_LN_GAP             \{ .ENDNOTE_LINENUMBER_GAP 1n                \}
+.    if !r#EN_ALLOWS_HEADERS     \{ .ENDNOTES_ALLOWS_HEADERS                  \}
 .    if !d$BIB_PN_STYLE          \{ .BIBLIOGRAPHY_PAGENUM_STYLE digit         \}
 .    if !d$BIB_FAM               \{ .BIBLIOGRAPHY_FAMILY \\*[$DOC_FAM]        \}
 .    if !d$BIB_FT                \{ .BIBLIOGRAPHY_FONT R                      \}
@@ -5775,11 +5653,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !r#COVER_UNDERLINE          \{ .COVER_UNDERLINE            \}
 .\" Defaults for printstyle TYPEWRITE
 .    if \\n[#PRINT_STYLE]=1 \{\
+.       SS DEFAULT
 .       if \\n[#UNDERLINE_QUOTES]=1 \{ .UNDERLINE_QUOTES         \}
 .       if \\n[#UNDERLINE_QUOTES]=0 \{ .UNDERLINE_QUOTES OFF     \}
 .\" +Quotes and blockquotes
 .       if !r#Q_OFFSET_VALUE \{\
-.          if '\\*[$Q_OFFSET_VALUE]'' \{ .QUOTE_INDENT 2 \}
+.          if '\\*[$Q_OFFSET_VALUE]'' \{ .QUOTE_INDENT 1 \}
 .       \}
 .\" +Epigraphs
 .       if !r#EPI_OFFSET_VALUE \{\
@@ -6006,15 +5885,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !d$FN_SIZE_CHANGE            \{ .FOOTNOTE_SIZE      -2               \}
 .       if !r#FN_AUTOLEAD               \{ .FOOTNOTE_AUTOLEAD  2                \}
 .\" +Endnotes
-.       if !r#EN_PS                     \{ .ENDNOTE_PT_SIZE (\\n[#DOC_PT_SIZE]u)\}
-.       if !d$EN_STRING_FT              \{ .ENDNOTE_STRING_FONT B               \}
-.       if !d$EN_STRING_SIZE_CHANGE     \{ .ENDNOTE_STRING_SIZE +1              \}
-.       if !d$EN_TITLE_FT               \{ .ENDNOTE_TITLE_FONT  B               \}
-.       if !d$EN_TITLE_SIZE_CHANGE      \{ .ENDNOTE_TITLE_SIZE  +0              \}
-.       if !d$EN_NUMBER_FT              \{ .ENDNOTE_NUMBER_FONT B               \}
-.       if !d$EN_LN_FT                  \{ .ENDNOTE_LINENUMBER_FONT R           \}
-.       if !d$EN_NUMBER_SIZE_CHANGE     \{ .ENDNOTE_NUMBER_SIZE +0              \}
-.       if !r#EN_PP_INDENT              \{ .ENDNOTE_PARA_INDENT 1.5m            \}
+.       if !r#EN_PS                     \{ .ENDNOTE_PT_SIZE (\\n[#DOC_PT_SIZE]u) \}
+.       if !d$EN_STRING_FT              \{ .ENDNOTE_STRING_FONT B                \}
+.       if !d$EN_STRING_SIZE_CHANGE     \{ .ENDNOTE_STRING_SIZE +1               \}
+.       if !d$EN_TITLE_FT               \{ .ENDNOTE_TITLE_FONT  B                \}
+.       if !d$EN_TITLE_SIZE_CHANGE      \{ .ENDNOTE_TITLE_SIZE  +0               \}
+.       if !d$EN_NUMBER_FT              \{ .ENDNOTE_NUMBER_FONT B                \}
+.       if !d$EN_LN_FT                  \{ .ENDNOTE_LINENUMBER_FONT R            \}
+.       if !d$EN_NUMBER_SIZE_CHANGE     \{ .ENDNOTE_NUMBER_SIZE +0               \}
+.       if !d$EN_LN_SIZE_CHANGE         \{ .ENDNOTE_LINENUMBER_SIZE +0           \}
+.       if !r#EN_PP_INDENT              \{ .ENDNOTE_PARA_INDENT 1.5m             \}
+.       if !d$EN_SPACE                  \{ .ENDNOTE_SPACING 0                    \}
 .\" +Bibliography
 .       if !r#BIB_LIST                  \{ .BIBLIOGRAPHY_TYPE LIST .                  \}
 .       if !r#BIB_PS                    \{ .BIBLIOGRAPHY_PT_SIZE (\\n[#DOC_PT_SIZE]u) \}
@@ -6023,7 +5904,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .\" +Table of contents
 .       if !d$TOC_FAM                   \{ .TOC_FAMILY  \\*[$DOC_FAM]           \}
 .       if !r#TOC_PS                    \{ .TOC_PT_SIZE (\\n[#DOC_PT_SIZE]u)    \}
-.       if !r#TOC_LEAD                  \{ .TOC_LEAD    \\n[#DOC_LEAD]u ADJUST  \}
+.       if !d$TOC_LEAD                  \{ .TOC_LEAD \\n[#DOC_LEAD]u ADJUST     \}
 .       if !d$TOC_HEADER_FAM            \{ .TOC_HEADER_FAMILY \\*[$TOC_FAM]     \}
 .       if !d$TOC_HEADER_SIZE_CHANGE    \{ .TOC_HEADER_SIZE +4                  \}
 .       if !d$TOC_HEADER_FT             \{ .TOC_HEADER_FONT  B                  \}
@@ -6054,18 +5935,21 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .\" +Refer support
 .    if !r#EN_REF \{ .nr #FN_REF 1 \}
-.    if '\\*[$REF_FN_INDENT]'' \{\
-.       if \\n[#PRINT_STYLE]=1 \{ .INDENT_REFS FOOTNOTE 2m   \}
-.       if \\n[#PRINT_STYLE]=2 \{ .INDENT_REFS FOOTNOTE 1.5m \}
+.    if !d$REF_FN_INDENT \{\
+.       if \\n[#PRINT_STYLE]=1 \{ .INDENT_REFS FOOTNOTE .5i \}
+.       if \\n[#PRINT_STYLE]=2 \{ .INDENT_REFS FOOTNOTE 2m  \}
 .    \}
-.    if '\\*[$REF_EN_INDENT]'' \{\
-.       if \\n[#PRINT_STYLE]=1 \{ .INDENT_REFS ENDNOTE 2m   \}
-.       if \\n[#PRINT_STYLE]=2 \{ .INDENT_REFS ENDNOTE 1.5m \}
+.    if !d$REF_EN_INDENT \{\
+.       if \\n[#PRINT_STYLE]=1 \{ .INDENT_REFS ENDNOTE .5i  \}
+.       if \\n[#PRINT_STYLE]=2 \{ .INDENT_REFS ENDNOTE 2m   \}
 .    \}
-.    if '\\*[$REF_BIB_INDENT]'' \{\
-.       if \\n[#PRINT_STYLE]=1 \{ .INDENT_REFS BIBLIO 2m    \}
-.       if \\n[#PRINT_STYLE]=2 \{ .INDENT_REFS BIBLIO 1.5m  :\}
+.    if !d$REF_BIB_INDENT \{\
+.       if \\n[#PRINT_STYLE]=1 \{ .INDENT_REFS BIBLIO .5i   \}
+.       if \\n[#PRINT_STYLE]=2 \{ .INDENT_REFS BIBLIO 2m    \}
 .    \}
+.\" Define strings for idem entries
+.    if \\n[#PRINT_STYLE]=1 .char \[idem] \[hy]\[hy]\[hy]
+.    if \\n[#PRINT_STYLE]=2 .char \[idem] \v'-.3m'\l'3m'\v'.3m'
 .\" Adjust doc leading for PRINTSTYLE TYPESET
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       ie \\n[#ADJ_DOC_LEAD]=1 \{ .DOC_LEAD_ADJUST \}
@@ -6075,7 +5959,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    di NULL
 .       ev NULL
 .       if \\n[#PRINT_STYLE]=1 \{\
-.          ps 12
+.          ps \\*[$TYPEWRITER_PS]
 .          ie \\n[#SINGLE_SPACE]=1 \{ .vs \\n[#ORIGINAL_DOC_LEAD]u \}
 .          el \{ .vs \\n[#ORIGINAL_DOC_LEAD]u/2u \}
 .       \}
@@ -6100,24 +5984,21 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             BIBLIOGRAPHY_LEAD 12 ADJUST
 .          \}
 .          el \{\
-.             ie \\n[#EN_SINGLESPACE] \{ .ENDNOTE_LEAD 12 ADJUST \}
-.             el \{ .ENDNOTE_LEAD 24 ADJUST \}
-.             ie \\n[#BIB_SINGLESPACE] \{ .BIBLIOGRAPHY_LEAD 12 ADJUST \}
-.             el \{ .BIBLIOGRAPHY_LEAD 24 ADJUST \}
+.             ie \\n[#EN_SINGLESPACE] .ENDNOTE_LEAD 12 ADJUST
+.             el .ENDNOTE_LEAD 24 ADJUST
+.             ie \\n[#BIB_SINGLESPACE] .BIBLIOGRAPHY_LEAD 12 ADJUST
+.             el .BIBLIOGRAPHY_LEAD 24 ADJUST
 .          \}
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
-.          ie !d$EN_LEAD \{ .ENDNOTE_LEAD 14 ADJUST \}
-.          el \{ .ENDNOTE_LEAD \\*[$EN_LEAD] \\*[$ADJUST_EN_LEAD] \}
-.          ie !d$BIB_LEAD \{ .BIBLIOGRAPHY_LEAD 14 ADJUST \}
-.          el \{ .BIBLIOGRAPHY_LEAD \\*[$BIB_LEAD] \\*[$ADJUST_BIB_LEAD] \}
-.          ie !d$TOC_LEAD \{ .TOC_LEAD \\n[#RESTORE_DOC_LEAD]u \}
-.          el \{ .TOC_LEAD \\*[$TOC_LEAD] \\*[$ADJUST_TOC_LEAD] \}
-.          rm $ADJUST_EN_LEAD
-.          rm $ADJUST_BIB_LEAD
-.          rm $ADJUST_TOC_LEAD
+.          ie !d$EN_LEAD .ENDNOTE_LEAD \\n[#UNADJUSTED_DOC_LEAD]u ADJUST
+.          el .ENDNOTE_LEAD \\*[$EN_LEAD] \\*[$ADJUST_EN_LEAD]
+.          ie !d$BIB_LEAD .BIBLIOGRAPHY_LEAD \\n[#UNADJUSTED_DOC_LEAD]u ADJUST
+.          el .BIBLIOGRAPHY_LEAD \\*[$BIB_LEAD] \\*[$ADJUST_BIB_LEAD]
+.          ie !d$TOC_LEAD .TOC_LEAD \\n[#UNADJUSTED_DOC_LEAD]u \\*[$ADJUST_TOC_LEAD]
+.          el .TOC_LEAD \\*[$TOC_LEAD] \\*[$ADJUST_TOC_LEAD]
 .       \}
-.       ie !d$BIB_SPACE \{ .BIBLIOGRAPHY_SPACING 1v \}
+.       ie !d$BIB_SPACE \{ .BIBLIOGRAPHY_SPACING 0 \}
 .       el \{\
 .          if \\n[#DEFER_BIB_SPACING]=1 \{\
 .             BIBLIOGRAPHY_SPACING \\*[$BIB_SPACE]
@@ -7585,7 +7466,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# Macro to begin document processing
 \#
 .MAC START END
-.    nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
+.    if !n \{ .nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap' \}
 .    if !\\n[#PRINT_STYLE] \{\
 .       PRINTSTYLE TYPEWRITE
 .       PRINT \&
@@ -7689,9 +7570,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       ev TOC_EV
 .       da TOC_ENTRIES
 .       if \\n[#PRINT_STYLE]=1 \{\
-\!.        fam C
+\!.        fam \\*[$TYPEWRITER_FAM]
 \!.        ft  R
-\!.        ps  12
+\!.        ps  \\*[$TYPEWRITER_PS]
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
 \!.        FAMILY  \\*[$TOC_TITLE_FAM]
@@ -8326,9 +8207,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Default is "END".
 \#
 .MAC FINIS_STRING END
-\#.    if \\n[#FINIS_STRING_CAPS]=1 \{ .CAPS \}
 .    ds $FINIS_STRING \\$1
-\#.    if \\n[#FINIS_STRING_CAPS]=1 \{ .CAPS OFF \}
 .END
 \#
 .MAC FINIS_STRING_CAPS END
@@ -8448,12 +8327,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       CENTER
 .       if \\n[#PRINT_STYLE]=1 \{\
-.          fam C
+.          fam \\*[$TYPEWRITER_FAM]
 .          ft  R
 .          if '\\*[$EPI_FT]'I' \{\
 .             FT I
 .          \}
-.          ps  12
+.          ps  \\*[$TYPEWRITER_PS]
 .          ie \\n[#SINGLE_SPACE] \{ .vs \\n[#DOC_LEAD]u \}
 .          el \{ .vs  \\n[#DOC_LEAD]u/2u \}
 .          nr #EPI_LEAD      \\n[#LEAD]
@@ -8522,12 +8401,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             CHECK_INDENT
 .          \}
 .          if \\n[#PRINT_STYLE]=1 \{\
-.             fam C
+.             fam \\*[$TYPEWRITER_FAM]
 .             ft  R
 .             if '\\*[$EPI_FT]'I' \{\
 .                FT I
 .             \}
-.             ps  12
+.             ps  \\*[$TYPEWRITER_PS]
 .             ie \\n[#SINGLE_SPACE] \{ .vs \\n[#DOC_LEAD]u \}
 .             el \{ .vs  \\n[#DOC_LEAD]u/2u \}
 .             QUAD LEFT
@@ -9118,7 +8997,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    if '\\$0'HEADER_RULE' \{\
-.       nr #HEADERS_ON  1
 .       ie '\\$1'' \{\
 .          nr #HEADER_RULE 1
 .          nr #HDRFTR_RULE 1
@@ -9129,7 +9007,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    if '\\$0'FOOTER_RULE' \{\
-.       nr #FOOTERS_ON  1
 .       ie '\\$1'' \{\
 .          nr #FOOTER_RULE 1
 .          nr #HDRFTR_RULE 1
@@ -9703,9 +9580,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ll \\n[#DOC_L_LENGTH]u
 .    ta \\n(.lu
 .    if \\n[#PRINT_STYLE]=1 \{\
-.       fam C
+.       fam \\*[$TYPEWRITER_FAM]
 .       ft  R
-.       ps  12\\*[$HDRFTR_SIZE_CHANGE]
+.       ps  \\*[$TYPEWRITER_PS]\\*[$HDRFTR_SIZE_CHANGE]
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 .      fam \\*[$HDRFTR_FAM]
@@ -9718,10 +9595,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #CAPS_WAS_ON 1
 .       CAPS OFF
 .    \}
-.    if \\n[#UNDERLINE_ON] \{\
-.       nr #UNDERLINE_WAS_ON 1
-.       UNDERLINE OFF
-.    \}
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       if \\n[#ENDNOTES]=1 \{\
 .\" Single-spaced endotes have a different lead
@@ -9731,7 +9604,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .       \}
 .    \}
-.    nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
+.    if !n \{ .nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap' \}
 .    RLD 1v
 .    ie \\n[#HEADERS_ON] \{\
 .       PRINT_HDRFTR
@@ -9764,10 +9637,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#CAPS_WAS_ON] \{\
 .       CAPS
 .       rr #CAPS_WAS_ON
-.    \}
-.    if \\n[#UNDERLINE_WAS_ON] \{\
-.       UNDERLINE
-.       rr #UNDERLINE_WAS_ON
 .    \}
 .    if \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
 .    if \\n[#QUOTE] \{\
@@ -9849,14 +9718,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       rm FN_IN_DIVER
 .       if dRUNON_FN_IN_DIVER \{ .rm RUNON_FN_IN_DIVER \}
 .    \}
-.    if \\n[#PRINT_STYLE]=1 \{\
-.       if \\n[#SLANT_ON] \{\
-.          if \\n[#UNDERLINE_SLANT] \{ .UNDERLINE \}
-.       \}
-.       if \\n[#UNDERLINE_ON]=1 \{\
-.          if \\n[#UNDERLINE_ITALIC] \{ .UNDERLINE \}
-.       \}
-.    \}
 .    rr #FROM_HEADER
 .    rr #DEFER_SPACE_ADDED
 .    if !\\n[#FN_DEPTH] \{\
@@ -9881,6 +9742,21 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    rr #MN_OVERFLOW_RIGHT
 .    rr #no-repeat-MN-right
 .    if \\n[#PRE_COLLATE]=1 \{ .rr #PRE_COLLATE \}
+.    if \\n[#UNDERLINE_WAS_ON]=1 \{\
+.       vs 0
+.       ie !n \{\
+.          nop \R'#UNDERLINE_ON 1'\X'ps: exec \\n[_w] \\n[_d] decorline' \}
+.       \}
+.       el \{\
+.          ul 1000
+.       \}
+.          rr #UNDERLINE_WAS_ON
+.       br
+.    \}
+.   if \\n[#RESTORE_PAGINATION] \{\
+.      PAGINATE
+.      rr #RESTORE_PAGINATION
+.   \}
 .END
 \#
 \# ====================================================================
@@ -9954,7 +9830,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   FINAL respects PAGENUMBER.
 \#
 .MAC FOOTER END
+.    nr #SAVED_LEAD \\n(.v
 .    ev PAGE_TRANSITION
+.    ie !n \{ .nop \X'ps: exec decornone' \}
+.    el \{ .ul 0 \}
+.    br
+.    if \\n[#UNDERLINE_ON]=1 \{\
+.       nr #UNDERLINE_WAS_ON 1
+.    \}
 .    if \\n[MN-left]>0 \{\
 .       if !\\n[#no-repeat-MN-left]=1 \{\
 .          MNbottom-left
@@ -9979,7 +9862,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    ch MN_OVERFLOW_TRAP
-.    nr #SAVED_LEAD \\n(.v
 .    nr #L_MARGIN_DIFF \\n[#L_MARGIN]-\\n[#DOC_L_MARGIN]
 .    if !\\n[#FN_DEFER] \{\
 .       nr #DIVER_DEPTH 0
@@ -9997,7 +9879,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          nf
 .          FOOTNOTES
 .          rm FOOTNOTES
-.          if dRUNON_FOOTNOTES \{ .rm RUNON_FOOTNOTES \}
+.          if d RUNON_FOOTNOTES \{ .rm RUNON_FOOTNOTES \}
 .          if \\n[#PRINT_STYLE]=1 \{ .vs \\n[#SAVED_LEAD]u \}
 .          if \\n[#PRINT_STYLE]=2 \{ .LS \\n[#SAVED_LEAD]u \}
 .          if '\\n(.z'FN_OVERFLOW' \{\
@@ -10095,7 +9977,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       ns
 .       rr #DIVERTED
 .    \}
-.    el \{ .DO_FOOTER \}
+.    el \{\
+.       DO_FOOTER
+.    \}
 .END
 \#
 \#
@@ -10108,21 +9992,37 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Resets CAPS and UNDERLINE if they were on.
 \#
 .MAC DO_FOOTER END
+.\" Part of workaround for refer spitting out a blank page if the
+.\" last reference falls on the bottom line.
+.    if \\n[num*refs] \{\
+.       if \\n[ref*num]=\\n[num*refs] \{\
+.          PRINT_FOOTER
+.          return
+.       \}
+.    \}
+.    PRINT_FOOTER
+.    bp
+.\" .bp springs the header trap; this pops the PAGE_TRANSITION ev
+.    ev
+.END
+\#
+.MAC PRINT_FOOTER END
 .\" Have to change position of FN_OVERFLOW_TRAP or it screws up the
 .\" placement of page numbers (or footers).  It's reset to its original
 .\" position at the end of the macro.
 .    if r#SAVED_FOOTER_POS \{ .ch FOOTER \\n[#SAVED_FOOTER_POS]u \}
 .    rr #SAVED_FOOTER_POS
-.    ie (\\n[#FOOTER_MARGIN]+\\n(.v)>\\n[#B_MARGIN] \{\
+.    ie (\\n[#FOOTER_MARGIN]+\\n[.v]>\\n[#B_MARGIN] \{\
 .       nr #SKIP_FOOTER 1
 .    \}
 .    el \{\
+.       ev FOOTER
 .       vpt 0
+.       vs  12
 .       sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u-1v
 .       mk y
-.       vpt 1
 .    \}
-.    ev FOOTER
+.    UNDERLINE OFF
 .    po \\n[#DOC_L_MARGIN]u
 .    ll \\n[#DOC_L_LENGTH]u
 .    ta \\n(.lu
@@ -10134,15 +10034,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       ft      R
 .       ps \\n[#DOC_PT_SIZE]u\\*[$HDRFTR_SIZE_CHANGE]
 .    \}
-.    vs \\n[#SAVED_LEAD]u
 .    nr #HDRFTR_PT_SIZE \\n[#PT_SIZE]
 .    if \\n[#CAPS_ON] \{\
 .       nr #CAPS_WAS_ON 1
 .       CAPS OFF
-.    \}
-.    if \\n[#UNDERLINE_ON] \{\
-.       nr #UNDERLINE_WAS_ON 1
-.       UNDERLINE OFF
 .    \}
 .    ie \\n[#FOOTERS_ON] \{\
 .       if !\\n[#SKIP_FOOTER]=1 \{ .PRINT_HDRFTR \}
@@ -10159,16 +10054,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       CAPS
 .       rr #CAPS_WAS_ON
 .    \}
-.    if \\n[#UNDERLINE_WAS_ON] \{\
-.       UNDERLINE
-.       rr #UNDERLINE_WAS_ON
-.    \}
 .    ev
 .    rr #SAVED_LEAD
-.    bp
-.\" This ev pops the PAGE_TRANSITION environment still active at the
-.\" end of HEADER
-.    ev
+.    vpt 1
 .END
 \#
 \# ====================================================================
@@ -10498,6 +10386,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   each line of text.
 \#
 .MAC HEAD END
+.    if \\n[#UNDERLINE_ON]=1 .UNDERLINE OFF
 .    br
 .    if \\n[#PRINT_STYLE]=1 \{ .ne \\n[#NUM_ARGS]+2 \}
 .    if \\n[#PRINT_STYLE]=2 \{\
@@ -10535,9 +10424,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ev TOC_EV
 .    da TOC_ENTRIES
 .    if \\n[#PRINT_STYLE]=1 \{\
-\!.     fam C
+\!.     fam \\*[$TYPEWRITER_FAM]
 \!.     ft  R
-\!.     ps  12
+\!.     ps  \\*[$TYPEWRITER_PS]
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 \!.     FAMILY  \\*[$TOC_HEAD_FAM]
@@ -10584,7 +10473,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       TYPEWRITER
 .       vs  \\n[#DOC_LEAD]u
-.       UNDERLINE OFF
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       FAMILY  \\*[$HEAD_FAM]
@@ -10730,6 +10618,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   each line of text.
 \#
 .MAC SUBHEAD END
+.    if \\n[#UNDERLINE_ON]=1 .UNDERLINE OFF
 .    br
 .    ne \\n[#NUM_ARGS]+2
 .\" Collect subhead for TOC.
@@ -10762,9 +10651,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ev TOC_EV
 .    da TOC_ENTRIES
 .    if \\n[#PRINT_STYLE]=1 \{\
-\!.     fam C
+\!.     fam \\*[$TYPEWRITER_FAM]
 \!.     ft  R
-\!.     ps  12
+\!.     ps  \\*[$TYPEWRITER_PS]
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 \!.     FAMILY  \\*[$TOC_SH_FAM]
@@ -10813,7 +10702,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       TYPEWRITER
 .       vs  \\n[#DOC_LEAD]u
 .       QUAD   \\*[$SH_QUAD]
-.       UNDERLINE OFF
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       FAMILY  \\*[$SH_FAM]
@@ -11009,6 +10897,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   PARAHEAD *must* come after PP.
 \#
 .MAC PARAHEAD END
+.    if \\n[#UNDERLINE_ON]=1 .UNDERLINE OFF
 .\" Collect parahead for TOC.
 .    nr #TOC_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
 .    ie \\n[#NUMBER_PH] \{\
@@ -11021,9 +10910,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ev TOC_EV
 .    da TOC_ENTRIES
 .    if \\n[#PRINT_STYLE]=1 \{\
-\!.       fam C
+\!.       fam \\*[$TYPEWRITER_FAM]
 \!.       ft  R
-\!.       ps  12
+\!.       ps  \\*[$TYPEWRITER_PS]
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 \!.     FAMILY  \\*[$TOC_PH_FAM]
@@ -11063,10 +10952,18 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    ie \\n[#PP]=1 \{\
 .       if \\n[#INDENT_FIRST_PARAS] \{\
+.          vpt 0
+.          if \\n[#PRINT_STYLE]=1 \{ .sp -1v \}
 .          ti \\n[#PH_INDENT]u
+.          vpt
 .       \}
 .    \}
-.    el \{ .ti \\n[#PH_INDENT]u \}
+.    el \{\
+.       vpt 0
+.       if \\n[#PRINT_STYLE]=1 \{ .sp -1v \}
+.       ti \\n[#PH_INDENT]u
+.       vpt
+.    \}
 .    ie \\n[#PREFIX_CH_NUM]=1 \{\
 .       ds $CH_NUM \\n[#CH_NUM].
 .    \}
@@ -11075,7 +10972,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       TYPEWRITER
-.       UNDERLINE OFF
 .       ie \\n[#NUMBER_PH] \{\
 .          if \\n[#NUMBER_HEAD] \{\
 .             ie \\n[#NUMBER_SH] \{\
@@ -11243,11 +11139,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Affects all paragraphs.
 \#
 .MAC PP_FONT END
-.    if \n[#PRINT_STYLE]=1 \{\
-.       ie \n[#ITALIC_MEANS_ITALIC] \{ .nop \}
+.    if \\n[#PRINT_STYLE]=1 \{\
+.       ie \\n[#ITALIC_MEANS_ITALIC] \{ .nop \}
 .       el \{ .return \}
 .    \}
-.    br
 .    if \\n[#COLLATE]=1 \{\
 .       if !'\\*[$SAVED_PP_FT]'' \{ .rm $SAVED_PP_FT \}
 .    \}
@@ -11369,7 +11264,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          ie \\n[#ENDNOTE] \{ .vs \\n[#EN_LEAD]u \}
 .          el \{ .vs \\n[#DOC_LEAD]u \}
 .          QUAD \\*[$DOC_QUAD]
-.          UNDERLINE OFF
 .          if \\n[#SLANT_ON] \{\
 .             if \\n[#UNDERLINE_SLANT] \{ .UNDERLINE \}
 .          \}
@@ -11491,13 +11385,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    nr #Q_PP +1
 .    \}
-\# This takes care of multi-paragraph dialogue, where each para
-\# is introduced by an open quote whereas the previous para has
-\# no close quote.
+.\" This takes care of multi-paragraph dialogue, where each para
+.\" is introduced by an open quote whereas the previous para has
+.\" no close quote.
 .    if \\n[#OPEN_CLOSE]=1 \{\
 .       nr #OPEN_CLOSE 0
 .    \}
 .    nr #PP_ACTIVE 1
+.    UNDERLINE OFF
 .END
 \#
 \# ====================================================================
@@ -12067,6 +11962,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nf
 .       B_QUOTE
 .    \}
+.    if \\n[#UNDERLINE_ON] \{\
+.       vpt 0
+.       sp -1v
+.       UNDERLINE OFF
+.       vpt
+.    \}
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       ALD \\n[#DOC_LEAD]u
 .       if !\\n[.v]=\\n[#DOC_LEAD] \{ .SHIM \}
@@ -12144,17 +12045,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    ie !\\n[#ENDNOTE] \{\
-.       nr #RESET_PP_INDENT \\n[#PP_INDENT]
-.       PARA_INDENT 0
-.       PP
-.       PARA_INDENT \\n[#RESET_PP_INDENT]u
 .       QUAD \\*[$DOC_QUAD]
 .    \}
 .    el \{\
-.       nr #RESET_EN_PP_INDENT \\n[#EN_PP_INDENT]
-.       ENDNOTE_PARA_INDENT 0
-.       PP
-.       ENDNOTE_PARA_INDENT \\n[#RESET_EN_PP_INDENT]u
 .       QUAD \\*[EN_QUAD]
 .    \}
 .    if r#DELAY_SHIM \{\
@@ -12317,7 +12210,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #END_QUOTE 1
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       if \\n[#UNDERLINE_QUOTES] \{\
+.          ev 1
 .          UNDERLINE OFF
+.          ev
 .       \}
 .    \}
 .    po \\n[#L_MARGIN]u
@@ -12642,6 +12537,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          return
 .       \}
 .       nr #FN_MARKER_STYLE 2
+.       shift
+.       if '\\$1'NO_SUPERSCRIPT' \{ .nr #NO_SUPERSCRIPT 1 \}
 .       if \\n[#NEWPAGE]=1 \{ .rr #NEWPAGE \}
 .       FOOTNOTE_MARKERS
 .    \}
@@ -12655,13 +12552,29 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .END
 \#
 \#
+\# FOOTNOTE NUMBER PLACEHOLDERS
+\# ----------------------------
+\# *Argument:
+\#   <number of placeholders>
+\# *Function:
+\#   Sets register #FN_NUMBER_PLACEHOLDERS, used to establish whether to
+\#   right pad a footnote number (in the footnote itself, not body copy).
+\# *Notes:
+\#   No default is set for this; user must determine if, and where, it's
+\#   required
+\#
+.MAC FOOTNOTE_NUMBER_PLACEHOLDERS END
+.    nr #FN_NUMBER_PLACEHOLDERS \\$1
+.END
+\#   
+\#   
 \# FOOTNOTE LINENUMBER MARK
 \# ------------------------
 \# *Function:
 \#   This string, when called inline, stores the current output line
 \#   number in register #FN_MARK for use with FOOTNOTE.
 \#
-.ds FN-MARK \R'#FN_MARK \En(ln'
+.ds FN_MARK \R'#FN_MARK \En(ln'
 \#
 \#
 \# FOOTNOTE LINENUMBER SEPARATOR
@@ -12810,8 +12723,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   Default is no space.
 \#
 .MAC FOOTNOTE_SPACING END
-.    ie \B'\\$1' \{ .nr #FN_SPACE (\\$1) \}
-.    el \{ .nr #FN_SPACE 0 \}
+.    ie \B'\\$1' .ds $FN_SPACE \\$1
+.    el \{ .rm $FN_SPACE \}
 .END
 \#
 \#
@@ -12886,6 +12799,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC FOOTNOTE END
 .    ie '\\$1'' \{\
+.       if \\n[#UNDERLINE_ON] \{\
+.          UNDERLINE OFF
+.          nr #UNDERLINE_WAS_ON_FN 1
+.       \}
 .       if \\n[#FN_MARKER_STYLE]=3 \{\
 .          if !\\n[#LINENUMBERS] \{\
 .             tm1 "[mom]: Line numbering must be enabled with NUMBER_LINES when
@@ -12999,12 +12916,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .\" Housekeeping
 .          if \\n[#CONDENSE] \{ \*[CONDX]\c \}
 .          if \\n[#EXTEND]   \{ \*[EXTX]\c  \}
-.          if \\n[#PRINT_STYLE]=1 \{\
-.             if \\n[#UNDERLINE_ON] \{\
-.                nr #UNDERLINE_WAS_ON 1
-.                UNDERLINE OFF
-.             \}
-.          \}
 .\" Add footnote markers to running text...
 .          if !\\n[#NO_FN_MARKER] \{\
 .\" ...but not if TERMINATE has not been called
@@ -13170,30 +13081,36 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          if !\\n[#DONT_RULE_ME]=1 \{\
 .             if !\\n[#FN_DEPTH] \{\
 .                if \\n[#PRINT_STYLE]=1 \{\
-.                   if !\\n[#RUN_ON] \{ .ALD \\n[#DOC_LEAD]u \}
+.                   if !\\n[#RUN_ON] \{ .sp \\n[#DOC_LEAD]u \}
 .                \}
 .                ie \\n[#FN_RULE]=1 \{\
-.                   if !\\n[#RUN_ON] \{ .PRINT_FOOTNOTE_RULE \}
+.                   if !\\n[#RUN_ON] \{\
+.                      if \\n[#SINGLE_SPACE] \{ .sp \\n[#DOC_LEAD]u \}
+.                      PRINT_FOOTNOTE_RULE
+.                      if !'\\*[$FN_SPACE]'' \{ .sp -\\*[$FN_SPACE] \}
+.                   \}
 .                \}
-.                el \{ .ALD 1v \}
+.                el \{ .sp 1v \}
 .                nr #RULED 1
 .             \}
 .          \}
 .       \}
 .       rr #DONT_RULE_ME
+.       ds $RESTORE_SS_VAR \\*[$SS_VAR]
+.       SS 0
 .\" Add footnote markers to footnote text...
 .       ie \\n[#FN_MARKERS] \{\
-.          if \\n[#FN_SPACE]>0 \{\
+.          if !'\\*[$FN_SPACE]'' \{\
 .             if \\n[#FN_COUNT]>0 \{\
-.                ALD \\n[#FN_SPACE]u
+.                ALD \\*[$FN_SPACE]
 .             \}
 .          \}
 .          if !\\n[#NO_FN_MARKER] \{\
 .\" ...but not if TERMINATE has been called.
 .             if !r#TERMINATE \{\
 .                if \\n[#REF]=1 \{\
-\!.                 in +\\*[$REF_FN_INDENT]
-\!.                 ti -\\*[$REF_FN_INDENT]
+.                   nr #REF_FN_INDENT (u;\\*[$REF_FN_INDENT])
+.                   ti \\n[#REF_FN_INDENT]u
 .                \}
 .                if \\n[#FN_MARKER_STYLE]=1 \{\
 .                   ie \\n[#COLUMNS]=1 \{\
@@ -13223,6 +13140,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .                   \}
 .                \}
 .                if \\n[#FN_MARKER_STYLE]=2 \{\
+.                   ds $FN_NUMBER \\n[#FN_NUMBER]
+.                   length #FN_NUMBER_LENGTH \\*[$FN_NUMBER]
 .                   if \\n[#COLUMNS]=1 \{\
 .                      \\n+[#FN_COUNT_FOR_COLS]
 .                   \}
@@ -13230,8 +13149,32 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .                      nr #FN_NUMBER 1 1
 .                      rr #NOT_YET_ADJUSTED
 .                   \}
-.                   if \\n[#PRINT_STYLE]=1 \{ .PRINT "(\\n[#FN_NUMBER])\c" \}
-.                   if \\n[#PRINT_STYLE]=2 \{ .PRINT "\*[SUP]\\n[#FN_NUMBER]\*[SUPX]\*[FU 2]\c" \}
+.                   if \\n[#PRINT_STYLE]=1 \{\
+.                      ie \\n[#NO_SUPERSCRIPT] \{\
+.                         ie \\n[#FN_NUMBER_LENGTH]<\\n[#FN_NUMBER_PLACEHOLDERS] \{\
+.                            PRINT "\0(\\n[#FN_NUMBER])\|\c"
+.                         \}
+.                         el \{\
+.                            PRINT "(\\n[#FN_NUMBER])\|\c"
+.                         \}
+.                      \}
+.                      el \{\
+.                         ie \\n[#FN_NUMBER_LENGTH]<\\n[#FN_NUMBER_PLACEHOLDERS] \{\
+.                            PRINT "\s-2\v'-\\n[.v]u/5u'\0\\n[#FN_NUMBER]\|\v'+\\n[.v]u/5u'\s+2\|\c"
+.                         \}
+.                         el \{\
+.                            PRINT "\s-2\v'-\\n[.v]u/5u'\\n[#FN_NUMBER]\|\v'+\\n[.v]u/5u'\s+2\|\c"
+.                         \}
+.                      \}
+.                   \}
+.                   if \\n[#PRINT_STYLE]=2 \{\
+.                      ie \\n[#FN_NUMBER_LENGTH]<\\n[#FN_NUMBER_PLACEHOLDERS] \{\
+.                         PRINT "\*[SUP]\0\\n[#FN_NUMBER]\*[SUPX]\*[FU 3]\c"
+.                      \}
+.                      el \{\
+.                         PRINT "\*[SUP]\\n[#FN_NUMBER]\*[SUPX]\*[FU 3]\c"
+.                      \}
+.                   \}
 .                \}
 .             \}
 .          \}
@@ -13248,17 +13191,16 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             \}
 .             if \\n[#REF]=1 \{\
 .                if !\\n[#RUN_ON]=1 \{\
-\!.                 in +\\*[$REF_FN_INDENT]
-\!.                 ti -\\*[$REF_FN_INDENT]
+\!.                 ti +\\n[#REF_FN_INDENT]u
 .                \}
 .             \}
 .             ie \\n[#FN_LN_BRACKETS]=1 \{\
 .                ds $FN_LINENUMBER \v'-.085m'\\*[$FN_OPEN_BRACKET]\v'.085m'
 .                ie \\n[#FN_MARK_2]=\\n[#FN_MARK] \{\
-.                   as $FN_LINENUMBER \\n[#FN_MARK]\v'-.085m'\\*[$FN_CLOSE_BRACKET]\v'.085m' \"
+.                   as $FN_LINENUMBER \\n[#FN_MARK]\v'-.085m'\\*[$FN_CLOSE_BRACKET]\v'.085m'\h'.25m'
 .                \}
 .                el \{\
-.                   as $FN_LINENUMBER \\n[#FN_MARK]\v'-.1m'-\v'.1m'\\n[#FN_MARK_2]\v'-.085m'\\*[$FN_CLOSE_BRACKET]\v'.085m' \"
+.                   as $FN_LINENUMBER \\n[#FN_MARK]\v'-.1m'-\v'.1m'\\n[#FN_MARK_2]\v'-.085m'\\*[$FN_CLOSE_BRACKET]\v'.085m'\h'.25m'
 .                \}
 .             \}
 .             el \{\
@@ -13323,18 +13265,16 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .\" More housekeeping
 .\" Turn off indent possibly set by FOOTNOTE INDENT
 .          in 0
+.          ev
+.          if \\n[#UNDERLINE_WAS_ON_FN] \{\
+.             UNDERLINE
+.             rr #UNDERLINE_WAS_ON_FN
+.          \}
 .\" Restore sentence spacing
 .          if \\n[#PRINT_STYLE]=2 \{\
-.             if d$RESTORE_SS_VAR \{ .SS \\*[$RESTORE_SS_VAR] \}
+.             if d $RESTORE_SS_VAR \{ .SS \\*[$RESTORE_SS_VAR] \}
 .             rm $RESTORE_SS_VAR
 .          \}
-.          if \\n[#PRINT_STYLE]=1 \{\
-.             if \\n[#UNDERLINE_WAS_ON] \{\
-.                UNDERLINE
-.                rr #UNDERLINE_WAS_ON
-.             \}
-.          \}
-.          ev
 .          rr #FN_R_INDENT
 .          rr #FN_BR_INDENT
 .          nr #PP_STYLE \\n[#PP_STYLE_PREV]
@@ -13527,7 +13467,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .\" current page position.  Leaving it in anyway, commented out, in
 .\" case the logic and the conditions under which it should
 .\" apply reveal themselves.
-\#.                    nr #VARIABLE_FOOTER_POS -\\n[#VFP_DIFF]
 .                      nr #FN_DEPTH \\n[#SAVED_FN_DEPTH_1]+\\n[#VFP_DIFF]
 .                   \}
 .                   el \{\
@@ -13911,40 +13850,60 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .END
 \#
 \#
-\# ENDNOTE LEAD
-\# ------------
+\# ENDNOTES, BIBLIOGRAPHY and TOC LEADING
+\# --------------------------------------
 \# *Argument:
-\#   <base leading to use in endnotes> [ ADJUST ]
+\#   <leading> [ ADJUST ]
 \# *Function:
-\#   Creates or modifies register #EN_LEAD.  Creates or removes
-\#   register #ADJ_EN_LEAD.  Stores arguments in strings if ENDNOTE_LEAD
-\#   set before START.
+\#   Depending on the name by which it's called, creates or modifies
+\#   register #<type>_LEAD, where <type> is BIB, EN, or TOC.  Creates or removes
+\#   register #ADJ_<type>_LEAD.  Stores arguments in strings if BIB,
+\#   EN, or TOC leading are set before START.
 \# *Notes:
-\#   Default is 14 points for TYPESET, adjusted; 24 for TYPEWRITE.
+\#   Default is same as doc lead for TYPESET, adjusted; 24 for TYPEWRITE.
 \#
-.MAC ENDNOTE_LEAD END
+.MAC _LEAD END
+.    if '\\$0'BIBLIOGRAPHY_LEAD' .ds $SECTION BIB
+.    if '\\$0'ENDNOTE_LEAD'      .ds $SECTION EN
+.    if '\\$0'TOC_LEAD'          .ds $SECTION TOC
+.    ds $\\*[$SECTION]_LEAD \\$1
+.    ds $ADJUST_\\*[$SECTION]_LEAD \\$2
 .    if !\\n[#OK_PROCESS_LEAD] \{\
-.       ds $EN_LEAD \\$1
-.       if !'\\$2'' \{\
-.           ds $ADJUST_EN_LEAD \\$2
-.       \}
 .       return
 .    \}
-.    rr #ADJ_EN_LEAD
-.    nr #EN_LEAD (p;\\$1)
+.    nr #\\*[$SECTION]_LEAD (p;\\$1)
+.    rr #ADJ_\\*[$SECTION]_LEAD
 .    if '\\$2'ADJUST' \{\
 .       nr #ORIG_DOC_LEAD \\n[#DOC_LEAD]
 .       nr #RESTORE_ADJ_DOC_LEAD \\n[#ADJ_DOC_LEAD]
 .       nr #ADJ_DOC_LEAD 1
-.       nr #ADJ_EN_LEAD 1
+.       nr #ADJ_\\*[$SECTION]_LEAD 1
 .       nr #NO_TRAP_RESET 1
-.       DOC_LEAD \\n[#EN_LEAD]u ADJUST
-.       nr #EN_LEAD \\n[#DOC_LEAD]
+.       DOC_LEAD \\n[#\\*[$SECTION]_LEAD]u ADJUST
+.       nr #\\*[$SECTION]_LEAD \\n[#DOC_LEAD]
 .       DOC_LEAD \\n[#ORIG_DOC_LEAD]u
 .       rr #NO_TRAP_RESET
 .       nr #ADJ_DOC_LEAD \\n[#RESTORE_ADJ_DOC_LEAD]
 .       rr #ORIG_DOC_LEAD
 .    \}
+.END
+\#
+.ALIAS BIBLIOGRAPHY_LEAD _LEAD
+.ALIAS ENDNOTE_LEAD _LEAD
+.ALIAS TOC_LEAD _LEAD
+\#
+\# ENDNOTE SPACING
+\# ----------------
+\# *Arguments:
+\#   <per item endnote spacing> | <anything>
+\# *Function:
+\#   Enables space between endnotes items.
+\# *Notes:
+\#   Default is no space.
+\#
+.MAC ENDNOTE_SPACING END
+.    ie \B'\\$1' .ds $EN_SPACE \\$1
+.    el \{ .rm $EN_SPACE \}
 .END
 \#
 \#
@@ -14023,7 +13982,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# ENDNOTE MARKER STYLE
 \# --------------------
 \# *Arguments:
-\#   NUMBER | LINE
+\#   NUMBER | LINE | SUPERSCRIPT
 \# *Function:
 \#   Sets register #EN_MARKER_STYLE, used in ENDNOTE to determine
 \#   the style of endnote markers (labels).
@@ -14032,15 +13991,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   Default is NUMBER.
 \#
 .MAC ENDNOTE_MARKER_STYLE END
-.    if '\\$1'NUMBER' \{\
-.       nr #EN_MARKER_STYLE 1
-.    \}
+.    if '\\$1'NUMBER' \{ .nr #EN_MARKER_STYLE 1 \}
 .    if '\\$1'LINE' \{\
 .       nr #EN_MARKER_STYLE 2
 .       if !\\n[#EN_LN_SEP] \{\
 .          if !\\n[#EN_LN_BRACKETS] \{ .ENDNOTE_LINENUMBER_BRACKETS SQUARE \}
 .       \}
 .    \}
+.    if '\\$1'SUPERSCRIPT' \{ .nr #EN_MARKER_STYLE 3 \}
 .END
 \#
 \#
@@ -14050,7 +14008,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   This string, when called inline, stores the current output line
 \#   number in register #EN_MARK for use with ENDNOTE.
 \#
-.ds EN-MARK \R'#EN_MARK \En(ln'
+.ds EN_MARK \R'#EN_MARK \En(ln'
 \#
 \#
 \# ENDNOTE LINENUMBER SEPARATOR
@@ -14118,40 +14076,30 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   labels in ENDNOTE.
 \#
 .MAC ENDNOTE_LINENUMBER_GAP END
-.    ds $EN_LN_GAP \\$1
+.    nr #EN_LN_GAP (u;\\$1)
 .END
 \#
 \#
-\# ENDNOTE NUMBERS ALIGN RIGHT
-\# ---------------------------
+\# ENDNOTE NUMBERS ALIGNMENT
+\# -------------------------
 \# *Argument:
-\#   <max. number of digit placeholders that will appear in endnotes>
+\#   LEFT | RIGHT <max. number of digit placeholders that will appear in endnotes>
 \# *Function:
-\#   Toggles register #EN_NUMBERS_ALIGN_RIGHT on; creates register
+\#   Creates registers for _LEFT or _RIGHT; creates register
 \#   #EN_NUMBER_PLACEHOLDERS.
 \# *Notes:
-\#   Default is for footnote numbers to be right aligned to 2 placeholders.
+\#   Default is for endnote numbers to be right aligned to 2 placeholders.
 \#
-.MAC ENDNOTE_NUMBERS_ALIGN_RIGHT END
-.    rr #EN_NUMBERS_ALIGN_LEFT
-.    nr #EN_NUMBERS_ALIGN_RIGHT 1
-.    nr #EN_NUMBER_PLACEHOLDERS \\$1
-.END
-\#
-\#
-\# ENDNOTE NUMBERS ALIGN LEFT
-\# --------------------------
-\# *Argument:
-\#   none
-\# *Function:
-\#   Toggles register #EN_NUMBERS_ALIGN_LEFT on.
-\# *Notes:
-\#   Default is for footnote numbers to be right aligned to 2 placeholders
-\#   (i.e. not left aligned).
-\#
-.MAC ENDNOTE_NUMBERS_ALIGN_LEFT END
-.    rr #EN_NUMBERS_ALIGN_RIGHT
-.    nr #EN_NUMBERS_ALIGN_LEFT 1
+.MAC ENDNOTE_NUMBERS_ALIGN END
+.    if '\\$1'LEFT' \{\
+.       rr #EN_NUMBERS_ALIGN_RIGHT
+.       nr #EN_NUMBERS_ALIGN_LEFT 1
+.    \}
+.    if '\\$1'RIGHT' \{\
+.       rr #EN_NUMBERS_ALIGN_LEFT
+.       nr #EN_NUMBERS_ALIGN_RIGHT 1
+.    \}
+.    nr #EN_NUMBER_PLACEHOLDERS \\$2
 .END
 \#
 \#
@@ -14338,27 +14286,29 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .MAC ENDNOTE END
 .    ie '\\$1'' \{\
 .       nr #ENDNOTE 1
-.       if \\n[#EN_MARKER_STYLE]=1 \{\
-.          if \\n[#CONDENSE] \{ \*[CONDX]\c \}
-.          if \\n[#EXTEND]   \{ \*[EXTX]\c  \}
-.          if \\n[#PRINT_STYLE]=1 \{\
+.       ie !\\n[#EN_MARKER_STYLE]=2 \{\
+.          if \\n[#CONDENSE] \{ .nop \*[CONDX]\c \}
+.          if \\n[#EXTEND]   \{ .nop \*[EXTX]\c  \}
 .             if \\n[#UNDERLINE_ON] \{\
 .                nr #UNDERLINE_WAS_ON 1
 .                UNDERLINE OFF
 .             \}
+.          if \\n[#PRINT_STYLE]=1 \{\
 .             if \\n[#SLANT_ON] \{\
 .                 nr #SLANT_WAS_ON 1
-\*[SLANTX]\c
+.                 nop \*[SLANTX]\c
 .             \}
+.\" Vertical raise amount here is more than when the same string is printed in
+.\" the endnotes so bottom of number aligns with top of bowl.
 .             PRINT "\s-2\v'-\\n[#DOC_LEAD]u/5u'\\n+[#EN_NUMBER]\v'+\\n[#DOC_LEAD]u/5u'\s+2\c"
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             PRINT \*[SUP]\\n+[#EN_NUMBER]\*[SUPX]\c
 .          \}
 .       \}
-.       if \\n[#EN_MARKER_STYLE]=2 \{\
-.           ie r#EN_NUMBER \{ \\n+[#EN_NUMBER] \}
-.           el \{ .nr #EN_NUMBER 1 1 \}
+.       el \{\
+.          ie r#EN_NUMBER \{ .nr #EN_NUMBER \\n[#EN_NUMBER]+1 \}
+.          el \{ .nr #EN_NUMBER 1 1 \}
 .          if !\\n[#LINENUMBERS] \{\
 .             tm1 "[mom]: Line numbering must be enabled with NUMBER_LINES when
 .             tm1 "       ENDNOTE_MARKER_STYLE is LINE.
@@ -14366,7 +14316,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          \}
 .          if \\n[#EN_MARK]=0 \{ .nr #EN_MARK \\n(ln \}
 .          nr #EN_MARK_2 \\n(ln
-.          if '\\n(.z'P_QUOTE' \{\
+.          if '\\n[.z]'P_QUOTE' \{\
 .             nr #EN_MARK -1
 .             nr #EN_MARK_2 -1
 .          \}
@@ -14384,9 +14334,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          el \{ .LL \\n[#COL_L_LENGTH]u \}
 .          ta \\n(.lu
 .       \}
+.       ENDNOTE_LEAD \\*[$EN_LEAD] \\*[$ADJUST_EN_LEAD]
 .       vs \\n[#EN_LEAD]u
+.\" Print page header title
 .       if \\n[#EN_NUMBER]=1 \{\
-\!.        ne 3
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             TYPEWRITER
 .          \}
@@ -14414,11 +14365,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             \}
 .          \}
 .       \}
+.\" Get indent from endnotes point size; convert string to reg in
+.\" case indent string is, e.g., m or n
+.       ps \\n[#EN_PS]u
+.       nr #REF_EN_INDENT (u;\\*[$REF_EN_INDENT])
 .       if \\n[#PRINT_STYLE]=1 \{\
 .          TYPEWRITER
-.          if \\n[#EN_NUMBER]=1 \{\
-.             if \\n[#SINGLE_SPACE]=1 \{ .sp \}
-.          \}
+.          if \\n[#EN_NUMBER]=1 \{ .sp \}
+.          if \\n[#EN_MARKER_STYLE]=3 \{ .PT_SIZE -2 \}
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
 .          if \\n[#EN_NUMBER]=1 \{\
@@ -14434,16 +14388,21 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             FT      \\*[$EN_LN_FT]
 .             PT_SIZE \\n[#EN_PS]u\\*[$EN_LN_SIZE_CHANGE]
 .          \}
+.          if \\n[#EN_MARKER_STYLE]=3 \{\
+.             FAMILY  \\*[$EN_NUMBER_FAM]
+.             FT      \\*[$EN_NUMBER_FT]
+.             PT_SIZE \\n[#PT_SIZE_IN_UNITS]u*6u/10u
+.          \}
 .       \}
+.\" Build string for line-numbered endnotes
 .       if \\n[#EN_MARKER_STYLE]=2 \{\
-.          ENDNOTE_NUMBERS_ALIGN_LEFT
 .          ie \\n[#EN_LN_BRACKETS]=1 \{\
 .             ds $EN_LINENUMBER \v'-.085m'\\*[$EN_OPEN_BRACKET]\v'.085m'
 .             ie \\n[#EN_MARK_2]=\\n[#EN_MARK] \{\
-.                as $EN_LINENUMBER \\n[#EN_MARK]\v'-.085m'\\*[$EN_CLOSE_BRACKET]\v'.085m' \"
+.                as $EN_LINENUMBER \\n[#EN_MARK]\v'-.085m'\\*[$EN_CLOSE_BRACKET]\v'.085m'\"
 .             \}
 .             el \{\
-.                as $EN_LINENUMBER \\n[#EN_MARK]\v'-.1m'-\v'.1m'\\n[#EN_MARK_2]\v'-.085m'\\*[$EN_CLOSE_BRACKET]\v'.085m' \"
+.                as $EN_LINENUMBER \\n[#EN_MARK]\v'-.1m'-\v'.1m'\\n[#EN_MARK_2]\v'-.085m'\\*[$EN_CLOSE_BRACKET]\v'.085m'\"
 .             \}
 .          \}
 .          el \{\
@@ -14457,37 +14416,56 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          nr #EN_MARK 0
 .       \}
 \!.     TRAP OFF
-.       nr #RESET_L_LENGTH \\n(.l
-.       ie \\n[#EN_NUMBERS_ALIGN_RIGHT] \{\
+.       ie \\n[#EN_NUMBERS_ALIGN_RIGHT] \{ .RIGHT \}
+.       el \{ .LEFT \}
+.       if \\n[#EN_MARKER_STYLE]=1 \{\
 .          nr #EN_NUMBER_L_LENGTH \w'\0'*\\n[#EN_NUMBER_PLACEHOLDERS]+\w'.'
+.       \}
+.       if \\n[#EN_MARKER_STYLE]=2 \{\
+.          ie \\n[#EN_LN_BRACKETS]=1 \{ .nr #EN_NUMBER_L_LENGTH (\w'\0'*(\\n[#EN_NUMBER_PLACEHOLDERS]*2))+\w'-[]' \}
+.          el \{ .nr #EN_NUMBER_L_LENGTH (\w'\0'*(\\n[#EN_NUMBER_PLACEHOLDERS]*2))+\w'-\\*[$EN_LN_SEP]' \}
 .          RIGHT
 .       \}
-.       el \{\
-.          nr #EN_NUMBER_L_LENGTH \w'\En[#EN_NUMBER].\0'
-.          LEFT
+.       if \\n[#EN_MARKER_STYLE]=3 \{\
+.          nr #EN_NUMBER_L_LENGTH \w'\0'*\\n[#EN_NUMBER_PLACEHOLDERS]
+.          RIGHT
 .       \}
-.       if \\n[#EN_MARKER_STYLE]=2 \{\
-.          if !\\n[#EN_NUMBERS_ALIGN_RIGHT] \{\
-.             nr #EN_NUMBER_L_LENGTH \w'\\*[$EN_LINENUMBER]'+\\*[$EN_LN_GAP]
-.             LEFT
-.          \}
+.       ie \\n[#REF]=1 \{\
+.          ll \\n[#EN_NUMBER_L_LENGTH]u+\\n[#REF_EN_INDENT]u
 .       \}
-.       ll \\n[#EN_NUMBER_L_LENGTH]u
+.       el \{ .ll \\n[#EN_NUMBER_L_LENGTH]u \}
 .       if \\n[#EN_MARKER_STYLE]=1 \{\
-\En[#EN_NUMBER].
+.          if \\n[#REF]=1 \{ .ti \\n[#REF_EN_INDENT]u \}
+.          nop \En[#EN_NUMBER].
 .       \}
 .       if \\n[#EN_MARKER_STYLE]=2 \{\
-\\*[$EN_LINENUMBER]
+.          nop \\*[$EN_LINENUMBER]
 .          rm $EN_LINENUMBER
 .       \}
-.       EOL
-.       ll \\n[#RESET_L_LENGTH]u
-.       nr #EN_FIGURE_SPACE \w'\0.'
-.       ie \\n[#EN_NUMBERS_ALIGN_RIGHT] \{\
-.          in \\n[#EN_NUMBER_L_LENGTH]u+\\n[#EN_FIGURE_SPACE]u
+.       if \\n[#EN_MARKER_STYLE]=3 \{\
+.          PT_SIZE \" Reset ps changed to get width of s-script numbers
+.          ie \\n[#PRINT_STYLE]=1 \{\
+.\" Vertical raise amount here is less than when the same string is printed in
+.\" the body of the text because number precedes a cap.
+.             nop \s-2\v'-\\n[#DOC_LEAD]u/7u'\\n[#EN_NUMBER]\|\v'+\\n[#DOC_LEAD]u/7u'\s+2
+.          \}
+.          el \{ .nop \E*[SUP]\\n[#EN_NUMBER]\E*[SUPX] \}
 .       \}
-.       el \{\
-.          ti \\n[#EN_NUMBER_L_LENGTH]u
+.       EOL
+\!.     TRAP OFF
+.       ll
+.       nr #EN_FIGURE_SPACE \w'\0'
+.       if \\n[#EN_MARKER_STYLE]=1 \{\
+.          ie \\n[#REF]=1 \{ .ti \\n[#EN_NUMBER_L_LENGTH]u+\\n[#REF_EN_INDENT]u+\\n[#EN_FIGURE_SPACE]u \}
+.          el \{ .in \\n[#EN_NUMBER_L_LENGTH]u+\\n[#EN_FIGURE_SPACE]u \}
+.       \}
+.       if \\n[#EN_MARKER_STYLE]=2 \{\
+.          ie \\n[#REF]=1 \{ .ti \\n[#EN_NUMBER_L_LENGTH]u+\\n[#REF_EN_INDENT]u+\\n[#EN_LN_GAP]u \}
+.          el \{ .ti \\n[#EN_NUMBER_L_LENGTH]u+\\n[#EN_LN_GAP]u \}
+.       \}
+.       if \\n[#EN_MARKER_STYLE]=3 \{\
+.          ie \\n[#REF]=1 \{ .ti \\n[#EN_NUMBER_L_LENGTH]u+\\n[#REF_EN_INDENT]u+\w'\|'u \}
+.          el \{ .in \\n[#EN_NUMBER_L_LENGTH]u \}
 .       \}
 .       nr #EN_TEXT_INDENT \\n(.i
 .       QUAD \\*[$EN_QUAD]
@@ -14500,51 +14478,30 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          FT      \\*[$EN_FT]
 .          PT_SIZE \\n[#EN_PS]u
 .       \}
-.       if \\n[#REF]=1 \{\
-.          ie !\\n[#EN_MARKER_STYLE]=2 \{\
-.             if \\n[#EN_NUMBERS_ALIGN_LEFT] \{\
-.                in \\*[$REF_EN_INDENT]
-.                ti -(\\*[$REF_EN_INDENT]-\\n[#EN_NUMBER_L_LENGTH]u)
-.             \}
-.             if \\n[#EN_NUMBERS_ALIGN_RIGHT] \{\
-\#.                in \\*[$REF_EN_INDENT]
-\#.                ti -(\\*[$REF_EN_INDENT]-\\n[#EN_NUMBER_L_LENGTH]u-\\n[#EN_FIGURE_SPACE]u)
-\#.                in \\*[$REF_EN_INDENT]+\\n[#EN_NUMBER_L_LENGTH]u
-\#.                ti -(\\*[$REF_EN_INDENT]-\\n[#EN_NUMBER_L_LENGTH]u+\\n[#EN_FIGURE_SPACE]u)
-.                in +\\*[$REF_EN_INDENT]
-.                ti -\\*[$REF_EN_INDENT]
-.             \}
-.          \}
-.          el \{\
-.             if \\n[#EN_NUMBERS_ALIGN_LEFT] \{\
-.                in \\*[$REF_EN_INDENT]
-.                ti -(\\*[$REF_EN_INDENT]-\\n[#EN_NUMBER_L_LENGTH]u)
-.             \}
-.          \}
-.       \}
 .    \}
 .    el \{\
-.       sp
+\!.     ie \\n[#EN_NUMBER]=\\\\n[#LAST_EN] \{ .vpt 0 \}
+\!.     el \{ .br \}
+.       ALD \\*[$EN_SPACE]
 .       in 0
 .       if \\n[#EN_MARKER_STYLE]=2 \{\
 \!.        in 0
 .       \}
-.       di
+.       da
 .\" Restore sentence spacing
 .       if \\n[#PRINT_STYLE]=2 \{\
 .          if d$RESTORE_SS_VAR \{ .SS \\*[$RESTORE_SS_VAR] \}
 .          rm $RESTORE_SS_VAR
 .       \}
 .       ev
+.\" Restore lead -- need 
 .       nr #PP_STYLE \\n[#PP_STYLE_PREV]
 .       if !\\n[#INDENT_FIRSTS] \{ .INDENT_FIRST_PARAS OFF \}
 .       rr #INDENT_FIRSTS
 .       rr #ENDNOTE
-.       if \\n[#PRINT_STYLE]=1 \{\
-.          if \\n[#UNDERLINE_WAS_ON] \{\
-.             rr #UNDERLINE_WAS_ON
-.             UNDERLINE
-.          \}
+.       if \\n[#UNDERLINE_WAS_ON] \{\
+.          rr #UNDERLINE_WAS_ON
+.          UNDERLINE
 .       \}
 .       if \\n[#SLANT_WAS_ON] \{\
 .          rr #SLANT_WAS_ON
@@ -14568,6 +14525,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   with endnotes, then outputs diversion END_NOTES.
 \#
 .MAC ENDNOTES END
+.    nr #LAST_EN \\n[#EN_NUMBER]
 .    nr #ENDNOTES 1
 .    nr #EN_FIRST_PAGE 1
 .    nr #HEADER_STATE \\n[#HEADERS_ON]
@@ -14728,11 +14686,11 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    CAPS OFF
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       ie \\n[#SINGLE_SPACE]=1 \{\
-.          ALD \\n[#EN_LEAD]u*2u
+.          sp
 .       \}
 .       el \{\
 .          ie \\n[#EN_SINGLESPACE]=1 \{\
-.              ALD \\n[#EN_LEAD]u*2
+.             sp
 .          \}
 .          el \{\
 .
@@ -14741,9 +14699,9 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{ .ALD \\n[#EN_LEAD]u \}
 .    QUAD \\*[$EN_QUAD]
+.    chop END_NOTES
 .    nf
 .    END_NOTES
-.    br
 .    ev
 .    rm END_NOTES
 .    if \\n[#PRINT_STYLE]=1 \{ .vs \\n[#DOC_LEAD]u \}
@@ -14760,6 +14718,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       NUMBER_LINES RESUME
 .       nr #LINENUMBERS 1
 .    \}
+.    PRINT_FOOTER
 .    rr #ENDNOTES
 .END
 \#
@@ -14784,35 +14743,11 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# Because the bibliography control macros all have endnotes
 \# equivalents, refer to the appropriate, similar endnote macro for
 \# Arguments, Function and Notes.
+\#
 \# Bibliography control macros
 \#
 .MAC BIBLIOGRAPHY_PT_SIZE END
 .    nr #BIB_PS (p;\\$1)
-.END
-\#
-.MAC BIBLIOGRAPHY_LEAD END
-.    if !\\n[#OK_PROCESS_LEAD] \{\
-.       ds $BIB_LEAD \\$1
-.       if !'\\$2'' \{\
-.           ds $ADJUST_BIB_LEAD \\$2
-.       \}
-.       return
-.    \}
-.    rr #ADJ_BIB_LEAD
-.    nr #BIB_LEAD (p;\\$1)
-.    if '\\$2'ADJUST' \{\
-.       nr #ORIG_DOC_LEAD \\n[#DOC_LEAD]
-.       nr #RESTORE_ADJ_DOC_LEAD \\n[#ADJ_DOC_LEAD]
-.       nr #ADJ_DOC_LEAD 1
-.       nr #ADJ_BIB_LEAD 1
-.       nr #NO_TRAP_RESET 1
-.       DOC_LEAD \\n[#BIB_LEAD]u ADJUST
-.       nr #BIB_LEAD \\n[#DOC_LEAD]
-.       DOC_LEAD \\n[#ORIG_DOC_LEAD]u
-.       rr #NO_TRAP_RESET
-.       nr #ADJ_DOC_LEAD \\n[#RESTORE_ADJ_DOC_LEAD]
-.       rr #ORIG_DOC_LEAD
-.    \}
 .END
 \#
 .MAC BIBLIOGRAPHY_HDRFTR_CENTER END
@@ -14830,7 +14765,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC BIBLIOGRAPHY_STRING_CAPS END
 .   ie '\\$1'' \{ .nr #BIB_STRING_CAPS 1 \}
-.   el \{ .rr #BIB_STRING_CAPS \}
+.   el \{ .nr #BIB_STRING_CAPS 0 \}
 .END
 \#
 .MAC BIBLIOGRAPHY_NO_COLUMNS END
@@ -14959,207 +14894,223 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   Bibliography pages are set up almost identically to endnotes pages.
 \#
 .MAC BIBLIOGRAPHY END
-.    nr #BIBLIOGRAPHY 1
-.    nr #BIB_FIRST_PAGE 1
-.    nr #HEADER_STATE \\n[#HEADERS_ON]
-.    ds $RESTORE_PAGENUM_STYLE \\*[$PAGENUM_STYLE]
-.    if \\n[#LINENUMBERS]=1 \{\
-.       NUMBER_LINES OFF
-.       nr #LINENUMBERS 2
-.    \}
-.    if \\n[#HEADERS_ON]=1 \{\
-.       if !\\n[#BIB_ALLOWS_HEADERS_ALL] \{ .HEADERS OFF \}
-.    \}
-.    if \\n[#HEADER_STATE]=1 \{\
-.       ie \\n[#BIB_HDRFTR_CENTER]=1 \{ . \}
-.       el \{ .rm $HDRFTR_CENTER  \}
-.    \}
-.    ie !\\n[#SUSPEND_PAGINATION] \{\
-.       if \\n[#PAGINATE]=1 \{\
-.          if \\n[#PAGE_NUM_V_POS]=1 \{\
-.             PAGENUM_STYLE \\*[$BIB_PN_STYLE]
-.             if \\n[#BIB_FIRST_PN] \{ .PAGENUMBER \\n[#BIB_FIRST_PN]-1 \}
-.             if r#BIB_NO_FIRST_PN \{ .nr #PAGINATE 0 \}
-.          \}
+.    ie '\\$1'' \{\
+.       rr #FN_REF
+.       rr #EN_REF
+.       REF_STYLE BIBLIO
+.       nr #BIBLIOGRAPHY 1
+.       nr #BIB_FIRST_PAGE 1
+.       nr #HEADER_STATE \\n[#HEADERS_ON]
+.       ds $RESTORE_PAGENUM_STYLE \\*[$PAGENUM_STYLE]
+.       if \\n[#LINENUMBERS]=1 \{\
+.          NUMBER_LINES OFF
+.          nr #LINENUMBERS 2
 .       \}
-.    \}
-.    el \{\
-.       ie \\n[#PAGE_NUM_V_POS]=2 \{ .nr #PAGINATE 1 \}
-.       el \{ .nr #PAGINATE 0 \}
-.    \}
-.    if \\n[#FOOTERS_ON]=1 \{\
-.       if !'\\*[$HDRFTR_CENTER_OLD]'' .ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_OLD]
-.    \}
-.    NEWPAGE
-.    if \\n[#FOOTERS_ON]=1 \{\
-.       ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_NEW]
-.       rm $HDRFTR_CENTER_OLD
-.       rm $HDRFTR_CENTER_NEW
-.    \}
-.    ie !\\n[#SUSPEND_PAGINATION] \{\
-.       if \\n[#PAGE_NUM_V_POS]=1 \{\
-.          if r#BIB_NO_FIRST_PN \{\
-.             if \\n[#PAGINATION_STATE]=1 \{\
-.                nr #PAGINATE 1
+.       if \\n[#HEADERS_ON]=1 \{\
+.          if !\\n[#BIB_ALLOWS_HEADERS_ALL] \{ .HEADERS OFF \}
+.       \}
+.       if \\n[#HEADER_STATE]=1 \{\
+.          ie \\n[#BIB_HDRFTR_CENTER]=1 \{ . \}
+.          el \{ .rm $HDRFTR_CENTER  \}
+.       \}
+.       ie !\\n[#SUSPEND_PAGINATION] \{\
+.          if \\n[#PAGINATE]=1 \{\
+.             if \\n[#PAGE_NUM_V_POS]=1 \{\
+.                PAGENUM_STYLE \\*[$BIB_PN_STYLE]
+.                if \\n[#BIB_FIRST_PN] \{ .PAGENUMBER \\n[#BIB_FIRST_PN]-1 \}
+.                if r#BIB_NO_FIRST_PN \{ .nr #PAGINATE 0 \}
 .             \}
 .          \}
 .       \}
-.    \}
-.    el \{\
-.       if \\n[#PAGE_NUM_V_POS]=2 \{ .nr #PAGINATE 0 \}
-.    \}
-.    rr #PAGINATION_STATE
-.    PAGENUM_STYLE \\*[$BIB_PN_STYLE]
-.    if \\n[#BIB_FIRST_PN] \{ .PAGENUMBER \\n[#BIB_FIRST_PN] \}
-.    if \\n[#HEADER_STATE]=1 \{\
-.       if \\n[#BIB_ALLOWS_HEADERS] \{ .HEADERS \}
-.    \}
+.       el \{\
+.          ie \\n[#PAGE_NUM_V_POS]=2 \{ .nr #PAGINATE 1 \}
+.          el \{ .nr #PAGINATE 0 \}
+.       \}
+.       if \\n[#FOOTERS_ON]=1 \{\
+.          if !'\\*[$HDRFTR_CENTER_OLD]'' .ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_OLD]
+.       \}
+.       BIBLIOGRAPHY_LEAD \\*[$BIB_LEAD] \\*[$ADJUST_BIB_LEAD]
+.       DOC_LEAD \\n[#BIB_LEAD]u
+.       NEWPAGE
+.       if \\n[#FOOTERS_ON]=1 \{\
+.          ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_NEW]
+.          rm $HDRFTR_CENTER_OLD
+.          rm $HDRFTR_CENTER_NEW
+.       \}
+.       ie !\\n[#SUSPEND_PAGINATION] \{\
+.          if \\n[#PAGE_NUM_V_POS]=1 \{\
+.             if r#BIB_NO_FIRST_PN \{\
+.                if \\n[#PAGINATION_STATE]=1 \{\
+.                   nr #PAGINATE 1
+.                \}
+.             \}
+.          \}
+.       \}
+.       el \{\
+.          if \\n[#PAGE_NUM_V_POS]=2 \{ .nr #PAGINATE 0 \}
+.       \}
+.       rr #PAGINATION_STATE
+.       PAGENUM_STYLE \\*[$BIB_PN_STYLE]
+.       if \\n[#BIB_FIRST_PN] \{ .PAGENUMBER \\n[#BIB_FIRST_PN] \}
+.       if \\n[#HEADER_STATE]=1 \{\
+.          if \\n[#BIB_ALLOWS_HEADERS] \{ .HEADERS \}
+.       \}
 .\" Collect bibliography title string for TOC
-.    nr #TOC_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
-.    af #TOC_ENTRY_PN \\g[#PAGENUMBER]
-.    ds $TOC_TITLE_ITEM \\*[$BIB_STRING]\\|
-.    ev TOC_EV
-.    da TOC_ENTRIES
-.    if \\n[#PRINT_STYLE]=1 \{\
-.       TYPEWRITER
-.    \}
-.    if \\n[#PRINT_STYLE]=2 \{\
-\!.     FAMILY  \\*[$TOC_TITLE_FAM]
-\!.     FT      \\*[$TOC_TITLE_FT]
-\!.     PT_SIZE \\n[#TOC_PS]u\\*[$TOC_TITLE_SIZE_CHANGE]
-.    \}
-\!.  TRAP OFF
-\!.  PAD_MARKER ^
-.    ie \\n[#PRINT_STYLE]=1 \{\
-\!.     PAD "\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN_TYPEWRITE]"
-.    \}
-.    el \{\
-\!.     PAD "\\h'\\n[#TOC_TITLE_INDENT]u'\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN]"
-.    \}
-\!.  PAD_MARKER #
-\!.  EOL
-\!.  ST 100 L
-\!.  ST 101 R
-.    if \\n[#PRINT_STYLE]=2 \{\
-\!.     FAMILY  \\*[$TOC_PN_FAM]
-\!.     FT      \\*[$TOC_PN_FT]
-\!.     PT_SIZE \\n[#TOC_PS]u\\*[$TOC_PN_SIZE_CHANGE]
-.    \}
-\!.  TAB 100
-\!.  PRINT \\*[LEADER]
-\!.  TN
-\!.  TRAP
-\!.  PRINT \\n[#TOC_ENTRY_PN]
-\!.  TQ
-.    di
-.    ev
-.\" End collection of bibliography title string for TOC
-.\" Process bibliography
-.    if \\n[#PRINT_STYLE]=1 \{ .vs \\n[#BIB_LEAD]u \}
-.    if \\n[#PRINT_STYLE]=2 \{\
-.       if \\n[#BIB_NO_COLS] \{\
-.          if \\n[#COLUMNS] \{ .nr #COLUMNS_WERE_ON 1 \}
-.          nr #COLUMNS 0
-.       \}
-.       nr #RESTORE_DOC_LEAD \\n[#DOC_LEAD]
-.       ie \\n[#ADJ_BIB_LEAD] \{\
-.          nr #DOC_LEAD \\n[#BIB_LEAD]
-.       \}
-.       el \{ .DOC_LEAD \\n[#BIB_LEAD]u \}
-.    \}
-.    PRINT \&
-.    ie r#BIB_STRING_ADVANCE \{ .sp |\\n[#BIB_STRING_ADVANCE]u \}
-.    el \{ .sp |\\n[#T_MARGIN]u \}
-.    mk ec
-.    if \\n[#SLANT_ON] \{\
-\*[SLANTX]\c
-.    \}
-.    if !'\\*[$BIB_STRING]'' \{\
+.       nr #TOC_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
+.       af #TOC_ENTRY_PN \\g[#PAGENUMBER]
+.       ds $TOC_TITLE_ITEM \\*[$BIB_STRING]\\|
+.       ev TOC_EV
+.       da TOC_ENTRIES
 .       if \\n[#PRINT_STYLE]=1 \{\
 .          TYPEWRITER
-.          vs \\n[#BIB_LEAD]u
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
-.          LL \\n[#DOC_L_LENGTH]u
-.          ta \\n(.lu
-.          if \\n[#COLUMNS] \{\
-.             ie \\n[#BIB_NO_COLS] \{ .LL \\n[#DOC_L_LENGTH]u \}
-.             el \{ .LL \\n[#COL_L_LENGTH]u \}
+\!.        FAMILY  \\*[$TOC_TITLE_FAM]
+\!.        FT      \\*[$TOC_TITLE_FT]
+\!.        PT_SIZE \\n[#TOC_PS]u\\*[$TOC_TITLE_SIZE_CHANGE]
+.       \}
+\!.     TRAP OFF
+\!.     PAD_MARKER ^
+.       ie \\n[#PRINT_STYLE]=1 \{\
+\!.        PAD "\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN_TYPEWRITE]"
+.       \}
+.       el \{\
+\!.        PAD "\\h'\\n[#TOC_TITLE_INDENT]u'\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN]"
+.       \}
+\!.     PAD_MARKER #
+\!.     EOL
+\!.     ST 100 L
+\!.     ST 101 R
+.       if \\n[#PRINT_STYLE]=2 \{\
+\!.        FAMILY  \\*[$TOC_PN_FAM]
+\!.        FT      \\*[$TOC_PN_FT]
+\!.        PT_SIZE \\n[#TOC_PS]u\\*[$TOC_PN_SIZE_CHANGE]
+.       \}
+\!.     TAB 100
+\!.     PRINT \\*[LEADER]
+\!.     TN
+\!.     TRAP
+\!.     PRINT \\n[#TOC_ENTRY_PN]
+\!.     TQ
+.       di
+.       ev
+.\" End collection of bibliography title string for TOC
+.\" Process bibliography
+.       if \\n[#PRINT_STYLE]=1 \{ .vs \\n[#BIB_LEAD]u \}
+.       if \\n[#PRINT_STYLE]=2 \{\
+.          if \\n[#BIB_NO_COLS] \{\
+.             if \\n[#COLUMNS] \{ .nr #COLUMNS_WERE_ON 1 \}
+.             nr #COLUMNS 0
+.          \}
+.          nr #RESTORE_DOC_LEAD \\n[#DOC_LEAD]
+.          ie \\n[#ADJ_BIB_LEAD] \{\
+.             nr #DOC_LEAD \\n[#BIB_LEAD]
+.          \}
+.          el \{ .DOC_LEAD \\n[#BIB_LEAD]u \}
+.       \}
+.       PRINT \&
+.       ie r#BIB_STRING_ADVANCE \{ .sp |\\n[#BIB_STRING_ADVANCE]u \}
+.       el \{ .sp |\\n[#T_MARGIN]u \}
+.       mk ec
+.       if \\n[#SLANT_ON] \{\
+\*[SLANTX]\c
+.       \}
+.       if !'\\*[$BIB_STRING]'' \{\
+.          if \\n[#PRINT_STYLE]=1 \{\
+.             TYPEWRITER
+.             vs \\n[#BIB_LEAD]u
+.          \}
+.          if \\n[#PRINT_STYLE]=2 \{\
+.             LL \\n[#DOC_L_LENGTH]u
 .             ta \\n(.lu
+.             if \\n[#COLUMNS] \{\
+.                ie \\n[#BIB_NO_COLS] \{ .LL \\n[#DOC_L_LENGTH]u \}
+.                el \{ .LL \\n[#COL_L_LENGTH]u \}
+.                ta \\n(.lu
+.             \}
+.             FAMILY  \\*[$BIB_STRING_FAM]
+.             FT      \\*[$BIB_STRING_FT]
+.             PT_SIZE \\n[#BIB_PS]u\\*[$BIB_STRING_SIZE_CHANGE]
+.             vs      \\n[#BIB_LEAD]u
 .          \}
-.          FAMILY  \\*[$BIB_STRING_FAM]
-.          FT      \\*[$BIB_STRING_FT]
-.          PT_SIZE \\n[#BIB_PS]u\\*[$BIB_STRING_SIZE_CHANGE]
-.          vs      \\n[#BIB_LEAD]u
-.       \}
-.       if '\\*[$BIB_STRING_QUAD]'L'      \{ .LEFT   \}
-.       if '\\*[$BIB_STRING_QUAD]'LEFT'   \{ .LEFT   \}
-.       if '\\*[$BIB_STRING_QUAD]'C'      \{ .CENTER \}
-.       if '\\*[$BIB_STRING_QUAD]'CENTER' \{ .CENTER \}
-.       if '\\*[$BIB_STRING_QUAD]'CENTRE' \{ .CENTER \}
-.       if '\\*[$BIB_STRING_QUAD]'R'      \{ .RIGHT  \}
-.       if '\\*[$BIB_STRING_QUAD]'RIGHT'  \{ .RIGHT  \}
-.       EOL
-.       if \\n[#BIB_STRING_CAPS] \{ .CAPS \}
-.       ie \\n[#BIB_STRING_UNDERLINE] \{\
-.          nr #FROM_BIB_STRING 1
-.          ie \\n[#BIB_STRING_UNDERLINE]=2 \{\
-.             UNDERSCORE2 "\\*[$BIB_STRING]"
-.          \}
-.          el \{\
-.             UNDERSCORE "\\*[$BIB_STRING]"
-.          \}
-.          rr #FROM_BIB_STRING
-.       \}
-.       el \{\
-.          PRINT "\\*[$BIB_STRING]"
-.       \}
-.    \}
-.    CAPS OFF
-.    FAMILY \\*[$BIB_FAMILY]
-.    FT \\*[$BIB_FT]
-.    PT_SIZE -\\*[$BIB_STRING_SIZE_CHANGE]
-.    if \\n[#PRINT_STYLE]=1 \{\
-.       ie \\n[#SINGLE_SPACE]=1 \{\
-.          ALD \\n[#BIB_LEAD]*3u
-.       \}
-.       el \{\
-.          ie \\n[#BIB_SINGLESPACE]=1 \{\
-.             ALD \\n[#BIB_LEAD]u*3u
+.          if '\\*[$BIB_STRING_QUAD]'L'      \{ .LEFT   \}
+.          if '\\*[$BIB_STRING_QUAD]'LEFT'   \{ .LEFT   \}
+.          if '\\*[$BIB_STRING_QUAD]'C'      \{ .CENTER \}
+.          if '\\*[$BIB_STRING_QUAD]'CENTER' \{ .CENTER \}
+.          if '\\*[$BIB_STRING_QUAD]'CENTRE' \{ .CENTER \}
+.          if '\\*[$BIB_STRING_QUAD]'R'      \{ .RIGHT  \}
+.          if '\\*[$BIB_STRING_QUAD]'RIGHT'  \{ .RIGHT  \}
+.          EOL
+.          if \\n[#BIB_STRING_CAPS] \{ .CAPS \}
+.          ie \\n[#BIB_STRING_UNDERLINE] \{\
+.             nr #FROM_BIB_STRING 1
+.             ie \\n[#BIB_STRING_UNDERLINE]=2 \{\
+.                UNDERSCORE2 "\\*[$BIB_STRING]"
+.             \}
+.             el \{\
+.                UNDERSCORE "\\*[$BIB_STRING]"
+.             \}
+.             rr #FROM_BIB_STRING
 .          \}
 .          el \{\
-.             ALD \\n[#BIB_LEAD]u
+.             PRINT "\\*[$BIB_STRING]"
 .          \}
 .       \}
-.    \}
-.    if \\n[#PRINT_STYLE]=2 \{ .ALD \\n[#BIB_LEAD]u*2u \}
-.    QUAD \\*[$BIB_QUAD]
-.    if \\n[#PRINT_STYLE]=1 \{\
-.       ie \\n[#SINGLE_SPACE]=1 \{\
-.          vs \\n[#BIB_LEAD]u
+.       CAPS OFF
+.       FAMILY \\*[$BIB_FAMILY]
+.       FT \\*[$BIB_FT]
+.       PT_SIZE -\\*[$BIB_STRING_SIZE_CHANGE]
+.       if \\n[#PRINT_STYLE]=1 \{\
+.          ie \\n[#SINGLE_SPACE]=1 \{\
+.             ALD \\n[#BIB_LEAD]*3u
+.          \}
+.          el \{\
+.             ie \\n[#BIB_SINGLESPACE]=1 \{\
+.                ALD \\n[#BIB_LEAD]u*3u
+.             \}
+.             el \{\
+.                ALD \\n[#BIB_LEAD]u
+.             \}
+.          \}
 .       \}
-.       el \{\
-.          ie \\n[#BIB_SINGLESPACE]=1 \{\
+.       if \\n[#PRINT_STYLE]=2 \{ .ALD \\n[#BIB_LEAD]u*2u \}
+.       QUAD \\*[$BIB_QUAD]
+.       if \\n[#PRINT_STYLE]=1 \{\
+.          ie \\n[#SINGLE_SPACE]=1 \{\
 .             vs \\n[#BIB_LEAD]u
 .          \}
 .          el \{\
-.             vs \\n[#BIB_LEAD]u
+.             ie \\n[#BIB_SINGLESPACE]=1 \{\
+.                vs \\n[#BIB_LEAD]u
+.             \}
+.             el \{\
+.                vs \\n[#BIB_LEAD]u
+.             \}
 .          \}
 .       \}
-.    \}
-.    if \\n[#PRINT_STYLE]=2 \{\
-.       ie \\n[#ADJ_BIB_LEAD] \{\
-.          nr #DOC_LEAD \\n[#RESTORE_DOC_LEAD]
+.       if \\n[#PRINT_STYLE]=2 \{\
+.          ie \\n[#ADJ_BIB_LEAD] \{\
+.             nr #DOC_LEAD \\n[#RESTORE_DOC_LEAD]
+.          \}
+.          el \{ .DOC_LEAD \\n[#RESTORE_DOC_LEAD]u \}
+.          rr #RESTORE_DOC_LEAD
 .       \}
-.       el \{ .DOC_LEAD \\n[#RESTORE_DOC_LEAD]u \}
-.       rr #RESTORE_DOC_LEAD
+.       if \\n[#COLUMNS_WERE_ON] \{ .nr #COLUMNS 1 \}
+.       if \\n[#HEADER_STATE]=1 \{ .HEADERS \}
+.       if \\n[#LINENUMBERS]=2 \{\
+.          NUMBER_LINES RESUME
+.          nr #LINENUMBERS 1
+.       \}
+.       di BIB
 .    \}
-.    if \\n[#COLUMNS_WERE_ON] \{ .nr #COLUMNS 1 \}
-.    if \\n[#HEADER_STATE]=1 \{ .HEADERS \}
-.    rr #BIBLIOGRAPHY
-.    if \\n[#LINENUMBERS]=2 \{\
-.       NUMBER_LINES RESUME
-.       nr #LINENUMBERS 1
+.    el \{\
+.       br
+.       di
+.\" Part of workaround for refer spitting out a blank page if the
+.\" last ref falls on the bottom line.
+.       nr num*refs \\n[ref*num*first-pass]
+.       nf
+.       BIB
 .    \}
 .END
 \#
@@ -15223,44 +15174,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    nr #TOC_PS (p;\\$1)
 .END
 \#
-\#
-\# TOC LEADING
-\# -----------
-\# *Argument:
-\#   <leading for toc pages> [ADJUST]
-\# *Function:
-\#   Creates or modifies register #TOC_LEAD. If optional ADJUST
-\#   given, adjusts lead to fill page.  If #OK_PROCESS_LEAD doesn't
-\#   exist, stores arguments for when it's okay to run the macro.
-\# *Notes:
-\#   No unit of measure required (points assumed).
-\#
-\#   Default is same as DOC_LEAD.
-\#
-.MAC TOC_LEAD END
-.    if !\\n[#OK_PROCESS_LEAD] \{\
-.       ds $TOC_LEAD \\$1
-.       if !'\\$2'' \{\
-.           ds $ADJUST_TOC_LEAD \\$2
-.       \}
-.       return
-.    \}
-.    rr #ADJ_TOC_LEAD
-.    nr #TOC_LEAD (p;\\$1)
-.    if '\\$2'ADJUST' \{\
-.       nr #ORIG_DOC_LEAD \\n[#DOC_LEAD]
-.       nr #RESTORE_ADJ_DOC_LEAD \\n[#ADJ_DOC_LEAD]
-.       nr #ADJ_DOC_LEAD 1
-.       nr #ADJ_TOC_LEAD 1
-.       nr #NO_TRAP_RESET 1
-.       DOC_LEAD \\n[#TOC_LEAD]u ADJUST
-.       nr #TOC_LEAD \\n[#DOC_LEAD]
-.       DOC_LEAD \\n[#ORIG_DOC_LEAD]u
-.       rr #NO_TRAP_RESET
-.       nr #ADJ_DOC_LEAD \\n[#RESTORE_ADJ_DOC_LEAD]
-.       rr #ORIG_DOC_LEAD
-.    \}
-.END
 \#
 \#
 \# TOC PAGES PAGE-NUMBERING STYLE
@@ -15397,6 +15310,19 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    \}
 .    if \\n[#FOOTERS_WERE_ON] \{ .FOOTERS OFF \} \" But have to turn FOOTERS off again so they don't print when FINIS was called
 .    COLLATE
+.    if \\n[#PRINT_STYLE]=1 \{\
+.       rr #IGNORE
+.       DOC_LEAD 24 ADJUST
+.       nr #IGNORE 1
+.    \}
+.    if \\n[#PRINT_STYLE]=2 \{\
+.       ie r#ADJ_TOC_LEAD \{\
+.          nr #NO_TRAP_RESET 1
+.          DOC_LEAD \\n[#TOC_LEAD]u ADJUST
+.          rr #NO_TRAP_RESET
+.       \}
+.       el \{ .DOC_LEAD \\n[#TOC_LEAD]u \}
+.    \}
 .    if \\n[#FINIS] \{\
 .       if \\n[#FOOTERS_WERE_ON] \{ .FOOTERS \} \" Finally, turn footers on if they were on
 .       rr #FOOTERS_WERE_ON
@@ -15416,23 +15342,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    rr #COLLATED_DOC
 .    DOCHEADER OFF
 .    PAGENUMBER 1
-.    if \\n[#PRINT_STYLE]=1 \{\
-.       rr #IGNORE
-.       DOC_LEAD 24 ADJUST
-.       nr #IGNORE 1
-.    \}
 .    if \\n[#LINENUMBERS]=2 \{ .nr #LINENUMBERS 3 \}
 .    START
 .    PP
 .    nr #COLUMNS 0
-.    if \\n[#PRINT_STYLE]=2 \{\
-.       ie r#ADJ_TOC_LEAD \{\
-.          nr #NO_TRAP_RESET 1
-.          DOC_LEAD \\n[#TOC_LEAD]u ADJUST
-.          rr #NO_TRAP_RESET
-.       \}
-.       el \{ .DOC_LEAD \\n[#TOC_LEAD]u \}
-.    \}
 .    sp |\\n[#T_MARGIN]u-\\n[#DOC_LEAD]u
 .    if \\n[#SLANT_ON] \{\
 \*[SLANTX]\c
@@ -15940,8 +15853,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    rr #SEP_TYPE
 .    EOL
 .    if \\n[#REF]=1 \{\
-.       IL +\\*[$REF_BIB_INDENT]
-.       ti \\n[#L_INDENT]u-\\*[$REF_BIB_INDENT]
+.       IL +\\n[#REF_BIB_INDENT]u
+.       ti \\n[#L_INDENT]u-\\n[#REF_BIB_INDENT]u
 .    \}
 .    TRAP
 .    if \\n[#KERN_WAS_ON]=1 \{\
@@ -16501,18 +16414,23 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# OUTPUT BLANK PAGES
 \# ------------------
 \# *Argument:
-\#   <number of blank pages to output> [ NULL ]
+\#   <number of blank pages to output> [ DIVIDER [ NULL ] ]
 \# *Function:
 \#   Outputs blank pages.
 \# *Notes:
 \#   If recto/verso, each page is recto/verso, even if there's
 \#   nothing on it.
 \#
-\#   The argument to BLANKPAGE is non-optional.
+\#   The 1st argument to BLANKPAGE is non-optional.  DIVIDER is for
+\#   blank pages before endnotes, bibliographies, tocs, new chapters.
 \#
 .MAC BLANKPAGE END
 .    nr #HOW_MANY \\$1
 .    nr #PAGES 0 1
+.    if \\n[#LINENUMBERS] \{\
+.       nr #LINENUMBERS_WERE_ON 1
+.       NUMBER_LINES OFF
+.    \}
 .    while \\n+[#PAGES]<=\\n[#HOW_MANY] \{\
 .       if \\n[#HEADERS_ON]=1 \{\
 .          nr #HEADERS_WERE_ON 1
@@ -16537,14 +16455,37 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          if \\n[#PAGINATE_WAS_ON] \{ .PAGINATE \}
 .       \}
 .\}
-.    NEWPAGE
-.    if \\n[#FOOTERS_WERE_ON] \{ .FOOTERS \}
-.    if \\n[#PAGE_NUM_V_POS]=2 \{\
-.       if \\n[#PAGINATE_WAS_ON] \{ .PAGINATE \}
+.    shift
+.    ie '\\$1'DIVIDER' \{\
+.       if \\n[#FOOTERS_WERE_ON] \{ .FOOTERS \}
+.       if \\n[#PAGE_NUM_V_POS]=2 \{\
+.          if \\n[#PAGINATE_WAS_ON] \{\
+.             nr #RESTORE_PAGINATION 1
+.          \}
+.       \}
+.       shift
+.       if '\\$1'NULL' \{ .nr #PAGE_NUM_ADJ -\\n[#HOW_MANY] \}
+.    \}
+.    el \{\
+.       if '\\$1'' \{\
+.          NEWPAGE
+.          if \\n[#FOOTERS_WERE_ON] \{ .FOOTERS \}
+.          if \\n[#PAGE_NUM_V_POS]=2 \{\
+.             if \\n[#PAGINATE_WAS_ON] \{ .PAGINATE \}
+.          \}
+.       \}
+.       if '\\$1'NULL' \{\
+.          NEWPAGE
+.          if \\n[#FOOTERS_WERE_ON] \{ .FOOTERS \}
+.          if \\n[#PAGE_NUM_V_POS]=2 \{\
+.             if \\n[#PAGINATE_WAS_ON] \{ .PAGINATE \}
+.          \}
+.       \}
 .    \}
 .    if \\n[#PAGINATE]=1 \{\
-.       if '\\$2'NULL' \{ .nr #PAGE_NUM_ADJ -\\n[#HOW_MANY] \}
+.       if '\\$1'NULL' \{ .nr #PAGE_NUM_ADJ -\\n[#HOW_MANY] \}
 .    \}
+.    if \\n[#LINENUMBERS_WERE_ON] \{ .NUMBER_LINES RESUME \}
 .    rr #HOW_MANY
 .    rr #HEADERS_WERE_ON
 .    rr #FOOTERS_WERE_ON
@@ -16580,7 +16521,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    ie \\n[#ADJ_DOC_LEAD]=1 \{\
 .       nr #LINES_PER_PAGE 0 1
 .       nr #DOC_LEAD_ADJ 0 1
-.       nr #DEPTH_TO_B_MARGIN \\n[#PAGE_LENGTH]-\\n[#ORIGINAL_B_MARGIN]-1v
+.       nr #DEPTH_TO_B_MARGIN \\n[#PAGE_LENGTH]-\\n[#ORIGINAL_B_MARGIN]-\\n[.v]
 .\" Get the number of unadjusted lines that fit on the page; always a
 .\" bit short of the bottom margin
 .       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]*\\n+[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{\
@@ -16589,9 +16530,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       nr #LINES_PER_PAGE -1
 .\" Add machine units, 1 at a time, increasing the leading until the
 .\" new leading fills the page properly
-.       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]+\\n+[#DOC_LEAD_ADJ]*\\n[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{\
+.       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]+\\n+[#DOC_LEAD_ADJ]*\\n[#LINES_PER_PAGE])<=\\n[#DEPTH_TO_B_MARGIN] \{\
 .
 .\}
+.       nr #UNADJUSTED_DOC_LEAD \\n[#DOC_LEAD]
 .       DOC_LEAD \\n[#DOC_LEAD]u+\\n[#DOC_LEAD_ADJ]u
 .\" The "visual" bottom margin is what \n(nl would report on the
 .\" last line before the FOOTER trap is sprung
@@ -16701,7 +16643,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .END
 \#
 \#
-\# This .em (for all DOC_TYPEs except 4 [LETTER]) ensures that
+\# This .em (for all DOC_TYPEs, except 4 [LETTER]) ensures that
 \# deferred footnotes that happen on the 2nd to last page get
 \# output.
 \#
@@ -16741,7 +16683,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    FOOTERS OFF
 .    PAGINATION OFF
 .    if \\n[#DOC_TYPE]=4 \{\
-.       if !'\\n(.z'' \{ .di \}
+.       if !'\\n(.z'' \{\
+.          br
+.          di
+.       \}
 .       IQ CLEAR
 .       TQ
 .       ie !'\\*[$CLOSE_INDENT]'' \{ .IL \\*[$CLOSE_INDENT] \}
@@ -16755,7 +16700,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       el \{ .SP 3v \}
 .       PRINT \\*[$AUTHOR_1]
 .    \}
-.    DO_FOOTER
 .END
 \#
 \# Set up a default papersize of US letter
@@ -17406,8 +17350,12 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   Instruct REF to put references in footnotes.
 \#
 .MAC FOOTNOTE_REFS END
-.    if r#EN_REF \{ .rr #EN_REF \}
-.    nr #FN_REF 1
+.    ie !'\\$1'' \{ .rr #FN_REF \}
+.    el \{\
+.       if r#EN_REF \{ .rr #EN_REF \}
+.       nr #FN_REF 1
+.    \}
+.    REF_STYLE NOTE
 .END
 \#
 \# Endnote references
@@ -17416,8 +17364,13 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   Instruct REF to collect references for endnotes output.
 \#
 .MAC ENDNOTE_REFS END
-.    if r#FN_REF \{ .rr #FN_REF \}
-.    nr #EN_REF 1
+.    ie !'\\$1'' \{ .rr #EN_REF \}
+.    el \{\
+.       if r#FN_REF \{ .rr #FN_REF \}
+.       nr #EN_REF 1
+.       if !r#EN_MARKER_STYLE \{ .ENDNOTE_MARKER_STYLE SUPERSCRIPT \}
+.    \}
+.    REF_STYLE NOTE
 .END
 \#
 \# Prepare mom for a reference
@@ -17463,6 +17416,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# -------------------------------------------
 \#
 .MAC REF_BRACKETS_START END
+.    if \\n[#FN_REF]=1 \{ .nr #FN_REF 2 \}
+.    if \\n[#EN_REF]=1 \{ .nr #EN_REF 2 \}
 .    ds $CURRENT_EV \\n[.ev]
 .    ev REFERENCE
 .    evc  \\*[$CURRENT_EV]
@@ -17478,32 +17433,49 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    if '\\$0'REF)' \{ .nop (\\*[REFERENCE]) \}
 .    if '\\$0'REF]' \{ .nop [\\*[REFERENCE]] \}
 .    if '\\$0'REF}' \{ .nop {\\*[REFERENCE]} \}
+.    if '\\$0'REF>' \{ .nop <\\*[REFERENCE]> \}
+.    if \\n[#FN_REF]=2 \{ .nr #FN_REF 1 \}
+.    if \\n[#EN_REF]=2 \{ .nr #EN_REF 1 \}
 .END
 \#
-\# These three pairs of aliases allow users to embed references in
-\# text and have them surrounded by (), [] or {}.
+\# These four pairs of aliases allow users to embed references in
+\# text and have them surrounded by (), [], {} or <>.
 \#
 .ALIAS REF( REF_BRACKETS_START
 .ALIAS REF) REF_BRACKETS_END
 \#
 .ALIAS REF[ REF_BRACKETS_START
-.ALIAS REF{ REF_BRACKETS_START
-\#
-.ALIAS REF} REF_BRACKETS_END
 .ALIAS REF] REF_BRACKETS_END
 \#
-\# Second-line indent for refs
-\# ---------------------------
+.ALIAS REF{ REF_BRACKETS_START
+.ALIAS REF} REF_BRACKETS_END
+\#
+.ALIAS REF< REF_BRACKETS_START
+.ALIAS REF> REF_BRACKETS_END
+\#
+.MAC REF_STYLE END
+.    if '\\$1'NOTE' \{\
+.       ds $REF_STYLE NOTE
+.    \}
+.    if '\\$1'BIBLIO' \{\
+.       ds $REF_STYLE BIBLIO
+.    \}
+.END
+\#
+\# Refer indenting
+\# ---------------
 \# *Argument:
 \#   FOOTNOTE | ENDNOTE | BIBLIO <indent for 2nd and subsequent lines of discrete reference entries>
 \# *Function:
-\#   Sets strings $REF_FN_INDENT, $REF_EN_INDENT or $REF_BIB_INDENT.
+\#   Sets registers #REF_FN_INDENT, #REF_EN_INDENT or #REF_BIB_INDENT.
 \# *Notes:
-\#   Indent value requires a unit of measure.
+\#   Indent value requires a unit of measure.  If refs are going
+\#   into footnotes or endnotes, first lines get indented; if going
+\#   into a bibliography, second lines get indented
 \#
 .MAC INDENT_REFS END
-.    if '\\$1'FOOTNOTE' .ds $REF_FN_INDENT \\$2
-.    if '\\$1'ENDNOTE'  .ds $REF_EN_INDENT \\$2
+.    if '\\$1'FOOTNOTE' .ds $REF_FN_INDENT  \\$2
+.    if '\\$1'ENDNOTE'  .ds $REF_EN_INDENT  \\$2
 .    if '\\$1'BIBLIO'   .ds $REF_BIB_INDENT \\$2
 .END
 \#
@@ -17524,40 +17496,57 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# The remainder of the definitions in this section are modified
 \# versions of the definitions found in the refer module of s.tmac.
 \#
-\# This one is directly from s.tmac.
-\#
 .de @error
 .tm \\n(.F:\\n(.c: macro error: \\$*
 ..
 \#
+\# Underlining unavoidably turns off sentence spacing.
+\#
+.de ref*restore-ss
+\c
+.SS \\*[$SAVED_SS_VAR]
+.if '\\n[.z]'END_NOTES' \{\
+\c
+\E*[PREV]\c
+.\}
+..
 \# The following strings define the order of entries for different
 \# types of references.  Each letter in the string refers to a database
 \# field (A for author, T1/T2 for article and book titles, etc).
-\# Mom is set up for MLA-style bibliographies.  Other styles can be
-\# implemented here by re-ordering the fields.
 \#
-\# Book - type 2
-.ds ref*spec!2 Q A T1 d t l r E S e V a C I D P O
-\# Article within book - type 3
-.ds ref*spec!3 Q A T2 B d t l r E S e V a C I D P O
-\# Journal article - type 1
-.ds ref*spec!1 Q A T2 J S N D P O
-\# Tech report - type 4
-.ds ref*spec!4 Q A T1 R G C I D P O
-\# Internet site - type 0
-.ds ref*spec!0 Q A T2 s E c d o a u O
+.de ref*specs
+.if \\n[#PRINT_STYLE]=1 \{\
+.   char '     \[aq]
+.   char \[oq] \[aq]
+.\}
+.\" Internet site - type 0
+.ds ref*spec!0 i Q A m p T2 s o D c a u n 
+.\" Journal article - type 1
+.ds ref*spec!1 i Q A m p T2 q O J V S N D P n
+.\" Book - type 2
+.ds ref*spec!2 i Q A m p T1 q b d l r E S e V O C I D P t n
+.\" Article within book - type 3
+.ds ref*spec!3 i Q A m p T2 B b d l r E S e V O C I D P t n
+.\" Tech report - type 4
+.ds ref*spec!4 i Q A m p T1 R G O C I D P n
+.\" Magazine or newspaper article - type 5
+.ds ref*spec!5 i Q A m p T2 O M V S N D P n
+..
 \#
 \# Refer's "1st" macro.  Since it is possible to define database
 \# fields using any single letter, we remove all possible string
-\# definitions of the form [X and [x
+\# definitions of the form [X and [x.  Also, reset ref*spec!<n>
+\# strings to their defaults.
 \#
 .de ]-
+.ref*specs
 .rm [A [B [C [D [E [F [G [H [I [J [K [L [M \
     [N [O [P [Q [R [S [T [U [V [W [X [Y [Z \
-.   [a [b [c [d [e [f [g [h [i [j [k [l [m \
+    [a [b [c [d [e [f [g [h [i [j [k [l [m \
     [n [o [p [q [r [s [t [u [v [w [x [y [z
-.rm ref*string
+.if r [e .rr [e \" [e persists if %e field is last
 .rr ref*type
+.rm ref*string
 ..
 \#
 \# Refer's "2nd" macro; builds up a reference with ref*build, and
@@ -17565,14 +17554,24 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .de ][
 .nr ref*type \\$1
+.if \\n[ref*type]=0 \{\
+.   ie d [C \{\
+.      if !d [I \{\
+.         nr pre-1900 1 \" If pre-1900, MLA allows excluding publisher
+.         nr ref*type 2
+.      \}
+.   \}
+.   el .nr ref*type 2
+.   if d [q .nr ref*type 2
+.\}
 .if \\n[ref*type]=3 \{\
 .   if !'\\*([R'' \{\
 .      nr ref*type 4
-.      ds ref*spec!4 Q A T2 B R C I D P O
+.      ds ref*spec!4 i Q A m p T2 B R O C I D P n
 .   \}
 .   if !'\\*([G'' \{\
 .      nr ref*type 4
-.      ds ref*spec!4 Q A T2 B G C I D P O
+.      ds ref*spec!4 i A m p T2 B G O C I D P O n
 .   \}
 .\}
 .if r [T \{\
@@ -17629,15 +17628,18 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .de ref*end-print
 .\" 10 is abritrary
 .nn 10
+.nr #REF_BIB_INDENT (u;\\*[$REF_BIB_INDENT])
 .ie \\n[#BIB_LIST]=0 \{\
-.in +\\*[$REF_BIB_INDENT]
-.ti -\\*[$REF_BIB_INDENT]
+.   in +\\n[#REF_BIB_INDENT]u
+.   ti -\\n[#REF_BIB_INDENT]u
 .\}
 .el .ITEM
-\\*[ref*string]
+.\" Part of workaround for refer spitting out a blank page if the
+.\" last ref falls on the bottom line.
+\\*[ref*string]\R'ref*num*first-pass +1'\?\R'ref*num +1'\?
 .sp \\n[#BIB_SPACE]u
 .ie \\n[#BIB_LIST]=0 .in
-.el .IL -\\*[$REF_BIB_INDENT]u
+.el .IL -\\n[#REF_BIB_INDENT]u
 .nn 0
 ..
 \#
@@ -17655,11 +17657,9 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .de ref*build
 .if \\n[#PRINT_STYLE]=2 \{\
 .   ds $RESTORE_SS_VAR \\*[$SS_VAR]
-.   SS +4
+.   SS +8
 .\}
-\#.rm ref*string ref*post-punct
 .rm ref*string
-.nr ref*suppress-period 1
 .while \\n[.$] \{\
 .   if d [\\$1 \{\
 .      ie d ref*add-\\$1 .ref*add-\\$1
@@ -17691,23 +17691,112 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 \# %A Author(s)
 .de ref*add-A
-.ref*field A ,
-.if r [A .nr ref*suppress-period \\n([A
+.ds eval*[A \\*([A
+.substring eval*[A -1
+.if '\\*[eval*[A]'.' \{\
+.   if !'\\*[$REF_STYLE]'NOTE' .chop [A
+.\}
+.\" Per MLA, NOTE should not use idem, therefore if %i contains other than
+.\" idem (eg. ed., trans.), transpose it to after author's name
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ie !'\\*[idem]'' .ref*field A "" "" ", \\*[idem]"
+.   el .ref*field A
+.   rm idem
+.el .ref*field A
+.\}
+.if \\n([A .nr ref*suppress-period 1
+..
+\# %i Idem.  BIBLIO: In all instances, removes %A field and replaces
+\# it with a dash; if %i field contains other than the word, idem,
+\# appends it to the dash
+.de ref*add-i
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ie '\\*([i'idem' .rm [i
+.   el .ds idem \\*([i
+.\}
+.el \{\
+.   ie '\\*([i'idem' \{\
+.      rm [A
+.      rm [i
+.      ref*field i "" \[idem] "" " "
+.   \}
+.   el \{\
+.      ds eval*[i \\*([i
+.      substring eval*[i -1
+.      if '\\*[eval*[i]'.' \{\
+.         chop [i
+.         ds idem \\*([i
+.      \}
+.      rm [i
+.      rm [A
+.      ref*field i "" \[idem] ", \\*[idem]" " "
+.   \}
+.\}
+..
+\# %m Multiple authors (et al.)
+.de ref*add-m
+.if !'\\*[$REF_STYLE]'NOTE' \{\
+.   ds eval*[m \\*([m
+.   substring eval*[m -1
+.   if '\\*[eval*[m]'.' .chop [m
+.\}
+.ref*field m ,
+..
+\# %p Post-author string (eg. Preface, Foreword, etc)
+.de ref*add-p
+.\" Convert first letter to uppercase, per MLA, if BIBLIO
+.if '\\*[$REF_STYLE]'BIBLIO' \{\
+.   ds initial*cap \\*([p
+.   substring initial*cap 0 0
+.   ds [p*string \\*([p
+.   substring [p*string 1
+.   ds [p \E*[UC]\\*[initial*cap]\E*[LC]\\*[[p*string]
+.\}
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field p ,
+.el .ref*field p . " "
+..
+\# %Q Author(s) when author is not a person
+.de ref*add-Q
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field Q
+.el .ref*field Q
 ..
 \# %T Title (generic)
 .de ref*add-T1
-.ref*field T . " \E*[IT]" "" \E*[PREV]
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field T , \E*[IT] \E*[ref*restore-ss]
+.el \{\
+.   ie !'\\*([A'' .ref*field T . " \E*[IT]" \E*[ref*restore-ss]
+.   el \{\
+.      ie !'\\*([Q'' .ref*field T . " \E*[IT]" \E*[ref*restore-ss]
+.      el .ref*field T . \E*[IT] \E*[ref*restore-ss]
+.   \}
+.\}
 .if \\n([T .nr ref*suppress-period \\n([T
+.
 ..
 \# %T Title of a chapter or article
 .de ref*add-T2
-.ref*field T . " \(lq" "" "\(rq"
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ref*field T , \[lq] "" \[rq]
+.\}
+.el \{\
+.   ie '\\*([A'' \{\
+.      ref*field T . \[lq] "" \[rq]
+.      if !'\\*([Q''.ref*field T . " \[lq]" "" \[rq]
+.   \}
+.   el .ref*field T . " \[lq]" "" \[rq]
+.\}
 .if \\n([T .nr ref*suppress-period \\n([T
 ..
 \# %B Book title (when citing an article from a book)
 .de ref*add-B
-.ie \\n([T .ref*field B "" ".\E*[IT]" "" \E*[PREV]
-.el .ref*field B . " \E*[IT]" "" \E*[PREV]
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ie \\n([T .ref*field B "" \E*[IT] \E*[ref*restore-ss]
+.   el .ref*field B , \E*[IT] \E*[ref*restore-ss]
+.\}
+.el \{\
+.   ie \\n([T .ref*field B "" ".\E*[IT]" \E*[ref*restore-ss]
+.   el .ref*field B . " \E*[IT]" \E*[ref*restore-ss]
+.\}
 \# refer doesn't set reg [T to 1 for these book titles, so we do it here
 .ds eval*[B \\*([B
 .substring eval*[B -1
@@ -17716,25 +17805,116 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .if '\\*[eval*[B]'?' .nr [T 1
 .rm eval*[B
 ..
+\# %q Titles that must go in quotes (e.g. an unpublished dissertation)
+.de ref*add-q
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field q , \[lq] "" \[rq]
+.el \{\
+.   ie !'\\*([A'' .ref*field q . " \[lq]" "" \[rq]
+.   el \{\
+.      ie !'\\*([Q'' .ref*field q . " \[lq]" "" \[rq]
+.      el .ref*field q . \[lq] "" \[rq]
+.   \}
+.\}
+..
 \# %R Report number for technical reports
 .de ref*add-R
 .ref*field R . " "
 ..
 \# %J Journal name
 .de ref*add-J
-.ie \\n([T .ref*field J "" " \E*[IT]" "" \E*[PREV]
-.el .ref*field J . " \E*[IT]" "" \E*[PREV]
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ie \\n([T .ref*field J "" "\E*[IT]" \E*[ref*restore-ss]
+.   el .ref*field J , "\E*[IT]" \E*[ref*restore-ss]
+.\}
+.el \{\
+.   ie \\n([T .ref*field J "" " \E*[IT]" \E*[ref*restore-ss]
+.   el .ref*field J . " \E*[IT]" \E*[ref*restore-ss]
+.\}
+..
+\# %M Magazine or newspaper name
+.de ref*add-M
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ie \\n([T .ref*field M "" "\E*[IT]" \E*[ref*restore-ss]
+.   el .ref*field M , "\E*[IT]" \E*[ref*restore-ss]
+.\}
+.el \{\
+.   ie \\n([T .ref*field M "" " \E*[IT]" \E*[ref*restore-ss]
+.   el .ref*field M . " \E*[IT]" \E*[ref*restore-ss]
+.\}
 ..
 \# %E Editor(s)
 .de ref*add-E
+.ds eval*[E \\*([E
+.substring eval*[E -1
+.if '\\*[eval*[E]'.' \{\
+.   if !\\n[#FN_REF]+\\n[#EN_REF] .chop [E
+.   rm eval*[E
+.\}
+.\" Workaround for join-authors also joining editors.  MLA style
+.\" requires a comma after first editor only if there are more than
+.\" two, whereas join-authors always puts a comma after the first if
+.\" there's more than one.
+.rm eval*[E
+.nr position 1 1
+.nr counter 1 1
+.while !'\\*[eval*[E]',' \{\
+.   ds eval*[E \\*([E
+.   substring eval*[E \\n+[position] \\n[position]
+.   if \\n+[counter]>30 .break \" 30 is abitrary
+.\}
+.\" Check for " and"
+.if '\\*[eval*[E]',' \{\
+.   ds eval*[E \\*([E
+.   nr and-check \\n[position]+4
+.   substring eval*[E \\n+[position] \\n[and-check]
+.\}
+.if '\\*[eval*[E]' and' \{\
+.   nr counter 1 1
+.   nr start-range -1 1
+.   nr end-range 3 1
+.   while !'\\*[eval*[E]', and' \{\
+.      ds eval*[E \\*([E
+.      substring eval*[E \\n+[start-range] \\n+[end-range]
+.      if \\n+[counter]>50 .break \" just in case; 50 is arbitrary
+.   \}
+.   if '\\*[eval*[E]', and' \{\
+.      length len*[E \\*([E
+.      nr rhs \\n[len*[E]-\\n[start-range]
+.      ds lhs \\*([E
+.      ds rhs \\*([E
+.      substring lhs 0 \\n[start-range]-1
+.      substring rhs -(\\n[rhs]-1)
+.      ds [E \\*[lhs]\\*[rhs]
+.   \}
+.   rm lhs
+.   rm rhs
+.   rr and-check
+.   rr counter
+.   rr start-range
+.   rr end-range
+.   rr len*[E
+.\}
+.\" End workaround
 .ie !\\n[ref*type]=0 \{\
 .   ie \\n([E>0 \{\
-.      ie \\n([T .ref*field E "" " Eds. "
-.      el .ref*field E . " Eds. "
+.      ie '\\*[$REF_STYLE]'NOTE' \{\
+.         ie \\n([T .ref*field E "" "ed. "
+.         el .ref*field E , "ed. "
+.      \}
+.      el \{\
+.         ie \\n([T .ref*field E "" " Eds. "
+.         el .ref*field E . " Eds. "
+.      \}
 .   \}
 .   el \{\
-.      ie \\n([T .ref*field E "" " Ed. "
-.      el .ref*field E . " Ed. "
+.      ie '\\*[$REF_STYLE]'NOTE' \{\
+.         ie \\n([T .ref*field E "" "ed. "
+.         el .ref*field E , "ed. "
+.      \}
+.      el \{\
+.         ie \\n([T .ref*field E "" " Ed. "
+.         el .ref*field E . " Ed. "
+.      \}
 .   \}
 .\}
 .el \{\
@@ -17742,21 +17922,30 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .   el .ref*field E . " "
 .\}
 .rr [T
+.rr [E
 ..
 \# %e Edition
 .de ref*add-e
-.ie \\n([T .ref*field e "" " " " edition"
-.el .ref*field e . " " " edition"
+.ie \\n([T .ref*field e "" "" " ed."
+.el \{\
+.   ie '\\*[$REF_STYLE]'NOTE' .ref*field e , "" " ed."
+.   el .ref*field e . " " " ed."
+.\}
+.nr ref*suppress-period 1
+.nr [e 1
 .rr [T
 ..
-\# %V Volume (of a journal, or series of books)
+\# %V Volume (of a journal, or series of books); for journals, %N may be preferable
 .de ref*add-V
 .if \\n[ref*type]=1 \{\
 .   ref*field V 
 .\}
 .if \\n[ref*type]=2 \{\
-.   ie \\n([T .ref*field V "" " "
-.   el .ref*field V . " "
+.   ie '\\*[$REF_STYLE]'NOTE' .ref*field V , "vol. "
+.   el \{\
+.      ie \\n([T .ref*field V "" " Vol. "
+.      el .ref*field V . " Vol. "
+.   \}
 .\}
 .if \\n[ref*type]=3 \{\
 .   ie \\n([T .ref*field V "" " "
@@ -17774,8 +17963,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .   ref*field S
 .\}
 .if \\n[ref*type]=2 \{\
-.   ie \\n([T .ref*field S "" " "
-.   el .ref*field S . " "
+.   ie '\\*[$REF_STYLE]'NOTE' \{\
+.      ie \\n([T .ref*field S
+.      el .ref*field S ,
+.   \}
+.   el \{\
+.      ie \\n([T .ref*field S "" " "
+.      el .ref*field S . " "
+.   \}
 .\}
 .if \\n[ref*type]=3 \{\
 .   ie \\n([T .ref*field S "" " "
@@ -17791,49 +17986,139 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 ..
 \# %C City
 .de ref*add-C
-.ie \\n([T .ref*field C "" " "
-.el .ref*field C . " "
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ie r [d \{\
+.      ref*field C
+.      rr [d
+.   \}
+.   el \{\
+.      ref*field C "" \*[FU 2](
+.   \}
+.   if \\n([T .nr ref*suppress-period \\n([T
+.\}
+.el \{\
+.   ie \\n([T .ref*field C "" " " " "
+.   el \{\
+.      ie r [e .ref*field C "" " "
+.      el .ref*field C . " "
+.   \}
+.\}
 .rr [T
+.rr [e
 ..
 \# %I Publisher (I stands for Issuer)
 .de ref*add-I
-.ie !'\\*([C'' .ref*field I :
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ie !'\\*([C'' .ref*field I :
+.   el .ref*field I "" (
+.\}
 .el \{\
-.   ie \\n([T .ref*field I "" " "
-.   el .ref*field I . " "
+.   ie !'\\*([C'' .ref*field I :
+.   el \{\
+.      ie \\n([T .ref*field I "" " "
+.      el .ref*field I . " "
+.   \}
 .\}
 .rr [T
 ..
 \# %D Date of publication
 .de ref*add-D
-.if \\n[ref*type]=1 \{\
-.   ie !'\\*([V''.ref*field D "" "(" ")"
-.   el .ref*field D
+.if \\n[ref*type]=0 \{\
+.   ie '\\*[$REF_STYLE]'NOTE' .ref*field D ,
+.   el .ref*field D . " "
 .\}
-.if \\n[ref*type]=2 .ref*field D ,
-.if \\n[ref*type]=3 \{\
-.   ie '\\*([C'' \{\
-.      ie '\\*([I'' .ref*field D . " "
-.      el .ref*field D ,
-.   \}
+.if \\n[ref*type]=1 \{\
+.   ref*field D "" "(" ")"
+.\}
+.if \\n[ref*type]=2 \{\
+.   ie '\\*[$REF_STYLE]'NOTE' .ref*field D , "" )
 .   el .ref*field D ,
 .\}
+.if \\n[ref*type]=3 \{\
+.   ie !'\\*([C'' \{\
+.      ie '\\*[$REF_STYLE]'NOTE' .ref*field D , "" )
+.      el .ref*field D ,
+.   \}
+.   el \{\
+.      if '\\*([I'' \{\
+.         ds eval*[D \\*([D
+.         substring eval*[D 0 -4
+.         ie '\\*[eval*[D]'1' .ds kern \*[BU3]
+.         el .ds kern \*[BU2]
+.         ie \\n[#PRINT_STYLE]=2 \{\
+.           if '\\*[$REF_STYLE]'NOTE' .ref*field D "" (\\*[kern] )
+.         \}
+.         el .ref*field D
+.      \}
+.      rm eval*[D
+.      rm kern
+.   \}
+.\}
 .if \\n[ref*type]=4 .ref*field D ,
+.if \\n[ref*type]=5 .ref*field D
+.ds eval*[D \\*([D
+.substring eval*[D -1
+.if '\\*[eval*[D]'.' .nr ref*suppress-period 1
 ..
 \# %P Page number(s)
 .de ref*add-P
-.ie \\n[ref*type]=1 .ref*field P : 
-.el .ref*field P . " "
+.if \\n[ref*type]=5 .nr ref*type 1
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ie \\n[ref*type]=1 .ref*field P : "" .
+.   el .ref*field P "" "\|"
+.   nr ref*suppress-period 1
+.\}
+.el \{\
+.   ie \\n[ref*type]=1 .ref*field P \|: 
+.   el \{\
+.      ie d [n .ref*field P . \| .
+.      el .ref*field P . " "
+.   \}
+.\}
 ..
 \# %G Gov't. ordering number
 .de ref*add-G
-.ref*field G . " "
+.ie '\\*[$REF_STYLE]'NOTE' ref*field G ,
+.el .ref*field G . " "
 ..
-\# %O Other (usually goes at end of ref)
+\# %O Other (info that goes after %T [or %B] but is hard to categorize; eg a dissertation)
 .de ref*add-O
-.ref*field O . " "
-.ie r [O .nr ref*suppress-period \\n([O
-.el .nr ref*suppress-period 1
+.ds eval*[O \\*([O
+.substring eval*[O -1
+.if '\\*[eval*[O]'.' .nr [O 1
+.ds initial*cap \\*([O
+.substring initial*cap 0 0
+.ds [O*string \\*([O
+.substring [O*string 1
+.if '\\*[$REF_STYLE]'BIBLIO' \{\
+.   ds [O \E*[UC]\\*[initial*cap]\E*[LC]\\*[[O*string]
+.\}
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field O ,
+.el \{\
+.   if \\n([O=1 .chop [O
+.   ie r [e .ref*field O "" " "
+.   el \{\
+.      ie !d [A .ref*field O
+.      el .ref*field O . " "
+.   \}
+.\}
+.rr [O
+.rr [e
+..
+\# %n Annotations (after ref)
+.de ref*add-n
+.ds eval*[n \\*([n
+.substring eval*[n -1
+.if '\\*[eval*[n]'.' .chop [n
+.if '\\*[eval*[n]'?' .nr [n 1
+.if '\\*[eval*[n]'!' .nr [n 1
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field n ,
+.el \{\
+.   ie !'\\*([P'' .ref*field n "" " "
+.   el .ref*field n . " "
+.\}
+.if r [n .nr ref*suppress-period 1
+.rr [n
 ..
 \#
 .de ref*add-dflt
@@ -17844,21 +18129,37 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# -------------
 \# %d date of publication (the orignal date of publication)
 .de ref*add-d
-.ie \\n([T .ref*field d "" " "
-.el .ref*field d . " "
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ref*field d "" ( ;
+.   nr [d 1
+.\}
+.el \{\
+.   ie \\n([T .ref*field d "" " "
+.   el .ref*field d . " "
+.\}
 .rr [T
 ..
-\# %a additions (such as a new intro to reprints)
-.de ref*add-a
-.ie \\n([T .ref*field a "" " "
-.el .ref*field a . " "
+\# %b main author when citing from a preface, introduction, foreword
+\# or afterword
+.de ref*add-b
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ie \\n([T .ref*field b "" "by"
+.   el .ref*field b , "by "
+.\}
+.el \{\
+.   ie \\n([T .ref*field b "" " By "
+.   el .ref*field b . " By "
+.\}
 .rr [T
 ..
 \# %t title, if different from original title (the T field, which s/b
 \# the original title)
 .de ref*add-t
-.ie \\n([T .ref*field t "" " Rpt. as \E*[IT]" "" \E*[PREV]
-.el .ref*field t . " Rpt. as \E*[IT]" "" \E*[PREV]
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field t , "rpt. of \E*[IT] " \E*[ref*restore-ss]
+.el \{\
+.   ie \\n([T .ref*field t "" " Rpt. of \E*[IT] " \E*[ref*restore-ss]
+.   el .ref*field t . " Rpt. of \E*[IT] " \E*[ref*restore-ss]
+.\}
 .rr [T
 ..
 \#
@@ -17866,14 +18167,23 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# ----------------
 \# %l Trans(l)ator
 .de ref*add-l
-.ie \\n([T .ref*field l "" " Trans. "
-.el .ref*field l . " Trans. "
+.ie '\\*[$REF_STYLE]'NOTE' \{\
+.   ie \\n([T .ref*field l "" "trans. "
+.   el .ref*field l , "trans. "
+.\}
+.el \{\
+.   ie \\n([T .ref*field l "" " Trans. "
+.   el .ref*field l . " Trans. "
+.\}
 .rr [T
 ..
 \# %r Translato(r) and edito(r)
 .de ref*add-r
-.ie \\n([T .ref*field r "" " Trans. and Ed. "
-.el .ref*field r . " Trans. and Ed. " 
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field r , "trans. and ed. "
+.el \{\
+.   ie \\n([T .ref*field r "" " Trans. and ed. "
+.   el .ref*field r . " Trans. and ed. " 
+.\}
 .rr [T
 ..
 \#
@@ -17881,42 +18191,65 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# --------
 \# %s Site name
 .de ref*add-s
-.ie \\n([s .ref*field s "" ".\E*[IT]" "" \E*[PREV]
-.el .ref*field s . " \E*[IT]" "" \E*[PREV]
-.\" refer doesn't set reg [T to 1 for these book titles, so we do it here
-.ds eval*[s \\*([s
-.substring eval*[s -1
-.rr [T
-.if '\\*[eval*[s]'!' .nr [T 1
-.if '\\*[eval*[s]'?' .nr [T 1
-.rm eval*[s
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field s , \E*[IT] \E*[ref*restore-ss]
+.el \{\
+.ie \\n([s .ref*field s "" ".\E*[IT]" \E*[ref*restore-ss]
+.el .ref*field s . " \E*[IT]" \E*[ref*restore-ss]
+.\}
+.\" refer doesn't set reg [T to 1 for these titles, so we do it here
+.if !'\\*[$REF_STYLE]'NOTE' \{\
+.   ds eval*[s \\*([s
+.   substring eval*[s -1
+.   rr [T
+.   if '\\*[eval*[s]'.' .nr [T 1
+.   if '\\*[eval*[s]'!' .nr [T 1
+.   if '\\*[eval*[s]'?' .nr [T 1
+.   rm eval*[s
+.\}
 ..
-\# %c content of site, if unclear (i.e. advertisement, cartoon,
-\# interview, etc.)
+\# %c content of site (ie. Web, Online posting, etc)
 .de ref*add-c
-.ie \\n([T .ref*field c "" " "
-.el .ref*field c . " "
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field c ,
+.el \{\
+.   ie \\n([T .ref*field c "" " "
+.   el .ref*field c . " "
+.\}
 .rr [T
 ..
 \# %o organization, group or sponsor of site
 .de ref*add-o
-.ie \\n([T .ref*field o "" " "
-.el .ref*field o . " "
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field o ,
+.el \{\
+.   ie \\n([T .ref*field o "" " "
+.   el .ref*field o . " "
+.\}
 .rr [T
 ..
 \# %a access date, i.e. the date you read it
 .de ref*add-a
-.ie \\n([T .ref*field a "" " "
-.el .ref*field a . " "
+.ie '\\*[$REF_STYLE]'NOTE' .ref*field a ,
+.el \{\
+.   ie \\n([T .ref*field a "" " "
+.   el .ref*field a . " "
+.\}
 .rr [T
 ..
 \# %u URL
 .de ref*add-u
-.ref*field u "" " <" ">"
+.ref*field u "" < >
 .rr [T
+..
+.de ref*add-z
+.ref*field z
 ..
 \#
 \# Build up reference string from ref*add-<x> macros.
+\#
+\# First, a string to ensure next field's font is reset to roman
+\# (TYPESET) or non-underlined (TYPEWRITE)
+\#
+.ie !n .ds ref*roman \f[R]\X'ps: exec decornone'\?\R'#UNDERLINE_ON 0'\?
+.el .ds ref*roman \f[R]\?\R'#UNDERLINE_ON 0'\?
 \#
 .de ref*field
 .if d ref*string \{\
@@ -17926,8 +18259,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .   \}
 .   el .as ref*string "\\$2 \"
 .\}
-.as ref*string "\\$3\\*([\\$1\\$4
-.if \\n[.$]>4 .ds ref*post-punct "\\$5
+.as ref*string "\\$3\\*([\\$1\\$4\E*[ref*roman]
+.if \\n[.$]>4 .ds ref*post-punct "\\$5\E*[ref*roman]
 .nr ref*suppress-period 0
 ..
 \#
@@ -18063,7 +18396,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    nr MN-size \\n[.ps]
 .    ps
 .    if \\n[#PRINT_STYLE]=1 \{\
-.       ps 12
+.       ps \\*[$TYPEWRITER_PS]
 .       nr MN-size \\n[.ps]
 .       ps
 .    \}
@@ -18318,4 +18651,4 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .  if !\\n[#no-repeat-MN-right]=1 .vpt 1
 ..
 \#
-\# vim: ft=groff:
+\# vim: ft=groff: encoding=latin1: fileencoding=latin1: nomodified:

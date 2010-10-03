@@ -239,7 +239,7 @@ mightily.
 The family, font, point size, colour and leading control macros have
 no effect in
 <a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>,
-which sets everyTHING in Courier roman, 12/24 (i.e. 12-point type on
+which sets everything in Courier roman, 12/24 (i.e. 12-point type on
 a linespace of 24 points).
 </p>
 
@@ -699,6 +699,14 @@ document family.
 Mom&#8217;s default paragraph (and document) family is Times Roman.
 </p>
 
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+Neither FAMILY nor DOC_FAMILY has any effect when the PRINTSTYLE is
+<kbd>TYPEWRITE</kbd>.
+</p>
+</div>
+
 <h4 id="pp-font" class="docs" style="margin-top: -.25em;">2. Font control</h4>
 
 <p>
@@ -721,6 +729,21 @@ them with the appropriate control macros.
 <p>
 Mom&#8217;s default paragraph font is medium roman.
 </p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+PP_FONT has no effect when the PRINTSTYLE is <kbd>TYPEWRITE</kbd>.
+If you wish to set whole typewritten paragraphs in italic, invoke
+invoke <kbd>.FT I</kbd> immediately after <kbd>.PP</kbd>.  Depending
+on which of
+<a href="docprocessing.html#printstyle-italics">UNDERLINE_ITALIC</a>
+or
+<a href="docprocessing.html#printstyle-italics">ITALIC_MEANS_ITALIC</a>
+is currently enabled, the paragraph will be set underlined or in
+italic.  Neither persists past the end of the paragraph.
+</p>
+</div>
 
 <h4 id="pp-color" class="docs" style="margin-top: -.25em;">3. Paragraph colour</h4>
 
@@ -807,7 +830,7 @@ paragraph whose leading you wish to change.
 <div class="box-tip">
 <p class="tip">
 <span class="note">Warning:</span>
-It is extremely unwise to change a paragraph's leading with LS as
+It is extremely unwise to change a paragraph&#8217;s leading with LS as
 it will, in all cases, screw up mom&#8217;s ability to balance
 the bottom margin of pages.  Should you absolutely need to change
 paragraph leading with LS, and subsequently want mom to get back on
@@ -1125,8 +1148,10 @@ HEAD_CAPS back on, simply invoke it without an argument.
 <h4 id="head-space" class="docs" style="margin-top: -.25em;">3. Pre-head space</h4>
 
 <p>
-By default, mom deposits 2 blank lines prior to every head.  If
-you&#8217;d prefer just a single blank line, do
+By default, mom deposits 2 blank lines prior to every head when your
+<a href="docprocessing.html#printstyle">PRINTSTYLE</a>
+is <kbd>TYPESET</kbd>.  If you&#8217;d prefer just a single blank
+line, do
 <br/>
 <span class="pre-in-pp">
   .HEAD_SPACE OFF
@@ -1136,6 +1161,13 @@ you like instead of <kbd>OFF</kbd> (<kbd>END, QUIT, Q, X</kbd>...).
 To restore the space before heads to 2 blank lines, invoke
 <kbd>.HEAD_SPACE</kbd> without an argument.
 </p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+HEAD_SPACE has no effect on PRINTSTYLE <kbd>TYPEWRITE</kbd>.
+</p>
+</div>
 
 <h4 id="head-underline" class="docs" style="margin-top: -.25em;">4. Underscoring</h4>
 
@@ -2144,7 +2176,7 @@ QUOTE_INDENT if paragraph first lines are not being indented.
 <p>
 The default value for QUOTE_INDENT is 3 (for
 <a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>)
-and 2 (for
+and 1 (for
 <a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>).
 </p>
 
@@ -2506,7 +2538,7 @@ it as well, invoke <kbd>.CODE</kbd> with the argument,
 <kbd>SPREAD</kbd>.  If, in addition to breaking the line before CODE
 you want a break afterwards, you must supply it manually with
 <a href="typesetting.html#br">BR</a>
-unless what follows immeidately is a macro that automatically causes
+unless what follows immediately is a macro that automatically causes
 a break (e.g.
 <a href="#pp">PP</a>).
 </p>
@@ -3638,13 +3670,23 @@ Even if you&#8217;re using
 mom knows what to do, and Does The Right Thing.
 </p>
 
-<p>
-Footnotes can be sly little beasts, though.  If you&#8217;re writing
-a document that&#8217;s footnote-heavy, you might want to read the
-following.
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+See
+<a href="refer.html">refer.html</a>
+for information on using footnotes with the <kbd>refer</kbd>
+bibliographic database.
 </p>
+</div>
 
 <h3 id="footnote-behaviour" class="docs">Footnote behaviour</h3>
+
+<p>
+Footnotes can be sly little beasts.  If you&#8217;re writing a
+document that&#8217;s footnote-heavy, you might want to read the
+following.
+</p>
 
 <p>
 By default, mom marks footnotes with alternating stars (asterisks),
@@ -4012,7 +4054,7 @@ explanation and examples
 In
 <a href="definitions.html#filled">no-fill</a>
 modes, the optional argument <kbd>BREAK</kbd> or <kbd>BR</kbd> may
-be used after the<kbd>OFF</kbd> (or <kbd>QUIT, END, X,</kbd> etc.)
+be used after the <kbd>OFF</kbd> (or <kbd>QUIT, END, X,</kbd> etc.)
 argument to instruct mom not to join the next input line to the
 previous output.  See
 <a href="#fn-and-punct-nofill">here</a>
@@ -4035,7 +4077,10 @@ should be entered normally.
 <ol style="margin-top: .5em; padding-bottom: .5em;">
   <li><a href="#footnote-general">Family/font/size/colour/lead/quad</a></li>
   <li><a href="#footnote-markers">Footnote markers</a> &ndash; on or off</li>
-  <li><a href="#footnote-marker-style">Footnote marker style</a> &ndash; star+dagger or numbered</li>
+  <li><a href="#footnote-marker-style">Footnote marker style</a> &ndash; star+dagger or numbered
+  <ul style="margin-left: -.5em; list-style-type: disc;">
+    <li><a href="#footnote-number-placeholders">Left padding of footnote numbers</a></li>
+  </ul></li>
   <li><a href="#footnotes-by-linenumber">Footnotes by line number</a>
   <ul style="margin-left: -.5em; list-style-type: disc;">
     <li><a href="#footnote-linenumber-brackets">FOOTNOTE_LINENUMBER_BRACKETS</a></li>
@@ -4109,12 +4154,76 @@ can ask mom to start each page&#8217;s footnote numbers at 1 with
 (<a href="#reset-footnote-number">see below</a>.)
 </p>
 
-<h4 id="footnotes-by-linenumber" class="docs" style="margin-top: -.25em;">4. Footnotes by line number</h4> 
+<p>
+If your
+<a href="docprocessing.html#printstyle">PRINTSTYLE</a>
+is <kbd>TYPEWRITE</kbd> and you would prefer that the footnotes
+themselves not use superscript numbers, you may pass
+<kbd>.FOOTNOTE_MARKER_STYLE NUMBER</kbd> an additional argument:
+<kbd>NO_SUPERSCRIPT</kbd>.  While the marker in the text will still
+be superscript, the footnotes themselves will be identified with
+normal-sized, base aligned numbers, surrounded by parentheses.
+</p>
+
+<h5 id="footnote-number-placeholders" class="docs">Left padding of footnote numbers</h5>
 
 <p>
-<kbd>.FOOTNOTE_MARKER_STYLE LINE</kbd> lets you have footnotes which
-are identified by line number, rather than by a marker in the text.
-(Note that
+When footnote numbering is enabled, in order to ensure that the
+left margin of footnote text aligns regardless of the footnote
+number, you sometimes have to pad the footnote numbers.  This will
+be the case any time the footnote numbers change from 9 to 10 on
+the same page, or from 99 to 100.  Consider this scenario:
+<br/>
+<span class="pre-in-pp">
+  <sup>9</sup>&nbsp;Footnote text
+  <sup>10</sup>&nbsp;Footnote text
+  <sup>11</sup>&nbsp;Footnote text
+</span>
+As you can see, the left margins of the footnotes are not aligned.
+</p>
+
+<p>
+In order to correct this, use the macro
+<kbd>.FOOTNOTE_NUMBER_PLACEHOLDERS</kbd>, which takes a single
+argument: the number of placeholders in the longer digit.  For
+example, placed at an appropriate point in your input file,
+<kbd>.FOOTNOTE_NUMBER_PLACEHOLDERS&nbsp;2</kbd> causes the above
+example to come out like this:
+<br/>
+<span class="pre-in-pp">
+  <sup> 9</sup> Footnote text
+  <sup>10</sup> Footnote text
+  <sup>11</sup> Footnote text
+</span>
+Given the impossibility of knowing in advance when the number of
+placeholders required for footnote numbers will change, you must
+study your <i>output</i> file to determine where to insert this
+macro into your <i>input</i> file.
+</p>
+
+<p>
+Obviously, mom does not provide a default for
+<kbd>.FOOTNOTE_NUMBER_PLACEHOLDERS</kbd>.
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+<kbd>.FOOTNOTE_NUMBER_PLACEHOLDERS</kbd> affects both superscript
+footnote numbers, and, in
+<a href="docprocessing.html#printstyle">PRINTSTYLE TYPEWRITE</a>,
+the normal, base-aligned numbers surrounded by parentheses that you
+get with
+<kbd>.FOOTNOTE_MARKER_STYLE&nbsp;NUMBER&nbsp;NO_SUPERSCRIPT</kbd>.
+</p>
+</div>
+
+<h4 id="footnotes-by-linenumber" class="docs" style="margin-top: -.25em;">4. Footnotes by line number &ndash; FOOTNOTE_MARKER_STYLE LINE</h4> 
+
+<p>
+FOOTNOTE_MARKER_STYLE with the argument, <kbd>LINE</kbd> lets you
+have footnotes which are identified by line number, rather than by a
+marker in the text.  (Note that
 <a href="#number-lines">NUMBER_LINES</a>
 must be enabled in order to use this marker style.)
 </p>
@@ -4123,57 +4232,88 @@ must be enabled in order to use this marker style.)
 With FOOTNOTE_MARKER_STYLE <kbd>LINE</kbd>, mom will identify
 footnotes either by single line numbers, or line ranges.  If
 what you want is a single line number, you need only invoke
-<kbd>.FOOTNOTE</kbd>, <i>without terminating the text line before it
-with</i> <kbd>\c</kbd>, at the appropriate place in running text.
+<kbd>.FOOTNOTE</kbd>, <i>without the terminating</i> <kbd>\c</kbd>,
+at the appropriate place in running text.  Input lines after the
+footnote has been terminated (e.g. with <kbd>.FOOTNOTE OFF</kbd>)
+must begin at the left margin.
 </p>
 
 <p>
 If you want a range of line numbers (e.g.&nbsp;[5-11]&nbsp;),
 insert, directly into the first line of the range you want,
 the <a href="definitions.html#inlines">inline escape</a>,
-<kbd>\*[FN-MARK]</kbd>.  For the terminating line number of the
-range, you need only invoke <kbd>.FOOTNOTE</kbd>, (again, without
-attaching <kbd>\c</kbd> to the text line before it).  Mom is smart
-enough to figure out that where <kbd>.FOOTNOTE</kbd> was invoked
-represents the terminating line number.  Range-numbered footnotes
-are always output on the page where <kbd>.FOOTNOTE</kbd> was
-invoked, not the page where <kbd>\*[FN-MARK]</kbd> appears (subject,
-of course, to the rules for footnotes that fall too close to the
-bottom of a page, as outlined
+<kbd>\*[FN_MARK]</kbd>.  For the terminating line number of the
+range, you need only invoke <kbd>.FOOTNOTE</kbd> (again, without the
+terminating <kbd>\c</kbd>); mom is smart enough to figure out that
+where <kbd>.FOOTNOTE</kbd> was invoked represents the terminating
+line number.  Range-numbered footnotes are always output on the
+page where <kbd>.FOOTNOTE</kbd> was invoked, not the page where
+<kbd>\*[FN_MARK]</kbd> appears (subject, of course, to the rules for
+footnotes that fall too close to the bottom of a page, as outlined
 <a href="#footnote-rules">here</a>).
 </p>
 
-<h5 id="footnote-linenumber-brackets" class="docs" style="margin-top: -.25em;">Footnote line number brackets</h5>
-
 <p>
-Mom, by default, puts footnote line numbers inside square
+The behaviour of line-numbered footnotes can be controlled with the
+macros:
+<br/>
+<span style="display: inline-block; margin-left: 2em; margin-top: .5em;"><a href="#footnote-linenumber-brackets">FOOTNOTE_LINENUMBER_BRACKETS</a></span>
+<br/>
+<span style="margin-left: 2em;"><a href="#footnote-linenumber-separator">FOOTNOTE_LINENUMBER_SEPARATOR</a></span>
+<br/>
+<span style="margin-left: 2em;"><a href="#footnotes-run-on">FOOTNOTES_RUN_ON</a></span>
+</p>
+
+<div style="margin-left: 1.25em;">
+<h5 id="footnote-linenumber-brackets" class="docs" style="margin-top: -.25em;">&bull;&nbsp;FOOTNOTE_LINENUMBER_BRACKETS</h5>
+
+<p style="margin-left: .5em;">
+Mom, by default, surrounds footnote line numbers with square
 brackets.  The style of the brackets may be changed with the macro,
-FOOTNOTE_LINENUMBER_BRACKETS, which takes one of three possible
-arguments: <kbd>PARENS</kbd> (round brackets), <kbd>SQUARE</kbd>
-(the default) or <kbd>BRACES</kbd> (curly braces).  If you prefer a
-shortform, the arguments, <kbd>(</kbd>, <kbd>[</kbd> or <kbd>{</kbd>
-may be used instead.
+<br/>
+<span class="pre-in-pp">
+  .FOOTNOTE_LINENUMBER_BRACKETS
+</span>
+which takes one of three possible arguments: <kbd>PARENS</kbd>
+(round brackets), <kbd>SQUARE</kbd> (the default) or
+<kbd>BRACES</kbd> (curly braces).  If you prefer a shortform, the
+arguments, <kbd>(</kbd>, <kbd>[</kbd> or <kbd>{</kbd> may be used
+instead.
 </p>
 
-<h5 id="footnote-linenumber-separator" class="docs" style="margin-top: -.25em;">FOOTNOTE_LINENUMBER_SEPARATOR</h5>
-
-<p>
-If you don&#8217;t want the numbers enclosed in brackets, you may
-tell mom to use a "separator" instead.  A common separator would be
-the colon, but it can be anything you like.  The macro to do this is
-FOOTNOTE_LINENUMBER_SEPARATOR, which takes, as its single argument,
-the separator you want.  For safety and consistency&#8217;s sake,
-always enclose the argument in double-quotes.
+<p style="margin-left: .5em;">Thus, for example, either
+<br/>
+<span class="pre-in-pp">
+  .FOOTNOTE_LINENUMBER_BRACKETS PARENS
+</span>
+or
+<br/>
+<span class="pre-in-pp">
+  .FOOTNOTE_LINENUMBER_BRACKETS (
+</span>
+will surround footnote line numbers with round brackets.
 </p>
 
-<p>
-The separator can be composed of any valid groff character,
-or any combination of characters.
+<h5 id="footnote-linenumber-separator" class="docs" style="margin-top: -.25em;">&bull;&nbsp;FOOTNOTE_LINENUMBER_SEPARATOR</h5>
+
+<p style="margin-left: .5em;">
+If you don&#8217;t want the numbers enclosed in brackets, you
+may tell mom to use a &#8220;separator&#8221; instead.  A common
+separator would be the colon, but it can be anything you like.
+The macro to do this is
+<br/>
+<span class="pre-in-pp">
+  .FOOTNOTE_LINENUMBER_SEPARATOR
+</span>
+which takes, as its single argument, the separator you want.  For
+safety and consistency&#8217;s sake, always enclose the argument in
+double-quotes.  The separator can be composed of any valid groff
+character, or any combination of characters.
 </p>
 
-<p>
+<p style="margin-left: .5em;">
 <b>A word of caution:</b> when using a separator, mom doesn&#8217;t
-insert a space after the separator.  Hence, if you want the space
+insert any space after the separator.  Hence, if you want space
 (you probably do), you must make the space part of the argument you
 pass to FOOTNOTE_LINENUMBER_SEPARATOR.  For example, to get a colon
 separator with a space after it, you&#8217;d do
@@ -4183,32 +4323,33 @@ separator with a space after it, you&#8217;d do
 </span>
 </p>
 
-<h5 id="footnotes-run-on" class="docs" style="margin-top: -.25em;">RUN-ON FOOTNOTES</h5>
+<h5 id="footnotes-run-on" class="docs" style="margin-top: -1em;">&bull;&nbsp;FOOTNOTES_RUN_ON</h5>
 
-<p>
+<p style="margin-left: .5em;">
 Finally, if your footnote marker style is <kbd>LINE</kbd>, you may
-instruct mom to do "run-on style" footnotes.  Run-on footnotes
-do not treat footnotes as discrete entities, i.e. on a line by
-themselves.  Rather, each footnote is separated from the footnote
-before it by a space, so that the footnotes on any given page
-form a continuous block, like lines in a paragraph.  The macro
-to get mom to run footnotes on is <kbd>.FOOTNOTES_RUN_ON</kbd>.
-Invoked by itself, it turns the feature on.  Invoked with any
-other argument (<kbd>OFF, NO</kbd>, etc.), it turns the feature off.  It is
-generally not a good idea to turn the feature on and off during the
-course of a single document.  If you do, mom will issue a warning
-if there&#8217;s going to be a problem.  However, it is always
-perfectly safe to enable/disable the feature after
+instruct mom to do &#8220;run-on style&#8221; footnotes.  Run-on
+footnotes do not treat footnotes as discrete entities, i.e. each
+beginning on a new line.  Rather, each footnote is separated from
+the footnote before it by horizontal space in the running line, so
+that the footnotes on any given page form a continuous block, like
+lines in a paragraph.
+</p>
+
+<p style="margin-left: .5em;">
+The macro to get mom to run footnotes on is
+<br/>
+<span class="pre-in-pp">
+  .FOOTNOTES_RUN_ON
+</span>
+Invoked by itself, it turns the feature on.  Invoked with any other
+argument (<kbd>OFF, NO</kbd>, etc.), it turns the feature off.
+It is generally not a good idea to turn the feature on and off
+during the course of a single document.  If you do, mom will issue
+a warning if there&#8217;s going to be a problem.  However, it is
+always perfectly safe to enable/disable the feature after
 <a href="rectoverso.html#collate">COLLATE</a>.
 </p>
-
-<p>
-The usual reason for wanting run-on footnotes is that you&#8217;re
-using them to hold many, short references.  (See
-<a href="refer.html#top">here</a>
-for instructions on using the groff program, <kbd>refer</kbd>, to
-set up references.)
-</p>
+</div>
 
 <h4 id="reset-footnote-number" class="docs" style="margin-top: -.25em;">5. Reset footnote number &ndash; RESET_FOOTNOTE_NUMBER</h4>
 
@@ -4222,13 +4363,13 @@ numbering so that the next footnote you enter is numbered 1.
 page&#8217;s footnote numbering at 1.
 </p>
 
-<h4 id="footnote-space" class="docs" style="margin-top: -.25em;">6. Inter-footnote spacing &ndash; FOOTNOTE_SPACE</h4>
+<h4 id="footnote-space" class="docs" style="margin-top: -.25em;">6. Inter-footnote spacing &ndash; FOOTNOTE_SPACING</h4>
 
 <p>
-If you&#8217;d like a little extra space between footnotes, you can
-have mom put it in for you by invoking <kbd>.FOOTNOTE_SPACE</kbd>
+If you&#8217;d like some space between footnotes, you can
+have mom put it in for you by invoking <kbd>.FOOTNOTE_SPACING</kbd>
 with an argument representing the amount of extra space you&#8217;d
-like.  The argument to FOOTNOTE_SPACE requires a
+like.  The argument to FOOTNOTE_SPACING requires a
 <a href="definitions.html#unitofmeasure">unit of measure</a>.
 </p>
 
@@ -4238,9 +4379,20 @@ other by 3
 <a href="definitions.html#picaspoints">points</a>.
 <br/>
 <span class="pre-in-pp">
-  .FOOTNOTE_SPACE 3p
+  .FOOTNOTE_SPACING 3p
 </span>
 </p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+If you&#8217;re using footnotes for references generated from the
+refer database (see
+<a href="refer.html">refer.html</a>),
+correct MLA style requires a full linespace between footnotes, which
+you can accomplish with <kbd>.FOOTNOTE_SPACING&nbsp;1v</kbd>.
+</p>
+</div>
 
 <h4 id="footnote-rule" class="docs" style="margin-top: -.25em;">7. Footnote rule &ndash; FOOTNOTE_RULE</h4>
 
@@ -4343,7 +4495,6 @@ wish.
 <ul style="margin-left: -.5em;">
   <li><a href="#endnote-behaviour">Endnotes behaviour</a>
   <ul style="margin-left: -.5em;">
-    <li><a href="#endnote-spacing">A note on endnotes spacing</a></li>
     <li><a href="#endnote-columns">Endnotes and columnar documents</a></li>
   </ul></li>
   <li><a href="#endnote">Tag: ENDNOTE</a></li>
@@ -4377,8 +4528,9 @@ except that <kbd>.FOOTNOTE</kbd> has been replaced with
 As with footnotes, note the obligatory use of the <kbd>\c</kbd>
 <a href="definitions.html#inlines">inline escape</a>
 when your
-<kbd><a href="#endnote-marker-style">ENDNOTE_MARKER_STYLE</a></kbd>
-is <kbd>NUMBER</kbd> (which marks endnotes references in
+<a href="#endnote-marker-style">ENDNOTE_MARKER_STYLE</a>
+is <kbd>NUMBER</kbd> or <kbd>SUPERSCRIPT</kbd> (both of which mark
+endnotes references in
 <a href="definitions.html#running">running text</a>
 with superscript numbers).  When the marker style is
 <kbd>LINE</kbd>, you must <i>not</i> use the <kbd>\c</kbd>
@@ -4392,8 +4544,9 @@ the body of the document):
 </p>
 
 <ol style="margin-top: -.5em;">
-  <li>When your ENDNOTE_MARKER_STYLE is <kbd>NUMBER</kbd>,
-      endnotes are always numbered incrementally, starting at "1".
+  <li>When your ENDNOTE_MARKER_STYLE is <kbd>NUMBER</kbd> or
+      <kbd>SUPERSCRIPT</kbd>, endnotes are always numbered
+      incrementally, starting at &#8220;1&#8221;.
   </li>
   <li>Endnotes must be output explicitly; mom does not output
       them for you.  In
@@ -4428,6 +4581,16 @@ subsequent quotes and blockquotes that appear in the document body
 as well.
 </p>
 
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+See
+<a href="refer.html">refer.html</a>
+for information on using endnotes with the <kbd>refer</kbd>
+bibliographic database.
+</p>
+</div>
+
 <h3 id="endnote-behaviour" class="docs">Endnotes behaviour</h3>
 
 <p>
@@ -4446,11 +4609,10 @@ is removed.
 By default, mom starts the endnotes page with a bold,
 centred, double-underscored head, &#8220;ENDNOTES&#8221;.
 Underneath&mdash;flush left, bold, and underscored&mdash;she prints
-the document title (or, in the case of chapters, the chapter
-number or title).  She then prints the endnotes.  Each endnote is
-identified by its appropriate number, in bold, right aligned to two
-placeholders.  The text of the endnotes themselves is indented to
-the right of the numbers.
+the document title (or, in the case of chapters, the chapter number
+or title).  She then prints the endnotes.  Endnotes are identified
+by superscript numbers.  The text of the endnotes themselves is
+indented to the right of the numbers.
 </p>
 
 <p>
@@ -4462,7 +4624,7 @@ bold, flush left, and underscored.
 
 <p>
 Of course, all the defaults, as well as the overall style of the
-endnotes page, can be changed with the
+endnotes pages, can be changed with the
 <a href="#endnote-control">endnote control macros</a>.
 The attentive will notice that endnotes have an awful lot of control
 macros.  This is because endnotes are like a mini-document unto
@@ -4470,25 +4632,6 @@ themselves, and therefore need not be bound by the style parameters
 of the body of the document.
 </p>
 
-<h3 id="endnote-spacing" class="docs">A note on endnotes spacing</h3>
-
-<p>
-On the endnotes page(s), each new endnote is separated from the
-previous endnote by a full line space.  This can result in a bottom
-margin that hangs, and is the one instance, other than the use of
-<a href="#pp-space">PARA_SPACE</a>,
-where mom allows unequal bottom alignment of pages.  Should you wish
-to correct this, by adding or subtracting small amounts of space
-between endnotes that appear together on an endnotes page, make the
-adjustment (with
-<a href="typesetting.html#ald">ALD</a>,
-<a href="typesetting.html#rld">RLD</a>
-or
-<a href="typesetting.html#space">SPACE</a>)
-<i>at the end of each endnote</i> (i.e. just before invoking
-<a href="#endnote"><kbd>.ENDNOTE OFF</kbd></a>)
-rather than at the top.
-</p>
 
 <h3 id="endnote-columns" class="docs">Endnotes and columnar documents</h3>
 
@@ -4516,7 +4659,7 @@ See <span style="font-style: normal"><a href="#endnote-note">HYPER-IMPORTANT NOT
 <p>
 ENDNOTE is a toggle macro, therefore invoking it on a line by itself
 allows you to enter an endnote in the body of a document.  Invoking
-it with any other argument (i.e. <kbd>OFF, QUIT, END, X...</kbd>
+it with any other argument (i.e. <kbd>OFF, QUIT, END, X...</kbd>)
 tells mom that you&#8217;ve finished the endnote.
 </p>
 
@@ -4535,9 +4678,12 @@ tag.  Use PP only to introduce subsequent paragraphs.
 <span class="note">HYPER-IMPORTANT NOTE:</span>
 If your
 <a href="#endnote-marker-style">ENDNOTE_MARKER_STYLE</a>
-is <kbd>NUMBER</kbd> (mom&#8217;s default), the final word on the
+is <kbd>NUMBER</kbd> or <kbd>SUPERSCRIPT</kbd> (mom&#8217;s
+default is <kbd>NUMBER</kbd> unless you have
+<a href="refer.html#endnote-refs">ENDNOTE_REFS</a>
+enabled, in which case it&#8217;s <kbd>SUPERSCRIPT</kbd>), the final word on the
 <a href="definitions.html#inputline">input line</a>
-that comes immediately before <kbd>.ENDNOTE</kbd> MUST terminate
+that comes immediately before <kbd>.ENDNOTE</kbd> must terminate
 with a
 <a href="typesetting.html#join"><kbd>\c</kbd></a>
 inline escape.  See the
@@ -4552,7 +4698,7 @@ modes
 (<a href="typesetting.html#justify">JUSTIFY</a>
 or
 <a href="typesetting.html#quad">QUAD</a>,
-the line <i>after</i> <kbd>.ENDNOTE&nbsp;OFF</kbd> should be
+the line after <kbd>.ENDNOTE&nbsp;OFF</kbd> should be
 entered as if there were no interruption in the input text, i.e.
 the line should begin with a literal space or punctuation mark (see
 explanation and examples for footnotes, which apply equally to
@@ -4564,7 +4710,7 @@ endnotes,
 In
 <a href="definitions.html#filled">no-fill</a>
 modes, the optional argument <kbd>BREAK</kbd> or <kbd>BR</kbd> may
-be used after the <kbd>OFF</kbd> (or <b>QUIT, END, X,</b> etc.)
+be used after the <kbd>OFF</kbd> (or <kbd>QUIT, END, X,</kbd> etc.)
 argument to instruct mom not to join the next input line to the
 previous output.  See
 <a href="#fn-and-punct-nofill">here</a>
@@ -4574,7 +4720,8 @@ for a more complete explanation.  The examples are for
 
 <p class="tip-bottom">
 If your ENDNOTE_MARKER_STYLE is LINE, do not use the <kbd>\c</kbd>
-escape, and enter the line after <kbd>.ENDNOTE OFF</kbd> normally.
+escape, and enter the line after <kbd>.ENDNOTE OFF</kbd> normally,
+i.e. at your text editor&#8217;s left margin.
 </p>
 </div>
 
@@ -4650,6 +4797,7 @@ appearance of endnotes pages, set them up prior to
     <li><a href="#endnote-style">Base family/font/quad</a></li>
     <li><a href="#endnote-pt-size">Base point size</a></li>
     <li><a href="#endnote-lead">Leading</a></li>
+    <li><a href="#endnote-spacing">Spacing between endnotes</a></li>
     <li><a href="#singlespace-endnotes">Singlespace endnotes (TYPEWRITE only)</a></li>
     <li><a href="#endnote-para-indent">Paragraph indenting</a></li>
     <li><a href="#endnote-para-space">Paragraph spacing</a></li>
@@ -4805,7 +4953,7 @@ for an explanation of leading adjustment.)
 <p>
 The default for
 <a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>
-is 14 points, adjusted.
+is the prevailing document leading (16 by default), adjusted.
 </p>
 
 <div class="box-tip">
@@ -4818,9 +4966,36 @@ enter <kbd>.ENDNOTE_LEAD&nbsp;&lt;lead&gt;</kbd> with no
 </p>
 </div>
 
+<!-- -ENDNOTE_SPACING- -->
+
+<h5 id="endnote-spacing" class="docs" style="margin-top: -.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Spacing between endnotes</h5>
+
+<div class="box-macro-args">
+Macro: <b>ENDNOTE_SPACING</b> <kbd class="macro-args">&lt;space to insert between endnotes&gt;</kbd>
+</div>
+<p class="requires">
+&bull;&nbsp;Requires a <a href="definitions.html#unitofmeasure">unit of measure</a>
+</p>
+
+<p>
+If you'd like some whitespace between endnotes, just invoke
+ENDNOTE_SPACING with the amount of space you want, e.g.
+<br/>
+<span class="pre-in-pp">
+  .ENDNOTE_SPACING 6p
+</span>
+which inserts 6 points of lead between endnotes.  Be aware, though,
+that inserting space between endnotes means that the bottoms of
+endnotes pages will most likely not align.
+</p>
+
+<p>
+Mom&#8217;s default is not to insert any whitespace between endnotes.
+</p>
+
 <!-- -SINGLESPACE_ENDNOTES- -->
 
-<h5 id="singlespace-endnotes" class="docs" style="margin-top: -.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Singlespace endnotes (TYPEWRITE only)</h5>
+<h5 id="singlespace-endnotes" class="docs" style="margin-top: 0; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Singlespace endnotes (TYPEWRITE only)</h5>
 
 <div class="box-macro-args">
 Macro: <b>SINGLESPACE_ENDNOTES</b> <kbd class="macro-args">&lt;toggle&gt;</kbd>
@@ -4908,18 +5083,9 @@ The default is not to insert a blank line between paragraphs in
 endnotes.
 </p>
 
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-Each endnote itself is always separated from any previous endnote
-by a line space.  ENDNOTE_PARA_SPACE refers only to paragraphs that
-appear within each discrete endnote.
-</p>
-</div>
-
 <!-- -ENDNOTES_NO_COLUMNS- -->
 
-<h5 id="endnotes-no-columns" class="docs" style="margin-top: -.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Turning off column mode during endnotes output</h5>
+<h5 id="endnotes-no-columns" class="docs" style="margin-top: 0; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Turning off column mode during endnotes output</h5>
 
 <div class="box-macro-args">
 Macro: <b>ENDNOTES_NO_COLUMNS</b> <kbd class="macro-args">&lt;toggle&gt;</kbd>
@@ -5438,10 +5604,11 @@ Mom&#8217;s default is to single-underscore the string with a
 <h5 id="endnote-marker-style" class="docs" style="margin-top: 1em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Endnote marker style</h5>
 
 <div class="box-macro-args">
-Macro: <b>ENDNOTE_MARKER_STYLE</b> <kbd class="macro-args">LINE | NUMBER</kbd>
+Macro: <b>ENDNOTE_MARKER_STYLE</b> <kbd class="macro-args"><a href="#line">LINE</a> | <a href="#number">NUMBER</a> | <a href="#superscript">SUPERSCRIPT</a></kbd>
 </div>
 
-<p>
+<p id="line">
+<span style="display: block; margin-bottom: .25em;">&bull;&nbsp;<i>Argument:</i> <kbd>LINE</kbd></span>
 By default, mom places superscript numbers in
 <a href="definitions.html#running">running text</a>
 to identify endnotes.  However, if you have
@@ -5456,9 +5623,10 @@ The command to do this is
 With ENDNOTE_MARKER_STYLE <kbd>LINE</kbd>, mom will identify
 endnotes either by single line numbers or by line ranges.  If
 what you want is a single line number, you need only invoke
-<kbd>.ENDNOTE</kbd>, <i>without terminating the text line before
-it with</i> <kbd>\c</kbd>, at the appropriate place in running
-text.
+<kbd>.ENDNOTE</kbd> at the appropriate place in running
+text <i>without the terminating</i> <kbd>\c</kbd>.  Input lines
+after the endnote has been terminated (e.g. with <kbd>.ENDNOTE
+OFF</kbd>) must begin at the left margin.
 </p>
 
 <p>
@@ -5472,16 +5640,96 @@ nothing to prevent you from doing so.)
 
 <p id="en-mark">
 If you want a range of line numbers (e.g.&nbsp;[5-11]&nbsp;),
-insert, directly into the first line of the range you want,
-the <a href="definitions.html#inlines">inline escape</a>,
+insert, directly into the first line of the range you want, the
+<a href="definitions.html#inlines">inline escape</a>,
 <kbd>\*[EN-MARK]</kbd>.  For the terminating line number of the
-range, you need only invoke <kbd>.ENDNOTE</kbd>, (again, without
-attaching <kbd>\c</kbd> to the text line before it).  Mom is smart
-enough to figure out that where <kbd>.ENDNOTE</kbd> is invoked
-represents the terminating line number.
+range, you need only invoke <kbd>.ENDNOTE</kbd> (again, without the
+terminating <kbd>\c</kbd>).  Mom is smart enough to figure out that
+where <kbd>.ENDNOTE</kbd> is invoked represents the terminating line
+number.
 </p>
 
-<h5 id="endnote-linenumber-gap" class="docs" style="margin-top: -.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Spacing between line-numbered endnotes and the endnote text</h5>
+<div id="endnote-linenumbers-note" class="box-tip">
+<p class="tip-top">
+<span class="note">Note:</span>
+By default, mom reserves a fixed amount of space, equal to 8
+placeholders, for the linenumbers of linenumbered endnotes.  Within
+that space, the numbers are flush right with each other.  The
+reserved space is enough to print a range of linenumbers of the form
+<kbd>[nnnn-nnnn]</kbd>, but may be more than you need.
+</p>
+
+<p>
+The goal with linenumbered endnotes is to ensure that the longest
+linenumber or range of lines is flush with the left margin of the
+page.  Adjusting the reserved space is done with the macro
+<a href="docelement.html#endnote-numbers-align">ENDNOTE_NUMBERS_ALIGN</a>,
+and the rules for getting it right are simple.
+</p>
+
+<p class="tip-bottom">
+If your document runs to less than 100 lines, invoke
+<br/>
+<span class="pre-in-pp">
+  .ENDNOTE_NUMBERS_ALIGN RIGHT 0
+</span>
+If your document has between 100 and 999 lines
+<br/>
+<span class="pre-in-pp">
+  .ENDNOTE_NUMBERS_ALIGN RIGHT 1
+</span>
+If your document has between 1000 and 9999 lines
+<br/>
+<span class="pre-in-pp">
+  .ENDNOTE_NUMBERS_ALIGN RIGHT 2
+</span>
+etc.
+</p>
+</div>
+
+<p id="number" style="margin-top: -.5em;">
+<span style="display: block; margin-bottom: .25em;">&bull;&nbsp;<i>Argument:</i> <kbd>NUMBER</kbd></span>
+With the argument <kbd>NUMBER</kbd>, mom places superscript numbers
+in running text, but identifies endnotes in the endnotes section
+of your document with normal-sized, base-aligned numbers.
+</p>
+
+<p id="superscript" style="margin-top: -.5em;">
+<span style="display: block; margin-bottom: .25em;">&bull;&nbsp;<i>Argument:</i> <kbd>SUPERSCRIPT</kbd></span>
+With the argument <kbd>SUPERSCRIPT</kbd>, mom places superscript
+numbers in running text, and identifies endnotes in the endnotes
+section of your document with superscript numbers as well.  This is
+mom&#8217;s default.
+</p>
+
+<div id="endnote-superscript-note" class="box-tip">
+<p class="tip-top">
+<span class="note">Note:</span>
+By default, mom reserves a fixed amount of space, equal to 2
+placeholders, for the superscript numbers identifying endnotes in
+the endnotes section of your document.  Within that space, the
+numbers are flush right with each other.
+</p>
+
+<p class="tip-bottom">
+If you need less space (the total number of endnotes is less than 10) or
+more (the total number of endnotes is greater than 99), use the
+macro,
+<a href="docelement.html#endnote-numbers-align">ENDNOTE_NUMBERS_ALIGN</a>,
+to set the desired amount of reserved space, e.g.
+<br/>
+<span class="pre-in-pp">
+  .ENDNOTE_NUMBERS_ALIGN RIGHT 1
+</span>
+or
+<br/>
+<span class="pre-in-pp">
+  .ENDNOTE_NUMBERS_ALIGN RIGHT 3
+</span>
+</p>
+</div>
+
+<h5 id="endnote-linenumber-gap" class="docs" style="margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Spacing between line-numbered endnotes and the endnote text</h5>
 
 <div class="box-macro-args">
 Macro: <b>ENDNOTE_LINENUMBER_GAP</b> <kbd class="macro-args">&lt;size of gap&gt;</kbd>
@@ -5492,40 +5740,26 @@ Macro: <b>ENDNOTE_LINENUMBER_GAP</b> <kbd class="macro-args">&lt;size of gap&gt;
 </p>
 
 <p>
-Given the impossibility of knowing, in advance, the string length
-of all the line numbers or ranges of line numbers that will be used
-in endnotes (the string length of &#8220;12&#8221; is two; the string length of
-&#8220;12-15&#8221; is 5), mom cannot &#8220;hang&#8221; line
-numbers and guarantee that they, and the endnote text, will align in
-a visually pleasing manner.  Consequently, mom sets the entirety of
-line-numbered endnotes completely flush left, including the line
-numbers themselves.  The line numbers (by default, enclosed in
-square brackets) are separated from the beginning of each endnote
-by a gap, so that a line-numbered endnote looks approximately like
-this:
-<br/>
-<span class="pre-in-pp">
-  [1-2]   Notwithstanding, Frye later asserts that Christianity
-  is "a ghost with the chains of a foul historical record of
-  cruelty clanking behind it."
-</span>
-You can change the size of the gap with the macro,
-ENDNOTE_LINENUMBER_GAP, which takes as its single argument the size
+When your
+<a href="#endnote-marker-style">ENDNOTE_MARKER_STYLE</a>
+is <kbd>LINE</kbd>, mom, by default, inserts a space equal to
+1/2-<a href="definitions.html#em">en</a>
+between the linenumber and the text of an endnote.  For aesthetic reasons, you may want 
+to change the size of the gap, which is done with the macro,
+ENDNOTE_LINENUMBER_GAP.
+</p>
+
+<p>
+ENDNOTE_LINENUMBER_GAP takes as its single argument the size
 of the gap.  The argument requires a
-<a href="definitions.html#unitofmeasure">unit of measure</a>.
-So, for example, to change the gap to 2
+<a href="definitions.html#unitofmeasure">unit of measure</a>,
+so, for example, to change the gap to 2
 <a href="definitions.html#picaspoints">picas</a>,
 you&#8217;d do
 <br/>
 <span class="pre-in-pp">
   .ENDNOTE_LINENUMBER_GAP 2P
 </span>
-The default gap for both
-<a href="docprocessing.html#printstyle">PRINTSTYLE TYPESET</a>
-and
-<a href="docprocessing.html#printstyle">PRINTSTYLE TYPEWRITE</a>
-is 1.5
-<a href="definitions.html#em">ems</a>.
 </p>
 
 <h5 id="endnote-linenumber-brackets" class="docs" style="margin-top: -.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Brackets around endnote line numbers</h5>
@@ -5580,12 +5814,17 @@ See
 <p class="defaults">
 Please note that the control macros for endnote numbering affect only
 the numbers that appear on the endnotes pages themselves, not the
-endnote numbers that appear in the body of the document(s).
+endnote numbers that appear in the body of a document.
 </p>
 <span class="pre defaults">
-.ENDNOTE_NUMBER_FAMILY  default = prevailing document family; default is Times Roman
-.ENDNOTE_NUMBER_FONT    default = bold
-.ENDNOTE_NUMBER_SIZE*   default = 0
+Numbered endnotes
+.ENDNOTE_NUMBER_FAMILY default = prevailing document family; default Times Roman
+.ENDNOTE_NUMBER_FONT   default = bold
+.ENDNOTE_NUMBER_SIZE*  default = 0
+Linenumbered endnotes
+.ENDNOTE_LINENUMBER_FAMILY default = prevailing document family; default Times Roman
+.ENDNOTE_LINENUMBER_FONT   default = bold
+.ENDNOTE_LINENUMBER_SIZE*  default = 0
 
 *Relative to the size of the endnotes text (set with ENDNOTE_PT_SIZE)
 </span>
@@ -5594,8 +5833,10 @@ endnote numbers that appear in the body of the document(s).
 <h5 id="endnote-number-alignment" class="docs" style="margin-top: -1.25em; margin-bottom: -.5em; margin-left: .5em;">&bull;&nbsp;Endnote numbering alignment</h5>
 
 <p style="margin-top: .75em;">
-By default, mom hangs the numbers on endnotes pages, aligned right
-to two placeholders, producing this:
+By default, when your
+<a href="#endnote-marker-style">ENDNOTE_MARKER_STYLE</a>
+is <kbd>NUMBER</kbd>, mom hangs the numbers on endnotes pages,
+aligned right to two placeholders, producing this:
 <br/>
 <span id="endnote-numbering-alignment-example" class="pre-in-pp">
    9. Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
@@ -5606,65 +5847,81 @@ to two placeholders, producing this:
       sed diam nonumy eirmod tempor invidunt ut labore et
       dolore magna aliquyam erat, sed diam voluptua.
 </span>
-The macros to alter this behaviour are
+If you wish to change either the alignment or the number of
+placeholders, the macro to use is ENDNOTE_NUMBERS_ALIGN.
 </p>
-<ul style="margin-top: -.5em; margin-left: -.5em;">
-  <li><a href="#endnote-numbers-align-right">ENDNOTE_NUMBERS_ALIGN_RIGHT</a></li>
-  <li><a href="#endnote-numbers-align-left">ENDNOTE_NUMBERS_ALIGN_LEFT</a></li>
-</ul>
 
-<!-- -ENDNOTE_NUMBERS_ALIGN_RIGHT- -->
+<!-- -ENDNOTE_NUMBERS_ALIGN- -->
 
-<div id="endnote-numbers-align-right" class="box-macro-args">
-Macro: <b>ENDNOTE_NUMBERS_ALIGN_RIGHT</b> <kbd class="macro-args">&lt;number of placeholders&gt;</kbd>
+<div id="endnote-numbers-align" class="box-macro-args">
+Macro: <b>ENDNOTE_NUMBERS_ALIGN</b> <kbd class="macro-args">LEFT | RIGHT &lt;number of placeholders&gt;</kbd>
 </div>
 
 <p>
-ENDNOTE_NUMBERS_ALIGN_RIGHT takes one (non-optional) argument: the
-number of placeholders to reserve for right alignment of endnote
-numbers.
+ENDNOTE_NUMBERS_ALIGN determines how endnote numbers are aligned.  If you invoke
+<br/>
+<span class="pre-in-pp">
+  .ENDNOTE_NUMBERS_ALIGN RIGHT 2
+</span>
+the periods (dots) after the numbers will align, like this
+<span class="pre-in-pp">
+   9. Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+      sed diam nonumy eirmod tempor invidunt ut labore et
+      dolore magna aliquyam erat, sed diam voluptua.
+
+  10. Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+      sed diam nonumy eirmod tempor invidunt ut labore et
+      dolore magna aliquyam erat, sed diam voluptua.
+</span>
+If you invoke
+<span class="pre-in-pp">
+  .ENDNOTE_NUMBERS_ALIGN LEFT 2
+</span>
+the first digits of the numbers will line up flush left, like this
+<span class="pre-in-pp">
+  9.  Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+      sed diam nonumy eirmod tempor invidunt ut labore et
+      dolore magna aliquyam erat, sed diam voluptua.
+
+  10. Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+      sed diam nonumy eirmod tempor invidunt ut labore et
+      dolore magna aliquyam erat, sed diam voluptua.
+</span>
+The argument <kbd>&lt;number of placeholders&gt;</kbd> represents
+the maximum size of the numbers, expressed as the number of
+digits in the largest number.  Numbers in the range 0-9 require
+1 placeholder; in the range 10-99, 2 placeholders; in the range
+100-999 3 placeholders, and so on.
 </p>
 
 <p>
-For example, if you have fewer than ten endnotes, you might want to do
+Therefore, if you have fewer than ten endnotes,
 <br/>
 <span class="pre-in-pp">
-  .ENDNOTE_NUMBERS_ALIGN_RIGHT 1
+  .ENDNOTE_NUMBERS_ALIGN RIGHT 1
 </span>
-which would ensure that the endnote numbers hang, but are all flush
-with the page&#8217;s left margin.  If, god help you, you have over a hundred
-endnotes, you&#8217;d want to do
-<br/>
-<span class="pre-in-pp">
-  .ENDNOTE_NUMBERS_ALIGN_RIGHT 3
-</span>
-to ensure that the numbers hang and are properly right-aligned.
+would ensure proper right alignment of endnote numbers.
 </p>
 
-<!-- -ENDNOTE_NUMBERS_ALIGN_LEFT- -->
+<p>
+Mom&#8217;s default for endnote number alignment is to align the
+numbers right to two placeholders.
+</p>
 
-<div id="endnote-numbers-align-left" class="box-macro-args">
-Macro: <b>ENDNOTE_NUMBERS_ALIGN_LEFT</b>
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+ENDNOTE_NUMBERS_ALIGN can also be used to establish the alignment
+and number of placeholders when your
+<a href="#endnote-marker-style">ENDNOTE_MARKER_STYLE</a>
+is <kbd>SUPERSCRIPT</kbd>.  Furthermore, it can be used to establish
+the number of placeholders to reserve when your ENDNOTE_MARKER_STYLE
+is <kbd>LINE</kbd>, even though, in such an instance, the numbers
+themselves are always aligned right.  See
+<a href="#endnote-linenumbers-note">here</a>
+for examples.
+</p>
 </div>
-
-<p>
-If you don&#8217;t want the endnote numbers to hang and right-align,
-invoke <kbd>.ENDNOTE_NUMBERS_ALIGN_LEFT</kbd>, which doesn&#8217;t
-require any argument.  This disables hanging and right-alignment of
-endnote numbers, so that the example
-<a href="#endnote-numbering-alignment-example">above</a>
-comes out like this:
-<br/>
-<span class="pre-in-pp">
-    9. Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
-    sed diam nonumy eirmod tempor invidunt ut labore et
-    dolore magna aliquyam erat, sed diam voluptua.
-
-    10. Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
-    sed diam nonumy eirmod tempor invidunt ut labore et
-    dolore magna aliquyam erat, sed diam voluptua.
-</span>
-</p>
 
 <div class="rule-short"><hr/></div>
 
@@ -6015,7 +6272,7 @@ etc) exits the current margin note.
 <p>
 The use of FINIS is optional.  If you invoke it (at the end of a
 document before
-<kbd><a href="#toc">.TOC</a></kbd>
+<kbd><a href="tables-of-contents.html#toc">.TOC</a></kbd>
 or
 <kbd><a href="#endnotes">.ENDNOTES</a></kbd>),
 mom deposits the word, <b>END</b>, centred after a blank line,
@@ -6049,7 +6306,7 @@ The use of FINIS is optional, but if you use it, it should be the
 last macro you invoke in a document (before
 <kbd><a href="#endnotes">.ENDNOTES</a></kbd>
 or
-<kbd><a href="#toc">.TOC</a></kbd>).
+<kbd><a href="tables-of-contents.html#toc">.TOC</a></kbd>).
 See
 <a href="#finis-intro">above</a>
 for a description of how FINIS behaves.
