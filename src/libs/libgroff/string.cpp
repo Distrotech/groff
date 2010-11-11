@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2009
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2009, 2010
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -318,6 +318,7 @@ void string::remove_spaces()
       if (ptr) {
 	a_delete ptr;
 	ptr = 0;
+	sz = 0;
       }
     }
   }
