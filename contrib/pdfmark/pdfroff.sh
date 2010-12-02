@@ -135,9 +135,40 @@
       echo $2`
   fi
 #
-# Set up temporary/intermediate file locations.
+# Set up temporary/intermediate file locations, with traps to
+# clean them up on exit.  Note that, for greater portability, we
+# prefer to refer to events by number, rather than by symbolic
+# names; thus, the EXIT event is trapped as event zero.
 #
-  WRKFILE=${GROFF_TMPDIR=${TMPDIR-${TMP-${TEMP-"."}}}}/pdf$$.tmp
+  export TMPDIR GROFF_TMPDIR
+  TMPDIR=${GROFF_TMPDIR=${TMPDIR-${TMP-${TEMP-"."}}}}
+  if GROFF_TMPDIR=`exec 2>${NULLDEV}; mktemp -dt pdfroff-XXXXXXXXXX`
+  then
+  #
+  # We successfully created a private temporary directory,
+  # so to clean up, we may simply purge it.
+  #
+    trap "rm -rf ${GROFF_TMPDIR}" 0
+  #
+  else
+  #
+  # Creation of a private temporary directory was unsuccessful;
+  # fall back to user nominated directory, (using current directory
+  # as default), and schedule removal of only the temporary files.
+  #
+    GROFF_TMPDIR=${TMPDIR}
+    trap "rm -f ${GROFF_TMPDIR}/pdf$$.*" 0
+  fi
+  #
+  # In the case of abnormal termination events, we force an exit
+  # (with status code '1'), leaving the normal exit trap to clean
+  # up the temporary files, as above.  Note that we again prefer
+  # to refer to events by number, rather than by symbolic names;
+  # here we trap SIGHUP, SIGINT, SIGQUIT, SIGPIPE and SIGTERM.
+  #
+  trap "exit 1" 1 2 3 13 15
+#
+  WRKFILE=${GROFF_TMPDIR}/pdf$$.tmp
 #
   REFCOPY=${GROFF_TMPDIR}/pdf$$.cmp
   REFFILE=${GROFF_TMPDIR}/pdf$$.ref
@@ -145,11 +176,6 @@
   CS_DATA=""
   TC_DATA=${GROFF_TMPDIR}/pdf$$.tc
   BD_DATA=${GROFF_TMPDIR}/pdf$$.ps
-#
-# Set a trap, to delete temporary files on exit.
-# (FIXME: may want to include other signals, in released version).
-#
-  trap "rm -f ${GROFF_TMPDIR}/pdf$$.*" 0
 #
 # Initialise 'groff' format control settings,
 # to discriminate table of contents and document body formatting passes.

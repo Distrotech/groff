@@ -645,10 +645,24 @@ normally, the final output file should be named
 .P
 Temporary files, created by
 .BR pdfroff ,
-are placed in the directory specified by environment variables (see
-section
-.BR ENVIRONMENT ),
-and named according to the convention
+are placed in the file system hierarchy,
+in or below the directory specified by environment variables
+(see section
+.BR ENVIRONMENT ).
+If
+.BR mktemp (@MAN1EXT@)
+is available,
+it is invoked to create a private subdirectory of
+the nominated temporary files directory,
+(with subdirectory name derived from the template
+.BR pdfroff-XXXXXXXXXX );
+if this subdirectory is successfully created,
+the temporary files will be placed within it,
+otherwise they will be placed directly in the directory
+nominated in the environment.
+.P
+All temporary files themselves
+are named according to the convention
 .BI pdf $$ .*\c
 \&, where
 .I $$
