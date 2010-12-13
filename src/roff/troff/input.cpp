@@ -6831,9 +6831,11 @@ void define_class()
     warning(WARN_SYNTAX,
 	    "empty class definition for `%1'",
 	    nm.contents());
+    skip_line();
     return;
   }
   (void)char_class_dictionary.lookup(nm, ci);
+  skip_line();
 }
 
 charinfo *token::get_char(int required)
