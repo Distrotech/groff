@@ -1,4 +1,4 @@
-# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2009
+# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2009, 2010
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
@@ -545,7 +545,8 @@ MDEFINES= \
 
 MAKE_K_FLAG=`case "$(MAKEFLAGS)" in *k*) echo ' -k ';; esac`
 
-INCDIRS=src/include
+INCDIRS=\
+  src/include
 LIBDIRS=\
   src/libs/libgroff \
   src/libs/libdriver \
@@ -576,8 +577,13 @@ CCPROGDIRS=\
   src/utils/addftinfo
 CPROGDIRS=\
   src/utils/pfbtops
-PROGDEPDIRS=arch/misc
-PROGDIRS=$(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS) $(XPROGDIRS)
+PROGDEPDIRS=\
+  arch/misc
+PROGDIRS=\
+  $(PROGDEPDIRS) \
+  $(CCPROGDIRS) \
+  $(CPROGDIRS) \
+  $(XPROGDIRS)
 DEVDIRS=\
   font/devps \
   font/devdvi \
@@ -605,8 +611,15 @@ OTHERDIRS=\
   contrib/hdtbl \
   contrib/pdfmark \
   contrib/gdiffmk
-ALLDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) \
-  $(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS) $(OTHERDIRS)
+ALLDIRS=\
+  $(INCDIRS) \
+  $(LIBDIRS) \
+  $(PROGDIRS) \
+  $(DEVDIRS) \
+  $(XDEVDIRS) \
+  $(OTHERDEVDIRS) \
+  $(TTYDEVDIRS) \
+  $(OTHERDIRS)
 EXTRADIRS=\
   font/devps/generate \
   font/devdvi/generate \
@@ -626,13 +639,36 @@ NOMAKEDIRS=\
   contrib/mom/momdoc \
   contrib/gdiffmk/tests \
   src/libs/snprintf \
+  src/libs/gnulib/lib \
+  src/libs/gnulib/lib/uniwidth \
+  src/libs/gnulib/m4 \
+  src/libs/gnulib/build-aux \
+  src/libs/gnulib \
   font/devps/old \
   font/util
+GNULIBDIRS=\
+  src/libs/gnulib
 DISTDIRS=\
-  $(INCDIRS) $(LIBDIRS) $(PROGDIRS) $(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) \
-  $(ALLTTYDEVDIRS) $(OTHERDIRS) $(EXTRADIRS) $(NOMAKEDIRS)
-TARGETS=all install_bin install_data clean distclean mostlyclean \
-  realclean extraclean distfiles TAGS depend uninstall_sub fonts
+  $(INCDIRS) \
+  $(LIBDIRS) \
+  $(PROGDIRS) \
+  $(DEVDIRS) \
+  $(XDEVDIRS) \
+  $(OTHERDEVDIRS) \
+  $(ALLTTYDEVDIRS) \
+  $(OTHERDIRS) \
+  $(EXTRADIRS) \
+  $(NOMAKEDIRS) \
+  $(GNULIBDIRS)
+TARGETS=\
+  all \
+  install_bin install_data \
+  clean distclean mostlyclean realclean extraclean \
+  distfiles \
+  TAGS \
+  depend \
+  uninstall_sub \
+  fonts
 
 # This ENVSETUP gork is required by the DJGPP build on Windows 9X,
 # where Make needs to be case-sensitive to find files like BI and VERSION.
@@ -658,7 +694,7 @@ dot: FORCE
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $(top_srcdir)/Makefile.sub $(do)
 
-$(LIBDIRS): FORCE $(INCDIRS) $(PROGDEPDIRS)
+$(LIBDIRS): FORCE $(INCDIRS) $(PROGDEPDIRS) $(GNULIBDIRS)
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
@@ -719,6 +755,21 @@ $(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE $(PROGDEPDIRS) $(CCP
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $$srcdir/Makefile.sub \
 	  -f $(top_srcdir)/Makefile.dev $(do)
+
+$(GNULIBDIRS): FORCE
+	@$(ENVSETUP); \
+	if test $(srcdir) = .; then \
+	  srcdir=.; \
+	else \
+	  srcdir=`cd $(srcdir); pwd`/$@; \
+	fi; \
+	test -d $@ || $(mkinstalldirs) $@; \
+	case $(do) in \
+	all) \
+	cd $@; \
+	test -f Makefile || $(SHELL) $$srcdir/configure; \
+	$(MAKE) $(do) ;; \
+	esac
 
 $(OTHERDIRS): $(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
 

@@ -25,6 +25,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
+#include <wchar.h>
 #include "errarg.h"
 #include "error.h"
 #include "cset.h"
@@ -383,9 +384,10 @@ int font::get_width(glyph *g, int point_size)
   }
   if (is_unicode) {
     // Unicode font
-    int width = 24;	// value found in the original font files
-			// XXX: this must be eventually moved back to the
-			//      font description file!
+    int width = 24; // XXX: Add a request to override this.
+    int w = wcwidth(get_code(g));
+    if (w > 1)
+      width *= w;
     if (real_size == unitwidth || font::unscaled_charwidths)
       return width;
     else
@@ -404,9 +406,7 @@ int font::get_height(glyph *g, int point_size)
   }
   if (is_unicode) {
     // Unicode font
-    return 0;	// value found in the original font files
-		// XXX: this must be eventually moved back to the
-		//      font description file!
+    return 0;
   }
   abort();
 }
@@ -421,9 +421,7 @@ int font::get_depth(glyph *g, int point_size)
   }
   if (is_unicode) {
     // Unicode font
-    return 0;	// value found in the original font files
-		// XXX: this must be eventually moved back to the
-		//      font description file!
+    return 0;
   }
   abort();
 }
@@ -438,9 +436,7 @@ int font::get_italic_correction(glyph *g, int point_size)
   }
   if (is_unicode) {
     // Unicode font
-    return 0;	// value found in the original font files
-		// XXX: this must be eventually moved back to the
-		//      font description file!
+    return 0;
   }
   abort();
 }
@@ -455,9 +451,7 @@ int font::get_left_italic_correction(glyph *g, int point_size)
   }
   if (is_unicode) {
     // Unicode font
-    return 0;	// value found in the original font files
-		// XXX: this must be eventually moved back to the
-		//      font description file!
+    return 0;
   }
   abort();
 }
@@ -472,9 +466,7 @@ int font::get_subscript_correction(glyph *g, int point_size)
   }
   if (is_unicode) {
     // Unicode font
-    return 0;	// value found in the original font files
-		// XXX: this must be eventually moved back to the
-		//      font description file!
+    return 0;
   }
   abort();
 }
@@ -547,9 +539,7 @@ int font::get_character_type(glyph *g)
   }
   if (is_unicode) {
     // Unicode font
-    return 0;	// value found in the original font files
-		// XXX: this must be eventually moved back to the
-		//      font description file!
+    return 0;
   }
   abort();
 }
@@ -971,6 +961,11 @@ int font::load(int *not_found, int head_only)
 	    if (metric.code == 0 && ptr == p) {
 	      t.error("bad code `%1' for character `%2'", p, nm);
 	      return 0;
+	    }
+	    if (is_unicode) {
+	      int w = wcwidth(metric.code);
+	      if (w > 1)
+	        metric.width *= w;
 	    }
 	    p = strtok(0, WS);
 	    if ((p == NULL) || (strcmp(p, "--") == 0)) {

@@ -871,6 +871,7 @@ int main(int argc, char **argv)
   if (getenv("GROFF_NO_SGR"))
     old_drawing_scheme = 1;
   setbuf(stderr, stderr_buf);
+  setlocale(LC_CTYPE, "");
   int c;
   static const struct option long_options[] = {
     { "help", no_argument, 0, CHAR_MAX + 1 },

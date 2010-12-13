@@ -1,3 +1,54 @@
+2010-12-13  Daiki Ueno  <ueno@unixuser.org>
+	    Werner LEMBERG  <wl@gnu.org
+
+	Add wide character support to grotty.
+
+	This is a huge patch, mainly by adding the gnulib infrastructure in
+	a separate directory tree (in `src/libs/gnulib/lib') for its
+	`wcwidth' module.  However, the actual changes to native groff
+	source files are just a few lines.
+
+	* Makefile.comm (INCLUDES): Updated.
+	(LIBGNU): Define.
+
+	* Makefile.in (NOMAKEDIRS): Updated.
+	(GNULLIBDIRS): Define.
+	(DISTDIRS): Add GNULLIBDIRS.
+	($LIBDIRS): Depend on GNULLIBDIRS.
+	($GNULLIBDIRS): New target.
+
+	* src/libs/libgroff/font.cpp (font::get_width, font::load)
+	[is_unicode]: Use `wcwidth'.
+
+	* src/roff/troff/Makefile.sub (XLIBS): Add LIBGNU.
+	* src/roff/troff/input.cpp (main): Set LC_CTYPE.
+
+	* src/devices/grotty/Makefile.sub (XLIBS): Add LIBGNU.
+	* src/devices/grotty/tty.cpp (main): Set LC_CTYPE.
+
+	* src/libs/gnulib/*: New files.  The import was done as follows:
+
+	  . Call
+
+	      gnulib-tool --create-testdir \
+	                  --dir=src/libs/gnulib \
+	                  wcwidth
+
+	    to get a testbed.
+
+	  . Manually move directories src/libs/gl{lib,m4} to
+	    src/libs/{lib,m4}, and do s/gllib/lib/ and s/glm4/m4/ everywhere
+	    to `convert' the gnulib testbed to a standard gnulib
+	    configuration as maintained by gnulib-tool.
+
+	  . Call
+
+	      gnulib-tool --add-import \
+	                  --dir=src/libs/gnulib \
+	                  wcwidth
+
+	    to update everything.
+
 2010-12-13  Werner LEMBERG  <wl@gnu.org>
 
 	`.class' must not emit empty lines.

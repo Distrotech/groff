@@ -7628,6 +7628,7 @@ int main(int argc, char **argv)
     if (putenv(strsave(e.contents())))
       fatal("putenv failed");
   }
+  setlocale(LC_CTYPE, "");
   static const struct option long_options[] = {
     { "help", no_argument, 0, CHAR_MAX + 1 },
     { "version", no_argument, 0, 'v' },
