@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2006, 2009
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2006, 2009, 2010
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -18,6 +18,9 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
+#include <vector>
+#include <utility>
+
 class macro;
 
 class charinfo : glyph {
@@ -35,6 +38,9 @@ class charinfo : glyph {
   char translate_input;		// non-zero means that asciify_code is
 				// active for .asciify (set by .trin)
   char_mode mode;
+  // Unicode character classes
+  std::vector<std::pair<int, int> > ranges;
+  std::vector<charinfo *> nested_classes;
 public:
   enum {		// Values for the flags bitmask.  See groff
 			// manual, description of the `.cflags' request.
@@ -66,6 +72,7 @@ public:
   unsigned char get_hyphenation_code();
   unsigned char get_ascii_code();
   unsigned char get_asciify_code();
+  int get_unicode_code();
   void set_hyphenation_code(unsigned char);
   void set_ascii_code(unsigned char);
   void set_asciify_code(unsigned char);
@@ -73,6 +80,7 @@ public:
   int get_translation_input();
   charinfo *get_translation(int = 0);
   void set_translation(charinfo *, int, int);
+  unsigned char get_flags();
   void set_flags(unsigned char);
   void set_special_translation(int, int);
   int get_special_translation(int = 0);
@@ -87,6 +95,13 @@ public:
   int is_fallback();
   int is_special();
   symbol *get_symbol();
+  void add_to_class(int);
+  void add_to_class(int, int);
+  void add_to_class(charinfo *);
+  bool is_class();
+  bool contains(int);
+  bool contains(symbol);
+  bool contains(charinfo *);
 };
 
 charinfo *get_charinfo(symbol);
@@ -95,37 +110,37 @@ charinfo *get_charinfo_by_number(int);
 
 inline int charinfo::overlaps_horizontally()
 {
-  return flags & OVERLAPS_HORIZONTALLY;
+  return get_flags() & OVERLAPS_HORIZONTALLY;
 }
 
 inline int charinfo::overlaps_vertically()
 {
-  return flags & OVERLAPS_VERTICALLY;
+  return get_flags() & OVERLAPS_VERTICALLY;
 }
 
 inline int charinfo::can_break_before()
 {
-  return flags & BREAK_BEFORE;
+  return get_flags() & BREAK_BEFORE;
 }
 
 inline int charinfo::can_break_after()
 {
-  return flags & BREAK_AFTER;
+  return get_flags() & BREAK_AFTER;
 }
 
 inline int charinfo::ends_sentence()
 {
-  return flags & ENDS_SENTENCE;
+  return get_flags() & ENDS_SENTENCE;
 }
 
 inline int charinfo::transparent()
 {
-  return flags & TRANSPARENT;
+  return get_flags() & TRANSPARENT;
 }
 
 inline int charinfo::ignore_hcodes()
 {
-  return flags & IGNORE_HCODES;
+  return get_flags() & IGNORE_HCODES;
 }
 
 inline int charinfo::numbered()
@@ -214,5 +229,27 @@ inline int charinfo::first_time_not_found()
 
 inline symbol *charinfo::get_symbol()
 {
-  return( &nm );
+  return &nm;
+}
+
+inline void charinfo::add_to_class(int c)
+{
+  // TODO ranges cumbersome for single characters?
+  ranges.push_back(std::pair<int, int>(c, c));
+}
+
+inline void charinfo::add_to_class(int lo,
+				   int hi)
+{
+  ranges.push_back(std::pair<int, int>(lo, hi));
+}
+
+inline void charinfo::add_to_class(charinfo *ci)
+{
+  nested_classes.push_back(ci);
+}
+
+inline bool charinfo::is_class()
+{
+  return (!ranges.empty() || !nested_classes.empty());
 }

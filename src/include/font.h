@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2004, 2006, 2009
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2004, 2006, 2009, 2010
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -73,6 +73,9 @@ inline int glyph_to_number(glyph *);	// Convert the given glyph back to
 			// a numbered character.
 inline int glyph_to_index(glyph *);	// Return the unique index that is
 			// associated with the given glyph. It is >= 0.
+extern int glyph_to_unicode(glyph *);	// Convert the given glyph to its
+			// Unicode codepoint.  Return -1 if it does not
+			// designate a Unicode character.
 
 inline int glyph_to_number(glyph *g)
 {

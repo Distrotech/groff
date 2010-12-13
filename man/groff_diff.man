@@ -138,7 +138,7 @@ Interpolate string
 taking
 .IR arg1 ,
 .IR arg2 ,
-.I .\|.\|.\&
+.IR .\|.\|. ,
 as arguments.
 .
 .TP
@@ -965,10 +965,11 @@ This is the same as
 .BR \[rs]p .
 .
 .TP
-.BI .cflags\  n\ c1\ c2\|.\|.\|.\&
+.BI .cflags\  "n c1 c2 .\|.\|."
 Characters
 .IR c1 ,
-.IR c2 ,\|.\|.\|.\&
+.IR c2 ,
+.IR .\|.\|. ,
 have properties determined by
 .IR n ,
 which is ORed from the following:
@@ -1091,6 +1092,21 @@ Chop the last element off macro, string, or diversion
 .IR xx .
 This is useful for removing the newline from the end of diversions
 that are to be interpolated as strings.
+.
+.TP
+.BI .class\  "name c1 c2 .\|.\|."
+Assign
+.I name
+to a set of characters
+.IR c1 ,
+.IR c2 ,
+.IR .\|.\|. ,
+so that they can be referred to from other requests easily (currently
+.B .cflags
+only).
+Character ranges (indicated by an intermediate `-') and nested classes
+are possible also.
+This is useful to assign properties to a large set of characters.
 .
 .TP
 .BI .close\  stream
@@ -1394,12 +1410,13 @@ request but before the list of fonts declared with
 .BR .special .
 .
 .TP
-.BI .fspecial\  f\ s1\ s2\|.\|.\|.\&
+.BI .fspecial\  "f s1 s2 .\|.\|."
 When the current font is\~\c
 .IR f ,
 fonts
 .IR s1 ,
-.IR s2 ,\|.\|.\|.\&
+.IR s2 ,
+.IR .\|.\|. ,
 are special, that is, they are searched for glyphs not in
 the current font.
 .
@@ -1470,7 +1487,7 @@ is missing,
 switch to the previous glyph color.
 .
 .TP
-.BI .hcode \ c1\ code1\ c2\ code2\|.\|.\|.\&
+.BI .hcode\  "c1 code1 c2 code2 .\|.\|."
 Set the hyphenation code of character
 .I c1
 to
@@ -1478,7 +1495,8 @@ to
 and that of
 .I c2
 to
-.IR code2 .
+.IR code2 ,
+and so on.
 A hyphenation code must be a single input character (not a special
 character) other than a digit or a space.
 .
@@ -1625,7 +1643,7 @@ except that the hyphenation patterns from
 are appended to the patterns already loaded in the current language.
 .
 .TP
-.BI .hpfcode\  a\ b\ c\ d\ .\|.\|.
+.BI .hpfcode\  "a b c d .\|.\|."
 After reading a hyphenation patterns file with the
 .B hpf
 or
@@ -1930,10 +1948,11 @@ and
 with a positive value which are applied after the line is output.
 .
 .TP
-.BI .rchar\  c1\ c2\|.\|.\|.\&
+.BI .rchar\  "c1 c2 .\|.\|."
 Remove the definitions of glyphs
 .IR c1 ,
-.IR c2 ,\|.\|.\|.
+.IR c2 ,
+.I .\|.\|.
 This undoes the effect of a
 .B char
 request.
@@ -1948,10 +1967,11 @@ from the macro one level higher.
 No effect otherwise.
 .
 .TP
-.BI .rfschar\  c1\ c2\|.\|.\|.\&
+.BI .rfschar\  "c1 c2 .\|.\|."
 Remove the font-specific definitions of glyphs
 .IR c1 ,
-.IR c2 ,\|.\|.\|.
+.IR c2 ,
+.I .\|.\|.
 This undoes the effect of a
 .B fschar
 request.
@@ -2039,7 +2059,7 @@ is missing, arguments are shifted by\~1.
 Shifting by negative amounts is currently undefined.
 .
 .TP
-.BI .sizes\  s1\ s2\|.\|.\|.\|sn\  [0]
+.BI .sizes\  s1\ s2\ .\|.\|.\ sn\  [0]
 This command is similar to the
 .B sizes
 command of a
@@ -2048,7 +2068,8 @@ file.
 .
 It sets the available font sizes for the current font to
 .IR s1 ,
-.IR s2 ,\|.\|.\|.\|,\~ sn
+.IR s2 ,
+.IR .\|.\|.\| ,\~ sn
 scaled points.
 .
 The list of sizes can be terminated by an optional\~\c
@@ -2063,10 +2084,11 @@ Contrary to the font file command, the list can't extend over more
 than a single line.
 .
 .TP
-.BI .special\  s1\ s2\|.\|.\|.\&
+.BI .special\  "s1 s2 .\|.\|."
 Fonts
 .IR s1 ,
-.IR s2 ,\|.\|.\|.\&
+.IR s2 ,
+.IR .\|.\|. ,
 are special and are searched for glyphs not in the current
 font.
 .
@@ -2563,18 +2585,21 @@ In GNU troff, as in UNIX troff, you should always follow a sentence
 with either a newline or two spaces.
 .
 .TP
-.BI .ta\  n1\ n2\|.\|.\|.nn \ T\  r1\ r2\|.\|.\|.\|rn
+.BI .ta\  "n1 n2 .\|.\|. nn " "T " "r1 r2 .\|.\|. rn"
 Set tabs at positions
 .IR n1 ,
-.IR n2 ,\|.\|.\|.\|,
+.IR n2 ,
+.IR .\|.\|. ,
 .I nn
 and then set tabs at
 .IR nn \|+\| r1 ,
-.IR nn \|+\| r2 ,\|.\|.\|.\|,
+.IR nn \|+\| r2 ,
+.IR .\|.\|. ,
 .IR nn \|+\| rn
 and then at
 .IR nn \|+\| rn \|+\| r1 ,
-.IR nn \|+\| rn \|+\| r2 ,\|.\|.\|.\|,
+.IR nn \|+\| rn \|+\| r2 ,
+.IR .\|.\|. ,
 .IR nn \|+\| rn \|+\| rn ,
 and so on.
 For example,

@@ -1,3 +1,37 @@
+2010-12-06  Colin Watson  <cjwatson@debian.org>
+	    Daiki Ueno  <ueno@unixuser.org>
+
+	Implement support for character classes.
+
+	This patch uses standard C++ headers, contrary to the rest of groff. 
+	Ideally, everything in groff should be updated to do the same.
+
+	* src/include/font.h (glyph_to_unicode): New function.
+
+	* src/libs/libgroff/font.cpp (glyph_to_unicode): Implement it.
+	(font::contains, font::get_code): Use it.
+
+	* src/roff/troff/charinfo.h: Include <vector> and <utility>.
+	(charinfo): New members `ranges' and `nested_classes'.
+	New member functions `get_unicode_code' and `get_flags'.
+	New member functions `add_to_class', `is_class', and `contains'.
+	(charinfo::overlaps_horizontally, charinfo::overlaps_vertically,
+	charinfo::can_break_before, charinfo::can_break_after,
+	charinfo::can_break_after, charinfo::ends_sentence,
+	charinfo::transparent,, charinfo:ignore_hcodes): Use `get_flags',
+	which handles character classes also.
+
+	* src/roff/troff/input.cpp (char_class_dictionary): New global
+	variable.
+	(define_class): New function.
+	(init_input_requests): Register `class'.
+
+	(charinfo::get_unicode_code, charinfo::get_flags,
+	charinfo::contains): Implement it.
+
+	* NEWS, doc/groff.texinfo (Character Classes), man/groff_diff.man,
+	man/groff.man: Document it.
+
 2010-11-11  Anton Shepelev  <anton.txt@gmail.com>
 
 	[grohtml]: Improve texinfo documentation.

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
-                 2006, 2007, 2008, 2009
+                 2006, 2007, 2008, 2009, 2010
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -6740,6 +6740,102 @@ void hyphenation_patterns_file_code()
   skip_line();
 }
 
+dictionary char_class_dictionary(501);
+
+void define_class()
+{
+  tok.skip();
+  symbol nm = get_name(1);
+  if (nm.is_null()) {
+    skip_line();
+    return;
+  }
+  charinfo *ci = get_charinfo(nm);
+  charinfo *child1 = 0, *child2 = 0;
+  while (!tok.newline() && !tok.eof()) {
+    tok.skip();
+    if (child1 != 0 && tok.ch() == '-') {
+      tok.next();
+      child2 = tok.get_char(1);
+      if (!child2) {
+	warning(WARN_MISSING,
+		"missing end of character range in class `%1'",
+		nm.contents());
+	skip_line();
+	return;
+      }
+      if (child1->is_class() || child2->is_class()) {
+	warning(WARN_SYNTAX,
+		"nested character class is not allowed in range definition");
+	skip_line();
+	return;
+      }
+      int u1 = child1->get_unicode_code();
+      int u2 = child2->get_unicode_code();
+      if (u1 < 0) {
+	warning(WARN_SYNTAX,
+		"invalid start value in character range");
+	skip_line();
+	return;
+      }
+      if (u2 < 0) {
+	warning(WARN_SYNTAX,
+		"invalid end value in character range");
+	skip_line();
+	return;
+      }
+      ci->add_to_class(u1, u2);
+      child1 = child2 = 0;
+    }
+    else if (child1 != 0) {
+      if (child1->is_class())
+	ci->add_to_class(child1);
+      else {
+	int u1 = child1->get_unicode_code();
+	if (u1 < 0) {
+	  warning(WARN_SYNTAX,
+		  "invalid character value in class `%1'",
+		  nm.contents());
+	  skip_line();
+	  return;
+	}
+	ci->add_to_class(u1);
+      }
+      child1 = 0;
+    }
+    child1 = tok.get_char(1);
+    tok.next();
+    if (!child1) {
+      if (!tok.newline())
+	skip_line();
+      break;
+    }
+  }
+  if (child1 != 0) {
+    if (child1->is_class())
+      ci->add_to_class(child1);
+    else {
+      int u1 = child1->get_unicode_code();
+      if (u1 < 0) {
+	warning(WARN_SYNTAX,
+		"invalid character value in class `%1'",
+		nm.contents());
+	skip_line();
+	return;
+      }
+      ci->add_to_class(u1);
+    }
+    child1 = 0;
+  }
+  if (!ci->is_class()) {
+    warning(WARN_SYNTAX,
+	    "empty class definition for `%1'",
+	    nm.contents());
+    return;
+  }
+  (void)char_class_dictionary.lookup(nm, ci);
+}
+
 charinfo *token::get_char(int required)
 {
   if (type == TOKEN_CHAR)
@@ -7817,6 +7913,7 @@ void init_input_requests()
   init_request("cflags", char_flags);
   init_request("char", define_character);
   init_request("chop", chop_macro);
+  init_request("class", define_class);
   init_request("close", close_request);
   init_request("color", activate_color);
   init_request("composite", composite_request);
@@ -8367,6 +8464,13 @@ charinfo::charinfo(symbol s)
   number = -1;
 }
 
+int charinfo::get_unicode_code()
+{
+  if (ascii_code != '\0')
+    return ascii_code;
+  return glyph_to_unicode(this);
+}
+
 void charinfo::set_hyphenation_code(unsigned char c)
 {
   hyphenation_code = c;
@@ -8386,6 +8490,27 @@ void charinfo::set_translation(charinfo *ci, int tt, int ti)
   }
   special_translation = TRANSLATE_NONE;
   transparent_translate = tt;
+}
+
+// Get the union of all flags affecting this charinfo.
+unsigned char charinfo::get_flags()
+{
+  unsigned char all_flags = flags;
+  dictionary_iterator iter(char_class_dictionary);
+  charinfo *cp;
+  symbol s;
+  while (iter.get(&s, (void **)&cp)) {
+    assert(!s.is_null());
+    if (cp->contains(get_unicode_code())) {
+#if defined(DEBUGGING)
+      if (debug_state)
+	fprintf(stderr, "charinfo::get_flags %p %s %d\n",
+			(void *)cp, cp->nm.contents(), cp->flags);
+#endif
+      all_flags |= cp->flags;
+    }
+  }
+  return all_flags;
 }
 
 void charinfo::set_special_translation(int c, int tt)
@@ -8430,6 +8555,50 @@ int charinfo::get_number()
 {
   assert(number >= 0);
   return number;
+}
+
+bool charinfo::contains(int c)
+{
+  std::vector<std::pair<int, int> >::const_iterator ranges_iter;
+  ranges_iter = ranges.begin();
+  while (ranges_iter != ranges.end()) {
+    if (c >= ranges_iter->first && c <= ranges_iter->second) {
+#if defined(DEBUGGING)
+      if (debug_state)
+	fprintf(stderr, "charinfo::contains(%d)\n", c);
+#endif
+      return true;
+    }
+    ++ranges_iter;
+  }
+
+  std::vector<charinfo *>::const_iterator nested_iter;
+  nested_iter = nested_classes.begin();
+  while (nested_iter != nested_classes.end()) {
+    if ((*nested_iter)->contains(c))
+      return true;
+    ++nested_iter;
+  }
+
+  return false;
+}
+
+bool charinfo::contains(symbol s)
+{
+  const char *unicode = glyph_name_to_unicode(s.contents());
+  if (unicode != NULL && strchr(unicode, '_') == NULL) {
+    char *ignore;
+    int c = (int)strtol(unicode, &ignore, 16);
+    return contains(c);
+  }
+  else
+    return false;
+}
+
+bool charinfo::contains(charinfo *)
+{
+  // TODO
+  return false;
 }
 
 symbol UNNAMED_SYMBOL("---");

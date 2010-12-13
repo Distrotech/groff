@@ -6052,7 +6052,7 @@ aaa bbb ccc ddd eee fff ggg hhh\h'0'\R':k \n[.k]'
 @endExample
 
 If you process this with the PostScript device (@code{-Tps}), there
-will be a line break eventually after @code{ggg} in both input lines. 
+will be a line break eventually after @code{ggg} in both input lines.
 However, after processing the space after @code{ggg}, the partially
 collected line is not overfull yet, so @code{troff} continues to
 collect input until it sees the space (or in this case, the newline)
@@ -8726,6 +8726,7 @@ special symbols (Greek, mathematics).
 * Font Families::
 * Font Positions::
 * Using Symbols::
+* Character Classes::
 * Special Fonts::
 * Artificial Fonts::
 * Ligatures and Kerning::
@@ -9122,7 +9123,7 @@ this is font 1 again
 
 @c ---------------------------------------------------------------------
 
-@node Using Symbols, Special Fonts, Font Positions, Fonts and Symbols
+@node Using Symbols, Character Classes, Font Positions, Fonts and Symbols
 @subsection Using Symbols
 @cindex using symbols
 @cindex symbols, using
@@ -9458,7 +9459,9 @@ width, depth, and height, nothing else.  All manipulations with the
 modified with the @code{cflags} request.  The first argument is the sum
 of the desired flags and the remaining arguments are the characters or
 symbols to have those properties.  It is possible to omit the spaces
-between the characters or symbols.
+between the characters or symbols.  Instead of single characters or
+symbols you can also use character classes (see @ref{Character Classes}
+for more details).
 
 @table @code
 @item 1
@@ -9639,7 +9642,83 @@ The request @code{rfschar} removes glyph definitions defined with
 
 @c ---------------------------------------------------------------------
 
-@node Special Fonts, Artificial Fonts, Using Symbols, Fonts and Symbols
+@node Character Classes, Special Fonts, Using Symbols, Fonts and Symbols
+@subsection Character Classes
+@cindex character classes
+@cindex classes, character
+
+Classes are particularly useful for East Asian languages such as
+Chinese, Japanese, and Korean, where the number of needed characters is
+much larger than in European languages, and where large sets of
+characters share the same properties.
+
+@Defreq {class, n c1 c2 @dots{}}
+@cindex character class (@code{class})
+@cindex defining character class (@code{class})
+@cindex class of characters (@code{class})
+In @code{groff}, a @dfn{character class} (or simply ``class'') is a set
+of characters, grouped by some user aspect.  The @code{class} request
+defines such classes so that other requests can refer to all characters
+belonging to this set with a single class name.  Currently, only the
+@code{cflags} request can handle character classes.
+
+A @code{class} request takes a class name followed by a list of
+entities.  In its simplest form, the entities are characters or symbols:
+
+@Example
+.class [prepunct] , : ; > @}
+@endExample
+
+Since class and glyph names share the same namespace, it is recommended
+to start and end the class name with @code{[} and @code{]},
+respectively, to avoid collisions with normal @code{groff} symbols (and
+symbols defined by the user).  In particular, the presence of @code{]}
+in the symbol name intentionally prevents the usage of @code{\[...]},
+thus you must use the @code{\C} escape to access a class with such a
+name.
+
+@cindex GGL (groff glyph list)
+@cindex groff glyph list (GGL)
+You can also use a special character range notation, consisting of a
+start character or symbol, followed by @samp{-}, and an end character or
+symbol.  Internally, @code{gtroff} converts these two symbol names to
+Unicode values (according to the groff glyph gist) which then give the
+start and end value of the range.  If that fails, the class definition
+is skipped.
+
+Finally, classes can be nested, too.  
+
+Here is a more complex example:
+
+@Example
+.class [prepunctx] \C'[prepunct]' \[u2013]-\[u2016]
+@endExample
+
+The class @samp{prepunctx} now contains the contents of the class
+@code{prepunct} as defined above (the set @samp{, : ; > @}}), and
+characters in the range between @code{U+2013} and @code{U+2016}.
+
+If you want to add @samp{-} to a class, it must be the first character
+value in the argument list, otherwise it gets misinterpreted as a range.
+
+Note that it is not possible to use class names within range
+definitions.
+
+Typical use of the @code{class} request is to control line-breaking and
+hyphenation rules as defined by the @code{cflags} request.  For example,
+to inhibit line breaks before the characters belonging to the
+@code{prepunctx} class, you can write:
+
+@Example
+.cflags 2 \C'[prepunctx]'
+@endExample
+
+See the @code{cflags} request in @ref{Using Symbols}, for more details.
+@endDefreq
+
+@c ---------------------------------------------------------------------
+
+@node Special Fonts, Artificial Fonts, Character Classes, Fonts and Symbols
 @subsection Special Fonts
 @cindex special fonts
 @cindex fonts, special

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
-                 2006, 2008, 2009
+                 2006, 2008, 2009, 2010
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -147,6 +147,47 @@ void text_file::error(const char *format,
     error_with_file_and_line(path, lineno, format, arg1, arg2, arg3);
 }
 
+int glyph_to_unicode(glyph *g)
+{
+  const char *nm = glyph_to_name(g);
+  if (nm != NULL) {
+    // ASCII character?
+    if (nm[0] == 'c' && nm[1] == 'h' && nm[2] == 'a' && nm[3] == 'r'
+	&& (nm[4] >= '0' && nm[4] <= '9')) {
+      int n = (nm[4] - '0');
+      if (nm[5] == '\0')
+	return n;
+      if (n > 0 && (nm[5] >= '0' && nm[5] <= '9')) {
+	n = 10*n + (nm[5] - '0');
+	if (nm[6] == '\0')
+	  return n;
+	if (nm[6] >= '0' && nm[6] <= '9') {
+	  n = 10*n + (nm[6] - '0');
+	  if (nm[7] == '\0' && n < 128)
+	    return n;
+	}
+      }
+    }
+    // Unicode character?
+    if (check_unicode_name(nm)) {
+      char *ignore;
+      return (int)strtol(nm + 1, &ignore, 16);
+    }
+    // If `nm' is a single letter `x', the glyph name is `\x'.
+    char buf[] = { '\\', '\0', '\0' };
+    if (nm[1] == '\0') {
+      buf[1] = nm[0];
+      nm = buf;
+    }
+    // groff glyphs that map to Unicode?
+    const char *unicode = glyph_name_to_unicode(nm);
+    if (unicode != NULL && strchr(unicode, '_') == NULL) {
+      char *ignore;
+      return (int)strtol(unicode, &ignore, 16);
+    }
+  }
+  return -1;
+}
 
 /* font functions */
 
@@ -269,42 +310,11 @@ int font::contains(glyph *g)
     return 1;
   if (is_unicode) {
     // Unicode font
-    const char *nm = glyph_to_name(g);
-    if (nm != NULL) {
-      // ASCII character?
-      if (nm[0] == 'c' && nm[1] == 'h' && nm[2] == 'a' && nm[3] == 'r'
-          && (nm[4] >= '0' && nm[4] <= '9')) {
-	int n = (nm[4] - '0');
-	if (nm[5] == '\0')
-	  return 1;
-	if (n > 0 && (nm[5] >= '0' && nm[5] <= '9')) {
-	  n = 10*n + (nm[5] - '0');
-	  if (nm[6] == '\0')
-	    return 1;
-	  if (nm[6] >= '0' && nm[6] <= '9') {
-	    n = 10*n + (nm[6] - '0');
-	    if (nm[7] == '\0' && n < 128)
-	      return 1;
-	  }
-	}
-      }
-      // Unicode character?
-      if (check_unicode_name(nm))
-	return 1;
-      // If `nm' is a single letter `x', the glyph name is `\x'.
-      char buf[] = { '\\', '\0', '\0' };
-      if (nm[1] == '\0') {
-	buf[1] = nm[0];
-        nm = buf;
-      }
-      // groff glyph name that maps to Unicode?
-      const char *unicode = glyph_name_to_unicode(nm);
-      if (unicode != NULL && strchr(unicode, '_') == NULL)
-	return 1;
-    }
+    // ASCII or Unicode character, or groff glyph name that maps to Unicode?
+    if (glyph_to_unicode(g) >= 0)
+      return 1;
     // Numbered character?
-    int n = glyph_to_number(g);
-    if (n >= 0)
+    if (glyph_to_number(g) >= 0)
       return 1;
   }
   return 0;
@@ -554,43 +564,10 @@ int font::get_code(glyph *g)
   }
   if (is_unicode) {
     // Unicode font
-    const char *nm = glyph_to_name(g);
-    if (nm != NULL) {
-      // ASCII character?
-      if (nm[0] == 'c' && nm[1] == 'h' && nm[2] == 'a' && nm[3] == 'r'
-          && (nm[4] >= '0' && nm[4] <= '9')) {
-	int n = (nm[4] - '0');
-	if (nm[5] == '\0')
-	  return n;
-	if (n > 0 && (nm[5] >= '0' && nm[5] <= '9')) {
-	  n = 10*n + (nm[5] - '0');
-	  if (nm[6] == '\0')
-	    return n;
-	  if (nm[6] >= '0' && nm[6] <= '9') {
-	    n = 10*n + (nm[6] - '0');
-	    if (nm[7] == '\0' && n < 128)
-	      return n;
-	  }
-	}
-      }
-      // Unicode character?
-      if (check_unicode_name(nm)) {
-	char *ignore;
-	return (int)strtol(nm + 1, &ignore, 16);
-      }
-      // If `nm' is a single letter `x', the glyph name is `\x'.
-      char buf[] = { '\\', '\0', '\0' };
-      if (nm[1] == '\0') {
-	buf[1] = nm[0];
-        nm = buf;
-      }
-      // groff glyphs that map to Unicode?
-      const char *unicode = glyph_name_to_unicode(nm);
-      if (unicode != NULL && strchr(unicode, '_') == NULL) {
-	char *ignore;
-	return (int)strtol(unicode, &ignore, 16);
-      }
-    }
+    // ASCII or Unicode character, or groff glyph name that maps to Unicode?
+    int uni = glyph_to_unicode(g);
+    if (uni >= 0)
+      return uni;
     // Numbered character?
     int n = glyph_to_number(g);
     if (n >= 0)
