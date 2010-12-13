@@ -5,7 +5,7 @@
 # Copyright (C) 2006, 2009, 2010 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 2 Jun 2010
+# Last update: 12 Dec 2010
 
 # This file is part of `chem' which is part of `groff'.
 
@@ -30,13 +30,23 @@ MOSTLYCLEANADD=chem chem.n README examples/README
 # not all make programs have $(RM) predefined.
 RM=rm -f
 
-all: README examples/README chem $(MAN1)
+all: \
+  README \
+  examples/README \
+  examples/122/README \
+  chem \
+  $(MAN1)
 
 README: $(srcdir)/README.txt
 	sed -e "s|@g@|$(g)|g" $? >$@
 
 examples/README: $(srcdir)/examples/README.txt
 	-test -d examples || $(mkinstalldirs) examples
+	sed -e "s|@g@|$(g)|g" $? >$@
+
+examples/122/README: $(srcdir)/examples/122/README.txt
+	-test -d examples || $(mkinstalldirs) examples
+	-test -d examples/122 || $(mkinstalldirs) examples/122
 	sed -e "s|@g@|$(g)|g" $? >$@
 
 chem: $(srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
@@ -63,7 +73,7 @@ install_data: chem \
 	$(INSTALL_DATA) $(srcdir)/chem.pic \
           $(DESTDIR)$(datasubdir)/pic/chem.pic
 	-test -d $(DESTDIR)$(exampledir)/chem \
-          || $(mkinstalldirs) $(DESTDIR)$(exampledir)/chem/122
+          || $(mkinstalldirs) $(DESTDIR)$(exampledir)/chem
 	-test -d $(DESTDIR)$(exampledir)/chem/122 \
           || $(mkinstalldirs) $(DESTDIR)$(exampledir)/chem/122
 	-$(RM) $(DESTDIR)$(exampledir)/chem/*
