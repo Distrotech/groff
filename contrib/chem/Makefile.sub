@@ -25,17 +25,19 @@
 ########################################################################
 
 MAN1=chem.n
-MOSTLYCLEANADD=chem chem.n README examples/README
+MOSTLYCLEANADD=\
+  chem \
+  chem.n \
+  README \
+  examples/README \
+  example/122/README
 
 # not all make programs have $(RM) predefined.
 RM=rm -f
 
-all: \
-  README \
-  examples/README \
-  examples/122/README \
-  chem \
-  $(MAN1)
+all: README examples/README examples/122/README \
+     chem \
+     $(MAN1)
 
 README: $(srcdir)/README.txt
 	sed -e "s|@g@|$(g)|g" $? >$@
