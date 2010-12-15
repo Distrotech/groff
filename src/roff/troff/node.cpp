@@ -2765,6 +2765,12 @@ int italic_corrected_node::character_type()
   return n->character_type();
 }
 
+enum break_char_type {
+  CAN_BREAK_BEFORE = 0x01,
+  CAN_BREAK_AFTER = 0x02,
+  IGNORE_HCODES = 0x04
+};
+
 class break_char_node : public node {
   node *ch;
   char break_code;
@@ -2846,16 +2852,16 @@ int break_char_node::ends_sentence()
 node *break_char_node::add_self(node *n, hyphen_list **p)
 {
   assert((*p)->hyphenation_code == 0);
-  if (break_code & 1) {
-    if ((*p)->breakable || break_code & 4) {
+  if (break_code & CAN_BREAK_BEFORE) {
+    if ((*p)->breakable || break_code & IGNORE_HCODES) {
       n = new space_node(H0, col, n);
       n->freeze_space();
     }
   }
   next = n;
   n = this;
-  if (break_code & 2) {
-    if ((*p)->breakable || break_code & 4) {
+  if (break_code & CAN_BREAK_AFTER) {
+    if ((*p)->breakable || break_code & IGNORE_HCODES) {
       n = new space_node(H0, col, n);
       n->freeze_space();
     }
@@ -5082,11 +5088,11 @@ node *node::add_char(charinfo *ci, environment *env,
   }
   int break_code = 0;
   if (ci->can_break_before())
-    break_code = 1;
+    break_code = CAN_BREAK_BEFORE;
   if (ci->can_break_after())
-    break_code |= 2;
+    break_code |= CAN_BREAK_AFTER;
   if (ci->ignore_hcodes())
-    break_code |= 4;
+    break_code |= IGNORE_HCODES;
   if (break_code) {
     node *next1 = res->next;
     res->next = 0;
