@@ -3212,11 +3212,6 @@ space_node::space_node(hunits nn, color *c, node *p)
 {
 }
 
-space_node::space_node(hunits nn, color *c, statem *s, int pop, node *p)
-: node(p, s, pop), n(nn), set(0), was_escape_colon(0), col(c)
-{
-}
-
 space_node::space_node(hunits nn, int s, int flag, color *c, statem *st,
 		       int pop, node *p)
 : node(p, st, pop), n(nn), set(s), was_escape_colon(flag), col(c)

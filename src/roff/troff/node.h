@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004,\
-                 2006, 2009
+                 2006, 2009, 2010
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -170,7 +170,6 @@ protected:
   color *col;			/* for grotty */
   space_node(hunits, int, int, color *, statem *, int, node * = 0);
 public:
-  space_node(hunits, color *, statem *, int, node * = 0);
   space_node(hunits, color *, node * = 0);
 #if 0
   ~space_node();
