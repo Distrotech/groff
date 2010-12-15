@@ -132,6 +132,14 @@ inline node::node(node *n, statem *s, int divlevel)
     state = 0;
 }
 
+inline node::~node()
+{
+  if (state != 0)
+    delete state;
+  if (push_state != 0)
+    delete push_state;
+}
+
 // 0 means it doesn't, 1 means it does, 2 means it's transparent
 
 int node_list_ends_sentence(node *);

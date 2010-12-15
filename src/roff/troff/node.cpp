@@ -1811,14 +1811,6 @@ void suppress_output_file::really_transparent_char(unsigned char)
 {
 }
 
-inline node::~node()
-{
-  if (state != 0)
-    delete state;
-  if (push_state != 0)
-    delete push_state;
-}
-
 /* glyphs, ligatures, kerns, discretionary breaks */
 
 class charinfo_node : public node {
