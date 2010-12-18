@@ -151,7 +151,7 @@ char *msw2posixpath(char *path)
   while (*s) {
     if (*s == '\\')
       *s = '/';
-    *s++;
+    s++;
   }
   return path;
 }
