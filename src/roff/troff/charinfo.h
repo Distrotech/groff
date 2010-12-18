@@ -29,7 +29,7 @@ class charinfo : glyph {
   macro *mac;
   unsigned char special_translation;
   unsigned char hyphenation_code;
-  unsigned char flags;
+  unsigned int flags;
   unsigned char ascii_code;
   unsigned char asciify_code;
   char not_found;
@@ -44,13 +44,16 @@ class charinfo : glyph {
 public:
   enum {		// Values for the flags bitmask.  See groff
 			// manual, description of the `.cflags' request.
-    ENDS_SENTENCE = 1,
-    BREAK_BEFORE = 2,
-    BREAK_AFTER = 4,
-    OVERLAPS_HORIZONTALLY = 8,
-    OVERLAPS_VERTICALLY = 16,
-    TRANSPARENT = 32,
-    IGNORE_HCODES = 64
+    ENDS_SENTENCE = 0x01,
+    BREAK_BEFORE = 0x02,
+    BREAK_AFTER = 0x04,
+    OVERLAPS_HORIZONTALLY = 0x08,
+    OVERLAPS_VERTICALLY = 0x10,
+    TRANSPARENT = 0x20,
+    IGNORE_HCODES = 0x40,
+    DONT_BREAK_BEFORE = 0x80,
+    DONT_BREAK_AFTER = 0x100,
+    INTER_CHAR_SPACE = 0x200
   };
   enum {
     TRANSLATE_NONE,
@@ -69,6 +72,9 @@ public:
   int can_break_after();
   int transparent();
   int ignore_hcodes();
+  int prohibit_break_before();
+  int prohibit_break_after();
+  int inter_char_space();
   unsigned char get_hyphenation_code();
   unsigned char get_ascii_code();
   unsigned char get_asciify_code();
@@ -80,8 +86,8 @@ public:
   int get_translation_input();
   charinfo *get_translation(int = 0);
   void set_translation(charinfo *, int, int);
-  unsigned char get_flags();
-  void set_flags(unsigned char);
+  unsigned int get_flags();
+  void set_flags(unsigned int);
   void set_special_translation(int, int);
   int get_special_translation(int = 0);
   macro *set_macro(macro *);
@@ -143,6 +149,21 @@ inline int charinfo::ignore_hcodes()
   return get_flags() & IGNORE_HCODES;
 }
 
+inline int charinfo::prohibit_break_before()
+{
+  return get_flags() & DONT_BREAK_BEFORE;
+}
+
+inline int charinfo::prohibit_break_after()
+{
+  return get_flags() & DONT_BREAK_AFTER;
+}
+
+inline int charinfo::inter_char_space()
+{
+  return get_flags() & INTER_CHAR_SPACE;
+}
+
 inline int charinfo::numbered()
 {
   return number >= 0;
@@ -185,7 +206,7 @@ inline unsigned char charinfo::get_asciify_code()
   return (translate_input ? asciify_code : 0);
 }
 
-inline void charinfo::set_flags(unsigned char c)
+inline void charinfo::set_flags(unsigned int c)
 {
   flags = c;
 }

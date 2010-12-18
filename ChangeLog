@@ -1,5 +1,45 @@
 2010-12-18  Werner LEMBERG  <wl@gnu.org>
 
+	Improve CJK support with new values for `.cflags'.
+
+	This patch introduces three new values to `.cflags':
+
+	  don't break before character: 128
+	  don't break after character:  256
+	  allow inter-character break:  512
+
+	They are handled differently if compared to other cflags values:
+
+	  (1) hcode values are completely ignored
+	  (2) similar to kern values, and contrary to the other cflags
+	      values, troff looks at pairs of characters to decide whether a
+	      break gets inserted
+
+	A yet-to-be-written patch should add inter-character spacing if
+	those flags are active; currently, only zero-width breakpoints are
+	inserted.
+
+	* src/roff/troff/charinfo.h (charinfo): Change type of `flags' to
+	`int'.  Update callers accordingly.
+	New enum values `DONT_BREAK_BEFORE', `DONT_BREAK_AFTER', and
+	`INTER_CHAR_SPACE'.
+	New member functions `prohibit_break_before',
+	`prohibit_break_after', and `inter_char_space'.
+	* src/roff/troff/input.cpp: Updated.
+
+	* src/roff/troff/node.cpp (inter_char_space_node): New class similar
+	to kern_pair_node, collecting charinfo entities with the
+	abovementioned cflags values.
+	(break_char_type): Add new enum values.
+	(glyph_node::merge_glyph_node): Handle abovementioned cflags values
+	and emit an `inter_char_space_node' if necessary.
+
+	* tmac/ja.tmac: Use new cflags values.
+
+	* doc/groff.texinfo, NEWS, man/groff_diff.man: Document new values.
+
+2010-12-18  Werner LEMBERG  <wl@gnu.org>
+
 	Remove compiler warning.
 
 	* src/libs/libgroff/relocate.cpp (msw2posixpath): Remove redundant

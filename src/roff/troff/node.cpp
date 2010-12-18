@@ -2111,6 +2111,47 @@ node *node::merge_glyph_node(glyph_node *)
   return 0;
 }
 
+class inter_char_space_node : public node {
+  hunits amount;
+  char left_break_code;
+  char right_break_code;
+  color *col;
+  node *n1;
+  node *n2;
+public:
+  inter_char_space_node(hunits, char, char, color *, node *, node *,
+			statem *, int, node * = 0);
+  ~inter_char_space_node();
+  node *copy();
+  node *merge_glyph_node(glyph_node *);
+  node *add_self(node *, hyphen_list **);
+  hyphen_list *get_hyphen_list(hyphen_list *, int *);
+  node *add_discretionary_hyphen();
+  hunits width();
+  node *last_char_node();
+  hunits italic_correction();
+  hunits subscript_correction();
+  void tprint(troff_output_file *);
+  hyphenation_type get_hyphenation_type();
+  int ends_sentence();
+  void ascii_print(ascii_output_file *);
+  void asciify(macro *);
+  int same(node *);
+  const char *type();
+  int force_tprint();
+  int is_tag();
+  void vertical_extent(vunits *, vunits *);
+};
+
+enum break_char_type {
+  CAN_BREAK_BEFORE = 0x01,
+  CAN_BREAK_AFTER = 0x02,
+  IGNORE_HCODES = 0x04,
+  PROHIBIT_BREAK_BEFORE = 0x08,
+  PROHIBIT_BREAK_AFTER = 0x10,
+  INTER_CHAR_SPACE = 0x20
+};
+
 node *glyph_node::merge_glyph_node(glyph_node *gn)
 {
   if (tf == gn->tf && gcol == gn->gcol && fcol == gn->fcol) {
@@ -2128,6 +2169,28 @@ node *glyph_node::merge_glyph_node(glyph_node *gn)
       return new kern_pair_node(kern, this, gn, state,
 				gn->div_nest_level, next1);
     }
+  }
+  int left_bc = 0, right_bc = 0;
+  if (ci->prohibit_break_before())
+    left_bc = PROHIBIT_BREAK_BEFORE;
+  if (gn->ci->prohibit_break_before())
+    right_bc = PROHIBIT_BREAK_BEFORE;
+  if (ci->prohibit_break_after())
+    left_bc |= PROHIBIT_BREAK_AFTER;
+  if (gn->ci->prohibit_break_after())
+    right_bc |= PROHIBIT_BREAK_AFTER;
+  if (ci->inter_char_space())
+    left_bc |= INTER_CHAR_SPACE;
+  if (gn->ci->inter_char_space())
+    right_bc |= INTER_CHAR_SPACE;
+  if (left_bc && right_bc) {
+    node *next1 = next;
+    next = 0;
+    // ic_space not supported yet
+    int ic_space = 0;
+    return new inter_char_space_node(ic_space, left_bc, right_bc,
+				     gcol, this, gn, state,
+				     gn->div_nest_level, next1);
   }
   return 0;
 }
@@ -2756,12 +2819,6 @@ int italic_corrected_node::character_type()
 {
   return n->character_type();
 }
-
-enum break_char_type {
-  CAN_BREAK_BEFORE = 0x01,
-  CAN_BREAK_AFTER = 0x02,
-  IGNORE_HCODES = 0x04
-};
 
 class break_char_node : public node {
   node *ch;
@@ -5714,6 +5771,195 @@ int dbreak_node::force_tprint()
 }
 
 int dbreak_node::is_tag()
+{
+  return 0;
+}
+
+inter_char_space_node::inter_char_space_node(hunits n,
+					     char left, char right,
+					     color *c, node *first, node *second,
+					     statem* s, int pop, node *x)
+: node(x, s, pop), amount(n), left_break_code(left), right_break_code(right),
+  col(c), n1(first), n2(second)
+{
+}
+
+inter_char_space_node::~inter_char_space_node()
+{
+  if (n1 != 0)
+    delete n1;
+  if (n2 != 0)
+    delete n2;
+}
+
+node *inter_char_space_node::merge_glyph_node(glyph_node *gn)
+{
+  node *nd = n2->merge_glyph_node(gn);
+  if (nd == 0)
+    return 0;
+  n2 = nd;
+  nd = n2->merge_self(n1);
+  if (nd) {
+    nd->next = next;
+    n1 = 0;
+    n2 = 0;
+    delete this;
+    return nd;
+  }
+  return this;
+}
+
+hunits inter_char_space_node::italic_correction()
+{
+  return n2->italic_correction();
+}
+
+hunits inter_char_space_node::subscript_correction()
+{
+  return n2->subscript_correction();
+}
+
+void inter_char_space_node::vertical_extent(vunits *min, vunits *max)
+{
+  n1->vertical_extent(min, max);
+  vunits min2, max2;
+  n2->vertical_extent(&min2, &max2);
+  if (min2 < *min)
+    *min = min2;
+  if (max2 > *max)
+    *max = max2;
+}
+
+node *inter_char_space_node::add_discretionary_hyphen()
+{
+  tfont *tf = n1->get_tfont();
+  if (tf) {
+    if (tf->contains(soft_hyphen_char)) {
+      color *gcol = n2->get_glyph_color();
+      color *fcol = n2->get_fill_color();
+      node *next1 = next;
+      next = 0;
+      node *n = copy();
+      glyph_node *gn = new glyph_node(soft_hyphen_char, tf, gcol, fcol,
+				      state, div_nest_level);
+      node *nn = n->merge_glyph_node(gn);
+      if (nn == 0) {
+	gn->next = n;
+	nn = gn;
+      }
+      return new dbreak_node(this, nn, state, div_nest_level, next1);
+    }
+  }
+  return this;
+}
+
+node *inter_char_space_node::copy()
+{
+  return new inter_char_space_node(amount, left_break_code, right_break_code,
+				   col, n1->copy(), n2->copy(),
+				   state, div_nest_level);
+}
+
+hyphen_list *inter_char_space_node::get_hyphen_list(hyphen_list *tail,
+						    int *count)
+{
+  hyphen_list *hl = n2->get_hyphen_list(tail, count);
+  return n1->get_hyphen_list(hl, count);
+}
+
+node *inter_char_space_node::add_self(node *n, hyphen_list **p)
+{
+  n = n1->add_self(n, p);
+  if (left_break_code & INTER_CHAR_SPACE
+      || left_break_code & PROHIBIT_BREAK_AFTER) {
+    if (right_break_code & PROHIBIT_BREAK_BEFORE)
+      // stretchable zero-width space not implemented yet
+      ;
+    else {
+      // breakable, stretchable zero-width space not implemented yet
+      n = new space_node(H0, col, n);
+      n->freeze_space();
+    }
+  }
+  n = n2->add_self(n, p);
+  n1 = n2 = 0;
+  delete this;
+  return n;
+}
+
+hunits inter_char_space_node::width()
+{
+  return n1->width() + n2->width();
+}
+
+node *inter_char_space_node::last_char_node()
+{
+  node *nd = n2->last_char_node();
+  if (nd)
+    return nd;
+  return n1->last_char_node();
+}
+
+int inter_char_space_node::ends_sentence()
+{
+  switch (n2->ends_sentence()) {
+  case 0:
+    return 0;
+  case 1:
+    return 1;
+  case 2:
+    break;
+  default:
+    assert(0);
+  }
+  return n1->ends_sentence();
+}
+
+void inter_char_space_node::ascii_print(ascii_output_file *ascii)
+{
+  n1->ascii_print(ascii);
+  n2->ascii_print(ascii);
+}
+
+void inter_char_space_node::asciify(macro *m)
+{
+  n1->asciify(m);
+  n2->asciify(m);
+  n1 = n2 = 0;
+  delete this;
+}
+
+hyphenation_type inter_char_space_node::get_hyphenation_type()
+{
+  return HYPHEN_MIDDLE;
+}
+
+void inter_char_space_node::tprint(troff_output_file *out)
+{
+  n1->tprint(out);
+  n2->tprint(out);
+}
+
+int inter_char_space_node::same(node *nd)
+{
+  return (amount == ((inter_char_space_node *)nd)->amount
+	  && left_break_code == ((inter_char_space_node *)nd)->left_break_code
+	  && right_break_code == ((inter_char_space_node *)nd)->right_break_code
+	  && same_node(n1, ((inter_char_space_node *)nd)->n1)
+	  && same_node(n2, ((inter_char_space_node *)nd)->n2));
+}
+
+const char *inter_char_space_node::type()
+{
+  return "inter_char_space_node";
+}
+
+int inter_char_space_node::force_tprint()
+{
+  return 0;
+}
+
+int inter_char_space_node::is_tag()
 {
   return 0;
 }

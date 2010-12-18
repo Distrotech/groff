@@ -993,7 +993,6 @@ Lines can be broken after the character (initially characters
 have this property); a line is not broken at a character with this
 property unless the characters on each side both have non-zero
 hyphenation codes.
-
 This can be overridden with value 64.
 .
 .IP 8
@@ -1021,7 +1020,32 @@ have this property).
 Ignore hyphenation code values of the surrounding characters.
 Use this in combination with values 2 and\~4 (initially no characters
 have this property).
+.
+.IP 128
+Prohibit a line break before the character, but allow a line break after the
+character.
+This works only in combination with flags 256 and 512 and has no effect
+otherwise.
+.
+.IP 256
+Prohibit a line break after the character, but allow a line break before
+the character.
+This works only in combination with flags 128 and 512 and has no effect
+otherwise.
+.
+.IP 512
+Allow line break before or after the character.
+This works only in combination with flags 128 and 256 and has no effect
+otherwise.
 .RE
+.
+.IP
+Contrary to flag values 2 and\~4, the flags 128, 256, and 512 work pairwise.
+If, for example, the left character has value 512, and the right character
+128, no line break gets inserted.
+If we use value\~6 instead for the left character, a line break after the
+character can't be suppressed since the right neighbour character doesn't
+get examined.
 .
 .TP
 .BI .char\  c\ string

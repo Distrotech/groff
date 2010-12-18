@@ -8496,9 +8496,9 @@ void charinfo::set_translation(charinfo *ci, int tt, int ti)
 }
 
 // Get the union of all flags affecting this charinfo.
-unsigned char charinfo::get_flags()
+unsigned int charinfo::get_flags()
 {
-  unsigned char all_flags = flags;
+  unsigned int all_flags = flags;
   dictionary_iterator iter(char_class_dictionary);
   charinfo *cp;
   symbol s;
