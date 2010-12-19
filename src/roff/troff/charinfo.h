@@ -105,9 +105,9 @@ public:
   void add_to_class(int, int);
   void add_to_class(charinfo *);
   bool is_class();
-  bool contains(int);
-  bool contains(symbol);
-  bool contains(charinfo *);
+  bool contains(int, bool = false);
+  bool contains(symbol, bool = false);
+  bool contains(charinfo *, bool = false);
 };
 
 charinfo *get_charinfo(symbol);

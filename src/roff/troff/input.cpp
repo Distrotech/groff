@@ -6788,8 +6788,14 @@ void define_class()
       child1 = child2 = 0;
     }
     else if (child1 != 0) {
-      if (child1->is_class())
+      if (child1->is_class()) {
+	if (ci == child1) {
+	  warning(WARN_SYNTAX, "invalid cyclic class nesting");
+	  skip_line();
+	  return;
+	}
 	ci->add_to_class(child1);
+      }
       else {
 	int u1 = child1->get_unicode_code();
 	if (u1 < 0) {
@@ -6812,8 +6818,14 @@ void define_class()
     }
   }
   if (child1 != 0) {
-    if (child1->is_class())
+    if (child1->is_class()) {
+      if (ci == child1) {
+	warning(WARN_SYNTAX, "invalid cyclic class nesting");
+	skip_line();
+	return;
+      }
       ci->add_to_class(child1);
+    }
     else {
       int u1 = child1->get_unicode_code();
       if (u1 < 0) {
@@ -8560,8 +8572,14 @@ int charinfo::get_number()
   return number;
 }
 
-bool charinfo::contains(int c)
+bool charinfo::contains(int c, bool already_called)
 {
+  if (already_called) {
+    warning(WARN_SYNTAX,
+	    "cyclic nested class detected while processing character code %1",
+	    c);
+    return false;
+  }
   std::vector<std::pair<int, int> >::const_iterator ranges_iter;
   ranges_iter = ranges.begin();
   while (ranges_iter != ranges.end()) {
@@ -8578,7 +8596,7 @@ bool charinfo::contains(int c)
   std::vector<charinfo *>::const_iterator nested_iter;
   nested_iter = nested_classes.begin();
   while (nested_iter != nested_classes.end()) {
-    if ((*nested_iter)->contains(c))
+    if ((*nested_iter)->contains(c, true))
       return true;
     ++nested_iter;
   }
@@ -8586,19 +8604,25 @@ bool charinfo::contains(int c)
   return false;
 }
 
-bool charinfo::contains(symbol s)
+bool charinfo::contains(symbol s, bool already_called)
 {
+  if (already_called) {
+    warning(WARN_SYNTAX,
+	    "cyclic nested class detected while processing symbol %1",
+	    s.contents());
+    return false;
+  }
   const char *unicode = glyph_name_to_unicode(s.contents());
   if (unicode != NULL && strchr(unicode, '_') == NULL) {
     char *ignore;
     int c = (int)strtol(unicode, &ignore, 16);
-    return contains(c);
+    return contains(c, true);
   }
   else
     return false;
 }
 
-bool charinfo::contains(charinfo *)
+bool charinfo::contains(charinfo *, bool)
 {
   // TODO
   return false;
