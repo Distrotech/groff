@@ -64,6 +64,7 @@ struct node {
   virtual int set_unformat_flag();
   virtual int force_tprint() = 0;
   virtual int is_tag() = 0;
+  virtual int get_break_code();
   virtual hunits width();
   virtual hunits subscript_correction();
   virtual hunits italic_correction();

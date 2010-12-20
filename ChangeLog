@@ -1,3 +1,24 @@
+2010-12-20  Werner LEMBERG  <wl@gnu.org>
+
+	Replace patch from 2010-12-18 with a much faster implementation.
+
+	* src/roff/troff/node.h (node): Add virtual function
+	`get_break_code'.
+
+	* src/roff/troff/node.cpp (inter_char_space_node): Remove class
+	completely.
+	(glyph_node::merge_glyph_node): Restore previous version.
+
+	(break_char_node): Add `prev_break_code' field and update
+	constructors.
+	(node::get_break_code, break_char_node::get_break_code): Implement.
+
+	(node::add_char): Pass remaining cflags values.
+
+	(break_char_node::add_self): Use the logic of the now deleted
+	`inter_char_space_node::add_self' function to insert a space node if
+	necessary.
+
 2010-12-20  Daiki Ueno  <ueno@unixuser.org>
 
 	A new try to not changing srcdir if building in separate builddir.
