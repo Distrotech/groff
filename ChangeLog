@@ -1,3 +1,28 @@
+2010-12-20  Werner LEMBERG  <wl@gnu.org>
+
+	Speed up access to cflags values.
+
+	We now recompute the cflags values for all charinfo objects if
+	`.class' has been called.
+
+	* src/roff/troff/charinfo.h: Add external references to `class_flag'
+	and `get_flags'.
+	(charinfo): `get_flags' no longer has a return value.
+	(charinfo::overlaps_horizontally, charinfo::overlaps_vertically,
+	charinfo::can_break_before, charinfo::can_break_after,
+	charinfo::can_break_after, charinfo::ends_sentence,
+	charinfo::transparent,, charinfo:ignore_hcodes,
+	charinfo::prohibit_break_before, charinfo::prohibit_break_after,
+	charinfo::inter_char_space): Call global `get_flags' only if
+	necessary.
+	(charinfo::add_to_class): Set `class_flag'.
+
+	* src/roff/troff/input.cpp (class_flag): New global flag.
+	(charinfo::charinfo): Call `get_flags' member function.
+	(get_flags): New global function which iterates over all entries in
+	the charinfo dictionary.
+	(charinfo::get_flags): Set `flags' directly.
+
 2010-12-19  Werner LEMBERG  <wl@gnu.org>
 
 	Protect `.class' against cyclic nesting.

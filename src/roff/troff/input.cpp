@@ -83,6 +83,7 @@ void transparent_file();
 
 token tok;
 int break_flag = 0;
+int class_flag = 0;
 int color_flag = 1;		// colors are on by default
 static int backtrace_flag = 0;
 #ifndef POPEN_MISSING
@@ -8477,6 +8478,7 @@ charinfo::charinfo(symbol s)
 {
   index = next_index++;
   number = -1;
+  get_flags();
 }
 
 int charinfo::get_unicode_code()
@@ -8507,25 +8509,36 @@ void charinfo::set_translation(charinfo *ci, int tt, int ti)
   transparent_translate = tt;
 }
 
-// Get the union of all flags affecting this charinfo.
-unsigned int charinfo::get_flags()
+// Recompute flags for all entries in the charinfo dictionary.
+void get_flags()
 {
-  unsigned int all_flags = flags;
-  dictionary_iterator iter(char_class_dictionary);
-  charinfo *cp;
+  dictionary_iterator iter(charinfo_dictionary);
+  charinfo *ci;
   symbol s;
-  while (iter.get(&s, (void **)&cp)) {
+  while (iter.get(&s, (void **)&ci)) {
     assert(!s.is_null());
-    if (cp->contains(get_unicode_code())) {
+    ci->get_flags();
+  }
+  class_flag = 0;
+}
+
+// Get the union of all flags affecting this charinfo.
+void charinfo::get_flags()
+{
+  dictionary_iterator iter(char_class_dictionary);
+  charinfo *ci;
+  symbol s;
+  while (iter.get(&s, (void **)&ci)) {
+    assert(!s.is_null());
+    if (ci->contains(get_unicode_code())) {
 #if defined(DEBUGGING)
       if (debug_state)
 	fprintf(stderr, "charinfo::get_flags %p %s %d\n",
-			(void *)cp, cp->nm.contents(), cp->flags);
+			(void *)ci, ci->nm.contents(), ci->flags);
 #endif
-      all_flags |= cp->flags;
+      flags |= ci->flags;
     }
   }
-  return all_flags;
 }
 
 void charinfo::set_special_translation(int c, int tt)

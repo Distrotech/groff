@@ -21,6 +21,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 #include <vector>
 #include <utility>
 
+extern int class_flag;	// set if there was a call to `.class'
+extern void get_flags();
+
 class macro;
 
 class charinfo : glyph {
@@ -86,7 +89,7 @@ public:
   int get_translation_input();
   charinfo *get_translation(int = 0);
   void set_translation(charinfo *, int, int);
-  unsigned int get_flags();
+  void get_flags();
   void set_flags(unsigned int);
   void set_special_translation(int, int);
   int get_special_translation(int = 0);
@@ -116,52 +119,72 @@ charinfo *get_charinfo_by_number(int);
 
 inline int charinfo::overlaps_horizontally()
 {
-  return get_flags() & OVERLAPS_HORIZONTALLY;
+  if (class_flag)
+    ::get_flags();
+  return flags & OVERLAPS_HORIZONTALLY;
 }
 
 inline int charinfo::overlaps_vertically()
 {
-  return get_flags() & OVERLAPS_VERTICALLY;
+  if (class_flag)
+    ::get_flags();
+  return flags & OVERLAPS_VERTICALLY;
 }
 
 inline int charinfo::can_break_before()
 {
-  return get_flags() & BREAK_BEFORE;
+  if (class_flag)
+    ::get_flags();
+  return flags & BREAK_BEFORE;
 }
 
 inline int charinfo::can_break_after()
 {
-  return get_flags() & BREAK_AFTER;
+  if (class_flag)
+    ::get_flags();
+  return flags & BREAK_AFTER;
 }
 
 inline int charinfo::ends_sentence()
 {
-  return get_flags() & ENDS_SENTENCE;
+  if (class_flag)
+    ::get_flags();
+  return flags & ENDS_SENTENCE;
 }
 
 inline int charinfo::transparent()
 {
-  return get_flags() & TRANSPARENT;
+  if (class_flag)
+    ::get_flags();
+  return flags & TRANSPARENT;
 }
 
 inline int charinfo::ignore_hcodes()
 {
-  return get_flags() & IGNORE_HCODES;
+  if (class_flag)
+    ::get_flags();
+  return flags & IGNORE_HCODES;
 }
 
 inline int charinfo::prohibit_break_before()
 {
-  return get_flags() & DONT_BREAK_BEFORE;
+  if (class_flag)
+    ::get_flags();
+  return flags & DONT_BREAK_BEFORE;
 }
 
 inline int charinfo::prohibit_break_after()
 {
-  return get_flags() & DONT_BREAK_AFTER;
+  if (class_flag)
+    ::get_flags();
+  return flags & DONT_BREAK_AFTER;
 }
 
 inline int charinfo::inter_char_space()
 {
-  return get_flags() & INTER_CHAR_SPACE;
+  if (class_flag)
+    ::get_flags();
+  return flags & INTER_CHAR_SPACE;
 }
 
 inline int charinfo::numbered()
@@ -255,6 +278,7 @@ inline symbol *charinfo::get_symbol()
 
 inline void charinfo::add_to_class(int c)
 {
+  class_flag = 1;
   // TODO ranges cumbersome for single characters?
   ranges.push_back(std::pair<int, int>(c, c));
 }
@@ -262,11 +286,13 @@ inline void charinfo::add_to_class(int c)
 inline void charinfo::add_to_class(int lo,
 				   int hi)
 {
+  class_flag = 1;
   ranges.push_back(std::pair<int, int>(lo, hi));
 }
 
 inline void charinfo::add_to_class(charinfo *ci)
 {
+  class_flag = 1;
   nested_classes.push_back(ci);
 }
 
