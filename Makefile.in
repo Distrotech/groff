@@ -767,14 +767,8 @@ $(GNULIBDIRS): FORCE
 	case $(do) in \
 	all) \
 	cd $@; \
-	if test ! $(srcdir) = .; then \
-          for file in aclocal.m4 Makefile.in configure build-aux; do \
-	    rm -rf $$file && cp -R $$srcdir/$$file .; \
-          done; \
-	  touch aclocal.m4 Makefile.in configure; \
-	fi; \
-	test -f Makefile || $(SHELL) $$srcdir/configure; \
-	$(MAKE) $(do) ;; \
+	test -f Makefile || $(SHELL) $$srcdir/configure ; \
+	$(MAKE) ACLOCAL=: AUTOCONF=: AUTOHEADER=: AUTOMAKE=: $(do) ;; \
 	esac
 
 $(OTHERDIRS): $(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
