@@ -3,12 +3,13 @@
 	Speed up troff.
 
 	* src/include/ptable.h (PTABLE): Make hash tables much more sparse
-	by changing `FULL_NUM' from 3 to 1.  This increases the allocated
-	memory by about 200kByte (which is nothing today) but assures that
-	there aren't extremely long searches for a free hash slot in case
-	that the hash function doesn't return a free one.  Due to the nature
-	of the entries in uniuni.cpp, the used hash function in ptable.cpp
-	is not optimal, but using a sparse array compensates this.
+	by changing the ratio `FULL_NUM/FULL_DEN' from 2/3 to 1/4.  This
+	increases the allocated memory by about 200kByte (which is nothing
+	today) but assures that there aren't extremely long searches for a
+	free hash slot in case that the hash function doesn't return a free
+	one.  Due to the nature of the entries in uniuni.cpp, the used hash
+	function in ptable.cpp is not optimal, but using a sparse array
+	compensates this.
 
 2010-12-20  Werner LEMBERG  <wl@gnu.org>
 
