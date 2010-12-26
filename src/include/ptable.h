@@ -86,8 +86,8 @@ class PTABLE(T) {							      \
   unsigned size;							      \
   unsigned used;							      \
   enum {								      \
-    FULL_NUM = 2,							      \
-    FULL_DEN = 3,							      \
+    FULL_NUM = 1,							      \
+    FULL_DEN = 4,							      \
     INITIAL_SIZE = 17							      \
   };									      \
 public:									      \
