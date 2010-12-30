@@ -1,4 +1,4 @@
-# Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2009
+# Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2009, 2010
 #   Free Software Foundation, Inc.
 #      Written by Werner Lemberg <wl@gnu.org>
 # 
@@ -99,9 +99,9 @@ imagedir=img
 	$(GROFF) -Tps -ms -mwww >$@
 
 .texinfo.dvi:
-	$(TEXI2DVI) -e $<
+	MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e $<
 .texinfo.pdf:
-	$(TEXI2DVI) -e --pdf $<
+	MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e --pdf $<
 .texinfo.html:
 	$(MAKEINFO) --enable-encoding -I$(srcdir) --html --no-split $< \
 	&& $(SHELL) $(srcdir)/fixinfo.sh $@
