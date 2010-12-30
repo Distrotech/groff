@@ -957,19 +957,3 @@ then
   make
 
 as usual.
-
-----------------------------------------------------------------------
-
-* When compiling on MacOS X 10.4 with gcc 4.0.1, the build errors out
-  with the following message:
-
-  g++ -g -O2  -o troff dictionary.o div.o env.o input.o majorminor.o
-  mtsm.o node.o number.o reg.o ...groff/src/libs/libgroff/libgroff.a -lm
-  /usr/bin/ld: Undefined symbols:
-  node::~node()
-
-Locate the line in src/roff/troff/node.cpp:
-
-  inline node::~node()
-
-Remove the `inline' keyword, save, and make again.
