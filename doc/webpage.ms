@@ -292,7 +292,7 @@ postings to the corresponding mailing list.
 .
 .
 .SH
-NEWS VERSION 1.20.2
+NEWS VERSION 1.21
 .LP
 .SH 2
 troff
