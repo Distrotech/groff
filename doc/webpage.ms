@@ -292,6 +292,81 @@ postings to the corresponding mailing list.
 .
 .
 .SH
+NEWS VERSION 1.20.2
+.LP
+.SH 2
+troff
+
+.ULS
+.LI
+The new `lsm' request specifies a macro to be invoked when leading
+spaces in an input line are encountered (which are removed then).
+Number registers `lsn' and `lss' hold the number of removed leading
+spaces and the corresponding horizontal space, respectively.
+
+.LI
+There is a new warning category `file', enabled by default.
+The `mso' request emits warnings in this category when the requested
+macro file does not exist.
+
+.LI
+The new `class' request assigns a short name to a set of characters
+which can be referred to in the `cflags' request.
+This is especially useful to control line-breaking and hyphenation
+rules in CJK languages.
+
+.LI
+Three new values for the `cflags' request have been added, which are
+needed for proper CJK support.
+
+.in 2m
+128  prohibit before but allow break after character
+.br
+256  prohibit after but allow break before character
+.br
+512  allow break before and after character
+.in
+.ULE
+.
+.
+.SH 2
+tbl
+
+.ULS
+.LI
+A new global option `nowarn' suppresses warnings if tables are longer
+than the current line width.
+.ULE
+.
+.
+.SH 2
+afmtodit
+
+.ULS
+.LI
+New option `\-o' to specify the name of the output file.
+.ULE
+.
+.
+.SH 2
+macro packages
+
+.ULS
+.LI
+A new macro `%U' has been added to the mdoc package to indicate a URL
+reference within an .Rs/.Re environment.
+
+.LI
+Rudimentary support for the Japanese script has been added, most
+suitable for man page handling as output by grotty.
+The file `ja.tmac' contains the necessary setup to allow line breaks
+before and after CJK characters (with proper exceptions).
+Note, however, that no inter-character spacing is implemented yet \[en]
+this usually causes many warnings about bad line breaks.
+.ULE
+.
+.
+.SH
 NEWS VERSION 1.20.1
 .LP
 A packaging error made it necessary to publish this release.
@@ -1613,7 +1688,7 @@ Troff
 .ULS
 .LI
 Color support has been added to troff and pic (and to the device drivers
-grops, grodvi, grotty, and grohtml -- other preprocessors and drivers will
+grops, grodvi, grotty, and grohtml \[en] other preprocessors and drivers will
 follow).
 A new function `defcolor' defines colors; the escape sequence `\em' sets the
 drawing color, the escape sequence `\eM' specifies the background color for
@@ -1655,7 +1730,7 @@ Similar to \em and \eM, \ef[] switches back to the previous font.
 
 .LI
 The new escape \eF is the same as `.fam'; \eF[] switches back to previous
-family -- \eF[P] selects family `P'.
+family \[en] \eF[P] selects family `P'.
 
 .LI
 Two new glyph symbols are available: `eu' is the official Euro symbol;
