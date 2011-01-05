@@ -8,7 +8,7 @@
 .ig
 
 Copyright (C) 1991-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2009,
-              2010
+              2010, 2011
   Free Software Foundation, Inc.
 mgm is written by Jörgen Hägg <jh@axis.com>
 
@@ -738,6 +738,15 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .ev
 .nr @verbose-flag 0
 ..
+.\" Wrapper to cancel the side effect of .tag + .br generating
+.\" unwanded vertical space.
+.de misc@tag  
+.vpt 0
+.DEVTAG-\\$1 \\$2
+.br
+.sp -1
+.vpt 1
+..
 .\" ######## module pict #################
 .nr pict*width 0
 .nr pict*height 0
@@ -1043,7 +1052,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"---------- user macro HY ------------- 
 .\"	user macro to reset indents
 .if d HY .HY \\n[hd*level] \\n[hd*arg1] "\\$2\\$3"
-.DEVTAG-NH \\n[hd*level]              \" HTML: mark beginning of heading
+.\" HTML: mark beginning of heading
+.misc@tag NH \\n[hd*level]
 .\"-------------------------------------- 
 .nr hd*mark-size \w@\\*[hd*mark]@
 .if (\\n[hd*level]<=\\n[Hc])&\\n[hd*htype] .ce\" center if level<=Hc
@@ -1091,7 +1101,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .nr hd*last-pos \\n[nl]
 .nr hd*last-hsize \\n[.k]
 .nr par@ind-flag 0
-.DEVTAG-EO-H  \" HTML: end of heading
+.\" HTML: end of heading
+.misc@tag EO-H
 ..
 .\"--------
 .de HM
