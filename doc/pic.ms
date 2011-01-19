@@ -1,4 +1,4 @@
-.\" Copyright (C) 2006-211
+.\" Copyright (C) 2006-2011
 .\"   Free Software Foundation, Inc.
 .\"      Written by Eric S. Raymond <esr@thyrsus.com>
 .\"
