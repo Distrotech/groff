@@ -1,4 +1,4 @@
-.\" Copyright (C) 2006, 2007, 2008, 2009
+.\" Copyright (C) 2006-211
 .\"   Free Software Foundation, Inc.
 .\"      Written by Eric S. Raymond <esr@thyrsus.com>
 .\"
@@ -188,7 +188,7 @@ This was produced from the following \fBpic\fP program:
 \&.PS
 ellipse "document";
 arrow;
-box width 0.6 "\efIpic\e/\efP(1)"
+box width 0.6 "\efIgpic\e/\efP(1)"
 arrow;
 box width 1.1 "\efIgtbl\e/\efP(1) or \efIgeqn\e/\efP(1)" "(optional)" dashed;
 arrow;
