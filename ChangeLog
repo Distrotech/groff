@@ -1,3 +1,12 @@
+2011-01-20  Colin Watson  <cjwatson@debian.org>
+
+	Fix handling of wide characters in no-SGR mode.
+
+	* src/devices/grotty/tty.cpp (tty_printer::make_underline): Only
+	emit a single backspace in no-SGR mode.  less (at least) backspaces
+	over a character at a time.
+	(tty_printer::make_bold): Likewise.
+
 2011-01-19  Werner LEMBERG  <wl@gnu.org>
 
 	* src/preproc/pic/pic.man: Add pic manual to `SEE ALSO' section.
@@ -22,7 +31,8 @@
 Version 1.21 released
 =====================
 
-	* NEWS, REVISION, VERSION, doc/groff.texinfo, doc/webpage.ms: Updated.
+	* NEWS, REVISION, VERSION, doc/groff.texinfo, doc/webpage.ms:
+	Updated.
 	* aclocal.m4, configure: Regenerated.
 
 2010-12-31  Werner LEMBERG  <wl@gnu.org>
@@ -791,3 +801,15 @@ Version 1.21 released
 	* src/devices/grops/ps.cpp (ps_printer::special): Check color state
 	before doing a PS special and flush buffer.
 	Update called functions.
+
+Copyright 2009-2011
+  Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Local Variables:
+version-control: never
+coding: latin-1
+End:

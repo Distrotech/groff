@@ -1,6 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2009,
-                 2010
+/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006,
+                 2009-2011
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -311,11 +311,8 @@ void tty_printer::make_underline(int w)
     if (!w)
       warning("can't underline zero-width character");
     else {
-      int n = w / font::hor;
-      for (int i = 0; i < n; i++)
-	putchar('_');
-      for (int j = 0; j < n; j++)
-	putchar('\b');
+      putchar('_');
+      putchar('\b');
     }
   }
   else {
@@ -337,10 +334,8 @@ void tty_printer::make_bold(output_character c, int w)
     if (!w)
       warning("can't print zero-width character in bold");
     else {
-      int n = w / font::hor;
       put_char(c);
-      for (int i = 0; i < n; i++)
-	putchar('\b');
+      putchar('\b');
     }
   }
   else {
