@@ -934,29 +934,31 @@ Similarly, we say @samp{gpic}, @samp{geqn}, etc.
 @pindex ggrn
 @pindex grap
 @pindex gtbl
+@pindex gchem
 @pindex grefer
 @pindex gsoelim
 @pindex preconv
-@code{groff} normally runs the @code{gtroff} program and a postprocessor
-appropriate for the selected device.  The default device is @samp{ps}
-(but it can be changed when @code{groff} is configured and built).  It
-can optionally preprocess with any of @code{gpic}, @code{geqn},
-@code{gtbl}, @code{ggrn}, @code{grap}, @code{grefer}, @code{gsoelim}, or
-@code{preconv}.
+@code{groff} normally runs the @code{gtroff} program and a
+postprocessor appropriate for the selected device.  The default device
+is @samp{ps} (but it can be changed when @code{groff} is configured and
+built).  It can optionally preprocess with any of @code{gpic},
+@code{geqn}, @code{gtbl}, @code{ggrn}, @code{grap}, @code{gchem},
+@code{grefer}, @code{gsoelim}, or @code{preconv}.
 
-This section only documents options to the @code{groff} front end.  Many
-of the arguments to @code{groff} are passed on to @code{gtroff},
+This section only documents options to the @code{groff} front end. 
+Many of the arguments to @code{groff} are passed on to @code{gtroff},
 therefore those are also included.  Arguments to pre- or postprocessors
 can be found in @ref{Invoking gpic}, @ref{Invoking geqn}, @ref{Invoking
 gtbl}, @ref{Invoking ggrn}, @ref{Invoking grefer}, @ref{Invoking
-gsoelim}, @ref{Invoking preconv}, @ref{Invoking grotty}, @ref{Invoking
-grops}, @ref{Invoking grohtml}, @ref{Invoking grodvi}, @ref{Invoking
-grolj4}, @ref{Invoking grolbp}, and @ref{Invoking gxditview}.
+gchem}, @ref{Invoking gsoelim}, @ref{Invoking preconv}, @ref{Invoking
+grotty}, @ref{Invoking grops}, @ref{Invoking grohtml}, @ref{Invoking
+grodvi}, @ref{Invoking grolj4}, @ref{Invoking grolbp}, and
+@ref{Invoking gxditview}.
 
 The command line format for @code{groff} is:
 
 @Example
-groff [ -abceghiklpstvzCEGNRSUVXZ ] [ -d@var{cs} ] [ -D@var{arg} ]
+groff [ -abceghijklpstvzCEGNRSUVXZ ] [ -d@var{cs} ] [ -D@var{arg} ]
       [ -f@var{fam} ] [ -F@var{dir} ] [ -I@var{dir} ] [ -K@var{arg} ]
       [ -L@var{arg} ] [ -m@var{name} ] [ -M@var{dir} ] [ -n@var{num} ]
       [ -o@var{list} ] [ -P@var{arg} ] [ -r@var{cn} ] [ -T@var{def} ]
@@ -1048,7 +1050,7 @@ using the @env{GROFF_FONT_PATH} environment variable.
 Preprocess with @code{ggrn}.
 
 @item -G
-Preprocess with @code{grap}.
+Preprocess with @code{grap}.  Implies @option{-p}.
 
 @item -h
 Print a help message.
@@ -1079,6 +1081,9 @@ The current directory is always searched first.  This option may be
 specified more than once; the directories are searched in the order
 specified.  No directory search is performed for files specified using
 an absolute path.
+
+@item -j
+Preprocess with @code{gchem}.  Implies @option{-p}.
 
 @item -k
 Preprocess with @code{preconv}.  This is run before any other
@@ -1329,10 +1334,10 @@ by @code{groff}.
 @cindex prefix, for commands
 If this is set to@tie{}@var{X}, then @code{groff} runs
 @code{@var{X}troff} instead of @code{gtroff}.  This also applies to
-@code{tbl}, @code{pic}, @code{eqn}, @code{grn}, @code{refer}, and
-@code{soelim}.  It does not apply to @code{grops}, @code{grodvi},
-@code{grotty}, @code{pre-grohtml}, @code{post-grohtml}, @code{preconv},
-@code{grolj4}, and @code{gxditview}.
+@code{tbl}, @code{pic}, @code{eqn}, @code{grn}, @code{chem},
+@code{refer}, and @code{soelim}.  It does not apply to @code{grops},
+@code{grodvi}, @code{grotty}, @code{pre-grohtml}, @code{post-grohtml},
+@code{preconv}, @code{grolj4}, and @code{gxditview}.
 
 The default command prefix is determined during the installation
 process.  If a non-GNU troff system is found, prefix @samp{g} is used,
@@ -14663,6 +14668,7 @@ which are freely available.
 * gpic::
 * ggrn::
 * grap::
+* gchem::
 * grefer::
 * gsoelim::
 * preconv::
@@ -14763,7 +14769,7 @@ which are freely available.
 
 @c =====================================================================
 
-@node grap, grefer, ggrn, Preprocessors
+@node grap, gchem, ggrn, Preprocessors
 @section @code{grap}
 @cindex @code{grap}, the program
 
@@ -14777,7 +14783,30 @@ is available as an extra package from the following address:
 
 @c =====================================================================
 
-@node grefer, gsoelim, grap, Preprocessors
+@node gchem, grefer, grap, Preprocessors
+@section @code{gchem}
+@cindex @code{chem}, the program
+@cindex @code{gchem}, the program
+
+@c XXX
+
+@menu
+* Invoking gchem::
+@end menu
+
+@c ---------------------------------------------------------------------
+
+@node Invoking gchem,  , gchem, gchem
+@subsection Invoking @code{gchem}
+@cindex invoking @code{gchem}
+@cindex @code{gchem}, invoking
+
+@c XXX
+
+
+@c =====================================================================
+
+@node grefer, gsoelim, gchem, Preprocessors
 @section @code{grefer}
 @cindex @code{refer}, the program
 @cindex @code{grefer}, the program
