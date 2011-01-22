@@ -6,7 +6,7 @@
 # Source file position: <groff-source>/src/roff/grog/grog.pl
 # Installed position: <prefix>/bin/grog
 
-# Copyright (C) 1993, 2006, 2009 Free Software Foundation, Inc.
+# Copyright (C) 1993, 2006, 2009, 2011 Free Software Foundation, Inc.
 # Written by James Clark, maintained by Werner Lemberg.
 # Rewritten and put under GPL by Bernd Warken.
 
@@ -26,7 +26,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################
-my $Last_Update = '5 Jan 2009';
+my $Last_Update = '22 Jan 2011';
 ########################################################################
 
 require v5.6;
@@ -128,7 +128,7 @@ sub process {
 
     if (/^(.cstart)|(begin\s+chem)$/) {
       $Groff{'chem'}++;
-      $Groff{'pic'}++;
+      $Groff{'soelim'}++ if $level;
     } elsif (/^\.TS$Sp/) {
       $_ = <FILE>;
       if (!/^\./) {
@@ -151,7 +151,6 @@ sub process {
       $_ = <FILE>;
       if (!/^\./) {
 	$Groff{'grap'}++;
-	$Groff{'pic'}++;
 	$Groff{'soelim'}++ if $level;
       }
 #    } elsif (/^\.PS\Sp([ 0-9.<].*)?$/) {
@@ -286,12 +285,13 @@ sub version {
   $Groff{'refer'} ||= $Groff{'refer_open'} && $Groff{'refer_close'};
 
   if ( $Groff{'pic'} || $Groff{'tbl'} || $Groff{'eqn'} ||
-       $Groff{'grn'} || $Groff{'grap'} || $Groff{'refer'} ) {
+       $Groff{'grn'} || $Groff{'grap'} || $Groff{'refer'} ||
+       $Groff{'chem'} ) {
     my $s = "-";
     $s .= "s" if $Groff{'soelim'};
     $s .= "R" if $Groff{'refer'};
-    # grap must be run before pic
     $s .= "G" if $Groff{'grap'};
+    $s .= "j" if $Groff{'chem'};
     $s .= "p" if $Groff{'pic'};
     $s .= "g" if $Groff{'grn'};
     $s .= "t" if $Groff{'tbl'};
@@ -331,13 +331,8 @@ sub version {
     push(@Command, $s);
   }
 
-  if ($Groff{'chem'}) {
-    my @chem = ('chem', @ARGV, '|', 'groff');
-    unshift(@Command, @chem);
-  } else {
-    unshift @Command, 'groff';
-    push(@Command, @ARGV);
-  }
+  unshift @Command, 'groff';
+  push(@Command, @ARGV);
 
   foreach (@Command) {
     next unless /\s/;

@@ -5,7 +5,7 @@
 # Source file position: <groff-source>/src/roff/grog/grog.sh
 # Installed position: <prefix>/bin/grog
 
-# Copyright (C) 1993, 2006, 2009 Free Software Foundation, Inc.
+# Copyright (C) 1993, 2006, 2009, 2011 Free Software Foundation, Inc.
 # Written by James Clark, maintained by Werner Lemberg.
 # Rewritten by and put under GPL Bernd Warken.
 
@@ -25,7 +25,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################
-Last_Update='5 Jan 2009'
+Last_Update='22 Jan 2011'
 ########################################################################
 
 soelim=@g@soelim
@@ -161,16 +161,16 @@ eval sed "'s/[ 	]*$//'" '--' "${filespec}" \
 | awk '
 /^\.SO_START$/ { so = 1 }
 /^\.SO_END$/ { so = 0 }
-/^\.cstart$/ { chem++ }
+/^\.cstart$/ { chem++; if (so > 0) soelim++ }
 /^\.TS/ { tbl++; in_tbl = 1; if (so > 0) soelim++; }
 /^\.TE/ { in_tbl = 0 }
 /^\.PS([ 0-9.<].*)?$/ { pic++; if (so > 0) soelim++ }
 /^\.EQ/ { eqn++; if (so > 0) soelim++ }
 /^\.R1/ { refer++; if (so > 0) soelim++ }
-/^\.\[/ {refer_start++; if (so > 0) soelim++ }
-/^\.\]/ {refer_end++; if (so > 0) soelim++ }
+/^\.\[/ { refer_start++; if (so > 0) soelim++ }
+/^\.\]/ { refer_end++; if (so > 0) soelim++ }
 /^\.GS/ { grn++; if (so > 0) soelim++ }
-/^\.G1/ { grap++; pic++; if (so > 0) soelim++ }
+/^\.G1/ { grap++; if (so > 0) soelim++ }
 /^\.TH/ { if (in_tbl != 1) TH++ }
 /^\.PP/ { PP++ }
 /^\.TL/ { TL++ }
@@ -202,18 +202,15 @@ eval sed "'s/[ 	]*$//'" '--' "${filespec}" \
 /^\.(PRINTSTYLE|START)/ { mom++ }
 
 END {
-  if (chem > 0) {
-    printf "chem %s | ", files
-    pic++    
-    files = ""
-  }
   printf "groff"
   refer = refer || (refer_start && refer_end)
-  if (pic > 0 || tbl > 0 || grn > 0 || grap > 0 || eqn > 0 || refer > 0) {
+  if (pic > 0 || tbl > 0 || grn > 0 || grap > 0 ||
+      eqn > 0 || refer > 0 || chem > 0) {
     printf " -"
     if (soelim > 0) printf "s"
     if (refer > 0) printf "R"
     if (grn > 0) printf "g"
+    if (chem > 0) printf "j"
     if (grap > 0) printf "G"
     if (pic > 0) printf "p"
     if (tbl > 0) printf "t"
