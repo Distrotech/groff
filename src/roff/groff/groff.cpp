@@ -50,6 +50,9 @@ extern "C" {
 #endif /* NEED_DECLARATION_PUTENV */
 
 // The number of commands must be in sync with MAX_COMMANDS in pipeline.h
+
+// grap and chem must come before pic;
+// tbl must come before eqn
 const int PRECONV_INDEX = 0;
 const int SOELIM_INDEX = PRECONV_INDEX + 1;
 const int REFER_INDEX = SOELIM_INDEX + 1;
@@ -122,6 +125,7 @@ int main(int argc, char **argv)
   int safer_flag = 1;
   int is_xhtml = 0;
   int eflag = 0;
+  int need_pic = 0;
   int opt;
   const char *command_prefix = getenv("GROFF_COMMAND_PREFIX");
   const char *encoding = getenv("GROFF_ENCODING");
@@ -172,7 +176,8 @@ int main(int argc, char **argv)
       break;
     case 'j':
       commands[CHEM_INDEX].set_name(command_prefix, "chem");
-      // fall through
+      need_pic = 1;
+      break;
     case 'p':
       commands[PIC_INDEX].set_name(command_prefix, "pic");
       break;
@@ -181,6 +186,7 @@ int main(int argc, char **argv)
       break;
     case 'G':
       commands[GRAP_INDEX].set_name(command_prefix, "grap");
+      need_pic = 1;
       break;
     case 'e':
       eflag = 1;
@@ -315,6 +321,8 @@ int main(int argc, char **argv)
       break;
     }
   }
+  if (need_pic)
+    commands[PIC_INDEX].set_name(command_prefix, "pic");
   if (encoding) {
     commands[PRECONV_INDEX].set_name("preconv");
     if (!Kflag && *encoding)
