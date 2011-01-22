@@ -1,6 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-                 2008, 2009, 2010
+/* Copyright (C) 1989-2011
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -55,7 +54,8 @@ const int PRECONV_INDEX = 0;
 const int SOELIM_INDEX = PRECONV_INDEX + 1;
 const int REFER_INDEX = SOELIM_INDEX + 1;
 const int GRAP_INDEX = REFER_INDEX + 1;
-const int PIC_INDEX = GRAP_INDEX + 1;
+const int CHEM_INDEX = GRAP_INDEX + 1;
+const int PIC_INDEX = CHEM_INDEX + 1;
 const int TBL_INDEX = PIC_INDEX + 1;
 const int GRN_INDEX = TBL_INDEX + 1;
 const int EQN_INDEX = GRN_INDEX + 1;
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
   };
   while ((opt = getopt_long(
 		  argc, argv,
-		  "abcCd:D:eEf:F:gGhiI:lkK:L:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ",
+		  "abcCd:D:eEf:F:gGhiI:jkK:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ",
 		  long_options, NULL))
 	 != EOF) {
     char buf[3];
@@ -170,6 +170,9 @@ int main(int argc, char **argv)
     case 't':
       commands[TBL_INDEX].set_name(command_prefix, "tbl");
       break;
+    case 'j':
+      commands[CHEM_INDEX].set_name(command_prefix, "chem");
+      // fall through
     case 'p':
       commands[PIC_INDEX].set_name(command_prefix, "pic");
       break;
@@ -206,7 +209,7 @@ int main(int argc, char **argv)
       vflag = 1;
       printf("GNU groff version %s\n", Version_string);
       printf(
-	"Copyright (C) 2009 Free Software Foundation, Inc.\n"
+	"Copyright (C) 2011 Free Software Foundation, Inc.\n"
 	"GNU groff comes with ABSOLUTELY NO WARRANTY.\n"
 	"You may redistribute copies of groff and its subprograms\n"
 	"under the terms of the GNU General Public License.\n"
@@ -259,7 +262,6 @@ int main(int argc, char **argv)
       if (strcmp(optarg, "html") == 0)
 	// force soelim to aid the html preprocessor
 	commands[SOELIM_INDEX].set_name(command_prefix, "soelim");
-      
       if (strcmp(optarg, "Xps") == 0) {
 	warning("-TXps option is obsolete: use -X -Tps instead");
 	device = "ps";
@@ -745,7 +747,7 @@ char **possible_command::get_argv()
 void synopsis(FILE *stream)
 {
   fprintf(stream,
-"usage: %s [-abceghiklpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
+"usage: %s [-abceghijklpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
 "       [-wname] [-Wname] [-Mdir] [-dcs] [-rcn] [-nnum] [-olist] [-Parg]\n"
 "       [-Darg] [-Karg] [-Larg] [-Idir] [files...]\n",
 	  program_name);
@@ -762,6 +764,7 @@ void help()
 "-e\tpreprocess with eqn\n"
 "-g\tpreprocess with grn\n"
 "-G\tpreprocess with grap\n"
+"-j\tpreprocess with chem\n"
 "-s\tpreprocess with soelim\n"
 "-R\tpreprocess with refer\n"
 "-Tdev\tuse device dev\n"
