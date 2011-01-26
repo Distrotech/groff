@@ -5,10 +5,10 @@
 # Source file position: <groff-source>/contrib/groffer/perl/groffer.pl
 # Installed position: <prefix>/bin/groffer
 
-# Copyright (C) 2006, 2009 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2009, 2011 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 5 Jan 2009
+# Last update: 26 Jan 2011
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -193,9 +193,9 @@ my %Viewer_X =('DVI' => ['kdvi', 'xdvi', 'dvilx'],
 	       'HTML' => ['konqueror', 'epiphany'. 'mozilla-firefox',
 			  'firefox', 'mozilla', 'netscape', 'galeon', 'opera',
 			  'amaya','arena', 'mosaic'],
-	       'PDF' => ['kpdf', 'acroread', 'evince', 'xpdf -z 150', 'gpdf',
+	       'PDF' => ['okular', 'kpdf', 'acroread', 'evince', 'xpdf -z 150', 'gpdf',
 			 'kghostview --scale 1.45', 'ggv'],
-	       'PS' => ['kpdf', 'kghostview --scale 1.45', 'evince', 'ggv',
+	       'PS' => ['okular', 'kpdf', 'kghostview --scale 1.45', 'evince', 'ggv',
 			'gv', 'ghostview', 'gs_x11', 'gs'],
 	       'TTY' => ['xless'],
 	       'X' => ['gxditview', 'xditview'],
@@ -1323,8 +1323,8 @@ sub _get_first_prog {
     if (%prog) {
       $Display{'PROG'} = $prog{'fullname'};
       $Display{'ARGS'} = $prog{'args'};
+      return 1;  # james bug fix
     }
-    return 1;
   }
   return 0;
 } # _get_first_prog() of main_set_mode()

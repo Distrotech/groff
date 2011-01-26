@@ -5,7 +5,7 @@
 # Source file position: <groff-source>/contrib/groffer/version.sh
 # Installed position: <prefix>/lib/groff/groffer/version.sh
 
-# Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2009
+# Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2009, 2011
 #   Free Software Foundation, Inc.
 # Written by Bernd Warken
 
@@ -29,10 +29,10 @@
 export _PROGRAM_VERSION;
 export _LAST_UPDATE;
 
-_PROGRAM_VERSION='1.1.1';
-_LAST_UPDATE='03 Jan 2009';
+_PROGRAM_VERSION='1.1.2';
+_LAST_UPDATE='26 Jan 2011';
 
 # this setting of the groff version is only used before make is run,
 # otherwise @VERSION@ will set it, see groffer.sh.
 export _GROFF_VERSION_PRESET;
-_GROFF_VERSION_PRESET='1.20preset';
+_GROFF_VERSION_PRESET='1.21';

@@ -5,10 +5,10 @@
 # Source file position: <groff-source>/contrib/groffer/perl/man.pl
 # Installed position: <prefix>/lib/groff/groffer/man.pl
 
-# Copyright (C) 2006, 2009 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2009, 2011 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 5 Jan 2009
+# Last update: 26 Jan 2011
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -522,7 +522,8 @@ sub manpath_set_from_path {
   my @path =
     qw( /usr/local /usr /usr/X11R6 /usr/openwin /opt /opt/gnome /opt/kde );
   # get a basic man path from $ENV{PATH}
-  foreach (@main::Path) {
+  my @path2 = @main::Path; # james bug fix
+  foreach (@path2) { # james bug fix
     s#bin/*$##;
     push @path, $_;
   }
