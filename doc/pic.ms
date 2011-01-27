@@ -1202,12 +1202,12 @@ Interpolation Between Positions
 A position may be interpolated between any two positions.  The syntax
 is `\fIfraction\fP \fBof the way between\fP \fIposition1\fP \fBand\fP
 \fIposition2\fP'.  For example, you can say \fB1/3 of the way between
-here and last ellipse .ne\fP.  The fraction may be in
+Here and last ellipse .ne\fP.  The fraction may be in
 numerator/denominator form or may be an ordinary number (values are
 \fInot\fP restricted to [0,1]).  As an alternative to this verbose
 syntax, you can say `\fIfraction\fP  \fB<\,\fP\fIposition1\fP \fB,\fP
 \fIposition2\/\fP\fB>\fP'; thus, the example could also be written as
-\fB1/3 <here, last ellipse>\fP.
+\fB1/3 <Here, last ellipse>\fP.
 .KS
 .PS
 arrow up right;
