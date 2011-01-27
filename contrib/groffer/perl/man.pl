@@ -8,7 +8,7 @@
 # Copyright (C) 2006, 2009, 2011 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 26 Jan 2011
+# Last update: 27 Jan 2011
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -522,8 +522,8 @@ sub manpath_set_from_path {
   my @path =
     qw( /usr/local /usr /usr/X11R6 /usr/openwin /opt /opt/gnome /opt/kde );
   # get a basic man path from $ENV{PATH}
-  my @path2 = @main::Path; # james bug fix
-  foreach (@path2) { # james bug fix
+  my @path2 = @main::Path;
+  foreach (@path2) {
     s#bin/*$##;
     push @path, $_;
   }

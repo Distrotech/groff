@@ -8,7 +8,7 @@
 # Copyright (C) 2006, 2009, 2011 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 26 Jan 2011
+# Last update: 27 Jan 2011
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -1323,7 +1323,7 @@ sub _get_first_prog {
     if (%prog) {
       $Display{'PROG'} = $prog{'fullname'};
       $Display{'ARGS'} = $prog{'args'};
-      return 1;  # james bug fix
+      return 1;
     }
   }
   return 0;
