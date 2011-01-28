@@ -7,8 +7,7 @@
 .@revision $Revision$
 .ig
 
-Copyright (C) 1991-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2009,
-              2010, 2011
+Copyright (C) 1991-2006, 2009-2011
   Free Software Foundation, Inc.
 mgm is written by Jörgen Hägg <jh@axis.com>
 
@@ -140,6 +139,8 @@ Index		array!index
 .nr Pt 0
 .\"	Reference title
 .ds Rp REFERENCES
+.\"	Reference page eject status
+.nr Rpe 0
 .\"	Display indent
 .nr Si 5
 .\"
@@ -2806,7 +2807,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .if !''\\$1' .ds \\$1 \v'-.4m'\s-3[\\n[ref*nr]]\s0\v'.4m'
 .nr ref*flag 1
 .am ref*mac
-.ref@start-print \\n[ref*nr]
+.ref@start-print \\n[ref*nr].
 \\..
 .eo
 .am ref*mac RF
@@ -2822,8 +2823,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .de ref@start-print
 .di ref*div
 .in \\n[ref*nr-width]u
-.ti -(\w@\\$1.@u+1n)
-\\$1.
+.ti -(\w@\\$1@u+1n)
+\\$1
 .sp -1
 ..
 .de ref@stop-print
@@ -2840,7 +2841,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"-----------
 .de RP
 .if !d ref*mac .@error "RP: No references!"
-.nr ref*i 0\\$2
+.ie !''\\$2' .nr ref*i 0\\$2
+.el .nr ref*i \\n[Rpe]
 .if \\n[ref*i]<2 .SK
 .SP 2
 .ref@print-refs
