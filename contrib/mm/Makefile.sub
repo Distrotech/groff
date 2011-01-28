@@ -1,4 +1,4 @@
-# Copyright 1991, 1992, 1993, 1999, 2000, 2001, 2006, 2007, 2009
+# Copyright 1991-1993, 1999-2001, 2006, 2007, 2009, 2011
 # 
 # This file is part of groff.
 # 
@@ -44,6 +44,7 @@ install_data: install_m
 		test -f $(DESTDIR)$(tmacdir)/mm/$$f \
 		  || touch $(DESTDIR)$(tmacdir)/mm/$$f; \
 	done
+	$(INSTALL_DATA) $(srcdir)/refer-mm.tmac $(DESTDIR)$(tmacdir)/refer-mm.tmac
 
 install_m:
 	-test -d $(DESTDIR)$(tmacdir) \
@@ -82,5 +83,6 @@ uninstall_sub:
 	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mm.tmac
 	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mse.tmac
 	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mmse.tmac
+	-rm -f $(DESTDIR)$(tmacdir)/refer-mm.tmac
 	-rmdir $(DESTDIR)$(tmacdir)/mm
 	-rm -f $(DESTDIR)$(bindir)/mmroff
