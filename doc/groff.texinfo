@@ -12676,6 +12676,33 @@ line three
 Note that this specific feature affects only the first potential page
 break caused by the end macro; further page breaks emitted by the end
 macro are handled normally.
+
+Another possible use of the @code{em} request is to make @code{gtroff}
+emit a single large page instead of multiple pages.  For example, one
+may want to produce a long plain-text file for reading on-screen.  The
+idea is to set the page length at the beginning of the document to a
+very large value to hold all the text, and automatically adjust it to
+the exact height of the document after the text has been output.
+
+@Example
+.de adjust-page-length
+.  br
+.  pl \\n[nl]u   \" \n[nl] holds the current page length
+..
+.
+.de single-page-mode
+.  pl 99999
+.  em adjust-page-length
+..
+.
+.\" activate the above code
+.single-page-mode
+@endExample
+
+Since only one end-of-input trap does exist and other macro packages
+may already use it, care must be taken not to break the mechanism.  A
+simple solution would be to append the above macro to the macro
+package's end-of-input macro using the @code{.am} request.
 @endDefreq
 
 
