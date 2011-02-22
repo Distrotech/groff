@@ -2,7 +2,7 @@
 .ig
 Mom -- a typesetting/document-processing macro set for groff.
 
-Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
+Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
   Free Software Foundation, Inc.
      Written by Peter Schaffter (peter@schaffter.ca)
 
@@ -21,8 +21,8 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-Version 1.6
------------
+Version 1.6-a
+-------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
 nothing left to take away.
@@ -41,6 +41,8 @@ may find other conventions preferable (e.g. NO, X, END, QUIT, etc.).
 
 "<anything>" in the description of arguments that can be passed
 to a macro means that any argument turns the feature off.
+
+Thanks to everyone who has contributed suggestions and patches.
 ..
 .\" %beginstrip%
 \#
@@ -5107,6 +5109,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'PARAHEAD_FAMILY'                .ds $PH_FAM \\$1
 .    if '\\$0'QUOTE_FAMILY'                   .ds $QUOTE_FAM \\$1
 .    if '\\$0'SUBHEAD_FAMILY'                 .ds $SH_FAM \\$1
+.    if '\\$0'SUBSUBHEAD_FAMILY'              .ds $SSH_FAM \\$1
 .    if '\\$0'SUBTITLE_FAMILY'                .ds $SUBTITLE_FAM \\$1
 .    if '\\$0'TITLE_FAMILY'                   .ds $TITLE_FAM \\$1
 .    if '\\$0'TOC_FAMILY'                     .ds $TOC_FAM \\$1
@@ -5116,6 +5119,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'TOC_PARAHEAD_FAMILY'            .ds $TOC_PH_FAM \\$1
 .    if '\\$0'TOC_PN_FAMILY'                  .ds $TOC_PN_FAM \\$1
 .    if '\\$0'TOC_SUBHEAD_FAMILY'             .ds $TOC_SH_FAM \\$1
+.    if '\\$0'TOC_SUBSUBHEAD_FAMILY'          .ds $TOC_SSH_FAM \\$1
 .    if '\\$0'TOC_TITLE_FAMILY'               .ds $TOC_TITLE_FAM \\$1
 .END
 \#
@@ -5159,6 +5163,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'PARAHEAD_FONT'                .ds $PH_FT \\$1
 .    if '\\$0'QUOTE_FONT'                   .ds $QUOTE_FT \\$1
 .    if '\\$0'SUBHEAD_FONT'                 .ds $SH_FT \\$1
+.    if '\\$0'SUBSUBHEAD_FONT'              .ds $SSH_FT \\$1
 .    if '\\$0'SUBTITLE_FONT'                .ds $SUBTITLE_FT \\$1
 .    if '\\$0'TITLE_FONT'                   .ds $TITLE_FT \\$1
 .    if '\\$0'TOC_HEADER_FONT'              .ds $TOC_HEADER_FT \\$1
@@ -5166,6 +5171,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'TOC_PARAHEAD_FONT'            .ds $TOC_PH_FT \\$1
 .    if '\\$0'TOC_PN_FONT'                  .ds $TOC_PN_FT \\$1
 .    if '\\$0'TOC_SUBHEAD_FONT'             .ds $TOC_SH_FT \\$1
+.    if '\\$0'TOC_SUBSUBHEAD_FONT'          .ds $TOC_SSH_FT \\$1
 .    if '\\$0'TOC_TITLE_FONT'               .ds $TOC_TITLE_FT \\$1
 .END
 \#
@@ -5208,6 +5214,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'PARAHEAD_SIZE'                .ds $PH_SIZE_CHANGE \\$1
 .    if '\\$0'QUOTE_SIZE'                   .ds $QUOTE_SIZE_CHANGE \\$1
 .    if '\\$0'SUBHEAD_SIZE'                 .ds $SH_SIZE_CHANGE \\$1
+.    if '\\$0'SUBSUBHEAD_SIZE'              .ds $SSH_SIZE_CHANGE \\$1
 .    if '\\$0'SUBTITLE_SIZE'                .ds $SUBTITLE_SIZE_CHANGE \\$1
 .    if '\\$0'TITLE_SIZE'                   .ds $TITLE_SIZE_CHANGE \\$1
 .    if '\\$0'TOC_HEADER_SIZE'              .ds $TOC_HEADER_SIZE_CHANGE \\$1
@@ -5215,6 +5222,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'TOC_PARAHEAD_SIZE'            .ds $TOC_PH_SIZE_CHANGE \\$1
 .    if '\\$0'TOC_PN_SIZE'                  .ds $TOC_PN_SIZE_CHANGE \\$1
 .    if '\\$0'TOC_SUBHEAD_SIZE'             .ds $TOC_SH_SIZE_CHANGE \\$1
+.    if '\\$0'TOC_SUBSUBHEAD_SIZE'          .ds $TOC_SSH_SIZE_CHANGE \\$1
 .    if '\\$0'TOC_TITLE_SIZE'               .ds $TOC_TITLE_SIZE_CHANGE \\$1
 .END
 \#
@@ -5329,6 +5337,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #DOCTYPE_COLOR 1
 .       ds $DOCTYPE_COLOR \\$1
 .    \}
+.    if '\\$0'ENDNOTE_STRING_COLOR' \{\
+.       nr #ENDNOTE_STRING_COLOR 1
+.       ds $ENDNOTE_STRING_COLOR \\$1
+.    \}
 .    if '\\$0'EPIGRAPH_COLOR' \{\
 .       nr #EPI_COLOR 1
 .       ds $EPI_COLOR \\$1
@@ -5393,6 +5405,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #SH_COLOR 1
 .       ds $SH_COLOR \\$1
 .    \}
+.    if '\\$0'SUBSUBHEAD_COLOR' \{\
+.       nr #SSH_COLOR 1
+.       ds $SSH_COLOR \\$1
+.    \}
 .    if '\\$0'SUBTITLE_COLOR' \{\
 .       nr #SUBTITLE_COLOR 1
 .       ds $SUBTITLE_COLOR \\$1
@@ -5434,6 +5450,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'ENDNOTE_TITLE_QUAD'       .ds $EN_TITLE_QUAD \\$1
 .    if '\\$0'EPIGRAPH_QUAD'            .ds $EPI_QUAD \\$1
 .    if '\\$0'FOOTNOTE_QUAD'            .ds $FN_QUAD \\$1
+.    if '\\$0'SUBSUBHEAD_QUAD'          .ds $SSH_QUAD \\$1
 .    if '\\$0'HEAD_QUAD'                .ds $HEAD_QUAD \\$1
 .    if '\\$0'SUBHEAD_QUAD'             .ds $SH_QUAD \\$1
 .    if '\\$0'TOC_HEADER_QUAD'          .ds $TOC_HEADER_QUAD \\$1
@@ -5538,6 +5555,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #DONE_ONCE 0 1
 .    RESET_HEAD_NUMBER
 .    RESET_SUBHEAD_NUMBER
+.    RESET_SUBSUBHEAD_NUMBER
 .    RESET_PARAHEAD_NUMBER
 .\" General style defaults for both PRINTSTYLEs
 .    nr #PP_STYLE 1
@@ -5557,6 +5575,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !r#HEAD_CAPS         \{ .HEAD_CAPS         \}
 .    if !r#HEAD_UNDERLINE    \{ .HEAD_UNDERLINE    \}
 .    if !d$SH_QUAD           \{ .SUBHEAD_QUAD LEFT \}
+.    if !d$SSH_QUAD          \{ .SUBSUBHEAD_QUAD LEFT \}
 .    if !r#HDRFTR_RIGHT_CAPS \{ .HDRFTR_RIGHT_CAPS \}
 .    if \\n[#HDRFTR_RIGHT_CAPS]=0 \{\
 .       if !d$HDRFTR_RIGHT_SIZE_CHANGE \{ .HDRFTR_RIGHT_SIZE +0 \}
@@ -5669,6 +5688,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .\" +Footnotes
 .       if !d$FN_SIZE_CHANGE        \{ .FOOTNOTE_SIZE     +0     \}
 .       if !r#FN_RULE_LENGTH        \{ .FOOTNOTE_RULE_LENGTH 2i  \}
+.\" +Subheads
+.       if !r#SH_BASELINE_ADJ  \{ .SUBHEAD_BASELINE_ADJUST \\n[#LEAD]u/5    \}
+.\" +Subsubheads
+.       if !r#SSH_BASELINE_ADJ \{ .SUBSUBHEAD_BASELINE_ADJUST \\n[#LEAD]u/5 \}
 .\" +Paragraph heads
 .       if !r#PH_INDENT    \{ .PARAHEAD_INDENT \\n[#PP_INDENT]u/2u \}
 .\" +Endnotes
@@ -5838,26 +5861,32 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#HDRFTR_RIGHT_CAPS] \{\
 .          if !d$HDRFTR_RIGHT_SIZE_CHANGE \{ .HDRFTR_RIGHT_SIZE -2 \}
 .       \}
-.       if !d$HDRFTR_RIGHT_SIZE_CHANGE  \{ .HDRFTR_RIGHT_SIZE  -.5              \}
+.       if !d$HDRFTR_RIGHT_SIZE_CHANGE  \{ .HDRFTR_RIGHT_SIZE  -.5                \}
 .\" +Heads
-.       if !d$HEAD_FAM                  \{ .HEAD_FAMILY        \\*[$DOC_FAM]    \}
-.       if !d$HEAD_FT                   \{ .HEAD_FONT          B                \}
-.       if !d$HEAD_SIZE_CHANGE          \{ .HEAD_SIZE          +1               \}
-.       if !r#HEAD_SPACE                \{ .HEAD_SPACE                          \}
+.       if !d$HEAD_FAM                  \{ .HEAD_FAMILY        \\*[$DOC_FAM]      \}
+.       if !d$HEAD_FT                   \{ .HEAD_FONT          B                  \}
+.       if !d$HEAD_SIZE_CHANGE          \{ .HEAD_SIZE          +1                 \}
+.       if !r#HEAD_SPACE                \{ .HEAD_SPACE                            \}
 .\" +Subheads
-.       if !d$SH_FAM                    \{ .SUBHEAD_FAMILY     \\*[$DOC_FAM]    \}
-.       if !d$SH_FT                     \{ .SUBHEAD_FONT       B                \}
-.       if !d$SH_SIZE_CHANGE            \{ .SUBHEAD_SIZE       +.5              \}
+.       if !d$SH_FAM                    \{ .SUBHEAD_FAMILY     \\*[$DOC_FAM]      \}
+.       if !d$SH_FT                     \{ .SUBHEAD_FONT       B                  \}
+.       if !d$SH_SIZE_CHANGE            \{ .SUBHEAD_SIZE       +.5                \}
+.       if !r#SH_BASELINE_ADJ           \{ .SUBHEAD_BASELINE_ADJUST \\n[#LEAD]u/8 \}
+.\" +SubSubheads
+.       if !d$SSH_FAM                   \{ .SUBSUBHEAD_FAMILY  \\*[$DOC_FAM]         \}
+.       if !d$SSH_FT                    \{ .SUBSUBHEAD_FONT    I                     \}
+.       if !d$SSH_SIZE_CHANGE           \{ .SUBSUBHEAD_SIZE    +.5                   \}
+.       if !r#SSH_BASELINE_ADJ          \{ .SUBSUBHEAD_BASELINE_ADJUST \\n[#LEAD]u/8 \}
 .\" +Paragraph heads
-.       if !d$PH_FAM                    \{ .PARAHEAD_FAMILY    \\*[$DOC_FAM]    \}
-.       if !d$PH_FT                     \{ .PARAHEAD_FONT      BI               \}
-.       if !d$PH_SIZE_CHANGE            \{ .PARAHEAD_SIZE      -.25             \}
-.       if !r#PH_INDENT                 \{ .PARAHEAD_INDENT \\n[#PP_INDENT]u/2u \}
-.       if !d$PH_SPACE                  \{ .PARAHEAD_SPACE .6m                  \}
+.       if !d$PH_FAM                    \{ .PARAHEAD_FAMILY    \\*[$DOC_FAM]      \}
+.       if !d$PH_FT                     \{ .PARAHEAD_FONT      BI                 \}
+.       if !d$PH_SIZE_CHANGE            \{ .PARAHEAD_SIZE      -.25               \}
+.       if !r#PH_INDENT                 \{ .PARAHEAD_INDENT \\n[#PP_INDENT]u/2u   \}
+.       if !d$PH_SPACE                  \{ .PARAHEAD_SPACE .6m                    \}
 .\" +Quotes
-.       if !d$QUOTE_FAM                 \{ .QUOTE_FAMILY       \\*[$DOC_FAM]    \}
-.       if !d$QUOTE_FT                  \{ .QUOTE_FONT         I                \}
-.       if !d$QUOTE_SIZE_CHANGE         \{ .QUOTE_SIZE         +0               \}
+.       if !d$QUOTE_FAM                 \{ .QUOTE_FAMILY       \\*[$DOC_FAM]      \}
+.       if !d$QUOTE_FT                  \{ .QUOTE_FONT         I                  \}
+.       if !d$QUOTE_SIZE_CHANGE         \{ .QUOTE_SIZE         +0                 \}
 .       if !r#Q_OFFSET_VALUE \{\
 .          if '\\*[$Q_OFFSET_VALUE]''   \{ .QUOTE_INDENT 3 \}
 .       \}
@@ -5902,35 +5931,41 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !d$BIB_STRING_FT             \{ .BIBLIOGRAPHY_STRING_FONT B                \}
 .       if !d$BIB_STRING_SIZE_CHANGE    \{ .BIBLIOGRAPHY_STRING_SIZE +1               \}
 .\" +Table of contents
-.       if !d$TOC_FAM                   \{ .TOC_FAMILY  \\*[$DOC_FAM]           \}
-.       if !r#TOC_PS                    \{ .TOC_PT_SIZE (\\n[#DOC_PT_SIZE]u)    \}
-.       if !d$TOC_LEAD                  \{ .TOC_LEAD \\n[#DOC_LEAD]u ADJUST     \}
-.       if !d$TOC_HEADER_FAM            \{ .TOC_HEADER_FAMILY \\*[$TOC_FAM]     \}
-.       if !d$TOC_HEADER_SIZE_CHANGE    \{ .TOC_HEADER_SIZE +4                  \}
-.       if !d$TOC_HEADER_FT             \{ .TOC_HEADER_FONT  B                  \}
-.       if !d$TOC_TITLE_FAM             \{ .TOC_TITLE_FAMILY \\*[$TOC_FAM]      \}
-.       if !d$TOC_PN_FAM                \{ .TOC_PN_FAMILY    \\*[$TOC_FAM]      \}
-.       if !d$TOC_HEAD_FAM              \{ .TOC_HEAD_FAMILY  \\*[$TOC_FAM]      \}
-.       if !d$TOC_SH_FAM                \{ .TOC_SUBHEAD_FAMILY  \\*[$TOC_FAM]   \}
-.       if !d$TOC_PH_FAM                \{ .TOC_PARAHEAD_FAMILY \\*[$TOC_FAM]   \}
-.       if !d$TOC_TITLE_FT              \{ .TOC_TITLE_FONT    BI                \}
-.       if !d$TOC_PN_FT                 \{ .TOC_PN_FONT       R                 \}
-.       if !d$TOC_HEAD_FT               \{ .TOC_HEAD_FONT     B                 \}
-.       if !d$TOC_SH_FT                 \{ .TOC_SUBHEAD_FONT  R                 \}
-.       if !d$TOC_PH_FT                 \{ .TOC_PARAHEAD_FONT I                 \}
-.       if !d$TOC_TITLE_SIZE_CHANGE     \{ .TOC_TITLE_SIZE    +.5               \}
-.       if !d$TOC_PN_SIZE_CHANGE        \{ .TOC_PN_SIZE       +0                \}
-.       if !d$TOC_HEAD_SIZE_CHANGE      \{ .TOC_HEAD_SIZE     +.5               \}
-.       if !d$TOC_SH_SIZE_CHANGE        \{ .TOC_SUBHEAD_SIZE  +0                \}
-.       if !d$TOC_PH_SIZE_CHANGE        \{ .TOC_PARAHEAD_SIZE +0                \}
+.       if !d$TOC_FAM                   \{ .TOC_FAMILY  \\*[$DOC_FAM]            \}
+.       if !r#TOC_PS                    \{ .TOC_PT_SIZE (\\n[#DOC_PT_SIZE]u)     \}
+.       if !d$TOC_LEAD                  \{ .TOC_LEAD \\n[#DOC_LEAD]u ADJUST      \}
+.       if !d$TOC_HEADER_FAM            \{ .TOC_HEADER_FAMILY \\*[$TOC_FAM]      \}
+.       if !d$TOC_HEADER_SIZE_CHANGE    \{ .TOC_HEADER_SIZE +4                   \}
+.       if !d$TOC_HEADER_FT             \{ .TOC_HEADER_FONT  B                   \}
+.       if !d$TOC_TITLE_FAM             \{ .TOC_TITLE_FAMILY \\*[$TOC_FAM]       \}
+.       if !d$TOC_PN_FAM                \{ .TOC_PN_FAMILY    \\*[$TOC_FAM]       \}
+.       if !d$TOC_HEAD_FAM              \{ .TOC_HEAD_FAMILY  \\*[$TOC_FAM]       \}
+.       if !d$TOC_SH_FAM                \{ .TOC_SUBHEAD_FAMILY  \\*[$TOC_FAM]    \}
+.       if !d$TOC_SSH_FAM               \{ .TOC_SUBSUBHEAD_FAMILY  \\*[$TOC_FAM] \}
+.       if !d$TOC_PH_FAM                \{ .TOC_PARAHEAD_FAMILY \\*[$TOC_FAM]    \}
+.       if !d$TOC_TITLE_FT              \{ .TOC_TITLE_FONT    BI                 \}
+.       if !d$TOC_PN_FT                 \{ .TOC_PN_FONT       R                  \}
+.       if !d$TOC_HEAD_FT               \{ .TOC_HEAD_FONT     B                  \}
+.       if !d$TOC_SH_FT                 \{ .TOC_SUBHEAD_FONT  R                  \}
+.       if !d$TOC_SSH_FT                \{ .TOC_SUBSUBHEAD_FONT  I               \}
+.       if !d$TOC_PH_FT                 \{ .TOC_PARAHEAD_FONT BI                 \}
+.       if !d$TOC_TITLE_SIZE_CHANGE     \{ .TOC_TITLE_SIZE    +1.5               \}
+.       if !d$TOC_PN_SIZE_CHANGE        \{ .TOC_PN_SIZE       +0                 \}
+.       if !d$TOC_HEAD_SIZE_CHANGE      \{ .TOC_HEAD_SIZE     +.5                \}
+.       if !d$TOC_SH_SIZE_CHANGE        \{ .TOC_SUBHEAD_SIZE  +0                 \}
+.       if !d$TOC_SSH_SIZE_CHANGE       \{ .TOC_SUBSUBHEAD_SIZE  +0              \}
+.       if !d$TOC_PH_SIZE_CHANGE        \{ .TOC_PARAHEAD_SIZE +0                 \}
 .       ps \\n[#TOC_PS]u\\*[$TOC_TITLE_SIZE_CHANGE]
-.       if !r#TOC_HEAD_INDENT           \{ .TOC_HEAD_INDENT \w'\0\0.'           \}
+.       if !r#TOC_HEAD_INDENT           \{ .TOC_HEAD_INDENT \w'\0\0.'            \}
 .       ps
 .       ps \\n[#TOC_PS]u\\*[$TOC_HEAD_SIZE_CHANGE]
-.       if !r#TOC_SH_INDENT             \{ .TOC_SUBHEAD_INDENT \\n[#TOC_HEAD_INDENT]+\w'\0\0.'       \}
+.       if !r#TOC_SH_INDENT             \{ .TOC_SUBHEAD_INDENT \\n[#TOC_HEAD_INDENT]+\w'\0\0.'  \}
 .       ps
 .       ps \\n[#TOC_PS]u\\*[$TOC_SH_SIZE_CHANGE]
-.       if !r#TOC_PH_INDENT             \{ .TOC_PARAHEAD_INDENT \\n[#TOC_SH_INDENT]+\w'\0\0.'       \}
+.       if !r#TOC_SSH_INDENT            \{ .TOC_SUBSUBHEAD_INDENT \\n[#TOC_SH_INDENT]+\w'\0\0.' \}
+.       ps
+.       ps \\n[#TOC_PS]u\\*[$TOC_SSH_SIZE_CHANGE]
+.       if !r#TOC_PH_INDENT             \{ .TOC_PARAHEAD_INDENT \\n[#TOC_SSH_INDENT]+\w'\0\0.'  \}
 .       ps
 .    \}
 .\" +Refer support
@@ -7995,6 +8030,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    PARAHEAD_FAMILY   \\*[$DOC_FAM]
 .    QUOTE_FAMILY      \\*[$DOC_FAM]
 .    SUBHEAD_FAMILY    \\*[$DOC_FAM]
+.    SUBSUBHEAD_FAMILY \\*[$DOC_FAM]
 .    SUBTITLE_FAMILY   \\*[$DOC_FAM]
 .    TITLE_FAMILY      \\*[$DOC_FAM]
 .END
@@ -10201,11 +10237,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ie '\\$1'' \{\
 .       nr #HEAD_NUM 0 1
 .       nr #SH_NUM   0 1
+.       nr #SSH_NUM  0 1
 .       nr #PH_NUM   0 1
 .    \}
 .    el \{\
 .       nr #HEAD_NUM \\$1-1 1
 .       nr #SH_NUM   0 1
+.       nr #SSH_NUM  0 1
 .       nr #PH_NUM   0 1
 .    \}
 .END
@@ -10237,18 +10275,59 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Resets incrementing register #SH_NUM to 1 or, if there's
 \#   an argument, to user supplied number.
 \# *Notes:
-\#   When the subhead number is reset, it resets the parahead number as
-\#   well.  If this behaviour is not what's wanted, RESET_SUBHEAD_NUMBER
-\#   allows the user to set the parahead number to whatever s/he desires.
+\#   When the subhead number is reset, it resets the subsubhead and
+\#   parahead numbers as well.  If this behaviour is not what's
+\#   wanted, RESET_SUBSUBHEAD_NUMBER and RESET_PARAHEAD_NUMBER
+\#   allow the user to set the subsubhead and parahead number(s) to
+\#   whatever s/he desires.
 \#
 .MAC RESET_SUBHEAD_NUMBER END
 .    ie '\\$1'' \{ .nr #SH_NUM 0 1 \}
 .    el \{\
-.       nr #SH_NUM \\$1-1 1
-.       nr #PH_NUM 0 1
+.       nr #SH_NUM  \\$1-1 1
+.       nr #SSH_NUM 0 1
+.       nr #PH_NUM  0 1
 .       \}
 .END
 \#
+\#
+\# NUMBER SUBSUBHEADS
+\# ---------------
+\# *Arguments:
+\#   <none> | <anything>
+\# *Function:
+\#   Toggles register #NUMBER_SSH; sets incrementing register #SSH_NUM.
+\# *Notes:
+\#   Default is OFF.
+\#
+.MAC NUMBER_SUBSUBHEADS END
+.    ie '\\$1'' \{\
+.       nr #NUMBER_SSH 1
+.       if !\\n[#SSH_NUM] \{ .nr #SSH_NUM 0 1 \}
+.    \}
+.    el \{ .rr #NUMBER_SSH \}
+.END
+\#
+\#
+\# RESET SUBSUBHEAD NUMBER
+\# --------------------
+\# *Arguments:
+\#   <none> | <desired subsubhead number>
+\# *Function:
+\#   Resets incrementing register #SSH_NUM to 1 or, if there's
+\#   an argument, to user supplied number.
+\# *Notes:
+\#   When the subsubhead number is reset, it resets the parahead number as
+\#   well.  If this behaviour is not what's wanted, RESET_PARAHEAD_NUMBER
+\#   allows the user to set the parahead number to whatever s/he desires.
+\#
+.MAC RESET_SUBSUBHEAD_NUMBER END
+.    ie '\\$1'' \{ .nr #SSH_NUM 0 1 \}
+.    el \{\
+.       nr #SSH_NUM \\$1-1 1
+.       nr #PH_NUM 0 1
+.    \}
+.END
 \#
 \# NUMBER PARAHEADS
 \# ----------------
@@ -10436,7 +10515,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \!.  TRAP OFF
 \!.  PAD_MARKER ^
 .    ie \\n[#PRINT_STYLE]=1 \{\
-\!.     PAD "\\h'2m'\\*[$TOC_HEAD_ITEM]\\*[$TOC_PN_TYPEWRITE]"
+\!.     PAD "\\h'\w'\0\0.'u'\\*[$TOC_HEAD_ITEM]\\*[$TOC_PN_TYPEWRITE]"
 .    \}
 .    el \{\
 \!.     PAD "\\h'\\n[#TOC_HEAD_INDENT]u'\\*[$TOC_HEAD_ITEM]\\*[$TOC_PN]"
@@ -10584,8 +10663,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    CAPS OFF
 .    ev
 .    ALD \\n[#DOC_LEAD]u
-.    if \\n[#NUMBER_HEAD] \{ .RESET_SUBHEAD_NUMBER  \}
-.    if \\n[#NUMBER_SH]   \{ .RESET_PARAHEAD_NUMBER \}
+.    if \\n[#NUMBER_HEAD] \{ .RESET_SUBHEAD_NUMBER    \}
+.    if \\n[#NUMBER_SH]   \{ .RESET_SUBSUBHEAD_NUMBER \}
+.    if \\n[#NUMBER_SSH]  \{ .RESET_PARAHEAD_NUMBER   \}
 .    if r#START      \{ .rr #START     \}
 .    if r#EPIGRAPH   \{ .rr #EPIGRAPH  \}
 .    if r#QUOTE      \{ .rr #QUOTE     \}
@@ -10602,6 +10682,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 \# ---Subheads---
+\#
+\# SUBHEAD BASELINE ADJUSTMENT
+\# ---------------------------
+\# *Arguments:
+\#   <amount to raise subhead>
+\# *Function:
+\#   Creates or modifies register #SH_BASELINE_ADJ
+\#
+.MAC SUBHEAD_BASELINE_ADJUST END
+.    nr #SH_BASELINE_ADJ \\$1
+.END
 \#
 \# SUBHEAD
 \# -------
@@ -10663,7 +10754,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \!.  TRAP OFF
 \!.  PAD_MARKER ^
 .    ie \\n[#PRINT_STYLE]=1 \{\
-\!.     PAD "\\h'4m'\\*[$TOC_SH_ITEM]\\*[$TOC_PN_TYPEWRITE]"
+\!.     PAD "\\h'\w'\0\0.'u*2u'\\*[$TOC_SH_ITEM]\\*[$TOC_PN_TYPEWRITE]"
 .    \}
 .    el \{\
 \!.     PAD "\\h'\\n[#TOC_SH_INDENT]u'\\*[$TOC_SH_ITEM]\\*[$TOC_PN]"
@@ -10710,8 +10801,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       LS      \\n[#DOC_LEAD]u
 .       QUAD    \\*[$SH_QUAD]
 .    \}
-.    if \\n[#PRINT_STYLE]=1 \{ .nr #SH_LEAD_ADJUST \\n[#LEAD]/5 \}
-.    if \\n[#PRINT_STYLE]=2 \{ .nr #SH_LEAD_ADJUST \\n[#LEAD]/8 \}
 .    ie \\n[#START] \{ .RLD 1v \}
 .    el \{\
 .       ie \\n[#HEAD]=1 \{ . \}
@@ -10743,24 +10832,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                \}
 .                ie \\n[#NUMBER_HEAD] \{\
 .                   br
-.                   UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]"
+.                   UNDERSCORE "\v'-\\n[#SH_BASELINE_ADJ]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]"
 .                   br
 .                \}
 .                el \{\
 .                   br
-.                   UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]"
+.                   UNDERSCORE "\v'-\\n[#SH_BASELINE_ADJ]u'\\*[$CH_NUM]\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]"
 .                   br
 .                \}
 .             \}
 .             el \{\
 .                br
-.                UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]"
+.                UNDERSCORE "\v'-\\n[#SH_BASELINE_ADJ]u'\\$[\\n+[#ARG_NUM]]"
 .                br
 .             \}
 .          \}
 .          el \{\
 .             br
-.             UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]"
+.             UNDERSCORE "\v'-\\n[#SH_BASELINE_ADJ]u'\\$[\\n+[#ARG_NUM]]"
 .             br
 .          \}
 .\}
@@ -10782,24 +10871,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                   \}
 .                   ie \\n[#NUMBER_HEAD] \{\
 .                      br
-.                      PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
+.                      PRINT "\v'-\\n[#SH_BASELINE_ADJ]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
 .                      br
 .                   \}
 .                   el \{\
 .                      br
-.                      PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
+.                      PRINT "\v'-\\n[#SH_BASELINE_ADJ]u'\\*[$CH_NUM]\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
 .                      br
 .                   \}
 .                \}
 .                el \{\
 .                   br
-.                   PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
+.                   PRINT "\v'-\\n[#SH_BASELINE_ADJ]u'\\$[\\n+[#ARG_NUM]]
 .                   br
 .                \}
 .             \}
 .             el \{\
 .                br
-.                PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
+.                PRINT "\v'-\\n[#SH_BASELINE_ADJ]u'\\$[\\n+[#ARG_NUM]]
 .                br
 .             \}
 .\}
@@ -10857,6 +10946,271 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #HEAD 2
 .END
 \#
+\# ---Subsubheads---
+\#
+\#
+\# SUBSUBHEAD BASELINE ADJUSTMENT
+\# ------------------------------
+\# *Arguments:
+\#   <amount to raise subsubhead>
+\# *Function:
+\#   Creates or modifies register #SSH_BASELINE_ADJ
+\#
+.MAC SUBSUBHEAD_BASELINE_ADJUST END
+.    nr #SSH_BASELINE_ADJ \\$1
+.END
+\#
+\# SUBSUBHEAD
+\# -------
+\# *Arguments:
+\#   "text of subsubhead" ["text of subsubhead"] ...
+\# *Function:
+\#   In TYPEWRITE, prints subsubheads underlined.
+\#   In TYPESET, prints subsubheads bold, .5 points larger than running
+\#   text.
+\#   In both styles, a line space precedes the subsubhead, and a small
+\#   amount of lead comes after.
+\# *Notes:
+\#   As with the HEAD macro, double-quotes (") must surround
+\#   each line of text.
+\#
+.MAC SUBSUBHEAD END
+.    if \\n[#UNDERLINE_ON]=1 .UNDERLINE OFF
+.    br
+.    ne \\n[#NUM_ARGS]+2
+.\" Collect subsubhead for TOC.
+.    nr #ARG_NUM 0 1
+.    nr #TOC_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
+.    while \\n[#ARG_NUM]<\\n[#NUM_ARGS] \{\
+.       ie \\n[#ARG_NUM]=\\n[#NUM_ARGS] \{\
+.          as $TOC_SSH_ITEM \\$[\\n+[#ARG_NUM]]\\|
+.       \}
+.       el \{\
+.\" Note that in the .as lines, below, \ at the end has a literal
+.\" space after it.
+.          ie \\n[#NUMBER_SSH] \{\
+.             ie \\n[#ARG_NUM]=0 \{\
+.                as $TOC_SSH_ITEM \\n+[#SSH_NUM].\0\\$[\\n+[#ARG_NUM]]\ \"
+.                nr #SSH_NUM \\n-[#SSH_NUM]
+.             \}
+.             el \{\
+.                as $TOC_SSH_ITEM \\$[\\n+[#ARG_NUM]]\ \"
+.             \}
+.          \}
+.          el \{\
+.             as $TOC_SSH_ITEM \\$[\\n+[#ARG_NUM]]\ \"
+.          \}
+.       \}
+.\}
+.\" Note the use of \!, which transparently embeds the macros used
+.\" in the TOC_ENTRIES diversion.  The elements they control must be
+.\" processed literally when the diversion is output.
+.    ev TOC_EV
+.    da TOC_ENTRIES
+.    if \\n[#PRINT_STYLE]=1 \{\
+\!.     fam \\*[$TYPEWRITER_FAM]
+\!.     ft  R
+\!.     ps  \\*[$TYPEWRITER_PS]
+.    \}
+.    if \\n[#PRINT_STYLE]=2 \{\
+\!.     FAMILY  \\*[$TOC_SSH_FAM]
+\!.     FT      \\*[$TOC_SSH_FT]
+\!.     PT_SIZE \\n[#TOC_PS]u\\*[$TOC_SSH_SIZE_CHANGE]
+.    \}
+\!.  TRAP OFF
+\!.  PAD_MARKER ^
+.    ie \\n[#PRINT_STYLE]=1 \{\
+\!.     PAD "\\h'\w'\0\0.'u*3u'\\*[$TOC_SSH_ITEM]\\*[$TOC_PN_TYPEWRITE]"
+.    \}
+.    el \{\
+\!.     PAD "\\h'\\n[#TOC_SSH_INDENT]u'\\*[$TOC_SSH_ITEM]\\*[$TOC_PN]"
+.    \}
+\!.  PAD_MARKER #
+\!.  EOL
+\!.  ST 100 L
+\!.  ST 101 R
+.    if \\n[#PRINT_STYLE]=2 \{\
+\!.     FAMILY  \\*[$TOC_PN_FAM]
+\!.     FT      \\*[$TOC_PN_FT]
+\!.     PT_SIZE \\n[#TOC_PS]u\\*[$TOC_PN_SIZE_CHANGE]
+.    \}
+\!.  TAB 100
+\!.  PRINT \\*[LEADER]
+\!.  TN
+\!.  TRAP
+\!.  PRINT \\n[#TOC_ENTRY_PN]
+\!.  TQ
+.    di
+.    ev
+.\" End collection of head for TOC
+.\" Process subsubhead
+.    nr #ARG_NUM 0 1
+.    if r#QUOTE    \{ .rr #QUOTE    \}
+.    if r#Q_AT_TOP \{ .rr #Q_AT_TOP \}
+.    ev SUBSUBHEAD
+.    ll \\n[#L_LENGTH]u
+.    ta \\n(.lu
+.    if \\n[#COLUMNS] \{\
+.       ll \\n[#COL_L_LENGTH]u
+.       ta \\n(.lu
+.    \}
+.    CHECK_INDENT
+.    if \\n[#PRINT_STYLE]=1 \{\
+.       TYPEWRITER
+.       vs  \\n[#DOC_LEAD]u
+.       QUAD   \\*[$SSH_QUAD]
+.    \}
+.    if \\n[#PRINT_STYLE]=2 \{\
+.       FAMILY  \\*[$SSH_FAM]
+.       FT      \\*[$SSH_FT]
+.       PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$SSH_SIZE_CHANGE]
+.       LS      \\n[#DOC_LEAD]u
+.       QUAD    \\*[$SSH_QUAD]
+.    \}
+.    if \\n[#PRINT_STYLE]=1 \{ .nr #SSH_LEAD_ADJUST \\n[#LEAD]/5 \}
+.    if \\n[#PRINT_STYLE]=2 \{ .nr #SSH_LEAD_ADJUST \\n[#LEAD]/8 \}
+.    ie \\n[#START] \{ .RLD 1v \}
+.    el \{\
+.       if \\n[#PRINT_STYLE]=1 \{\
+.          if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
+.       \}
+.       if \\n[#PRINT_STYLE]=2 \{\
+.          ie \\n[#PP_SPACE]=1 \{\
+.             ie !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
+.             el \{ .RLD \\n[#DOC_LEAD]u \}
+.          \}
+.          el \{\
+.             if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
+.          \}
+.       \}
+.    \}
+.\" Print subsubhead
+.    if \\n[#PRINT_STYLE]=1 \{\
+.       while \\n[#ARG_NUM]<\\n[#NUM_ARGS] \{\
+.          ie \\n[#NUMBER_SSH] \{\
+.             ie \\n[#ARG_NUM]=0 \{\
+.                ie \\n[#PREFIX_CH_NUM]=1 \{\
+.                   ds $CH_NUM \\n[#CH_NUM].
+.                \}
+.                el \{\
+.                   rm $CH_NUM
+.                \}
+.                ie \\n[#NUMBER_HEAD] \{\
+.                   br
+.                   PRINT "\v'-\\n[#SSH_BASELINE_ADJ]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#SSH_NUM].\0\\$[\\n+[#ARG_NUM]]"
+.                   br
+.                \}
+.                el \{\
+.                   br
+.                   PRINT "\v'-\\n[#SSH_BASELINE_ADJ]u'\\*[$CH_NUM]\\n+[#SSH_NUM].\0\\$[\\n+[#ARG_NUM]]"
+.                   br
+.                \}
+.             \}
+.             el \{\
+.                br
+.                PRINT "\v'-\\n[#SSH_BASELINE_ADJ]u'\\$[\\n+[#ARG_NUM]]"
+.                br
+.             \}
+.          \}
+.          el \{\
+.             br
+.             PRINT "\v'-\\n[#SSH_BASELINE_ADJ]u'\\$[\\n+[#ARG_NUM]]"
+.             br
+.          \}
+.\}
+.    \}
+.    if \\n[#PRINT_STYLE]=1 \{\
+.       if \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
+.    \}
+.    if \\n[#PRINT_STYLE]=2 \{\
+.       if \\n[#SSH_COLOR]=1 \{ .COLOR \\*[$SSH_COLOR] \}
+.       ie \\n[#PP_SPACE]=0 \{\
+.          while \\n[#ARG_NUM]<\\n[#NUM_ARGS] \{\
+.             ie \\n[#NUMBER_SH] \{\
+.                ie \\n[#ARG_NUM]=0 \{\
+.                   ie \\n[#PREFIX_CH_NUM]=1 \{\
+.                      ds $CH_NUM \\n[#CH_NUM].
+.                   \}
+.                   el \{\
+.                      rm $CH_NUM
+.                   \}
+.                   ie \\n[#NUMBER_HEAD] \{\
+.                      br
+.                      PRINT "\v'-\\n[#SSH_BASELINE_ADJ]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#SSH_NUM].\0\\$[\\n+[#ARG_NUM]]
+.                      br
+.                   \}
+.                   el \{\
+.                      br
+.                      PRINT "\v'-\\n[#SSH_BASELINE_ADJ]u'\\*[$CH_NUM]\\n+[#SSH_NUM].\0\\$[\\n+[#ARG_NUM]]
+.                      br
+.                   \}
+.                \}
+.                el \{\
+.                   br
+.                   PRINT "\v'-\\n[#SSH_BASELINE_ADJ]u'\\$[\\n+[#ARG_NUM]]
+.                   br
+.                \}
+.             \}
+.             el \{\
+.                br
+.                PRINT "\v'-\\n[#SSH_BASELINE_ADJ]u'\\$[\\n+[#ARG_NUM]]
+.                br
+.             \}
+.\}
+.       \}
+.       el \{\
+.          ALD \\n[#DOC_LEAD]u
+.          if \\n[#HEAD]=1      \{ .RLD \\n[#DOC_LEAD]u \}
+.          if \\n[#END_QUOTE]   \{ .RLD \\n[#DOC_LEAD]u \}
+.          if \\n[#EPIGRAPH]    \{ .RLD \\n[#DOC_LEAD]u \}
+.          while \\n[#ARG_NUM]<\\n[#NUM_ARGS] \{\
+.             ie \\n[#NUMBER_SH] \{\
+.                ie \\n[#ARG_NUM]=0 \{\
+.                   ie \\n[#PREFIX_CH_NUM]=1 \{\
+.                      ds $CH_NUM \\n[#CH_NUM].
+.                   \}
+.                   el \{\
+.                      rm $CH_NUM
+.                   \}
+.                   ie \\n[#NUMBER_HEAD] \{\
+.                      br
+.                      PRINT "\v'-\\n[#SSH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#SSH_NUM]\0\\$[\\n+[#ARG_NUM]]
+.                      br
+.                   \}
+.                   el \{\
+.                      br
+.                      PRINT "\v'-\\n[#SSH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n+[#SSH_NUM].\0\\$[\\n+[#ARG_NUM]]
+.                      br
+.                   \}
+.                \}
+.                el \{\
+.                   br
+.                   PRINT "\v'-\\n[#SSH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
+.                   br
+.                \}
+.             \}
+.             el \{\
+.                br
+.                PRINT "\v'-\\n[#SSH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
+.                br
+.             \}
+.\}
+.          ALD \\n[#DOC_LEAD]u
+.       \}
+.    \}
+.    REMOVE_INDENT
+.    ev
+.    if \\n[#NUMBER_SH] \{ .RESET_PARAHEAD_NUMBER \}
+.    if r#START     \{ .rr #START     \}
+.    if r#EPIGRAPH  \{ .rr #EPIGRAPH  \}
+.    if r#Q_FITS    \{ .rr #Q_FITS    \}
+.    if r#END_QUOTE \{ .rr #END_QUOTE \}
+.    if r#LINEBREAK \{ .rr #LINEBREAK \}
+.    rm $TOC_SSH_ITEM
+.    nr #PP 0
+.    nr #HEAD 2
+.END
+\#
 \# ---Paragraph heads---
 \#
 \# PARAHEAD INDENT
@@ -10898,6 +11252,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC PARAHEAD END
 .    if \\n[#UNDERLINE_ON]=1 .UNDERLINE OFF
+.    if \\n[#LINENUMBERS] .nm
 .\" Collect parahead for TOC.
 .    nr #TOC_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
 .    ie \\n[#NUMBER_PH] \{\
@@ -10922,7 +11277,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \!.  TRAP OFF
 \!.  PAD_MARKER ^
 .    ie \\n[#PRINT_STYLE]=1 \{\
-\!.     PAD "\\h'6m'\\*[$TOC_PH_ITEM]\\*[$TOC_PN_TYPEWRITE]"
+\!.     PAD "\\h'\w'\0\0.'u*4u'\\*[$TOC_PH_ITEM]\\*[$TOC_PN_TYPEWRITE]"
 .    \}
 .    el \{\
 \!.     PAD "\\h'\\n[#TOC_PH_INDENT]u'\\*[$TOC_PH_ITEM]\\*[$TOC_PN]"
@@ -10950,20 +11305,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #SLANT_WAS_ON 1
 \E*[SLANTX]
 .    \}
+.    vpt 0
+.    sp -1v
 .    ie \\n[#PP]=1 \{\
 .       if \\n[#INDENT_FIRST_PARAS] \{\
-.          vpt 0
-.          if \\n[#PRINT_STYLE]=1 \{ .sp -1v \}
 .          ti \\n[#PH_INDENT]u
-.          vpt
 .       \}
 .    \}
 .    el \{\
-.       vpt 0
-.       if \\n[#PRINT_STYLE]=1 \{ .sp -1v \}
 .       ti \\n[#PH_INDENT]u
-.       vpt
 .    \}
+.       vpt
 .    ie \\n[#PREFIX_CH_NUM]=1 \{\
 .       ds $CH_NUM \\n[#CH_NUM].
 .    \}
@@ -10975,7 +11327,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       ie \\n[#NUMBER_PH] \{\
 .          if \\n[#NUMBER_HEAD] \{\
 .             ie \\n[#NUMBER_SH] \{\
-.                UNDERSCORE "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#PH_NUM].\\ \\$1"
+.                UNDERSCORE "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n[#SH_NUM].\\n[#SSH_NUM].\\n+[#PH_NUM].\\ \\$1"
 \0
 .             \}
 .             el \{\
@@ -11022,7 +11374,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             \}
 .             if \\n[#NUMBER_HEAD] \{\
 .                ie \\n[#NUMBER_SH] \{\
-.                   PRINT "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'\\*[$PH_SPACE]'\c"
+.                   PRINT "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n[#SH_NUM].\\n[#SSH_NUM].\\n+[#PH_NUM].\0\\$1\h'\\*[$PH_SPACE]'\c"
 .                \}
 .                el \{\
 .                   PRINT "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#PH_NUM].\0\\$1\h'\\*[$PH_SPACE]'\c"
@@ -11053,6 +11405,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    rr #NUMBERED
 .    rm $TOC_PH_ITEM
+.    if \\n[#LINENUMBERS] .nm +0
 .END
 \#
 \#
@@ -13961,7 +14314,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC ENDNOTE_STRING_CAPS END
 .   ie '\\$1'' \{ .nr #EN_STRING_CAPS 1 \}
-.   el \{ .rr #EN_STRING_CAPS \}
+.   el \{ .nr #EN_STRING_CAPS 0 \}
 .END
 \#
 \#
@@ -14659,6 +15012,12 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          FT      \\*[$EN_STRING_FT]
 .          PT_SIZE \\n[#EN_PS]u\\*[$EN_STRING_SIZE_CHANGE]
 .          vs      \\n[#EN_LEAD]u
+.          if \\n[#ENDNOTE_STRING_COLOR]=1 \{\
+.             TRAP OFF
+.             COLOR \\*[$ENDNOTE_STRING_COLOR]
+.             EOL
+.             TRAP
+.          \}
 .       \}
 .       if '\\*[$EN_STRING_QUAD]'L'      \{ .LEFT   \}
 .       if '\\*[$EN_STRING_QUAD]'LEFT'   \{ .LEFT   \}
@@ -15282,6 +15641,12 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC TOC_SUBHEAD_INDENT END
 .    nr #TOC_SH_INDENT (\\$1)
+.END
+\#
+\# - for subsubhead entries
+\#
+.MAC TOC_SUBSUBHEAD_INDENT END
+.    nr #TOC_SSH_INDENT (\\$1)
 .END
 \#
 \# - for parahead entries
@@ -17146,6 +17511,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   PARAHEAD_FAMILY                  _FAMILY
 .ALIAS   QUOTE_FAMILY                     _FAMILY
 .ALIAS   SUBHEAD_FAMILY                   _FAMILY
+.ALIAS   SUBSUBHEAD_FAMILY                _FAMILY
 .ALIAS   SUBTITLE_FAMILY                  _FAMILY
 .ALIAS   TITLE_FAMILY                     _FAMILY
 .ALIAS   TOC_FAM                          _FAMILY
@@ -17155,6 +17521,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   TOC_PARAHEAD_FAMILY              _FAMILY
 .ALIAS   TOC_PN_FAMILY                    _FAMILY
 .ALIAS   TOC_SUBHEAD_FAMILY               _FAMILY
+.ALIAS   TOC_SUBSUBHEAD_FAMILY            _FAMILY
 .ALIAS   TOC_TITLE_FAMILY                 _FAMILY
 \#
 .ALIAS   AUTHOR_FONT                    _FONT
@@ -17193,6 +17560,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   PARAHEAD_FONT                  _FONT
 .ALIAS   QUOTE_FONT                     _FONT
 .ALIAS   SUBHEAD_FONT                   _FONT
+.ALIAS   SUBSUBHEAD_FONT                _FONT
 .ALIAS   SUBTITLE_FONT                  _FONT
 .ALIAS   TITLE_FONT                     _FONT
 .ALIAS   TOC_HEADER_FONT                _FONT
@@ -17200,6 +17568,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   TOC_PARAHEAD_FONT              _FONT
 .ALIAS   TOC_PN_FONT                    _FONT
 .ALIAS   TOC_SUBHEAD_FONT               _FONT
+.ALIAS   TOC_SUBSUBHEAD_FONT            _FONT
 .ALIAS   TOC_TITLE_FONT                 _FONT
 \#
 .ALIAS   AUTHOR_SIZE                    _SIZE
@@ -17237,6 +17606,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   PARAHEAD_SIZE                  _SIZE
 .ALIAS   QUOTE_SIZE                     _SIZE
 .ALIAS   SUBHEAD_SIZE                   _SIZE
+.ALIAS   SUBSUBHEAD_SIZE                _SIZE
 .ALIAS   SUBTITLE_SIZE                  _SIZE
 .ALIAS   TITLE_SIZE                     _SIZE
 .ALIAS   TOC_HEADER_SIZE                _SIZE
@@ -17244,6 +17614,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   TOC_PARAHEAD_SIZE              _SIZE
 .ALIAS   TOC_PN_SIZE                    _SIZE
 .ALIAS   TOC_SUBHEAD_SIZE               _SIZE
+.ALIAS   TOC_SUBSUBHEAD_SIZE            _SIZE
 .ALIAS   TOC_TITLE_SIZE                 _SIZE
 \#
 .ALIAS   ATTRIBUTE_COLOR                 _COLOR
@@ -17271,6 +17642,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   DOC_COVER_TITLE_COLOR           _COLOR
 .ALIAS   DOCHEADER_COLOR                 _COLOR
 .ALIAS   DOCTYPE_COLOR                   _COLOR
+.ALIAS   ENDNOTE_STRING_COLOR            _COLOR
 .ALIAS   EPIGRAPH_COLOR                  _COLOR
 .ALIAS   FINIS_COLOR                     _COLOR
 .ALIAS   FOOTNOTE_COLOR                  _COLOR
@@ -17287,6 +17659,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   QUOTE_COLOR                     _COLOR
 .ALIAS   SECTION_COLOR                   _COLOR
 .ALIAS   SUBHEAD_COLOR                   _COLOR
+.ALIAS   SUBSUBHEAD_COLOR                _COLOR
 .ALIAS   SUBTITLE_COLOR                  _COLOR
 .ALIAS   TITLE_COLOR                     _COLOR
 \#
@@ -17308,6 +17681,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   FOOTNOTE_QUAD              _QUAD
 .ALIAS   HEAD_QUAD                  _QUAD
 .ALIAS   SUBHEAD_QUAD               _QUAD
+.ALIAS   SUBSUBHEAD_QUAD            _QUAD
 .ALIAS   TOC_HEADER_QUAD            _QUAD
 \#
 \# Support aliases
