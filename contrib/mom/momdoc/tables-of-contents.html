@@ -2,7 +2,7 @@
 <!--
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004, 2005, 2006, 2009, 2010 Free Software Foundation, Inc.
+Copyright (C) 2004, 2005, 2006, 2009, 2010, 2011 Free Software Foundation, Inc.
 Written by Peter Schaffter.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -552,12 +552,15 @@ entries, along with their defaults.
 <div id="toc-indent-note" class="box-tip">
 <p class="tip">
 <span class="note">Note:</span>
-The table of contents _INDENT
-macros set an absolute indent, relative to nothing, and therefore
-require an appended
+The table of contents _INDENT macros set an absolute indent,
+relative to nothing, and therefore require an appended
 <a href="definitions.html#unitofmeasure">unit of measure</a>.
+Furthermore, the size of the indent can only be changed when your
+<a href="docprocessing.html#printstyle">PRINTSTYLE</a>
+is <kbd>TYPESET</kbd>; the indent is fixed for <kbd>TYPEWRITE</kbd>.
 </p>
 </div>
+
 <div id="index-toc-entry-control-macros" class="defaults-container" style="padding-bottom: 8px;">
 <p class="defaults" style="padding-top: 6px;">
 See
@@ -567,31 +570,37 @@ See
 <span class="pre defaults">
 <span id="toc-title">
 .TOC_TITLE_FAMILY  default = prevailing doc family 
-.TOC_TITLE_FONT    default = bold italic
-.TOC_TITLE_SIZE    default = +0
-.TOC_TITLE_INDENT  default = 0 for TYPESET and TYPEWRITE
+.TOC_TITLE_FONT    default = bold italic (TYPESET); roman (TYPEWRITE)
+.TOC_TITLE_SIZE    default = +1.5
+.TOC_TITLE_INDENT  default = 0
 </span>
 <span id="toc-head">
 .TOC_HEAD_FAMILY  default = prevailing doc family 
-.TOC_HEAD_FONT    default = bold
+.TOC_HEAD_FONT    default = bold (TYPESET); roman (TYPEWRITE)
 .TOC_HEAD_SIZE    default = +.5
-.TOC_HEAD_INDENT  default = 18p for TYPESET; 2m for TYPEWRITE
+.TOC_HEAD_INDENT  default = 2 <a href="definitions.html#figurespace">figure spaces</a> + a period
 </span>
 <span id="toc-subhead">
 .TOC_SUBHEAD_FAMILY  default = prevailing doc family 
 .TOC_SUBHEAD_FONT    default = roman
-.TOC_SUBHEAD_SIZE    default = +0
-.TOC_SUBHEAD_INDENT  default = 30p for TYPESET; 4m for TYPEWRITE
+.TOC_SUBHEAD_SIZE    default = 0
+.TOC_SUBHEAD_INDENT  default = TOC_HEAD_INDENT + 2 <a href="definitions.html#figurespace">figure spaces</a> + a period
+</span>
+<span id="toc-subsubhead">
+.TOC_SUBSUBHEAD_FAMILY  default = prevailing doc family 
+.TOC_SUBSUBHEAD_FONT    default = italic (TYPESET); roman (TYPEWRITE)
+.TOC_SUBSUBHEAD_SIZE    default = 0
+.TOC_SUBSUBHEAD_INDENT  default = TOC_SUBHEAD_INDENT + 2 <a href="definitions.html#figurespace">figure spaces</a> + a period
 </span>
 <span id="toc-parahead">
 .TOC_PARAHEAD_FAMILY  default = prevailing doc family 
-.TOC_PARAHEAD_FONT    default = italic
-.TOC_PARAHEAD_SIZE    default = +0
-.TOC_PARAHEAD_INDENT  default = 42p for TYPESET; 6m for TYPEWRITE
+.TOC_PARAHEAD_FONT    default = bold italic (TYPESET); roman (TYPEWRITE)
+.TOC_PARAHEAD_SIZE    default = 0
+.TOC_PARAHEAD_INDENT  default = TOC_SUBSUBHEAD_INDENT + 2 <a href="definitions.html#figurespace">figure spaces</a> + a period 
 </span>
 .TOC_PN_FAMILY  default = prevailing doc family 
 .TOC_PN_FONT    default = roman
-.TOC_PN_SIZE    default = +0
+.TOC_PN_SIZE    default = 0
 </span>
 </div>
 

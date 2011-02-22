@@ -2,7 +2,7 @@
 <!--
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004, 2005, 2006, 2009, 2010 Free Software Foundation, Inc.
+Copyright (C) 2004, 2005, 2006, 2009, 2010, 2011 Free Software Foundation, Inc.
 Written by Peter Schaffter.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -81,6 +81,11 @@ FDL in the main directory of the groff source package.
 <ul class="toc-docproc" style="margin-top: .5em;">
   <li><a href="#subhead">SUBHEAD</a></li>
   <li><a href="#subhead-control">Subhead control</a></li>
+</ul>
+<h3 class="toc toc-docproc-header"><a class="header-link" href="#subsubhead-intro">Subsubheads</a></h3>
+<ul class="toc-docproc" style="margin-top: .5em;">
+  <li><a href="#subsubhead">SUBSUBHEAD</a></li>
+  <li><a href="#subsubhead-control">Subsubhead control</a></li>
 </ul>
 <h3 class="toc toc-docproc-header"><a class="header-link" href="#parahead-intro">Paragraph heads</a></h3>
 <ul class="toc-docproc" style="margin-top: .5em;">
@@ -1120,9 +1125,9 @@ See
 <a href="#control-macro-args">Arguments to the control macros</a>.
 </p>
 <span class="pre defaults">
-.HEAD_FAMILY default = prevailing document family; default is Times Roman
-.HEAD_FONT   default = bold
-.HEAD_SIZE   default = +1 (point)
+.HEAD_FAMILY default = prevailing document family
+.HEAD_FONT   default = bold, underlined (TYPESET); roman,underlined (TYPEWRITE)
+.HEAD_SIZE   default = +1 (TYPESET); 0 (TYPEWRITE)
 .HEAD_COLOR  default = black
 .HEAD_QUAD   default = CENTER
 </span>
@@ -1141,8 +1146,9 @@ To change this behaviour, do
   .HEAD_CAPS OFF
 </span>
 HEAD_CAPS is a toggle macro, therefore you can use any argument you
-like instead of <kbd>OFF</kbd> (<b>END, QUIT, Q, X</b>...).  To turn
-HEAD_CAPS back on, simply invoke it without an argument.
+like instead of <kbd>OFF</kbd> to disable it (e.g. <b>END, QUIT, Q,
+X</b>...).  To turn HEAD_CAPS back on, simply invoke it without an
+argument.
 </p>
 
 <h4 id="head-space" class="docs" style="margin-top: -.25em;">3. Pre-head space</h4>
@@ -1349,7 +1355,7 @@ Subheads should be used any place you want titles to introduce
 sections of a document below heads.  If you wish, mom can
 number subheads for you.  Subhead numbers can also be included
 hierarchically in numbered
-<a href="#parahead-intro">paraheads</a>.
+<a href="#subsubhead-intro">subsubheads</a>.
 </p>
 
 <p>
@@ -1387,9 +1393,10 @@ surround each line with double-quotes.
 <div class="box-tip">
 <p class="tip">
 <span class="note">Note:</span>
-If a subhead falls near the bottom of an output page and mom is
-unable to fit the head <i>plus at least one line of text underneath
-it</i>, she will set the subhead at the top of the next page.
+If a subhead falls near the bottom of an output page and mom
+is unable to fit the subhead <i>plus at least one line of text
+underneath it</i>, she will set the subhead at the top of the next
+page.
 </p>
 </div>
 
@@ -1398,13 +1405,14 @@ it</i>, she will set the subhead at the top of the next page.
 
 <p class="defaults">
 In addition to the usual family/font/size/quad control macros, there
-are macros to manage subhead numbering.
+are macros to manage subhead numbering and vertical placement.
 </p>
 
 <ol style="margin-top: .5em; padding-bottom: .5em;">
   <li><a href="#subhead-general">Family/font/size/colour/quad</a></li>
   <li><a href="#number-subheads">Numbering</a></li>
   <li><a href="#reset-subhead-number">Reset subhead numbering</a></li>
+  <li><a href="#subhead-baseline-adjust">Baseline adjustment</a></li>
   <li><a href="#subhead-inlines">Vertical inline escapes inside subheads</a></li>
 </ol>
 </div>
@@ -1417,9 +1425,9 @@ See
 <a href="#control-macro-args">Arguments to the control macros</a>.
 </p>
 <span class="pre defaults" style="padding-bottom: -1em;">
-.SUBHEAD_FAMILY default = prevailing document family; default is Times Roman
-.SUBHEAD_FONT   default = bold
-.SUBHEAD_SIZE   default = +.5 (point)
+.SUBHEAD_FAMILY default = prevailing document family
+.SUBHEAD_FONT   default = bold (TYPESET); italic, ie underlined (TYPEWRITE)
+.SUBHEAD_SIZE   default = +.5 (TYPESET); 0 (TYPEWRITE)
 .SUBHEAD_COLOR  default = black
 .SUBHEAD_QUAD   default = LEFT
 </span>
@@ -1475,12 +1483,214 @@ Your next subhead will be numbered &#8220;4&#8221; and subsequent
 subheads will be numbered in ascending order from &#8220;4&#8221;.
 </p>
 
-<h4 id="subhead-inlines" class="docs" style="margin-top: -.25em;">4. Vertical inline escapes inside subheads</h4>
+<h4 id="subhead-baseline-adjust" class="docs" style="margin-top: -.25em;">4. Baseline adjustment</h4>
+
+<p>
+For aesthetic reasons and to clarify document structure, mom raises
+subheads slightly above the
+<a href="definitions.html#baseline">baseline</a>
+on which they would otherwise fall.  In 
+<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>,
+the amount is 1/8 of the prevailing
+<a href="definitions.html#leading">leading</a>.  In
+<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>,
+it&#8217;s 1/5 of the prevailing leading.
+</p>
+
+<p>
+If you would prefer mom not exhibit this behaviour, or if you would
+like to change the amount by which she raises the subhead, use the
+macro <kbd>.SUBHEAD_BASELINE_ADJUST</kbd>.  With an argument of 0 (zero),
+subhead baseline adjustment will be disabled.  Any other numeric
+argument, with a
+<a href="definitions.html#unitofmeasure">unit of measure</a>
+appended directly onto the argument, will cause mom to raise your
+subheads by the amount you specify.
+</p>
+
+<h4 id="subhead-inlines" class="docs" style="margin-top: -.25em;">5. Vertical inline escapes inside subheads</h4>
 
 <p>
 See
 <a href="#head-inlines">Vertical inline escapes inside heads</a>.
 The information there applies equally to subheads.
+</p>
+
+<div class="rule-short"><hr/></div>
+
+<!-- ==================================================================== -->
+
+<h2 id="subsubhead-intro" class="macro-group">Subsubheads</h2>
+
+<ul style="margin-left: -.5em;">
+  <li><a href="#subsubhead">Tag: SUBSUBHEAD</a></li>
+  <li><a href="#subsubhead-control">Subsubhead control macros</a></li>
+</ul>
+
+<p>
+Subsubheads should be used any place you want titles to introduce
+sections of a document below subheads.  If you wish, mom can
+number subsubheads for you.  Subsubhead numbers can also be included
+hierarchically in numbered
+<a href="#parahead-intro">paraheads</a>.
+</p>
+
+<p>
+By default, subsubheads are flush left.  In
+<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>,
+they are set in italic, slightly larger than paragraph text.  In
+<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>,
+they are set roman at the same size as the prevailing type.  A
+single linespace precedes them in both printstyles, and a tiny space
+adjustment raises them slightly above text that comes afterwards for
+greater clarity in document structuring.
+</p>
+
+<p>
+If these defaults don&#8217;t suit you, you can change them with the
+subsubhead control macros.
+</p>
+
+<!-- -SUBSUBHEAD- -->
+
+<div class="macro-id-overline">
+<h3 id="subsubhead" class="macro-id">SUBSUBHEAD</h3>
+</div>
+
+<div class="box-macro-args">
+Macro: <b>SUBSUBHEAD</b> <kbd class="macro-args">&quot;&lt;text of subsubhead&gt;&quot; [ &quot;&lt;2nd line&gt;&quot; [ &quot;&lt;3rd line&gt;&quot; ... ] ]</kbd>
+</div>
+
+<p>
+The argument to SUBSUBHEAD is the text of the subsubhead, surrounded by
+double-quotes.  If you need additional lines for a subsubhead, simply
+surround each line with double-quotes.
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+If a subsubhead falls near the bottom of an output page and mom
+is unable to fit the subsubhead <i>plus at least one line of text
+underneath it</i>, she will set the subsubhead at the top of the next
+page.
+</p>
+</div>
+
+<div class="defaults-container" style="background-color: #ded4bd; border: none;">
+<h3 id="subsubhead-control" class="docs defaults">SUBSUBHEAD control macros and defaults</h3>
+
+<p class="defaults">
+In addition to the usual family/font/size/quad control macros, there
+are macros to manage subsubhead numbering.
+</p>
+
+<ol style="margin-top: .5em; padding-bottom: .5em;">
+  <li><a href="#subsubhead-general">Family/font/size/colour/quad</a></li>
+  <li><a href="#number-subsubheads">Numbering</a></li>
+  <li><a href="#reset-subsubhead-number">Reset subsubhead numbering</a></li>
+  <li><a href="#subsubhead-baseline-adjust">Baseline adjustment</a></li>
+  <li><a href="#subsubhead-inlines">Vertical inline escapes inside subsubheads</a></li>
+</ol>
+</div>
+
+<h4 id="subsubhead-general" class="docs" style="margin-top: -1.5em; margin-bottom: .5em;">1. Family/font/size/quad</h4>
+
+<div class="defaults-container" style="padding-bottom: 8px;">
+<p class="defaults" style="padding-top: 6px;">
+See
+<a href="#control-macro-args">Arguments to the control macros</a>.
+</p>
+<span class="pre defaults" style="padding-bottom: -1em;">
+.SUBSUBHEAD_FAMILY default = prevailing document family
+.SUBSUBHEAD_FONT   default = italic (TYPESET); roman (TYPEWRITE)
+.SUBSUBHEAD_SIZE   default = +.5 (TYPESET); 0 (TYPEWRITE)
+.SUBSUBHEAD_COLOR  default = black
+.SUBSUBHEAD_QUAD   default = LEFT
+</span>
+</div>
+
+<h4 id="number-subsubheads" class="docs" style="margin-top: -1.25em;">2. Number subsubheads</h4>
+
+<p>
+If you&#8217;d like your subsubheads numbered, simply invoke
+<kbd>.NUMBER_SUBSUBHEADS</kbd> with no argument.  Mom will number
+all subsequent subsubheads automatically (in ascending order,
+naturally).
+</p>
+
+<p>
+If, in addition to numbering subsubheads, you also request that
+<a href="#head-intro">heads</a>
+be numbered, the head number will be included in the subsubhead
+number (separated by a period [dot]).
+</p>
+
+<p>
+Should you wish to stop subsubhead numbering, invoke
+<kbd>.NUMBER_SUBSUBHEADS</kbd> with any argument (<kbd>OFF, QUIT, END,
+X</kbd>...).  Subsubhead numbering will cease, and the subsubhead number
+will not be included in the numbering of paraheads.
+</p>
+
+<p>
+See also
+<a href="#prefix-chapter-number">Prefixing chapter numbers</a>
+if you&#8217;d like chapter numbers prepended to the subsubhead numbers.
+</p>
+
+<h4 id="reset-subsubhead-number" class="docs" style="margin-top: -.25em;">3. Reset subsubhead numbering</h4>
+
+<p>
+Should you wish to reset the subsubhead number to &#8220;1&#8221;,
+invoke
+<span class="pre-in-pp">
+  .RESET_SUBSUBHEAD_NUMBER
+</span>
+with no argument.  If, for some reason, you want mom to use a
+subsubhead number that is not the next in ascending order (i.e. the
+last subsubhead number + 1), invoke <kbd>.RESET_SUBSUBHEAD_NUMBER</kbd>
+with the number you want, e.g.
+<br/>
+<span class="pre-in-pp">
+  .RESET_SUBSUBHEAD_NUMBER 4
+</span>
+
+Your next subsubhead will be numbered &#8220;4&#8221; and subsequent
+subsubheads will be numbered in ascending order from &#8220;4&#8221;.
+</p>
+
+<h4 id="subsubhead-baseline-adjust" class="docs" style="margin-top: -.25em;">4. Baseline adjustment</h4>
+
+<p>
+For aesthetic reasons and to clarify document structure, mom raises
+subsubheads slightly above the
+<a href="definitions.html#baseline">baseline</a>
+on which they would otherwise fall.  In 
+<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>,
+the amount is 1/8 of the prevailing
+<a href="definitions.html#leading">leading</a>.  In
+<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>,
+it&#8217;s 1/5 of the prevailing leading.
+</p>
+
+<p>
+If you would prefer mom not exhibit this behaviour, or if you would
+like to change the amount by which she raises the subsubhead, use the
+macro <kbd>.SUBSUBHEAD_BASELINE_ADJUST</kbd>.  With an argument of 0 (zero),
+subsubhead baseline adjustment will be disabled.  Any other numeric
+argument, with a
+<a href="definitions.html#unitofmeasure">unit of measure</a>
+appended directly onto the argument, will cause mom to raise your
+subsubheads by the amount you specify.
+</p>
+
+<h4 id="subsubhead-inlines" class="docs" style="margin-top: -.25em;">5. Vertical inline escapes inside sububheads</h4>
+
+<p>
+See
+<a href="#head-inlines">Vertical inline escapes inside heads</a>.
+The information there applies equally to subsubheads.
 </p>
 
 <div class="rule-short"><hr/></div>
@@ -1521,8 +1731,8 @@ parahead control macros.
 <div class="box-tip">
 <p class="tip">
 <span class="tip">Tip:</span>
-If you really need a heading level below subhead (a sub-subhead)
-that isn&#8217;t joined to the body of a paragraph, you can trick
+If you really need a heading level below subsubheads that
+isn&#8217;t joined to the body of a paragraph, you can trick
 PARAHEAD into giving you one by creating a paragraph that contains
 only a parahead, like this:
 <br/>
@@ -1585,9 +1795,9 @@ See
 <a href="#control-macro-args">Arguments to the control macros</a>.
 </p>
 <span class="pre defaults">
-.PARAHEAD_FAMILY default = prevailing document family; default is Times Roman
-.PARAHEAD_FONT   default = bold italic
-.PARAHEAD_SIZE   default = +.5 (point)
+.PARAHEAD_FAMILY default = prevailing document family
+.PARAHEAD_FONT   default = bold italic (TYPESET); italic, ie underlined (TYPEWRITE)
+.PARAHEAD_SIZE   default = -.25 (TYPESET); 0 (TYPEWRITE)
 .PARAHEAD_COLOR  default = black*
 
 *If you colourize paragraph text, paraheads will appear in the same
@@ -1615,9 +1825,6 @@ do:
 <span class="pre-in-pp">
   .PARAHEAD_INDENT 2.5P
 </span>
-</p>
-
-<p>
 Mom&#8217;s default indent for paragraph heads is 1/2 the first-line
 indent of normal paragraphs (both printstyles).  However, as stated
 above, if you choose to change the indent, you must give an absolute
@@ -1626,6 +1833,18 @@ number register <kbd>\n[#PP_INDENT]u</kbd> arithmetically as the
 argument to PARAHEAD_INDENT for an indent that&#8217;s relative to
 PP_INDENT.)
 </p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="tip">Tip:</span>
+If you want to make the parahead indent equal to the paragraph
+indent, a convenient way to do it is
+<br/>
+<span class="pre-in-pp">
+  .PARAHEAD INDENT \n[#PP_INDENT]
+</span>
+</p>
+</div>
 
 <div class="box-tip">
 <p class="tip">
@@ -1734,10 +1953,11 @@ Macro: <b>PREFIX_CHAPTER_NUMBER</b> <kbd class="macro-args">&lt;none&gt; | &lt;c
 </div>
 
 <p>
-If you&#8217;ve requested numbering of heads, subheads and/or paragraph
-heads (with
+If you&#8217;ve requested numbering of heads, subheads, subsubheads
+and/or paragraph heads (with
 <a href="#number-heads">NUMBER_HEADS</a>,
-<a href="#number-subheads">NUMBER_SUBHEADS</a>
+<a href="#number-subheads">NUMBER_SUBHEADS,</a>
+<a href="#number-subheads">NUMBER_SUBSUBHEADS</a>
 and/or
 <a href="#number-paraheads">NUMBER_PARAHEADS</a>)
 and you&#8217;d like mom, in addition, to prefix
@@ -5336,10 +5556,11 @@ See
 <a href="#control-macro-args">Arguments to the control macros</a>.
 </p>
 <span class="pre defaults">
-.ENDNOTE_STRING_FAMILY  default = prevailing document family; default is Times Roman
+.ENDNOTE_STRING_FAMILY  default = prevailing document family
 .ENDNOTE_STRING_FONT    default = bold
 .ENDNOTE_STRING_SIZE*   default = +1
 .ENDNOTE_STRING_QUAD    default = centred
+.ENDNOTE_STRING_COLOR   default = black
 
 *Relative to the size of the endnotes text (set with ENDNOTE_PT_SIZE)
 </span>

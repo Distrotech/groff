@@ -2,7 +2,7 @@
 <!--
   This file is part of groff, the GNU roff type-setting system.
 
-  Copyright (C) 2004, 2005, 2006, 2009, 2010 Free Software Foundation, Inc.
+  Copyright (C) 2004, 2005, 2006, 2009, 2010, 2011 Free Software Foundation, Inc.
   Written by Peter Schaffter.
 
   Permission is granted to copy, distribute and/or modify this document
@@ -644,6 +644,7 @@ mom uses, along with brief descriptions of their functions.
   START                   Sets doc defaults and prints info collected
                             with doc info macros
   SUBHEAD                 Subheads
+  SUBSUBHEAD              Subsubheads
 
 <span style="display: block; margin-top: -.75em; margin-bottom: -1em;">*Headers/footers</span>
   BREAK_QUOTE          Manually break a footnoted quote that crosses
@@ -811,6 +812,8 @@ mom uses, along with brief descriptions of their functions.
   HDRFTR_VERSO             User-defined, single string verso
                              header/footer
   HEADERS                  Turns headers on or off
+  HEADER_GAP               Space between header and running text
+  HEADER_MARGIN            Space from top of page to header
   HEADERS_AND_FOOTERS      Enables and permits the creation of
                              headers and footers that appear on the
                              same page
@@ -831,8 +834,6 @@ mom uses, along with brief descriptions of their functions.
                              endnotes
 
 -Heads-
-  HEADER_GAP               Space between header and running text
-  HEADER_MARGIN            Space from top of page to header
   HEAD_CAPS                Print section titles in caps? (boolean)
   HEAD_SPACE               Give HEADs 2 line-spaces before. If OFF,
                              only 1.  Default is on.
@@ -843,6 +844,12 @@ mom uses, along with brief descriptions of their functions.
 -Subheads-
   NUMBER_SUBHEADS          Print subhead numbers
   RESET_SUBHEAD_NUMBER     Reset subhead number
+  SUBHEAD_BASELINE_ADJUST  Amount to raise subhead above baseline
+
+-Subsubheads-
+  NUMBER_SUBSUBHEADS          Print subhead numbers
+  RESET_SUBSUBHEAD_NUMBER     Reset subhead number
+  SUBSUBHEAD_BASELINE_ADJUST  Amount to raise subhead above baseline
 
 -Para heads-
   NUMBER_PARAHEADS         Print parahead numbers
@@ -1509,27 +1516,27 @@ mom uses, along with brief descriptions of their functions.
                                line numbering is enabled
   #LINES_PER_PAGE            # of lines (at DOC_LEAD) that fit on
                                page after #B_MARGIN is set
-  #LN                        Are line numbers on? (boolean)
-    MN-active                  Are we doing a margin note? (boolean)
-    MN-curr                    Current margin note
-    MN-div-&lt;n&gt;-depth           Depth of margin note &lt;n&gt;
-    MN-hy                      Hyphenation flag of margin notes
+  #LN                        Test 1st arg to NUMBER_LINES for digit or string
+  MN-active                  Are we doing a margin note? (boolean)
+  MN-curr                    Current margin note
+  MN-div-&lt;n&gt;-depth           Depth of margin note &lt;n&gt;
+  MN-hy                      Hyphenation flag of margin notes
   #MNinit                    Have margin notes been initialized? (boolean)
   #MNinit_DEFERRED           Did we have to defer a margin note? (boolean)
-    MN-last-pos                Baseline of previous margin note
-    MN-lead-adj                Difference between the current DOC_LEAD and the
-                                 leading used in margin notes
-    MN-left                    Number of current left margin note
-    MN-left-start              Horizontal start position of left margin note
-    MN-left-width              Width of left margin note
-    MN-right                   Number of current right margin note
-    MN-right-start             Horizontal start position of right margin note
-    MN-right-width             Width of right margin note
-    MN-sep                     Gutter between margin notes and running text
-    MN-shifted                 Did we have to shift a margin note down?
-                                (boolean)
-    MN-size                    Point size of margin notes
-    MN-spacing                 Leading of margin notes
+  MN-last-pos                Baseline of previous margin note
+  MN-lead-adj                Difference between the current DOC_LEAD and the
+                               leading used in margin notes
+  MN-left                    Number of current left margin note
+  MN-left-start              Horizontal start position of left margin note
+  MN-left-width              Width of left margin note
+  MN-right                   Number of current right margin note
+  MN-right-start             Horizontal start position of right margin note
+  MN-right-width             Width of right margin note
+  MN-sep                     Gutter between margin notes and running text
+  MN-shifted                 Did we have to shift a margin note down?
+                              (boolean)
+  MN-size                    Point size of margin notes
+  MN-spacing                 Leading of margin notes
   #MISC_&lt;n&gt;                  Used to print "next" misc lines in DO_COVER
   #MISC_COVER_NUM            Number of cover misc items
   #MISC_DOCCOVER_NUM         Number od doc cover misc items
@@ -1576,9 +1583,10 @@ mom uses, along with brief descriptions of their functions.
   #NUMBER_HEAD               Are heads numbered? (boolean)
   #NUMBER_PH                 Are paraheads numbered? (boolean)
   #NUMBER_SH                 Are subheads numbered? (boolean)
+  #NUMBER_SSH                Are subsubheads numbered? (boolean)
   #NUM_COLS                  Number of columns per page
   #NUMBERED                  If set to 1, lets PARAHEAD know that
-                               main- and subhead numbers have already been
+                               main-, sub-, and subsubhead numbers have already been
                                prefixed to the parahead string
   #NUM_FIELDS                Incrementing register used to match
                                #TOTAL_FIELDS
@@ -1763,8 +1771,8 @@ mom uses, along with brief descriptions of their functions.
   #SAVED_WEIGHT_ADJ          SAVED_UNDERSCORE_WEIGHT/2
   #SEP_TYPE                  Set to 1 if LIST separator is ( or [ or {
   #SH_COLOR                  Colorize subheads? (boolean)
-  #SH_LEAD_ADJUST            #DOC_LEAD/8 (TYPESET) or /2 (TYPEWRITE)
-                               (used for subhead spacing)
+  #SH_BASELINE_ADJ           #DOC_LEAD/8 (TYPESET) or /5 (TYPEWRITE)
+                               (used for subhead vertical spacing)
   #SH_NUM                    Subhead number
   #SHIM                      Amount of lead required to advance to
                                next valid baseline
@@ -1786,6 +1794,8 @@ mom uses, along with brief descriptions of their functions.
                                sometimes reports a fractionally larger
                                space than is actually available for
                                footnote text.
+  #SSH_BASELINE_ADJ          #DOC_LEAD/8 (TYPESET) or /5 (TYPEWRITE)
+                               (used for subsubhead vertical spacing)
   #START                     If 1, signals completion of START
   #START_FOR_FOOTERS         Toggle set in START; signals to
                                PRINT_HDRFTR that START has been invoked,
