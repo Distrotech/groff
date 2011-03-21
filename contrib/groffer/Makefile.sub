@@ -63,8 +63,6 @@ GROFFER_REST=$(srcdir)/roff2.man \
 GROFFER_PERL_=`echo $(GROFFER_PERL) | sed 's|$(srcdir)/perl/||g'`
 GROFFER_SHELL_=`echo $(GROFFER_SHELL) | sed 's|$(srcdir)/shell||g'`
 
-groffer_dir=$(libdir)/groff/groffer
-
 # TODO: Add perl check to configure script.
 groffer: $(GROFFER_PERL) $(GROFFER_SHELL) \
          $(GROFFER_REST) $(SH_DEPS_SED_SCRIPT)
@@ -75,6 +73,7 @@ groffer: $(GROFFER_PERL) $(GROFFER_SHELL) \
             -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
 	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
+	    -e "s|@groffer_dir@|$(DESTDIR)$(groffer_dir)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
 	    $(srcdir)/perl/groffer.pl >$@; \
@@ -89,6 +88,7 @@ groffer: $(GROFFER_PERL) $(GROFFER_SHELL) \
             -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
 	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
+	    -e "s|@groffer_dir@|$(DESTDIR)$(groffer_dir)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
             $(srcdir)/shell/groffer.sh >$@; \

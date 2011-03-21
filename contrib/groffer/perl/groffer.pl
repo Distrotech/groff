@@ -132,8 +132,7 @@ BEGIN {
       $at_at{'BINDIR'} = '@BINDIR@';
       $at_at{'G'} = '@g@';
       $at_at{'LIBDIR'} = '@libdir@';
-      $groffer_libdir =
-	File::Spec->catdir($at_at{'LIBDIR'}, 'groff', 'groffer');
+      $groffer_libdir = '@groffer_dir@';
       $file_perl_test_pl = File::Spec->catfile($groffer_libdir,
 					       'perl_test.pl');
       $File_version_sh = File::Spec->catfile($groffer_libdir, 'version.sh');

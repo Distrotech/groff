@@ -1193,3 +1193,19 @@ AC_DEFUN([GROFF_APPRESDIR_CHECK],
        ])
      fi
    fi])
+
+
+# Set up the `--with-grofferdir' command line option.
+
+AC_DEFUN([GROFF_GROFFERDIR_OPTION],
+  [AC_ARG_WITH([grofferdir],
+     AS_HELP_STRING([--with-grofferdir=DIR],
+		    [groffer files location]))])
+
+AC_DEFUN([GROFF_GROFFERDIR_DEFAULT],
+  [if test "x$with_grofferdir" = "x"; then
+    groffer_dir=$libdir/groff/groffer
+  else
+    groffer_dir=$with_grofferdir
+  fi
+  AC_SUBST([groffer_dir])])
