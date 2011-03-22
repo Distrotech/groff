@@ -8,7 +8,7 @@
 # Copyright (C) 2006, 2009, 2011 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 27 Jan 2011
+# Last update: 22 Mar 2011
 
 # This file is part of `groffer', which is part of `groff'.
 
