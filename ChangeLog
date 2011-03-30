@@ -1,3 +1,17 @@
+2011-03-29  Christian Weisgerber  <naddy@mips.inka.de>
+
+	Fix build with non-GNU make.
+
+	* Makefile.in ($TARGETS): We must not pass `$MDEFINES' recursively
+	down to the sub-makes started in src/libs/gnulib, because that
+	directory has its own values for `$top_srcdir' etc., and overriding
+	those from the command line will cause the build to fail. 
+	Currently, `$MAKEOVERRIDES' will prevent the recursive passing of
+	those overrides with GNU make, but not with other make(1)
+	implementations.  It looks like all targets that require `$MDEFINES'
+	set them explicitly anyway, so we shouldn't need to set `$MDEFINES'
+	on the top level.
+
 2011-03-21  Jan Vcelak <jvcelak@redhat.com>
 	    Bernd Warken
 
