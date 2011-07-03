@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2003, 2004, 2009 Free Software Foundation, Inc.
+/* Copyright (C) 2003, 2004, 2009, 2011 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk)
 
 This file is part of groff.
@@ -610,12 +610,12 @@ int state_set::is_in(int_value_state i)
 
 int state_set::is_in(units_value_state u)
 {
-  return (unitsset & (1 << (int)u) != 0);
+  return (unitsset & (1 << (int)u)) != 0;
 }
 
 int state_set::is_in(string_value_state s)
 {
-  return (stringset & (1 << (int)s) != 0);
+  return (stringset & (1 << (int)s)) != 0;
 }
 
 void state_set::add(units_value_state, int n)
