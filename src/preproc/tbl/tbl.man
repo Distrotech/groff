@@ -814,6 +814,48 @@ this:
 .EE
 .
 .
+.LP
+A leading and/or trailing `|' in a format line, such as
+.
+.IP
+.EX
+|l r|.
+.EE
+.
+.LP
+gives output which has a 1n\~space between the resulting
+bordering vertical rule and the content of the adjacent column,
+as in
+.
+.IP
+.EX
+\&.TS
+\&tab(#);
+\&|l r|.
+\&left column#right column
+\&.TE
+.EE
+.
+.LP
+If it is desired to have zero space (so that the rule touches
+the content), this can be achieved by introducing extra \[lq]dummy\[rq]
+columns, with no content and zero separation, before and/or after,
+as in
+.
+.IP
+.EX
+\&.TS
+\&tab(#);
+\&r0|l r0|l.
+\&#left column#right column#
+\&.TE
+.EE
+.
+.LP
+The resulting \[lq]dummy\[rq] columns are invisible and have zero width;
+note that such columns usually don't work with TTY devices.
+.
+.
 .SH REFERENCE
 Lesk, M.E.: "TBL \[en] A Program to Format Tables".
 For copyright reasons it cannot be included in the groff distribution,
