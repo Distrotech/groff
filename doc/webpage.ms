@@ -296,6 +296,46 @@ postings to the corresponding mailing list.
 .
 .
 .SH
+NEWS VERSION 1.21.1
+.LP
+.SH 2
+groff
+
+.ULS
+.LI
+A new option `\-j' has been added to call the `chem' preprocessor.
+.ULE
+.
+.
+.SH 2
+macro packages
+
+.ULS
+.LI
+Support for the `refer' preprocessor has been added to the \-mm macro
+package.
+
+
+.LI
+Bugs in the support for the `n1' and `n2' requests in the \-me package were
+fixed that caused extra line numbers to be added to text in floats and
+diversion environments, as well as equations and pic-style pictures.
+
+The `TH' macro was changed for compatibility with line number support in
+tables.
+.ULE
+.
+.
+.SH 2
+tbl
+
+.ULS
+.LI
+Added numbered line support in tables.
+.ULE
+.
+.
+.SH
 NEWS VERSION 1.21
 .LP
 .SH 2
@@ -689,7 +729,7 @@ Here the same table using a more expanded syntax:
 Tables can be nested; `hdtbl' works without a preprocessor so that the
 full capability of groff's macro engine is available.
 
-This package currently works with `-Tps' only.
+This package currently works with `\-Tps' only.
 
 .LI
 \-mandoc now supports multiple man pages (in either man or mdoc format).

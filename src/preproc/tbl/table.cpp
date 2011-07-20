@@ -1,6 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2003, 2004, 2007, 2008,
-                 2009, 2010
+/* Copyright (C) 1989-1992, 2000, 2003, 2004, 2007-2011
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -59,6 +58,11 @@ const int DEFAULT_COLUMN_SEPARATION = 3;
 #define REPEATED_VPT_MACRO PREFIX "rvpt"
 #define SUPPRESS_BOTTOM_REG PREFIX "supbot"
 #define SAVED_DN_REG PREFIX "dn"
+#define ROW_START_LINE_REG PREFIX "lnst"
+#define ROW_SAVE_LINE_REG PREFIX "lnsv"
+#define ROW_MAX_LINE_REG PREFIX "lnmx"
+#define REPEATED_NM_SET_MACRO PREFIX "rlns"
+#define REPEATED_NM_SUS_MACRO PREFIX "rlnx"
 
 // this must be one character
 #define COMPATIBLE_REG PREFIX "c"
@@ -1780,6 +1784,31 @@ void table::init_output()
 	 ".de " REPEATED_VPT_MACRO "\n"
 	 ".vpt \\$1\n"
 	 ".if !'\\n(.z'' \\!." REPEATED_VPT_MACRO " \"\\$1\"\n"
+	 "..\n"
+	 ".de " REPEATED_NM_SET_MACRO "\n"
+	 ".ie !'\\n(.z'' \\{.nm\n"
+	 "\\!." REPEATED_NM_SET_MACRO " \"\\$1\"\n"
+	 ".\\}\n"
+	 ".el .if \\n[ln] \\{\\\n"
+	 ".if '\\$1'd' .nr " ROW_START_LINE_REG " \\n[ln]\n"
+	 ".if '\\$1's' .nm \\n[" ROW_START_LINE_REG "]\n"
+	 ".if '\\$1'm' .nr " ROW_MAX_LINE_REG " \\n[ln]>?\\n[" ROW_MAX_LINE_REG "]\n"
+	 ".\\}\n"
+	 "..\n"
+	 ".de " REPEATED_NM_SUS_MACRO "\n"
+	 ".ie !'\\n(.z'' \\{.nm\n"
+	 "\\!." REPEATED_NM_SUS_MACRO " \"\\$1\"\n"
+	 ".\\}\n"
+	 ".el .if \\n[ln] \\{\\\n"
+	 ".ie '\\$1's' \\{\\\n"
+	 ".nr " ROW_SAVE_LINE_REG " \\n(ln<?\\n[" ROW_MAX_LINE_REG "]\n"
+	 ".nm +0 \\n[ln]+42\n"
+	 ".\\}\n"
+	 ".el \\{\\\n"
+	 ".nr ln \\n[" ROW_SAVE_LINE_REG "]\n"
+	 ".nm \\n[ln] 1\n"
+	 ".\\}\n"
+	 ".\\}\n"
 	 "..\n");
   if (!(flags & NOKEEP))
     prints(".de " KEEP_MACRO_NAME "\n"
@@ -1812,9 +1841,12 @@ void table::init_output()
 	   page. */
 	   ".tm warning: page \\n%: table text block will not fit on one page\n"
 	   ".nf\n"
+	   ".if \\n[ln] .nm \\n[ln]\n"
+	   ".nr " ROW_MAX_LINE_REG " \\n[ln]\n"
 	   ".ls 1\n"
 	   "." SECTION_DIVERSION_NAME "\n"
 	   ".ls\n"
+	   ".if \\n[ln] .nm\n"
 	   ".rm " SECTION_DIVERSION_NAME "\n"
 	   ".\\}\n"
 	   "..\n"
@@ -1836,9 +1868,13 @@ void table::init_output()
 	   ".in 0\n"
 	   ".ls 1\n"
 	   ".nf\n"
+	   ".if \\n[ln] .nm \\n[ln]\n"
 	   "." TABLE_DIVERSION_NAME "\n"
 	   ".\\}\n"
 	   ".rm " TABLE_DIVERSION_NAME "\n"
+	   ".\\}\n"
+	   ".if \\n[ln] \\{.nm\n"
+	   ".nr ln \\n[" ROW_MAX_LINE_REG "]\n"
 	   ".\\}\n"
 	   "..\n");
   prints(".ec\n"
@@ -2268,6 +2304,7 @@ void table::print_single_hline(int r)
 {
   prints(".vs " LINE_SEP ">?\\n[.V]u\n"
 	 ".ls 1\n"
+	 "." REPEATED_NM_SUS_MACRO " s\n"
 	 "\\v'" BODY_DEPTH "'"
 	 "\\s[\\n[" LINESIZE_REG "]]");
   if (r > nrows - 1)
@@ -2304,7 +2341,8 @@ void table::print_single_hline(int r)
     }
   }
   prints("\\s0\n");
-  prints(".ls\n"
+  prints("." REPEATED_NM_SUS_MACRO " r\n"
+	 ".ls\n"
 	 ".vs\n");
 }
 
@@ -2313,6 +2351,7 @@ void table::print_double_hline(int r)
   prints(".vs " LINE_SEP "+" DOUBLE_LINE_SEP
 	 ">?\\n[.V]u\n"
 	 ".ls 1\n"
+	 "." REPEATED_NM_SUS_MACRO " s\n"
 	 "\\v'" BODY_DEPTH "'"
 	 "\\s[\\n[" LINESIZE_REG "]]");
   if (r > nrows - 1)
@@ -2371,6 +2410,7 @@ void table::print_double_hline(int r)
     }
   }
   prints("\\s0\n"
+	 "." REPEATED_NM_SUS_MACRO " r\n"
 	 ".ls\n"
 	 ".vs\n");
 }
@@ -2571,7 +2611,8 @@ void table::define_bottom_macro()
     print_single_hline(0);
     prints(".\\}\n");
   }
-  prints(".ls 1\n");
+  prints("." REPEATED_NM_SUS_MACRO " s\n"
+	 ".ls 1\n");
   for (vertical_rule *p = vrule_list; p; p = p->next)
     p->contribute_to_bottom_macro(this);
   if (flags & DOUBLEBOX)
@@ -2588,7 +2629,8 @@ void table::define_bottom_macro()
 	   ".sp -1\n"
 	   "\\v'" BODY_DEPTH "'\\h'|\\n[TW]u'\\s[\\n[" LINESIZE_REG "]]"
 	   "\\D'l 0 |\\n[" TOP_REG "]u-1v'\\s0\n");
-  prints(".ls\n");
+  prints("." REPEATED_NM_SUS_MACRO " r\n"
+	 ".ls\n");
   prints(".nr " LAST_PASSED_ROW_REG " \\n[" CURRENT_ROW_REG "]\n"
 	 ".sp |\\n[" SAVED_VERTICAL_POS_REG "]u\n"
 	 "." REPEATED_VPT_MACRO " 1\n"
@@ -2659,6 +2701,8 @@ void table::do_row(int r)
   // we might have had a .TH, for example,  since we last tried
   if (!(flags & NOKEEP) && row_begins_section(r))
     prints("." KEEP_MACRO_NAME "\n");
+  prints("." REPEATED_NM_SET_MACRO " d\n"
+	 ".nr " ROW_MAX_LINE_REG " \\n[ln]\n");
   printfs(".mk %1\n", row_start_reg(r));
   prints(".mk " BOTTOM_REG "\n"
 	 "." REPEATED_VPT_MACRO " 0\n");
@@ -2755,6 +2799,7 @@ void table::do_row(int r)
     table_entry *e = entry[r][c];
     if (e) {
       if (e->end_row == r && e->to_simple_entry() == 0) {
+	prints("." REPEATED_NM_SET_MACRO " s\n");
 	e->position_vertically();
 	e->print();
 	prints(".nr " BOTTOM_REG " \\n[" BOTTOM_REG "]>?\\n[.d]\n");
@@ -2763,7 +2808,8 @@ void table::do_row(int r)
       c = e->end_col;
     }
   }
-  prints("." REPEATED_VPT_MACRO " 1\n"
+  prints("." REPEATED_NM_SET_MACRO " m\n"
+	 "." REPEATED_VPT_MACRO " 1\n"
 	 ".sp |\\n[" BOTTOM_REG "]u\n"
 	 "\\*[" TRANSPARENT_STRING_NAME "].nr " NEED_BOTTOM_RULE_REG " 1\n");
   if (r != nrows - 1 && (flags & ALLBOX)) {
@@ -2791,6 +2837,7 @@ void table::do_row(int r)
     if (!(flags & NOKEEP) && row_ends_section(r))
       prints("." RELEASE_MACRO_NAME "\n");
   }
+  prints(".if \\n[ln] .nr ln \\n[" ROW_MAX_LINE_REG "]\n");
 }
 
 void table::do_top()
@@ -2799,7 +2846,8 @@ void table::do_top()
   if (!(flags & NOKEEP) && (flags & (BOX | DOUBLEBOX | ALLBOX)))
     prints("." TABLE_KEEP_MACRO_NAME "\n");
   if (flags & DOUBLEBOX) {
-    prints(".ls 1\n"
+    prints("." REPEATED_NM_SUS_MACRO " s\n"
+	   ".ls 1\n"
 	   ".vs " LINE_SEP ">?\\n[.V]u\n"
 	   "\\v'" BODY_DEPTH "'\\s[\\n[" LINESIZE_REG "]]\\D'l \\n[TW]u 0'\\s0\n"
 	   ".vs\n"
@@ -2813,7 +2861,8 @@ void table::do_top()
 	    "\n",
 	    column_divide_reg(0),
 	    column_divide_reg(ncolumns));
-    prints(".ls\n"
+    prints("." REPEATED_NM_SUS_MACRO " r\n"
+	   ".ls\n"
 	   ".vs\n");
   }
   else if (flags & (ALLBOX | BOX)) {
@@ -2836,6 +2885,10 @@ void table::do_bottom()
 	 ".T#\n");
   if (!(flags & NOKEEP) && (flags & (BOX | DOUBLEBOX | ALLBOX)))
     prints("." TABLE_RELEASE_MACRO_NAME "\n");
+  else
+    prints(".if \\n[ln] \\{.nm\n"
+	   ".nr ln \\n[" ROW_MAX_LINE_REG "]\n"
+	   ".\\}\n");
   if (flags & DOUBLEBOX)
     prints(".sp " DOUBLE_LINE_SEP "\n");
   prints("." RESET_MACRO_NAME "\n"
