@@ -1,0 +1,31 @@
+pspic.tmac
+----------
+
+Equiv for gropdf is pdfpic (which is dependant on a program
+pdfbb (to extract MediaBox (etc.) from the pdf) which is not written yet!
+Meanwhile you could use \X'pdf: pdfpic filename -L|R|C wid (hgt) (linelen)'
+(-R and -C require a linelen) Wid or hgt may be zero (in which case the same
+scaling as the other axis is used).  The disadvantage of this call (over
+pdfpic macro) is that it is transparent to groff, after placing the image
+the current X/Y position remains what it was, so you need to do your own
+'motion control' (like a .sp) to "step over" the image you just placed.
+
+psfig.tmac
+----------
+
+No equiv for gropdf.
+
+psatk.tmac
+----------
+
+No equiv for gropdf.
+
+-I : search -I directory for included files
+
+-w : set line width
+
+Another \X : \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap' for mom
+
+Cater for fonts with >255 glyphs (currently  accessing a glyph above 255
+(i.e. \N[260]) causes a fail).  This will be fixed when font subsetting is
+implemented.

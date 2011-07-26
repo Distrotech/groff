@@ -862,7 +862,7 @@ into a postprocessor to produce output for a particular device.
 Currently, @code{groff} has postprocessors for @sc{PostScript} devices,
 character terminals, X@tie{}Windows (for previewing), @TeX{} DVI format,
 HP LaserJet@tie{}4 and Canon LBP printers (which use @acronym{CAPSL}),
-@acronym{HTML}, and @acronym{XHTML}.
+@acronym{HTML}, @acronym{XHTML}, and PDF.
 
 
 @c =====================================================================
@@ -945,14 +945,14 @@ built).  It can optionally preprocess with any of @code{gpic},
 @code{geqn}, @code{gtbl}, @code{ggrn}, @code{grap}, @code{gchem},
 @code{grefer}, @code{gsoelim}, or @code{preconv}.
 
-This section only documents options to the @code{groff} front end.
-Many of the arguments to @code{groff} are passed on to @code{gtroff},
+This section only documents options to the @code{groff} front end.  Many
+of the arguments to @code{groff} are passed on to @code{gtroff},
 therefore those are also included.  Arguments to pre- or postprocessors
 can be found in @ref{Invoking gpic}, @ref{Invoking geqn}, @ref{Invoking
-gtbl}, @ref{Invoking ggrn}, @ref{Invoking grefer}, @ref{Invoking
-gchem}, @ref{Invoking gsoelim}, @ref{Invoking preconv}, @ref{Invoking
-grotty}, @ref{Invoking grops}, @ref{Invoking grohtml}, @ref{Invoking
-grodvi}, @ref{Invoking grolj4}, @ref{Invoking grolbp}, and
+gtbl}, @ref{Invoking ggrn}, @ref{Invoking grefer}, @ref{Invoking gchem},
+@ref{Invoking gsoelim}, @ref{Invoking preconv}, @ref{Invoking grotty},
+@ref{Invoking grops}, @ref{Invoking gropdf}, @ref{Invoking grohtml},
+@ref{Invoking grodvi}, @ref{Invoking grolj4}, @ref{Invoking grolbp}, and
 @ref{Invoking gxditview}.
 
 The command line format for @code{groff} is:
@@ -1194,6 +1194,9 @@ following are the output devices currently available:
 @item ps
 For @sc{PostScript} printers and previewers.
 
+@item pdf
+For PDF viewers or printers.
+
 @item dvi
 For @TeX{} DVI format.
 
@@ -1337,7 +1340,7 @@ If this is set to@tie{}@var{X}, then @code{groff} runs
 @code{tbl}, @code{pic}, @code{eqn}, @code{grn}, @code{chem},
 @code{refer}, and @code{soelim}.  It does not apply to @code{grops},
 @code{grodvi}, @code{grotty}, @code{pre-grohtml}, @code{post-grohtml},
-@code{preconv}, @code{grolj4}, and @code{gxditview}.
+@code{preconv}, @code{grolj4}, @code{gropdf}, and @code{gxditview}.
 
 The default command prefix is determined during the installation
 process.  If a non-GNU troff system is found, prefix @samp{g} is used,
@@ -2534,8 +2537,8 @@ release number (such as ``System V Release 3'').
 
 @Defmac {UC, [@Var{version}], man}
 @cindex @code{man}macros, BSD compatibility
-Alters the footer for use with @acronym{BSD} manpages.  This command
-exists only for compatibility; don't use it.  The argument can be:
+Alters the footer for use with BSD manpages.  This command exists only
+for compatibility; don't use it.  The argument can be:
 
 @table @code
 @item 3
@@ -3876,9 +3879,8 @@ equation.
 @DefmacList {[, , ms}
 @DefmacListEnd {], , ms}
 Denotes a reference, to be processed by the @code{refer} preprocessor.
-The @acronym{GNU} @cite{refer(1)} man page provides a comprehensive
-reference to the preprocessor and the format of the bibliographic
-database.
+The GNU @cite{refer(1)} man page provides a comprehensive reference to
+the preprocessor and the format of the bibliographic database.
 @endDefmac
 
 @menu
@@ -8892,10 +8894,10 @@ the current family.
 
 @cindex PostScript fonts
 @cindex fonts, PostScript
-Currently, fonts for the devices @option{-Tps}, @option{-Tdvi},
-@option{-Tlj4}, @option{-Tlbp}, and the X11 fonts are set up to this
-mechanism.  By default, @code{gtroff} uses the Times family with the
-four styles @samp{R}, @samp{I}, @samp{B}, and @samp{BI}.
+Currently, fonts for the devices @option{-Tps}, @option{-Tpdf},
+@option{-Tdvi}, @option{-Tlj4}, @option{-Tlbp}, and the X11 fonts are
+set up to this mechanism.  By default, @code{gtroff} uses the Times
+family with the four styles @samp{R}, @samp{I}, @samp{B}, and @samp{BI}.
 
 This way, it is possible to use the basic four fonts and to select a
 different font family on the command line (@pxref{Groff Options}).
@@ -9804,7 +9806,8 @@ Default scaling indicator is @samp{z}.
 The read-only number register @code{.height} contains the font height as
 set by @code{\H}.
 
-Currently, only the @option{-Tps} device supports this feature.
+Currently, only the @option{-Tps} and @option{-Tpdf} devices support
+this feature.
 
 Note that @code{\H} doesn't produce an input token in @code{gtroff}.  As
 a consequence, it can be used in requests like @code{mc} (which expects
@@ -9840,7 +9843,8 @@ the right.  Only integer values are possible.
 The read-only number register @code{.slant} contains the font slant as
 set by @code{\S}.
 
-Currently, only the @option{-Tps} device supports this feature.
+Currently, only the @option{-Tps} and @option{-Tpdf} devices support
+this feature.
 
 Note that @code{\S} doesn't produce an input token in @code{gtroff}.  As
 a consequence, it can be used in requests like @code{mc} (which expects
@@ -14913,6 +14917,7 @@ is available as an extra package from the following address:
 * Special Characters::
 * grotty::
 * grops::
+* gropdf::
 * grodvi::
 * grolj4::
 * grolbp::
@@ -15023,7 +15028,7 @@ ISO@tie{}6429 SGR sequences to control terminals.
 
 @c =====================================================================
 
-@node grops, grodvi, grotty, Output Devices
+@node grops, gropdf, grotty, Output Devices
 @section @code{grops}
 @cindex @code{grops}, the program
 
@@ -15123,7 +15128,82 @@ This escape sequence is used internally by the macro @code{PSPIC}
 
 @c =====================================================================
 
-@node grodvi, grolj4, grops, Output Devices
+@node gropdf, grodvi, grops, Output Devices
+@section @code{gropdf}
+@cindex @code{gropdf}, the program
+
+The postprocessor @command{gropdf} translates the output from GNU
+@command{troff} into a form suitable for Adobe PDF devices.  It is fully
+documented on its manual page, @cite{gropdf(1)}.
+
+@menu
+* Invoking gropdf::
+* Embedding PDF::
+@end menu
+
+@c ---------------------------------------------------------------------
+
+@node Invoking gropdf, Embedding PDF, gropdf, gropdf
+@subsection Invoking @code{gropdf}
+@cindex invoking @code{gropdf}
+@cindex @code{gropdf}, invoking
+
+The postprocessor @code{gropdf} accepts the following command-line
+options:
+
+@table @option
+@item -d
+Produce uncompressed PDFs which include debugging comments.
+
+@item -e
+This forces @code{gropdf} to embed all used fonts in the PDF,
+even if they are one of the 14 base Adobe fonts.
+
+@item -F@var{dir}
+Put the directory @file{@var{dir}/dev@var{name}} in front of the
+search path for the font, prologue and device description files,
+given the target device @var{name}, usually @strong{pdf}.
+
+@item -fy@var{foundry}
+This forces the use of a different font foundry.
+
+@item -l
+Use landscape orientation.
+
+@item -p@var{papersize}
+Set the page dimensions.  Overrides the commands @option{papersize},
+@option{paperlength}, and @option{paperwidth} in the @file{DESC}
+file.  See the @cite{groff_font(5)} manual page for details.
+
+@item -v
+Print the version number.
+@end table
+
+@c ---------------------------------------------------------------------
+
+@node Embedding PDF,  , Invoking gropdf, gropdf
+@subsection Embedding PDF
+@cindex embedding PDF
+@cindex PDF, embedding
+
+The escape sequence
+
+@code{\X'pdf: pdfpic @var{file} @var{alignment} @var{width} [@var{height}]
+  [@var{linelength}]'}
+
+@noindent
+places a rectangle of the specified @var{width} containing the PDF
+drawing from file @var{file} of desired @var{width} and @var{height} (if
+@var{height} is missing or zero then it is scaled proportionally).  If
+@var{alignment} is @code{-L} the drawing is left aligned.  If it is
+@code{-C} or @code{-R} a @var{linelength} greater than the width of the
+drawing is required as well.  If @var{width} is specified as zero then
+the width is scaled in proportion to the height.
+
+
+@c =====================================================================
+
+@node grodvi, grolj4, gropdf, Output Devices
 @section @code{grodvi}
 @cindex @code{grodvi}, the program
 

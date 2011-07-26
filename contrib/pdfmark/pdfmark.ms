@@ -6,7 +6,7 @@ File position: <groff-source>/contrib/pdfmark/pdfmark.ms
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004, 2005, 2006, 2009 Free Software Foundation, Inc.
+Copyright (C) 2004-2006, 2009, 2011 Free Software Foundation, Inc.
 written by Keith Marshall <keith.d.marshall@ntlworld.com>
 
 Permission is granted to copy, distribute and/or modify this document
@@ -342,6 +342,10 @@ groff -Tps [-m
 .B pdfmark
 .I options \& [-
 .I "file ..." \& "...] "
+.LP
+(Or use the PDF post-processor to avoid using ghostscript,
+.CW -Tpdf\c
+).
 .LP
 It may be noted that the
 .CW pdfmark
@@ -2489,6 +2493,10 @@ groff -Tps
 .B -mspdf
 .I "-options ...\&" ] [
 file(s) ...
+.LP
+(Or use the PDF post-processor to avoid using ghostscript,
+.CW -Tpdf\c
+).
 .LP
 When using the
 .CW spdf.tmac

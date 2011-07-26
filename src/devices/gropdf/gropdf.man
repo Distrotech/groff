@@ -1,0 +1,1069 @@
+.ig
+Copyright (C) 2011
+  Free Software Foundation, Inc.
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be included in
+translations approved by the Free Software Foundation instead of in
+the original English.
+..
+.
+.
+.\" Like TP, but if specified indent is more than half
+.\" the current line-length - indent, use the default indent.
+.de Tp
+.  ie \\n(.$=0:((0\\$1)*2u>(\\n(.lu-\\n(.iu)) .TP
+.  el .TP "\\$1"
+..
+.de TQ
+.  br
+.  ns
+.  TP \$1
+..
+.
+.de FT
+.  if '\\*(.T'ps' .ft \\$1
+.  if '\\*(.T'pdf' .ft \\$1
+..
+.
+.
+.TH GROPDF @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.
+.
+.SH NAME
+.
+gropdf \- PDF driver for groff
+.
+.
+.SH SYNOPSIS
+.
+.SY gropdf
+.OP \-delv
+.OP \-F dir
+\#.OP \-I dir
+.OP \-p papersize
+\#.OP \-w n
+.OP \-fy foundry
+.RI [ files
+.IR .\|.\|. ]
+.YS
+.
+.LP
+It is possible to have whitespace between a command line option and its
+parameter.
+.
+.
+.SH DESCRIPTION
+.
+.B gropdf
+translates the output of GNU
+.B troff
+to PDF.
+.
+Normally
+.B gropdf
+should be invoked by using the groff command
+with a
+.B \-Tpdf
+option.
+.
+If no files are given,
+.B gropdf
+reads the standard input.
+.
+A filename of
+.B \-
+also causes
+.B grops
+to read the standard input.
+.
+PDF output is written to the standard output.
+.
+When
+.B gropdf
+is run by
+.B groff
+options can be passed to
+.B gropdf
+using
+.BR groff 's
+.B \-P
+option.
+.
+.LP
+See section
+.B FONT INSTALLATION
+below for a guide how to install fonts for
+.BR gropdf .
+.
+.
+.SH OPTIONS
+.
+.TP
+.B \-d
+Include debug information as comments within the PDF.
+Also produces an uncompressed PDF.
+.
+.TP
+.B \-e
+Force all fonts to be embedded in the PDF.
+.
+.TP
+.BI \-F dir
+Prepend directory
+.IB dir /dev name
+to the search path for font, and device description files;
+.I name
+is the name of the device, usually
+.BR pdf .
+.
+.\" .TP
+.\" .BI \-I dir
+.\" This option may be used to add a directory to the search path for
+.\" files on the command line and files named in
+.\" .B \[rs]X'ps: import'
+.\" and
+.\" .B \[rs]X'ps: file'
+.\" escapes.
+.\" .
+.\" The search path is initialized with the current directory.
+.\" .
+.\" This option may be specified more than once; the directories are then
+.\" searched in the order specified (but before the current directory).
+.\" .
+.\" If you want to make the current directory be read before other directories,
+.\" add
+.\" .B \-I.\&
+.\" at the appropriate place.
+.\" .
+.\" .IP
+.\" No directory search is performed for files with an absolute file name.
+.\" .
+.\" .TP
+.
+.TP
+.B \-l
+Print the document in landscape format.
+.
+.TP
+.BI \-p paper-size
+Set physical dimension of output medium.
+.
+This overrides the
+.BR papersize ,
+.BR paperlength ,
+and
+.B paperwidth
+commands in the
+.B DESC
+file; it accepts the same arguments as the
+.B papersize
+command.
+.
+See
+.B groff_font (@MAN5EXT@)
+for details.
+.
+.\" .TP
+.\" .BI \-w n
+.\" Lines should be drawn using a thickness of
+.\" .IR n \~\c
+.\" thousandths of an em.
+.\" .
+.\" If this option is not given, the line thickness defaults to 0.04\~em.
+.\" .
+.
+.TP
+.B \-v
+Print the version number.
+.
+.TP
+.BI \-fy foundry
+Set the foundry to use for selecting fonts of the same name.
+.
+.TP
+.B \-e
+Forces gropdf to embed ALL fonts (even the 14 base PDF fonts). 
+.
+.
+.SH USAGE
+.
+The input to
+.B gropdf
+must be in the format output by
+.BR @g@troff (@MAN1EXT@).
+.
+This is described in
+.BR groff_out (@MAN5EXT@).
+.
+.LP
+In addition, the device and font description files for the device used
+must meet certain requirements:
+.
+The resolution must be an integer multiple of\~72 times the
+.BR sizescale .
+.
+The
+.B pdf
+device uses a resolution of 72000 and a sizescale of 1000.
+.
+.LP
+The device description file must contain a valid paper size; see
+.BR groff_font (@MAN5EXT@)
+for more information.
+.
+.B gropdf
+uses the same Type\~1 Adobe postscript fonts as the
+.B grops
+device driver.
+.
+Although the PDF Standard allows the use of other font types (like TrueType)
+this implementation only accepts the Type\~1 postscript font.
+.
+Fewer Type\~1 fonts are supported natively in PDF documents than
+the standard 35 fonts supported by
+.B grops
+and all postscript printers, but all the fonts are available since any
+which aren't supported natively are automatically embedded in the PDF.
+.
+.LP
+.B gropdf
+supports the concept of foundries, that is different versions of basically
+the same font.
+.
+During install a
+.B Foundry
+file controls where fonts are found and builds
+.B groff
+fonts from the files it discovers on your system.
+.
+.LP
+Each font description file must contain a command
+.
+.IP
+.BI internalname\  psname
+.
+.LP
+which says that the PostScript name of the font is
+.IR psname .
+.
+Lines starting with
+.B #
+and blank lines are ignored.
+.
+The code for each character given in the font file must correspond
+to the code in the default encoding for the font.
+.
+This code can be used with the
+.B \[rs]N
+escape sequence in
+.B troff
+to select the character,
+even if the character does not have a groff name.
+.
+Every character in the font file must exist in the PostScript font, and
+the widths given in the font file must match the widths used
+in the PostScript font.
+.
+.LP
+Note that
+.B gropdf
+is currently only able to display the first 256 glyphs in any font.
+This restriction will be lifted in a later version.
+.
+.\" .LP
+.\" Note that
+.\" .B grops
+.\" is able to display all glyphs in a PostScript font, not only 256.
+.\" .I enc_file
+.\" (or the default encoding if no encoding file specified) just defines the
+.\" order of glyphs for the first 256 characters; all other glyphs are
+.\" accessed with additional encoding vectors which
+.\" .B grops
+.\" produces on the fly.
+.
+.LP
+.B gropdf
+can automatically include the downloadable fonts necessary
+to print the document.
+.
+Fonts may be in PFA or PFB format.
+.LP
+.
+Any downloadable fonts which should, when required, be included by
+.B gropdf
+must be listed in the file
+.BR @FONTDIR@/devpdf/download ;
+this should consist of lines of the form
+.
+.IP
+.I
+foundry font filename
+.
+.LP
+where
+.I foundry
+is the foundry name or blank for the default foundry.
+.
+.I font
+is the PostScript name of the font,
+and
+.I filename
+is the name of the file containing the font;
+lines beginning with
+.B #
+and blank lines are ignored;
+fields must be separated by tabs;
+.I filename
+is searched for using the same mechanism that is used
+for groff font metric files.
+.
+The
+.B download
+file itself is also searched for using this mechanism;
+currently, only the first found file in the font path is used.
+.
+Foundry names are usually a single character (such as `U' for the URW
+Foundry) or blank for the default foundry.
+.
+This default uses the same fonts as
+.B ghostscript
+uses when it embeds fonts in a PDF file.
+.
+.LP
+In the default setup there are styles called
+.BR R ,
+.BR I ,
+.BR B ,
+and
+.B BI
+mounted at font positions 1 to\~4.
+.
+The fonts are grouped into families
+.BR A ,
+.BR BM ,
+.BR C ,
+.BR H ,
+.BR HN ,
+.BR N ,
+.BR P ,
+and\~\c
+.B T
+having members in each of these styles:
+.
+.RS
+.TP
+.B AR
+.FT AR
+AvantGarde-Book
+.FT
+.
+.TQ
+.B AI
+.FT AI
+AvantGarde-BookOblique
+.FT
+.
+.TQ
+.B AB
+.FT AB
+AvantGarde-Demi
+.FT
+.
+.TQ
+.B ABI
+.FT ABI
+AvantGarde-DemiOblique
+.FT
+.
+.TQ
+.B BMR
+.FT BMR
+Bookman-Light
+.FT
+.
+.TQ
+.B BMI
+.FT BMI
+Bookman-LightItalic
+.FT
+.
+.TQ
+.B BMB
+.FT BMB
+Bookman-Demi
+.FT
+.
+.TQ
+.B BMBI
+.FT BMBI
+Bookman-DemiItalic
+.FT
+.
+.TQ
+.B CR
+.FT CR
+Courier
+.FT
+.
+.TQ
+.B CI
+.FT CI
+Courier-Oblique
+.FT
+.
+.TQ
+.B CB
+.FT CB
+Courier-Bold
+.FT
+.
+.TQ
+.B CBI
+.FT CBI
+Courier-BoldOblique
+.FT
+.
+.TQ
+.B HR
+.FT HR
+Helvetica
+.FT
+.
+.TQ
+.B HI
+.FT HI
+Helvetica-Oblique
+.FT
+.
+.TQ
+.B HB
+.FT HB
+Helvetica-Bold
+.FT
+.
+.TQ
+.B HBI
+.FT HBI
+Helvetica-BoldOblique
+.FT
+.
+.TQ
+.B HNR
+.FT HNR
+Helvetica-Narrow
+.FT
+.
+.TQ
+.B HNI
+.FT HNI
+Helvetica-Narrow-Oblique
+.FT
+.
+.TQ
+.B HNB
+.FT HNB
+Helvetica-Narrow-Bold
+.FT
+.
+.TQ
+.B HNBI
+.FT HNBI
+Helvetica-Narrow-BoldOblique
+.FT
+.
+.TQ
+.B NR
+.FT NR
+NewCenturySchlbk-Roman
+.FT
+.
+.TQ
+.B NI
+.FT NI
+NewCenturySchlbk-Italic
+.FT
+.
+.TQ
+.B NB
+.FT NB
+NewCenturySchlbk-Bold
+.FT
+.
+.TQ
+.B NBI
+.FT NBI
+NewCenturySchlbk-BoldItalic
+.FT
+.
+.TQ
+.B PR
+.FT PR
+Palatino-Roman
+.FT
+.
+.TQ
+.B PI
+.FT PI
+Palatino-Italic
+.FT
+.
+.TQ
+.B PB
+.FT PB
+Palatino-Bold
+.FT
+.
+.TQ
+.B PBI
+.FT PBI
+Palatino-BoldItalic
+.FT
+.
+.TQ
+.B TR
+.FT TR
+Times-Roman
+.FT
+.
+.TQ
+.B TI
+.FT TI
+Times-Italic
+.FT
+.
+.TQ
+.B TB
+.FT TB
+Times-Bold
+.FT
+.
+.TQ
+.B TBI
+.FT TBI
+Times-BoldItalic
+.FT
+.RE
+.
+.LP
+There is also the following font which is not a member of a family:
+.
+.RS
+.TP
+.B ZCMI
+.FT ZCMI
+ZapfChancery-MediumItalic
+.FT
+.RE
+.
+.LP
+There are also some special fonts called
+.B S
+for the PS Symbol font. The lower case greek characters are automatically
+slanted (to match the SymbolSlanted font (SS) available to postscript).
+.
+Zapf Dingbats is available as
+.BR ZD ,
+the "hand pointing left" glyph (\[rs]lh) is available since it
+has been defined using the \[rs]X'pdf: xrev' extension which reverses the
+direction of letters within words.
+.
+.LP
+The default color for
+.B \[rs]m
+and
+.B \[rs]M
+is black; for colors defined in the `rgb' color space
+.B setrgbcolor
+is used, for `cmy' and `cmyk'
+.BR setcmykcolor ,
+and for `gray'
+.BR setgray .
+.
+Note that
+.B setcmykcolor
+is a PostScript LanguageLevel\~2 command and thus not available on some
+older printers.
+.
+.LP
+.B gropdf
+understands some of the X\~commands produced using the
+.B \[rs]X
+escape sequences supported by
+.B grops.
+Specifically it supports:-
+.
+.TP
+.B "\[rs]X'ps: invis'"
+Suppress output.
+.
+.TP
+.B "\[rs]X'ps: endinvis'"
+Stop suppressing output.
+.
+.TP
+.B "\[rs]X'ps: exec gsave currentpoint 2 copy translate \fIn\fP rotate neg exch neg exch translate'"
+where
+.I n
+is the angle of rotation.
+This is to support the
+.I align
+command in
+.BR gpic .
+.
+.TP
+.B "\[rs]X'ps: exec grestore'"
+Again used by
+.B gpic
+to restore after rotation.
+.
+.TP
+.BI "\[rs]X'ps: ... pdfmark'"
+All the
+.I pdfmark
+macros installed by using
+.I -m pdfmark
+or
+.I -m mspdf
+(see documentation in `pdfmark.pdf').
+A subset of these macros are installed automatically when you use
+.B -Tpdf
+so you should not need to use `-m pdfmark' for using most of the PDF
+functionality.
+.
+.LP
+All other
+.B ps:
+tags are silently ignored.
+.
+.LP
+One
+.B \[rs]X
+special used by the DVI driver is also recognised:
+.
+.TP
+.BI \[rs]X'papersize= paper-size '
+where the
+.I paper-size
+parameter is the same as the
+.B papersize
+command.
+.
+See
+.BR groff_font (@MAN5EXT@)
+for details.
+This means that you can alter the page size at will within the PDF file
+being created by
+.BR gropdf .
+.
+If you do want to change the paper size, it must be done before you start
+creating the page.
+.
+.LP
+In addition,
+.B gropdf
+supports its own suite of
+.B pdf:
+tags.
+.
+The following tags are supported:
+.
+.TP
+.BI "\[rs]X'pdf: pdfpic " "file alignment width height line-length" '
+Place an image of the specified
+.I width
+containing the PDF drawing from file 
+.I file
+of desired 
+.I width
+and
+.I height
+(if 
+.I height
+is missing or zero then it is scaled proportionally).
+.
+If 
+.I alignment
+is
+.B \-L
+the drawing is left aligned.
+.
+If it is
+.B \-C
+or
+.B \-R
+a
+.I linelength
+greater than the width of the drawing is required as well.
+.
+If 
+.I width
+is specified as zero then the width is scaled in proportion to the height.
+.
+.\" .IP
+.\" See
+.\" .BR groff_tmac (@MAN5EXT@)
+.\" for a description of the
+.\" .B PSPIC
+.\" macro which provides a convenient high-level interface for inclusion of
+.\" PostScript graphics.
+.
+.TP
+.B \[rs]X'pdf: xrev'
+This toggles a flag which reverses the direction of printing
+.IR "letter by letter" ,
+i.e., each separate letter is reversed, not the entire word.
+.
+This is useful for reversing the direction of glyphs in the Dingbats font.
+.
+To return to normal printing repeat the command again.
+.
+.TP
+.BI "\[rs]X'pdf: markstart " "/ANN definition" '
+The macros which support PDF Bookmarks use this call internally to start the
+definition of bookmark hotspot (user will have called
+`.pdfhref\~L' with the text which will become the `hot spot' region).
+.
+Normally this is never used except from within the pdfmark macros.
+.
+.TP
+.B \[rs]X'pdf: markend'
+The macros which support PDF Bookmarks use this call internally to stop the
+definition of bookmark hotspot (user will have called
+`.pdfhref\~L' with the text which will become the `hot spot' region).
+.
+Normally this is never used except from within the pdfmark macros.
+.
+.TP
+.B \[rs]X'pdf: marksuspend'
+.TQ
+.B \[rs]X'pdf: markrestart'
+If you are using page traps to produce headings, footings, etc., you need to
+use these in case a `hot spot' crosses a page boundary, otherwise any text
+output by the heading or footing macro will be marked as part of the `hot
+spot'.
+.
+To stop this happening just place
+`.pdfmarksuspend' and `.pdfmarkrestart' at the start and end of the page trap macro,
+respectively.
+.
+(These are just convenience macros which emit the \[rs]X code.
+.
+These macros must only be used within page traps.)
+.
+.SS Importing graphics
+.
+.B gropdf
+only supports importing other PDF files as graphics.
+.
+But that PDF file may contain any of the graphic formats supported by the PDF
+standard (such as JPEG, PNG, GIF, etc.).
+.
+So any application which outputs PDF can be used as an embedded file in
+.BR gropdf .
+.
+The PDF file you wish to insert must be a single page and the drawing must
+just fit inside the media size of the PDF file.
+.
+So, in
+.BR inkscape (1)
+or
+.BR gimp (1)
+(for example) make sure the canvas size just fits the image.
+.
+.LP
+The PDF parser used in
+.B gropdf
+has not been rigorously tested with all possible applications which produce
+PDFs.
+.
+If you find a single page PDF which fails to import properly, it is worth
+running it through the
+.
+.BR pdftk (1)
+program by issuing the command:
+.
+.RS
+.LP
+.B pdftk
+.I oldfile.pdf
+.B output
+.I newfile.pdf
+.RE
+.
+.LP
+You may find that
+.I newfile.pdf
+will now load successfully.
+.
+.SS TrueType and other font formats
+.
+.B gropdf
+does not support TrueType fonts natively within the PDF files it generates
+(but does support any fonts if they are in an imported PDF).
+.
+However, TrueType fonts can be used with
+.B gropdf
+if converted first to
+.B Type\~42
+format, a special PostScript wrapper equivalent to the PFA format mentioned
+in
+.BR \%pfbtops (@MAN1EXT@).
+.
+There are several different methods to generate a Type\~42
+wrapper and most of them involve the use of a PostScript
+interpreter such as Ghostscript \[en] see
+.BR gs (1).
+.
+.LP
+Yet, the easiest method involves the use of the application
+.BR ttftot42 (1).
+.
+This program uses
+.BR freetype (3)
+(version 1.3.1) to generate Type\~42
+font wrappers and well-formed AFM files that can be fed to the
+.BR \%afmtodit (@MAN1EXT@)
+script to create appropriate metric files.
+.
+The resulting font wrappers should be added to groff's
+.B download
+file.
+.
+.B ttftot42
+source code can be downloaded from
+.UR ftp://\:www.giga.or.at/\:pub/\:nih/\:ttftot42/
+ftp://\:www.giga.or.at/\:pub/\:nih/\:ttftot42/
+.UE .
+.
+.LP
+Another solution for creating Type\~42 wrappers is to use FontForge,
+available from
+.UR http://\:fontforge.sf.net
+http://\:fontforge.sf.net
+.UE .
+.
+This font editor can convert most outline font formats.
+.
+.
+.SH FONT INSTALLATION
+.
+This section gives a summary of the above explanations; it can serve
+as a step-by-step font installation guide for
+.BR gropdf .
+.
+.ds BU \[bu]\ \ \"
+.de LI
+.IP "" 4
+\h'-\w'\*[BU]'u'\*[BU]\c
+..
+.LI
+Convert your font to something groff understands.
+.
+This is either a PostScript Type\~1 font in either PFA or PFB format or a
+PostScript Type\~42 font, together with an AFM file.
+.
+.IP
+The very first line in a PFA/PFB file contains this:
+.
+.RS
+.IP
+.B %!PS-AdobeFont-1.0:
+.RE
+.
+.IP
+A PFB file has this also in the first line, but the string is
+preceded with some binary bytes.
+.
+.IP
+The very first characters in a Type\~42 font file look like this:
+.
+.RS
+.IP
+.B %!PS-TrueTypeFont
+.RE
+.
+.IP
+This is a wrapper format for TrueType fonts.
+.
+Old PS printers might not support it (this is, they don't have a
+built-in TrueType font interpreter).
+.
+.IP
+For TrueType fonts, try
+.B ttftot42
+or
+.BR fontforge .
+For all other font formats use
+.B fontforge
+which can convert most outline font formats.
+.
+.LI
+Convert the AFM file to a groff font description file with the
+.BR \%afmtodit (@MAN1EXT@)
+program.
+.
+An example call is
+.
+.RS
+.IP
+afmtodit Foo-Bar-Bold.afm map/textmap FBB
+.RE
+.
+.IP
+which converts the metric file `Foo-Bar-Bold.afm' to the groff
+font `FBB'.
+.
+If you have a font family which comes with normal, bold, italic,
+and bold italic faces, it is recommended to use the letters
+.BR R ,
+.BR B ,
+.BR I ,
+and
+.BR BI ,
+respectively, as postfixes in the groff font names to make groff's
+`.fam' request work.
+.
+An example is groff's built-in Times-Roman font: The font family name
+is
+.BR T ,
+and the groff font names are
+.BR TR ,
+.BR TB ,
+.BR TI ,
+and
+.BR TBI .
+.
+.LI
+Install both the groff font description files and the fonts in a
+`devpdf' subdirectory of the font path which groff finds.
+.
+See the
+.B ENVIRONMENT
+section in the
+.BR troff (@MAN1EXT@)
+man page which lists the actual value of the font path.
+.
+Note that groff doesn't use the AFM files (but it is a good idea to
+store them anyway).
+.
+.LI
+Register all fonts which must be downloaded to the printer in the
+`devpdf/download' file.
+.
+Only the first occurrence of this file in the font path is read.
+.
+This means that you should copy the default `download' file to the
+first directory in your font path and add your fonts there.
+.
+To continue the above example we assume that the PS font name for
+Foo-Bar-Bold.pfa is `XY-Foo-Bar-Bold' (the PS font name is stored in the
+.B internalname
+field in the `FBB' file) and belongs to foundry `F', thus the following
+line should be added to `download':
+.
+.RS
+.IP
+.B F XY-Foo-Bar-Bold Foo-Bar-Bold.pfa
+.
+.LP
+Use a tab character to separate the fields, and the
+`foundry' field should be null for the default foundry.
+.RE
+.
+.
+.SH ENVIRONMENT
+.
+.TP
+.SM
+.B GROFF_FONT_PATH
+A list of directories in which to search for the
+.BI dev name
+directory in addition to the default ones.
+.
+If, in the `download' file, the
+font file has been specified with a full path, no directories are searched.
+.
+See
+.BR @g@troff (@MAN1EXT@)
+and
+.BR \%groff_font (@MAN5EXT@)
+for more details.
+.
+.
+.SH FILES
+.
+.Tp \w'\fB@FONTDIR@/devpdf/download'u+2n
+.B @FONTDIR@/devpdf/DESC
+Device description file.
+.
+.TP
+.BI @FONTDIR@/devpdf/ F
+Font description file for font\~\c
+.IR F .
+.
+.TP
+.BI @FONTDIR@/devpdf/ U-F
+Font description file for font\~\c
+.I F
+(using foundry\~\c
+.I U
+rather than the default foundry).
+.
+.TP
+.B @FONTDIR@/devpdf/download
+List of downloadable fonts.
+.
+.TP
+.B @FONTDIR@/devpdf/Foundry
+A Perl script used during install to locate suitable fonts.
+.
+.TP
+.B @FONTDIR@/devpdf/enc/text.enc
+Encoding used for text fonts.
+.
+.TP
+.B @MACRODIR@/pdf.tmac
+Macros for use with
+.BR gropdf ;
+automatically loaded by
+.BR troffrc .
+.
+.\" .TP
+.\" .B @MACRODIR@/pspic.tmac
+.\" Definition of
+.\" .B PSPIC
+.\" macro,
+.\" automatically loaded by
+.\" .BR ps.tmac .
+.\" .
+.
+.
+.SH "SEE ALSO"
+.
+.BR \%afmtodit (@MAN1EXT@),
+.BR groff (@MAN1EXT@),
+.BR grops (@MAN1EXT@),
+.BR @g@troff (@MAN1EXT@),
+.BR grops (@MAN1EXT@),
+.BR \%pfbtops (@MAN1EXT@),
+.BR \%groff_out (@MAN5EXT@),
+.BR \%groff_font (@MAN5EXT@),
+.BR \%groff_char (@MAN7EXT@),
+.BR \%groff_tmac (@MAN5EXT@)
+.
+.
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" End:

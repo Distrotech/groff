@@ -862,7 +862,7 @@ In GNU \fBgpic\fR, objects can have an
 .B aligned
 attribute.
 This only works if the postprocessor is
-\fBgrops\fP.
+\fBgrops\fP or \fBgropdf\fP.
 Any text associated with an object having the
 .B aligned
 attribute is rotated about the center of the object

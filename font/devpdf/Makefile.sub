@@ -1,0 +1,107 @@
+# Copyright (C) 2011 Free Software Foundation, Inc.
+#      Written by Deri James <deri@chuzzlewit.demon.co.uk>
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+DEV=pdf
+GROFF_FONT_FILES=`cd $(DESTDIR)$(fontsubdir); \
+                  grep -l internalname * | grep -v Makefile.sub`
+ENC_FILES=`cd $(DESTDIR)$(fontsubdir); ls enc`
+MAP_FILES=`cd $(DESTDIR)$(fontsubdir); ls map`
+
+UTILFILES=\
+  BuildFoundries
+
+MOSTLYCLEANADD=\
+  download \
+  DESC \
+  util/BuildFoundries \
+  $(GROFF_FONT_FILES) \
+  $(ENC_FILES) \
+  $(MAP_FILES)
+#MOSTLYCLEANDIRADD=enc map
+
+DEVFILES=\
+  Foundry
+#DEVSCRIPTS=util/BuildFoundries
+
+DISTFILES=\
+  $(DEVFILES) \
+  $(DEVSCRIPTS)
+
+
+# Some `makes' don't predefine RM...
+RM=rm -f
+
+
+all: DESC BuildFoundries
+
+DESC: DESC.in
+	-rm -f DESC
+	cat $(srcdir)/DESC.in >DESC
+	if test "$(PAGE)" = A4; then \
+	  echo "papersize a4" >>DESC; \
+	else \
+	  echo "papersize letter" >>DESC; \
+	fi
+
+BuildFoundries: util/BuildFoundries.pl $(SH_DEPS_SED_SCRIPT)
+	-test -d util || $(mkinstalldirs) util
+	$(RM) util/$@
+	sed -f $(SH_DEPS_SED_SCRIPT) \
+	    -e "s|@VERSION@|$(version)$(revision)|" \
+	    -e "s|@PERLPATH@|$(PERLPATH)|" \
+	    -e "s|@GROFF_FONT_DIR@|$(fontdir)|" $(srcdir)/util/BuildFoundries.pl > util/$@
+	chmod +x util/$@
+
+install_data:
+	-test -d $(DESTDIR)$(fontsubdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)
+	-test -d $(DESTDIR)$(fontsubdir)/enc \
+	  || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/enc
+	-test -d $(DESTDIR)$(fontsubdir)/map \
+	  || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/map
+	for f in $(MOSTLYCLEANADD); do \
+	  $(RM) $(DESTDIR)$(fontsubdir)/$$f; \
+	  if test -f $$f; then \
+	    $(INSTALL_DATA) $$f $(DESTDIR)$(fontsubdir)/$$f; \
+	  else \
+	    $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(fontsubdir)/$$f; \
+	  fi; \
+	done
+	$(RM) $@
+	cp -f $(DESTDIR)$(fontdir)/devps/text.enc \
+	  $(DESTDIR)$(fontsubdir)/enc
+	cp -f $(srcdir)/../devps/symbolmap \
+	  $(DESTDIR)$(fontsubdir)/map
+	cp -f $(DESTDIR)$(fontdir)/devps/generate/dingbats.map \
+	  $(DESTDIR)$(fontsubdir)/map
+	cp -f $(DESTDIR)$(fontdir)/devps/generate/textmap \
+	  $(DESTDIR)$(fontsubdir)/map
+	cp -f $(DESTDIR)$(fontdir)/devps/generate/symbolchars \
+	  $(DESTDIR)$(fontsubdir)/map
+	echo "# foundry	ps name	psfile" > $(DESTDIR)$(fontsubdir)/download
+	util/BuildFoundries $(DESTDIR)$(fontsubdir) \
+	  > $(DESTDIR)$(fontsubdir)/download
+
+uninstall_sub:
+	for f in $(MOSTLYCLEANADD); do \
+	  $(RM) $(DESTDIR)$(fontsubdir)/$$f; \
+	done
+	rmdir $(DESTDIR)$(fontsubdir)/enc
+	rmdir $(DESTDIR)$(fontsubdir)/map
+	rmdir $(DESTDIR)$(fontsubdir)/util
+	rmdir $(DESTDIR)$(fontsubdir)

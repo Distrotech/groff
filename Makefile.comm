@@ -1,4 +1,4 @@
-# Copyright (C) 1989-2000, 2002, 2003, 2004, 2006, 2007, 2009, 2010
+# Copyright (C) 1989-2000, 2002-2004, 2006-2011
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
@@ -246,6 +246,18 @@ install_dev:
 	  test -d $(DESTDIR)$(fontsubdir)/generate \
 	    || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/generate; \
 	fi
+	-if test -d $(srcdir)/enc; then \
+	  test -d $(DESTDIR)$(fontsubdir)/enc \
+	    || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/enc; \
+	fi
+	-if test -d $(srcdir)/map; then \
+	  test -d $(DESTDIR)$(fontsubdir)/map \
+	    || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/map; \
+	fi
+	-if test -d $(srcdir)/util; then \
+	  test -d $(DESTDIR)$(fontsubdir)/util \
+	    || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/util; \
+	fi
 	-if test -d $(srcdir)/old; then \
 	  test -d $(DESTDIR)$(oldfontdir) \
 	    || $(mkinstalldirs) $(DESTDIR)$(oldfontdir); \
@@ -288,6 +300,12 @@ uninstall_dev:
 	     done
 	-test -d $(DESTDIR)$(fontsubdir)/generate \
 	  && rmdir $(DESTDIR)$(fontsubdir)/generate
+	-test -d $(DESTDIR)$(fontsubdir)/enc \
+	  && rmdir $(DESTDIR)$(fontsubdir)/enc
+	-test -d $(DESTDIR)$(fontsubdir)/map \
+	  && rmdir $(DESTDIR)$(fontsubdir)/map
+	-test -d $(DESTDIR)$(fontsubdir)/util \
+	  && rmdir $(DESTDIR)$(fontsubdir)/util
 	-rmdir $(DESTDIR)$(fontsubdir)
 	-rmdir $(DESTDIR)$(oldfontsubdir)
 
