@@ -774,7 +774,8 @@ $(GNULIBDIRS): FORCE
 	case $(do) in \
 	all) \
 	cd $@; \
-	test -f Makefile || $(SHELL) $$srcdir/configure ; \
+	args=`$(top_builddir)/config.status --config`; \
+	test -f Makefile || eval $$srcdir/configure "$$args" --srcdir=$$srcdir; \
 	$(MAKE) ACLOCAL=: AUTOCONF=: AUTOHEADER=: AUTOMAKE=: $(do) ;; \
 	esac
 
