@@ -93,33 +93,33 @@ my $suspendmark=undef;
 my $n_flg=1;
 
 my %ppsz=(	'ledger'=>[1224,792],
-		'legal'=>[612,1008],
-		'letter'=>[612,792],
-		'a0'=>[2384,3370],
-		'a1'=>[1684,2384],
-		'a2'=>[1191,1684],
-		'a3'=>[842,1191],
-		'a4'=>[595,842],
-		'a5'=>[420,595],
-		'a6'=>[297,420],
-		'a7'=>[210,297],
-		'a8'=>[148,210],
-		'a9'=>[105,148],
-		'a10'=>[73,105],
-		'isob0'=>[2835,4008],
-		'isob1'=>[2004,2835],
-		'isob2'=>[1417,2004],
-		'isob3'=>[1001,1417],
-		'isob4'=>[709,1001],
-		'isob5'=>[499,709],
-		'isob6'=>[354,499],
-		'c0'=>[2599,3677],
-		'c1'=>[1837,2599],
-		'c2'=>[1298,1837],
-		'c3'=>[918,1298],
-		'c4'=>[649,918],
-		'c5'=>[459,649],
-		'c6'=>[323,459] );
+	'legal'=>[612,1008],
+	'letter'=>[612,792],
+	'a0'=>[2384,3370],
+	'a1'=>[1684,2384],
+	'a2'=>[1191,1684],
+	'a3'=>[842,1191],
+	'a4'=>[595,842],
+	'a5'=>[420,595],
+	'a6'=>[297,420],
+	'a7'=>[210,297],
+	'a8'=>[148,210],
+	'a9'=>[105,148],
+	'a10'=>[73,105],
+	'isob0'=>[2835,4008],
+	'isob1'=>[2004,2835],
+	'isob2'=>[1417,2004],
+	'isob3'=>[1001,1417],
+	'isob4'=>[709,1001],
+	'isob5'=>[499,709],
+	'isob6'=>[354,499],
+	'c0'=>[2599,3677],
+	'c1'=>[1837,2599],
+	'c2'=>[1298,1837],
+	'c3'=>[918,1298],
+	'c4'=>[649,918],
+	'c5'=>[459,649],
+	'c6'=>[323,459] );
 
 
 my $fd;
@@ -157,92 +157,92 @@ MakeMatrix();
 
 if (substr($papersz,0,1) eq '/' and -r $papersz)
 {
-	if (open(P,"<$papersz"))
+    if (open(P,"<$papersz"))
+    {
+	while (<P>)
 	{
-		while (<P>)
-		{
-			chomp;
-			s/# .*//;
-			next if $_ eq '';
-			$papersz=$_;
-			last
-		}
-
-		close(P);
+	    chomp;
+	    s/# .*//;
+	    next if $_ eq '';
+	    $papersz=$_;
+	    last
 	}
+
+	close(P);
+    }
 }
 
 if ($papersz=~m/([\d.]+)([cipP]),([\d.]+)([cipP])/)
 {
-	@defaultmb=@mediabox=(0,0,ToPoints($1,$2),ToPoints($3,$4));
+    @defaultmb=@mediabox=(0,0,ToPoints($1,$2),ToPoints($3,$4));
 }
 elsif (exists($ppsz{$papersz}))
 {
-	@defaultmb=@mediabox=(0,0,$ppsz{$papersz}->[0],$ppsz{$papersz}->[1]);
+    @defaultmb=@mediabox=(0,0,$ppsz{$papersz}->[0],$ppsz{$papersz}->[1]);
 }
 
 my (@dt)=localtime(time);
 my $dt=PDFDate(\@dt);
 
 my %info=('Creator' => "(groff version $cfg{GROFF_VERSION})",
-								'Producer' => "(gropdf version $cfg{GROFF_VERSION})",
-								'ModDate' => "($dt)",
-								'CreationDate' => "($dt)");
+				'Producer' => "(gropdf version $cfg{GROFF_VERSION})",
+				'ModDate' => "($dt)",
+				'CreationDate' => "($dt)");
 while (<>)
 {
-	chomp;
-	$lct++;
-	
-	do 	# The ahead buffer behaves like 'ungetc'
-	{{
-		if (scalar(@ahead))
-		{
-			$_=shift(@ahead);
-		}
-		
+    chomp;
+    $lct++;
 
-		my $cmd=substr($_,0,1);
-		next if $cmd eq '#';	# just a comment
-		my $lin=substr($_,1);
+    do 	# The ahead buffer behaves like 'ungetc'
+    {{
+	if (scalar(@ahead))
+	{
+	    $_=shift(@ahead);
+	}
 
-		while ($cmd eq 'w')
-		{
-			$cmd=substr($lin,0,1);
-			$lin=substr($lin,1);
-			$w_flg=1 if $gotT;
-		}
-		
-		$lin=~s/^\s+//;
+
+	my $cmd=substr($_,0,1);
+	next if $cmd eq '#';	# just a comment
+	my $lin=substr($_,1);
+
+	while ($cmd eq 'w')
+	{
+	    $cmd=substr($lin,0,1);
+	    $lin=substr($lin,1);
+	    $w_flg=1 if $gotT;
+	}
+
+	$lin=~s/^\s+//;
 #		$lin=~s/\s#.*?$//;	# remove comment
-		$stream.="\% $_\n" if $debug;
+	$stream.="\% $_\n" if $debug;
 
-		do_x($lin),next if ($cmd eq 'x');
-		next if $suppress;
-		do_p($lin),next if ($cmd eq 'p');
-		do_f($lin),next if ($cmd eq 'f');
-		do_s($lin),next if ($cmd eq 's');
-		do_m($lin),next if ($cmd eq 'm');
-		do_D($lin),next if ($cmd eq 'D');
-		do_V($lin),next if ($cmd eq 'V');
-		do_v($lin),next if ($cmd eq 'v');
-		do_t($lin),next if ($cmd eq 't');
-		do_C($lin),next if ($cmd eq 'C');
-		do_c($lin),next if ($cmd eq 'c');
-		do_N($lin),next if ($cmd eq 'N');
-		do_h($lin),next if ($cmd eq 'h');
-		do_H($lin),next if ($cmd eq 'H');
-		do_n($lin),next if ($cmd eq 'n');
-		
-		my $tmp=scalar(@ahead);
-	}} until scalar(@ahead) == 0;
-	
+	do_x($lin),next if ($cmd eq 'x');
+	next if $suppress;
+	do_p($lin),next if ($cmd eq 'p');
+	do_f($lin),next if ($cmd eq 'f');
+	do_s($lin),next if ($cmd eq 's');
+	do_m($lin),next if ($cmd eq 'm');
+	do_D($lin),next if ($cmd eq 'D');
+	do_V($lin),next if ($cmd eq 'V');
+	do_v($lin),next if ($cmd eq 'v');
+	do_t($lin),next if ($cmd eq 't');
+	do_C($lin),next if ($cmd eq 'C');
+	do_c($lin),next if ($cmd eq 'c');
+	do_N($lin),next if ($cmd eq 'N');
+	do_h($lin),next if ($cmd eq 'h');
+	do_H($lin),next if ($cmd eq 'H');
+	do_n($lin),next if ($cmd eq 'n');
+
+	my $tmp=scalar(@ahead);
+    }} until scalar(@ahead) == 0;
+
 }
 
 
 if ($cpageno > 0)
 {
-	PutObj($cpageno);
-	OutStream($cpageno+1);
+    PutObj($cpageno);
+    OutStream($cpageno+1);
 }
 
 
@@ -256,7 +256,7 @@ PutObj($objct);
 
 foreach my $o (3..$objct)
 {
-	PutObj($o) if (!exists($obj[$o]->{XREF}));
+    PutObj($o) if (!exists($obj[$o]->{XREF}));
 }
 
 #my $encrypt=BuildObj(++$objct,{'Filter' => '/Standard', 'V' => 1, 'R' => 2, 'P' => 252});
@@ -270,8 +270,8 @@ print "xref\n0 $objct\n0000000000 65535 f \n";
 
 foreach my $xr (@obj)
 {
-	next if !defined($xr);
-	printf("%010d 00000 n \n",$xr->{XREF});
+    next if !defined($xr);
+    printf("%010d 00000 n \n",$xr->{XREF});
 }
 
 print "trailer\n<<\n/Info $info\n/Root 1 0 R\n/Size $objct\n>>\nstartxref\n$fct\n\%\%EOF\n\% Pages=$pages->{Count}\n";
@@ -279,227 +279,227 @@ print "trailer\n<<\n/Info $info\n/Root 1 0 R\n/Size $objct\n>>\nstartxref\n$fct\
 
 sub MakeMatrix
 {
-	my $fontxrev=shift||0;
-	my @mat=($frot)?(0,1,-1,0):(1,0,0,1);
+    my $fontxrev=shift||0;
+    my @mat=($frot)?(0,1,-1,0):(1,0,0,1);
 
-	if (!$frot)
+    if (!$frot)
+    {
+	if ($env{FontHT} != 0)
 	{
-		if ($env{FontHT} != 0)
-		{
-			$mat[3]=sprintf('%.3f',$env{FontHT}/$cftsz);
-		}
-
-		if ($env{FontSlant} != 0)
-		{
-			my $slant=$env{FontSlant};
-			$slant*=$env{FontHT}/$cftsz if $env{FontHT} != 0;
-			my $ang=rad($slant);
-
-			$mat[2]=sprintf('%.3f',sin($ang)/cos($ang));
-		}
-
-		if ($fontxrev)
-		{
-			$mat[0]=-$mat[0];
-		}
+	    $mat[3]=sprintf('%.3f',$env{FontHT}/$cftsz);
 	}
 
-	$matrix=join(' ',@mat);
-	$matrixchg=1;
+	if ($env{FontSlant} != 0)
+	{
+	    my $slant=$env{FontSlant};
+	    $slant*=$env{FontHT}/$cftsz if $env{FontHT} != 0;
+	    my $ang=rad($slant);
+
+	    $mat[2]=sprintf('%.3f',sin($ang)/cos($ang));
+	}
+
+	if ($fontxrev)
+	{
+	    $mat[0]=-$mat[0];
+	}
+    }
+
+    $matrix=join(' ',@mat);
+    $matrixchg=1;
 }
 
 sub PutOutlines
 {
-	my $o=shift;
-	my $outlines;
-	
-	if ($#{$o} > 0)
+    my $o=shift;
+    my $outlines;
+
+    if ($#{$o} > 0)
+    {
+	# We've got Outlines to deal with
+	my $openct=$curoutlev->[0]->[2];
+
+	while ($thislev-- > 1)
 	{
-		# We've got Outlines to deal with
-		my $openct=$curoutlev->[0]->[2];
-		
-		while ($thislev-- > 1)
-		{
-			my $nxtoutlev=$curoutlev->[0]->[1];
-			$nxtoutlev->[0]->[2]+=$openct if $curoutlev->[0]->[3]==1;
-			$openct=0 if $nxtoutlev->[0]->[3]==-1;
-			$curoutlev=$nxtoutlev;
-		}
-		
-		$cat->{Outlines}=BuildObj(++$objct,{'Count' => abs($o->[0]->[0])+$o->[0]->[2]});
-		$outlines=$obj[$objct]->{DATA};
-	}
-	else
-	{
-		return;
+	    my $nxtoutlev=$curoutlev->[0]->[1];
+	    $nxtoutlev->[0]->[2]+=$openct if $curoutlev->[0]->[3]==1;
+	    $openct=0 if $nxtoutlev->[0]->[3]==-1;
+	    $curoutlev=$nxtoutlev;
 	}
 
-	SetOutObj($o);
+	$cat->{Outlines}=BuildObj(++$objct,{'Count' => abs($o->[0]->[0])+$o->[0]->[2]});
+	$outlines=$obj[$objct]->{DATA};
+    }
+    else
+    {
+	return;
+    }
 
-	$outlines->{First}=$o->[1]->[2];
-	$outlines->{Last}=$o->[$#{$o}]->[2];
+    SetOutObj($o);
 
-	LinkOutObj($o,$cat->{Outlines});
+    $outlines->{First}=$o->[1]->[2];
+    $outlines->{Last}=$o->[$#{$o}]->[2];
+
+    LinkOutObj($o,$cat->{Outlines});
 }
 
 sub SetOutObj
 {
-	my $o=shift;
+    my $o=shift;
 
-	for my $j (1..$#{$o})
-	{
-		my $ono=BuildObj(++$objct,$o->[$j]->[0]);
-		$o->[$j]->[2]=$ono;
+    for my $j (1..$#{$o})
+    {
+	my $ono=BuildObj(++$objct,$o->[$j]->[0]);
+	$o->[$j]->[2]=$ono;
 
-		SetOutObj($o->[$j]->[1]) if $#{$o->[$j]->[1]} > -1;
-	}
+	SetOutObj($o->[$j]->[1]) if $#{$o->[$j]->[1]} > -1;
+    }
 }
 
 sub LinkOutObj
 {
-	my $o=shift;
-	my $parent=shift;
+    my $o=shift;
+    my $parent=shift;
 
-	for my $j (1..$#{$o})
+    for my $j (1..$#{$o})
+    {
+	my $op=GetObj($o->[$j]->[2]);
+
+	$op->{Next}=$o->[$j+1]->[2] if ($j < $#{$o});
+	$op->{Prev}=$o->[$j-1]->[2] if ($j > 1);
+	$op->{Parent}=$parent;
+
+	if ($#{$o->[$j]->[1]} > -1)
 	{
-		my $op=GetObj($o->[$j]->[2]);
-		
-		$op->{Next}=$o->[$j+1]->[2] if ($j < $#{$o});
-		$op->{Prev}=$o->[$j-1]->[2] if ($j > 1);
-		$op->{Parent}=$parent;
-
-		if ($#{$o->[$j]->[1]} > -1)
-		{
-			$op->{Count}=$o->[$j]->[1]->[0]->[2]*$o->[$j]->[1]->[0]->[3];# if exists($op->{Count}) and $op->{Count} > 0;
-			$op->{First}=$o->[$j]->[1]->[1]->[2];
-			$op->{Last}=$o->[$j]->[1]->[$#{$o->[$j]->[1]}]->[2];
-			LinkOutObj($o->[$j]->[1],$o->[$j]->[2]);
-		}
+	    $op->{Count}=$o->[$j]->[1]->[0]->[2]*$o->[$j]->[1]->[0]->[3];# if exists($op->{Count}) and $op->{Count} > 0;
+	    $op->{First}=$o->[$j]->[1]->[1]->[2];
+	    $op->{Last}=$o->[$j]->[1]->[$#{$o->[$j]->[1]}]->[2];
+	    LinkOutObj($o->[$j]->[1],$o->[$j]->[2]);
 	}
+    }
 }
 
 sub GetObj
 {
-	my $ono=shift;
-	($ono)=split(' ',$ono);
-	return($obj[$ono]->{DATA});
+    my $ono=shift;
+    ($ono)=split(' ',$ono);
+    return($obj[$ono]->{DATA});
 }
-		
-	
+
+
 
 sub PDFDate
 {
-	my $dt=shift;
-	return(sprintf("D:%04d%02d%02d%02d%02d%02d% +02d'00'",$dt->[5]+1900,$dt->[4]+1,$dt->[3],$dt->[2],$dt->[1],$dt->[0],( localtime time() + 3600*( 12 - (gmtime)[2] ) )[2] - 12));
+    my $dt=shift;
+    return(sprintf("D:%04d%02d%02d%02d%02d%02d% +02d'00'",$dt->[5]+1900,$dt->[4]+1,$dt->[3],$dt->[2],$dt->[1],$dt->[0],( localtime time() + 3600*( 12 - (gmtime)[2] ) )[2] - 12));
 }
 
 sub ToPoints
 {
-	my $num=shift;
-	my $unit=shift;
+    my $num=shift;
+    my $unit=shift;
 
-	if ($unit eq 'i')
-	{
-		return($num*72);
-	}
-	elsif ($unit eq 'c')
-	{
-		return int($num*72/2.54);
-	}
-	elsif ($unit eq 'm')	# millimetres
-	{
-		return int($num*72/25.4);
-	}
-	elsif ($unit eq 'p')
-	{
-		return($num);
-	}
-	elsif ($unit eq 'P')
-	{
-		return($num*6);
-	}
-	else
-	{
-		Msg(1,"Unknown scaling factor '$unit'");
-	}
+    if ($unit eq 'i')
+    {
+	return($num*72);
+    }
+    elsif ($unit eq 'c')
+    {
+	return int($num*72/2.54);
+    }
+    elsif ($unit eq 'm')	# millimetres
+    {
+	return int($num*72/25.4);
+    }
+    elsif ($unit eq 'p')
+    {
+	return($num);
+    }
+    elsif ($unit eq 'P')
+    {
+	return($num*6);
+    }
+    else
+    {
+	Msg(1,"Unknown scaling factor '$unit'");
+    }
 }
 
 sub Load_Config
 {
-	open(CFG,"<gropdf_config") or die "Can't open config file: $!";
+    open(CFG,"<gropdf_config") or die "Can't open config file: $!";
 
-	while (<CFG>)
-	{
-		chomp;
-		my ($key,$val)=split(/ ?= ?/);
+    while (<CFG>)
+    {
+	chomp;
+	my ($key,$val)=split(/ ?= ?/);
 
-		$cfg{$key}=$val;
-	}
+	$cfg{$key}=$val;
+    }
 
-	close(CFG);
+    close(CFG);
 }
 
 sub LoadDownload
 {
-	my $f;
-	
-	OpenFile(\$f,$fontdir,"download");
-	Msg(1,"Failed to open 'download'") if !defined($f);
+    my $f;
 
-	while (<$f>)
+    OpenFile(\$f,$fontdir,"download");
+    Msg(1,"Failed to open 'download'") if !defined($f);
+
+    while (<$f>)
+    {
+	chomp;
+	s/#.*$//;
+	next if $_ eq '';
+	my ($foundry,$name,$file)=split(/\t+/);
+	if (substr($file,0,1) eq '*')
 	{
-		chomp;
-		s/#.*$//;
-		next if $_ eq '';
-		my ($foundry,$name,$file)=split(/\t+/);
-		if (substr($file,0,1) eq '*')
-		{
-			next if !$embedall;
-			$file=substr($file,1);
-		}
-		
-		$download{"$foundry $name"}=$file;
+	    next if !$embedall;
+	    $file=substr($file,1);
 	}
 
-	close($f);
+	$download{"$foundry $name"}=$file;
+    }
+
+    close($f);
 }
 
 sub OpenFile
 {
-	my $f=shift;
-	my $dirs=shift;
-	my $fnm=shift;
+    my $f=shift;
+    my $dirs=shift;
+    my $fnm=shift;
 
-	if (substr($fnm,0,1)  eq '/')
-	{
-		return if -r "$fnm" and open($$f,"<$fnm");
-	}
-	
-	my (@dirs)=split(':',$dirs);
+    if (substr($fnm,0,1)  eq '/')
+    {
+	return if -r "$fnm" and open($$f,"<$fnm");
+    }
 
-	foreach my $dir (@dirs)
-	{
-		last if -r "$dir/$devnm/$fnm" and open($$f,"<$dir/$devnm/$fnm");
-	}
+    my (@dirs)=split(':',$dirs);
+
+    foreach my $dir (@dirs)
+    {
+	last if -r "$dir/$devnm/$fnm" and open($$f,"<$dir/$devnm/$fnm");
+    }
 }
 
 sub LoadDesc
 {
-	my $f;
-	
-	OpenFile(\$f,$fontdir,"DESC");
-	Msg(1,"Failed to open 'DESC'") if !defined($f);
-	
-	while (<$f>)
-	{
-		chomp;
-		s/#.*$//;
-		next if $_ eq '';
-		my ($name,$prms)=split(' ',$_,2);
-		$desc{lc($name)}=$prms;
-	}
-	
-	close($f);
+    my $f;
+
+    OpenFile(\$f,$fontdir,"DESC");
+    Msg(1,"Failed to open 'DESC'") if !defined($f);
+
+    while (<$f>)
+    {
+	chomp;
+	s/#.*$//;
+	next if $_ eq '';
+	my ($name,$prms)=split(' ',$_,2);
+	$desc{lc($name)}=$prms;
+    }
+
+    close($f);
 }
 
 sub rad  { $_[0]*3.14159/180 }
@@ -508,417 +508,417 @@ my $InPicRotate=0;
 
 sub do_x
 {
-	my $l=shift;
-	my ($xcmd,@xprm)=split(' ',$l);
+    my $l=shift;
+    my ($xcmd,@xprm)=split(' ',$l);
+    $xcmd=substr($xcmd,0,1);
+
+    if ($xcmd eq 'T')
+    {
+	Msg(0,"Expecting a pdf pipe (got $xprm[0])") if $xprm[0] ne substr($devnm,3);
+    }
+    elsif ($xcmd eq 'f')	# Register Font
+    {
+	$xprm[1]="${Foundry}-$xprm[1]" if $Foundry ne '';
+	LoadFont($xprm[0],$xprm[1]);
+    }
+    elsif ($xcmd eq 'F')	# Source File (for errors)
+    {
+	$env{SourceFile}=$xprm[0];
+    }
+    elsif ($xcmd eq 'H')	# FontHT
+    {
+	$xprm[0]/=$unitwidth;
+	$xprm[0]=0 if $xprm[0] == $cftsz;
+	$env{FontHT}=$xprm[0];
+	MakeMatrix();
+    }
+    elsif ($xcmd eq 'S')	# FontSlant
+    {
+	$env{FontSlant}=$xprm[0];
+	MakeMatrix();
+    }
+    elsif ($xcmd eq 'i')	# Initialise
+    {
+	$objct++;
+	@defaultmb=@mediabox;
+	BuildObj($objct,{'Pages' => BuildObj($objct+1,
+			    {'Kids' => [],
+			    'Count' => 0,
+			    'Type' => '/Pages',
+			    'Rotate' => $rot,
+			    'MediaBox' => \@defaultmb,
+			    'Resources' =>
+				{'Font' => {},
+				'ProcSet' => ['/PDF', '/Text', '/ImageB', '/ImageC', '/ImageI']}
+			    }
+			    ),
+	    'Type' =>  '/Catalog'});
+
+	$cat=$obj[$objct]->{DATA};
+	$objct++;
+	$pages=$obj[2]->{DATA};
+        Put("%PDF-1.4\n%‚„œ”\n");
+    }
+    elsif ($xcmd eq 'X')
+    {
+	# There could be extended args
+	do
+	{{
+	    LoadAhead(1);
+	    if (substr($ahead[0],0,1) eq '+')
+	    {
+		$l.="\n".substr($ahead[0],1);
+		shift(@ahead);
+	    }
+	}} until $#ahead==0;
+
+	($xcmd,@xprm)=split(' ',$l);
 	$xcmd=substr($xcmd,0,1);
 
-	if ($xcmd eq 'T')
+	if ($xprm[0]=~m/^(.+:)(.+)/)
 	{
-		Msg(0,"Expecting a pdf pipe (got $xprm[0])") if $xprm[0] ne substr($devnm,3);
+	    splice(@xprm,1,0,$2);
+	    $xprm[0]=$1;
 	}
-	elsif ($xcmd eq 'f')	# Register Font
-	{
-		$xprm[1]="${Foundry}-$xprm[1]" if $Foundry ne '';
-		LoadFont($xprm[0],$xprm[1]);
-	}
-	elsif ($xcmd eq 'F')	# Source File (for errors)
-	{
-		$env{SourceFile}=$xprm[0];
-	}
-	elsif ($xcmd eq 'H')	# FontHT
-	{
-		$xprm[0]/=$unitwidth;
-		$xprm[0]=0 if $xprm[0] == $cftsz;
-		$env{FontHT}=$xprm[0];
-		MakeMatrix();
-	}
-	elsif ($xcmd eq 'S')	# FontSlant
-	{
-		$env{FontSlant}=$xprm[0];
-		MakeMatrix();
-	}
-	elsif ($xcmd eq 'i')	# Initialise
-	{
-		$objct++;
-		@defaultmb=@mediabox;
-		BuildObj($objct,{'Pages' => BuildObj($objct+1,
-						      {'Kids' => [],
-						      'Count' => 0,
-						      'Type' => '/Pages',
-						      'Rotate' => $rot,
-						      'MediaBox' => \@defaultmb,
-						      'Resources' =>
-								{'Font' => {},
-								'ProcSet' => ['/PDF', '/Text', '/ImageB', '/ImageC', '/ImageI']}
-						      }
-						      ),
-			  'Type' =>  '/Catalog'});
-		
-		$cat=$obj[$objct]->{DATA};
-		$objct++;
-		$pages=$obj[2]->{DATA};
-		Put("%PDF-1.4\n%‚„œ”\n");
-	}
-	elsif ($xcmd eq 'X')
-	{
-		# There could be extended args
-		do
-		{{
-			LoadAhead(1);
-			if (substr($ahead[0],0,1) eq '+')
-			{
-				$l.="\n".substr($ahead[0],1);
-				shift(@ahead);
-			}
-		}} until $#ahead==0;
 
-		($xcmd,@xprm)=split(' ',$l);
-		$xcmd=substr($xcmd,0,1);
-		
-		if ($xprm[0]=~m/^(.+:)(.+)/)
+	my $par=join(' ',@xprm[1..$#xprm]);
+
+	if ($xprm[0] eq 'ps:')
+	{
+	    if ($xprm[1] eq 'invis')
+	    {
+		$suppress=1;
+	    }
+	    elsif ($xprm[1] eq 'endinvis')
+	    {
+		$suppress=0;
+	    }
+	    elsif ($par=~m/exec gsave currentpoint 2 copy translate (.+) rotate neg exch neg exch translate/)
+	    {
+		# This is added by gpic to rotate a single object
+
+		my $theta=-rad($1);
+
+		IsGraphic();
+		my ($curangle,$hyp)=RtoP($xpos,GraphY($ypos));
+		my ($x,$y)=PtoR($theta+$curangle,$hyp);
+		$stream.="q\n".sprintf("%.3f %.3f %.3f %.3f %.3f %.3f cm",cos($theta),sin($theta),-sin($theta),cos($theta),$xpos-$x,GraphY($ypos)-$y)."\n";
+		$InPicRotate=1;
+	    }
+	    elsif ($par=~m/exec grestore/ and $InPicRotate)
+	    {
+		IsGraphic();
+		$stream.="Q\n";
+		$InPicRotate=0;
+	    }
+	    elsif ($par=~m/\[(.+) pdfmark/)
+	    {
+		my $pdfmark=$1;
+		$pdfmark=~s((\d{4,6}) u)(sprintf("%.1f",$1/$desc{sizescale}))eg;
+
+		if ($pdfmark=~m/(.+) \/DOCINFO/)
 		{
-			splice(@xprm,1,0,$2);
-			$xprm[0]=$1;
+		    my @xwds=split(' ',"<< $1 >>");
+		    my $docinfo=ParsePDFValue(\@xwds);
+
+		    foreach my $k (keys %{$docinfo})
+		    {
+			$info{$k}=$docinfo->{$k} if $k ne 'Producer';
+		    }
 		}
-		
-		my $par=join(' ',@xprm[1..$#xprm]);
-		
-		if ($xprm[0] eq 'ps:')
+		elsif ($pdfmark=~m/(.+) \/DOCVIEW/)
 		{
-			if ($xprm[1] eq 'invis')
-			{
-				$suppress=1;
-			}
-			elsif ($xprm[1] eq 'endinvis')
-			{
-				$suppress=0;
-			}
-			elsif ($par=~m/exec gsave currentpoint 2 copy translate (.+) rotate neg exch neg exch translate/)
-			{
-				# This is added by gpic to rotate a single object
-				
-				my $theta=-rad($1);
+		    my @xwds=split(' ',"<< $1 >>");
+		    my $docview=ParsePDFValue(\@xwds);
 
-				IsGraphic();
-				my ($curangle,$hyp)=RtoP($xpos,GraphY($ypos));
-				my ($x,$y)=PtoR($theta+$curangle,$hyp);
-				$stream.="q\n".sprintf("%.3f %.3f %.3f %.3f %.3f %.3f cm",cos($theta),sin($theta),-sin($theta),cos($theta),$xpos-$x,GraphY($ypos)-$y)."\n";
-				$InPicRotate=1;
-			}
-			elsif ($par=~m/exec grestore/ and $InPicRotate)
-			{
-				IsGraphic();
-				$stream.="Q\n";
-				$InPicRotate=0;
-			}
-			elsif ($par=~m/\[(.+) pdfmark/)
-			{
-				my $pdfmark=$1;
-				$pdfmark=~s((\d{4,6}) u)(sprintf("%.1f",$1/$desc{sizescale}))eg;
-
-				if ($pdfmark=~m/(.+) \/DOCINFO/)
-				{
-					my @xwds=split(' ',"<< $1 >>");
-					my $docinfo=ParsePDFValue(\@xwds);
-
-					foreach my $k (keys %{$docinfo})
-					{
-						$info{$k}=$docinfo->{$k} if $k ne 'Producer';
-					}
-				}
-				elsif ($pdfmark=~m/(.+) \/DOCVIEW/)
-				{
-					my @xwds=split(' ',"<< $1 >>");
-					my $docview=ParsePDFValue(\@xwds);
-					
-					foreach my $k (keys %{$docview})
-					{
-						$cat->{$k}=$docview->{$k} if !exists($cat->{$k});
-					}
-				}
-				elsif ($pdfmark=~m/(.+) \/DEST/)
-				{
-					my @xwds=split(' ',"<< $1 >>");
-					my $dest=ParsePDFValue(\@xwds);
-					foreach my $v (@{$dest->{View}})
-					{
-						$v=GraphY(abs($v)) if substr($v,0,1) eq '-';
-					}
-					unshift(@{$dest->{View}},"$cpageno 0 R");
-
-					if (!defined($dests))
-					{
-						$cat->{Dests}=BuildObj(++$objct,{});
-						$dests=$obj[$objct]->{DATA};
-					}
-
-					my $k=substr($dest->{Dest},1);
-					$dests->{$k}=$dest->{View};
-				}
-				elsif ($pdfmark=~m/(.+) \/ANN/)
-				{
-					my $l=$1;
-					$l=~s/Color/C/;
-					$l=~s/Action/A/;
-					$l=~s/Title/T/;
-					$l=~s'/Subtype /URI'/S /URI';
-					my @xwds=split(' ',"<< $l >>");
-					my $annotno=BuildObj(++$objct,ParsePDFValue(\@xwds));
-					my $annot=$obj[$objct];
-					$annot->{DATA}->{Type}='/Annot';
-					FixRect($annot->{DATA}->{Rect}); # Y origin to ll
-					push(@{$cpage->{Annots}},$annotno);
-				}
-				elsif ($pdfmark=~m/(.+) \/OUT/)
-				{
-					my @xwds=split(' ',"<< $1 >>");
-					my $out=ParsePDFValue(\@xwds);
-
-					my $this=[$out,[]];
-
-					if (exists($out->{Level}))
-					{
-						my $lev=abs($out->{Level});
-						my $levsgn=sgn($out->{Level});
-						delete($out->{Level});
-
-						if ($lev > $thislev)
-						{
-							my $thisoutlev=$curoutlev->[$#{$curoutlev}]->[1];
-							$thisoutlev->[0]=[0,$curoutlev,0,$levsgn];
-							$curoutlev=$thisoutlev;
-							$thislev++;
-						}
-						elsif ($lev < $thislev)
-						{
-							my $openct=$curoutlev->[0]->[2];
-
-							while ($thislev > $lev)
-							{
-								my $nxtoutlev=$curoutlev->[0]->[1];
-								$nxtoutlev->[0]->[2]+=$openct if $curoutlev->[0]->[3]==1;
-								$openct=0 if $nxtoutlev->[0]->[3]==-1;
-								$curoutlev=$nxtoutlev;
-								$thislev--;
-							}
-						}
-						
-						push(@{$curoutlev},$this);
-						$curoutlev->[0]->[2]++;
-					}
-					else
-					{
-						while ($curoutlev->[0]->[0] == 0 and defined($curoutlev->[0]->[1]))
-						{
-							$curoutlev=$curoutlev->[0]->[1];
-						}
-
-						$curoutlev->[0]->[0]--;
-						$curoutlev->[0]->[2]++;
-						push(@{$curoutlev},$this);
-
-
-						if (exists($out->{Count}) and $out->{Count} != 0)
-						{
-							push(@{$this->[1]},[abs($out->{Count}),$curoutlev,0,sgn($out->{Count})]);
-							$curoutlev=$this->[1];
-
-							if ($out->{Count} > 0)
-							{
-								my $p=$curoutlev;
-
-								while (defined($p))
-								{
-									$p->[0]->[2]+=$out->{Count};
-									$p=$p->[0]->[1];
-								}
-							}
-						}
-					}
-				}
-			}
+		    foreach my $k (keys %{$docview})
+		    {
+			$cat->{$k}=$docview->{$k} if !exists($cat->{$k});
+		    }
 		}
-		elsif (lc($xprm[0]) eq 'pdf:')
+		elsif ($pdfmark=~m/(.+) \/DEST/)
 		{
-			if (lc($xprm[1]) eq 'import')
-			{
-				my $fil=$xprm[2];
-				my $llx=$xprm[3];
-				my $lly=$xprm[4];
-				my $urx=$xprm[5];
-				my $ury=$xprm[6];
-				my $wid=$xprm[7];
-				my $hgt=$xprm[8]||-1;
-				my $mat=[1,0,0,1,0,0];
-				
-				if (!exists($incfil{$fil}))
-				{
-					if ($fil=~m/\.pdf$/)
-					{
-						$incfil{$fil}=LoadPDF($fil,$mat,$wid,$hgt,"import");
-					}
-					elsif ($fil=~m/\.swf$/)
-					{
-						my $xscale=$wid/($urx-$llx+1);
-						my $yscale=($hgt<=0)?$xscale:($hgt/($ury-$lly+1));
-						$hgt=($ury-$lly+1)*$yscale;
-						
-						if ($rot)
-						{
-							$mat->[3]=$xscale;
-							$mat->[0]=$yscale;
-						}
-						else
-						{
-							$mat->[0]=$xscale;
-							$mat->[3]=$yscale;
-						}
-						
-						$incfil{$fil}=LoadSWF($fil,[$llx,$lly,$urx,$ury],$mat);
-					}
-					else
-					{
-						Msg(0,"Unknown filetype '$fil'");
-						return undef;
-					}
-				}
-				
-				if (defined($incfil{$fil}))
-				{
-					IsGraphic();
-					if ($fil=~m/\.pdf$/)
-					{
-						my $bbox=$incfil{$fil}->[1];
-						my $xscale=$wid/($bbox->[2]-$bbox->[0]+1);
-						my $yscale=($hgt<=0)?$xscale:($hgt/($bbox->[3]-$bbox->[1]+1));
-						$stream.="q $xscale 0 0 $yscale ".PutXY($xpos,$ypos)." cm";
-						$stream.=" 0 1 -1 0 0 0 cm" if $rot;
-						$stream.=" /$incfil{$fil}->[0] Do Q\n";
-					}
-					elsif ($fil=~m/\.swf$/)
-					{
-						$stream.=PutXY($xpos,$ypos)." m /$incfil{$fil} Do\n";
-					}
-				}
-			}
-			elsif (lc($xprm[1]) eq 'pdfpic')
-			{
-				my $fil=$xprm[2];
-				my $flag=uc($xprm[3]);
-				my $wid=GetPoints($xprm[4]);
-				my $hgt=GetPoints($xprm[5]||-1);
-				my $ll=GetPoints($xprm[6]||0);
-				my $mat=[1,0,0,1,0,0];
-				
-				if (!exists($incfil{$fil}))
-				{
-					$incfil{$fil}=LoadPDF($fil,$mat,$wid,$hgt,"pdfpic");
-				}
-				
-				if (defined($incfil{$fil}))
-				{
-					IsGraphic();
-					my $bbox=$incfil{$fil}->[1];
-					my $xscale=$wid/($bbox->[2]-$bbox->[0]+1);
-					my $yscale=($hgt<=0)?$xscale:($hgt/($bbox->[3]-$bbox->[1]+1));
-					$xscale=($wid<=0)?$yscale:$xscale;
-					$xscale=$yscale if $yscale < $xscale;
-					$yscale=$xscale if $xscale < $yscale;
-					$wid=($bbox->[2]-$bbox->[0]+1)*$xscale;
-					$hgt=($bbox->[3]-$bbox->[1]+1)*$yscale;
+		    my @xwds=split(' ',"<< $1 >>");
+		    my $dest=ParsePDFValue(\@xwds);
+		    foreach my $v (@{$dest->{View}})
+		    {
+			$v=GraphY(abs($v)) if substr($v,0,1) eq '-';
+		    }
+		    unshift(@{$dest->{View}},"$cpageno 0 R");
 
-					if ($flag eq '-C' and $ll > $wid)
-					{
-						$xpos+=int(($ll-$wid)/2);
-					}
-					elsif ($flag eq '-R' and $ll > $wid)
-					{
-						$xpos+=$ll-$wid;
-					}
-					
-					$ypos+=$hgt;
-					$stream.="q $xscale 0 0 $yscale ".PutXY($xpos,$ypos)." cm";
-					$stream.=" 0 1 -1 0 0 0 cm" if $rot;
-					$stream.=" /$incfil{$fil}->[0] Do Q\n";
-				}
-			}
-			elsif (lc($xprm[1]) eq 'xrev')
-			{
-				$xrev=!$xrev;
-			}
-			elsif (lc($xprm[1]) eq 'markstart')
-			{
-				$mark={'rst' => $xprm[2]/$unitwidth, 'rsb' => $xprm[3]/$unitwidth, 'xpos' => $xpos,
-							 'ypos' => $ypos, 'pdfmark' => join(' ',@xprm[4..$#xprm])};
-			}
-			elsif (lc($xprm[1]) eq 'markend')
-			{
-				PutHotSpot($xpos) if defined($mark);
-				$mark=undef;
-			}
-			elsif (lc($xprm[1]) eq 'marksuspend')
-			{
-				$suspendmark=$mark;
-				$mark=undef;
-			}
-			elsif (lc($xprm[1]) eq 'markrestart')
-			{
-				$mark=$suspendmark;
-				$suspendmark=undef;
-			}
+		    if (!defined($dests))
+		    {
+			$cat->{Dests}=BuildObj(++$objct,{});
+			$dests=$obj[$objct]->{DATA};
+		    }
+
+		    my $k=substr($dest->{Dest},1);
+		    $dests->{$k}=$dest->{View};
 		}
-		elsif (lc(substr($xprm[0],0,9)) eq 'papersize')
+		elsif ($pdfmark=~m/(.+) \/ANN/)
 		{
-			my ($px,$py)=split(',',substr($xprm[0],10));
-			$px=GetPoints($px);
-			$py=GetPoints($py);
-			@mediabox=(0,0,$px,$py);
-			my @mb=@mediabox;
-			$matrixchg=1;
-			$cpage->{MediaBox}=\@mb;
+		    my $l=$1;
+		    $l=~s/Color/C/;
+		    $l=~s/Action/A/;
+		    $l=~s/Title/T/;
+		    $l=~s'/Subtype /URI'/S /URI';
+		    my @xwds=split(' ',"<< $l >>");
+		    my $annotno=BuildObj(++$objct,ParsePDFValue(\@xwds));
+		    my $annot=$obj[$objct];
+		    $annot->{DATA}->{Type}='/Annot';
+		    FixRect($annot->{DATA}->{Rect}); # Y origin to ll
+		    push(@{$cpage->{Annots}},$annotno);
 		}
+		elsif ($pdfmark=~m/(.+) \/OUT/)
+		{
+		    my @xwds=split(' ',"<< $1 >>");
+		    my $out=ParsePDFValue(\@xwds);
+
+		    my $this=[$out,[]];
+
+		    if (exists($out->{Level}))
+		    {
+			my $lev=abs($out->{Level});
+			my $levsgn=sgn($out->{Level});
+			delete($out->{Level});
+
+			if ($lev > $thislev)
+			{
+			    my $thisoutlev=$curoutlev->[$#{$curoutlev}]->[1];
+			    $thisoutlev->[0]=[0,$curoutlev,0,$levsgn];
+			    $curoutlev=$thisoutlev;
+			    $thislev++;
+			}
+			elsif ($lev < $thislev)
+			{
+			    my $openct=$curoutlev->[0]->[2];
+
+			    while ($thislev > $lev)
+			    {
+				my $nxtoutlev=$curoutlev->[0]->[1];
+				$nxtoutlev->[0]->[2]+=$openct if $curoutlev->[0]->[3]==1;
+				$openct=0 if $nxtoutlev->[0]->[3]==-1;
+				$curoutlev=$nxtoutlev;
+				$thislev--;
+			    }
+			}
+
+			push(@{$curoutlev},$this);
+			$curoutlev->[0]->[2]++;
+		    }
+		    else
+		    {
+			while ($curoutlev->[0]->[0] == 0 and defined($curoutlev->[0]->[1]))
+			{
+			    $curoutlev=$curoutlev->[0]->[1];
+			}
+
+			$curoutlev->[0]->[0]--;
+			$curoutlev->[0]->[2]++;
+			push(@{$curoutlev},$this);
+
+
+			if (exists($out->{Count}) and $out->{Count} != 0)
+			{
+			    push(@{$this->[1]},[abs($out->{Count}),$curoutlev,0,sgn($out->{Count})]);
+			    $curoutlev=$this->[1];
+
+			    if ($out->{Count} > 0)
+			    {
+				my $p=$curoutlev;
+
+				while (defined($p))
+				{
+				    $p->[0]->[2]+=$out->{Count};
+				    $p=$p->[0]->[1];
+				}
+			    }
+			}
+		    }
+		}
+	    }
 	}
+	elsif (lc($xprm[0]) eq 'pdf:')
+	{
+	    if (lc($xprm[1]) eq 'import')
+	    {
+		my $fil=$xprm[2];
+		my $llx=$xprm[3];
+		my $lly=$xprm[4];
+		my $urx=$xprm[5];
+		my $ury=$xprm[6];
+		my $wid=$xprm[7];
+		my $hgt=$xprm[8]||-1;
+		my $mat=[1,0,0,1,0,0];
+
+		if (!exists($incfil{$fil}))
+		{
+		    if ($fil=~m/\.pdf$/)
+		    {
+			$incfil{$fil}=LoadPDF($fil,$mat,$wid,$hgt,"import");
+		    }
+		    elsif ($fil=~m/\.swf$/)
+		    {
+			my $xscale=$wid/($urx-$llx+1);
+			my $yscale=($hgt<=0)?$xscale:($hgt/($ury-$lly+1));
+			$hgt=($ury-$lly+1)*$yscale;
+
+			if ($rot)
+			{
+			    $mat->[3]=$xscale;
+			    $mat->[0]=$yscale;
+			}
+			else
+			{
+			    $mat->[0]=$xscale;
+			    $mat->[3]=$yscale;
+			}
+
+			$incfil{$fil}=LoadSWF($fil,[$llx,$lly,$urx,$ury],$mat);
+		    }
+		    else
+		    {
+			Msg(0,"Unknown filetype '$fil'");
+			return undef;
+		    }
+		}
+
+		if (defined($incfil{$fil}))
+		{
+		    IsGraphic();
+		    if ($fil=~m/\.pdf$/)
+		    {
+			my $bbox=$incfil{$fil}->[1];
+			my $xscale=$wid/($bbox->[2]-$bbox->[0]+1);
+			my $yscale=($hgt<=0)?$xscale:($hgt/($bbox->[3]-$bbox->[1]+1));
+			$stream.="q $xscale 0 0 $yscale ".PutXY($xpos,$ypos)." cm";
+			$stream.=" 0 1 -1 0 0 0 cm" if $rot;
+			$stream.=" /$incfil{$fil}->[0] Do Q\n";
+		    }
+		    elsif ($fil=~m/\.swf$/)
+		    {
+			$stream.=PutXY($xpos,$ypos)." m /$incfil{$fil} Do\n";
+		    }
+		}
+	    }
+	    elsif (lc($xprm[1]) eq 'pdfpic')
+	    {
+		my $fil=$xprm[2];
+		my $flag=uc($xprm[3]);
+		my $wid=GetPoints($xprm[4]);
+		my $hgt=GetPoints($xprm[5]||-1);
+		my $ll=GetPoints($xprm[6]||0);
+		my $mat=[1,0,0,1,0,0];
+
+		if (!exists($incfil{$fil}))
+		{
+		    $incfil{$fil}=LoadPDF($fil,$mat,$wid,$hgt,"pdfpic");
+		}
+
+		if (defined($incfil{$fil}))
+		{
+		    IsGraphic();
+		    my $bbox=$incfil{$fil}->[1];
+		    my $xscale=$wid/($bbox->[2]-$bbox->[0]+1);
+		    my $yscale=($hgt<=0)?$xscale:($hgt/($bbox->[3]-$bbox->[1]+1));
+		    $xscale=($wid<=0)?$yscale:$xscale;
+		    $xscale=$yscale if $yscale < $xscale;
+		    $yscale=$xscale if $xscale < $yscale;
+		    $wid=($bbox->[2]-$bbox->[0]+1)*$xscale;
+		    $hgt=($bbox->[3]-$bbox->[1]+1)*$yscale;
+
+		    if ($flag eq '-C' and $ll > $wid)
+		    {
+			$xpos+=int(($ll-$wid)/2);
+		    }
+		    elsif ($flag eq '-R' and $ll > $wid)
+		    {
+			$xpos+=$ll-$wid;
+		    }
+
+		    $ypos+=$hgt;
+		    $stream.="q $xscale 0 0 $yscale ".PutXY($xpos,$ypos)." cm";
+		    $stream.=" 0 1 -1 0 0 0 cm" if $rot;
+		    $stream.=" /$incfil{$fil}->[0] Do Q\n";
+		}
+	    }
+	    elsif (lc($xprm[1]) eq 'xrev')
+	    {
+		$xrev=!$xrev;
+	    }
+	    elsif (lc($xprm[1]) eq 'markstart')
+	    {
+		$mark={'rst' => $xprm[2]/$unitwidth, 'rsb' => $xprm[3]/$unitwidth, 'xpos' => $xpos,
+			    'ypos' => $ypos, 'pdfmark' => join(' ',@xprm[4..$#xprm])};
+	    }
+	    elsif (lc($xprm[1]) eq 'markend')
+	    {
+		PutHotSpot($xpos) if defined($mark);
+		$mark=undef;
+	    }
+	    elsif (lc($xprm[1]) eq 'marksuspend')
+	    {
+		$suspendmark=$mark;
+		$mark=undef;
+	    }
+	    elsif (lc($xprm[1]) eq 'markrestart')
+	    {
+		$mark=$suspendmark;
+		$suspendmark=undef;
+	    }
+	}
+	elsif (lc(substr($xprm[0],0,9)) eq 'papersize')
+	{
+	    my ($px,$py)=split(',',substr($xprm[0],10));
+	    $px=GetPoints($px);
+	    $py=GetPoints($py);
+	    @mediabox=(0,0,$px,$py);
+	    my @mb=@mediabox;
+	    $matrixchg=1;
+	    $cpage->{MediaBox}=\@mb;
+	}
+    }
 }
 
 sub PutHotSpot
 {
-	my $endx=shift;
-	my $l=$mark->{pdfmark};
-	$l=~s/Color/C/;
-	$l=~s/Action/A/;
-	$l=~s'/Subtype /URI'/S /URI';
-	my @xwds=split(' ',"<< $l >>");
-	my $annotno=BuildObj(++$objct,ParsePDFValue(\@xwds));
-	my $annot=$obj[$objct];
-	$annot->{DATA}->{Type}='/Annot';
-	$annot->{DATA}->{Rect}=[$mark->{xpos},$mark->{ypos}-$mark->{rsb},$endx,$mark->{ypos}-$mark->{rst}];
-	FixRect($annot->{DATA}->{Rect}); # Y origin to ll
-	push(@{$cpage->{Annots}},$annotno);
+    my $endx=shift;
+    my $l=$mark->{pdfmark};
+    $l=~s/Color/C/;
+    $l=~s/Action/A/;
+    $l=~s'/Subtype /URI'/S /URI';
+    my @xwds=split(' ',"<< $l >>");
+    my $annotno=BuildObj(++$objct,ParsePDFValue(\@xwds));
+    my $annot=$obj[$objct];
+    $annot->{DATA}->{Type}='/Annot';
+    $annot->{DATA}->{Rect}=[$mark->{xpos},$mark->{ypos}-$mark->{rsb},$endx,$mark->{ypos}-$mark->{rst}];
+    FixRect($annot->{DATA}->{Rect}); # Y origin to ll
+    push(@{$cpage->{Annots}},$annotno);
 }
-	
+
 sub sgn
 {
-	return(1) if $_[0] > 0;
-	return(-1) if $_[0] < 0;
-	return(0);
+    return(1) if $_[0] > 0;
+    return(-1) if $_[0] < 0;
+    return(0);
 }
 
 sub FixRect
 {
-	my $rect=shift;
+    my $rect=shift;
 
-	return if !defined($rect);
-	$rect->[1]=GraphY($rect->[1]);
-	$rect->[3]=GraphY($rect->[3]);
+    return if !defined($rect);
+    $rect->[1]=GraphY($rect->[1]);
+    $rect->[3]=GraphY($rect->[3]);
 }
 
 sub GetPoints
 {
-	my $val=shift;
+    my $val=shift;
 
-	$val=ToPoints($1,$2) if ($val=~m/(-?[\d.]+)([cipn])/);
+    $val=ToPoints($1,$2) if ($val=~m/(-?[\d.]+)([cipn])/);
 
-	return $val;
+    return $val;
 }
 
 # Although the PDF reference mentions XObject/Form as a way of incorporating an external PDF page into
@@ -933,20 +933,20 @@ sub GetPoints
 # 	my $mat=shift;
 # 	my $wid=($bbox->[2]-$bbox->[0])*$mat->[0];
 # 	my $hgt=($bbox->[3]-$bbox->[1])*$mat->[3];
-# 
+#
 # 	if (!open(PDF,"<$fil"))
 # 	{
 # 		Msg(0,"Failed to open '$fil'");
 # 		return(undef);
 # 	}
-# 
+#
 # 	my (@f)=(<PDF>);
-# 
+#
 # 	close(PDF);
-# 
+#
 # 	$objct++;
 # 	my $xonm="XO$objct";
-# 	
+#
 # 	$pages->{'Resources'}->{'XObject'}->{$xonm}=BuildObj($objct,{'Type' => '/XObject',
 # 								    'Subtype' => '/Form',
 # 								    'BBox' => $bbox,
@@ -959,7 +959,7 @@ sub GetPoints
 # 										})
 # 								    }
 # 								});
-# 
+#
 # 	$obj[$objct]->{STREAM}="q 1 0 0 1 0 0 cm
 # q BT
 # 1 0 0 1 0 0 Tm
@@ -969,7 +969,7 @@ sub GetPoints
 # ET Q
 # 0 0 m 72 0 l s
 # Q\n";
-# 								
+#
 # #	$obj[$objct]->{STREAM}=PutXY($xpos,$ypos)." m ".PutXY($xpos+$wid,$ypos)." l ".PutXY($xpos+$wid,$ypos+$hgt)." l ".PutXY($xpos,$ypos+$hgt)." l f\n";
 # 	$obj[$objct+2]->{STREAM}=join('',@f);
 # 	PutObj($objct);
@@ -981,1819 +981,1819 @@ sub GetPoints
 
 sub LoadSWF
 {
-	my $fil=shift;
-	my $bbox=shift;
-	my $mat=shift;
-	my $wid=($bbox->[2]-$bbox->[0])*$mat->[0];
-	my $hgt=($bbox->[3]-$bbox->[1])*$mat->[3];
-	my (@path)=split('/',$fil);
-	my $node=pop(@path);
+    my $fil=shift;
+    my $bbox=shift;
+    my $mat=shift;
+    my $wid=($bbox->[2]-$bbox->[0])*$mat->[0];
+    my $hgt=($bbox->[3]-$bbox->[1])*$mat->[3];
+    my (@path)=split('/',$fil);
+    my $node=pop(@path);
 
-	if (!open(PDF,"<$fil"))
-	{
-		Msg(0,"Failed to open '$fil'");
-		return(undef);
-	}
+    if (!open(PDF,"<$fil"))
+    {
+	Msg(0,"Failed to open '$fil'");
+	return(undef);
+    }
 
-	my (@f)=(<PDF>);
+    my (@f)=(<PDF>);
 
-	close(PDF);
+    close(PDF);
 
-	$objct++;
-	my $xonm="XO$objct";
+    $objct++;
+    my $xonm="XO$objct";
 
-	$pages->{'Resources'}->{'XObject'}->{$xonm}=BuildObj($objct,{'Type' => '/XObject', 'BBox' => $bbox, 'Matrix' => $mat, 'FormType' => 1, 'Subtype' => '/Form', 'Length' => 0, 'Type' => "/XObject"});
-	$obj[$objct]->{STREAM}='';
-	PutObj($objct);
-	$objct++;
-	my $asset=BuildObj($objct,{'EF' => {'F' => BuildObj($objct+1,{})},
-				   'F' => "($node)",
-				   'Type' => '/Filespec',
-				   'UF' => "($node)"});
+    $pages->{'Resources'}->{'XObject'}->{$xonm}=BuildObj($objct,{'Type' => '/XObject', 'BBox' => $bbox, 'Matrix' => $mat, 'FormType' => 1, 'Subtype' => '/Form', 'Length' => 0, 'Type' => "/XObject"});
+    $obj[$objct]->{STREAM}='';
+    PutObj($objct);
+    $objct++;
+    my $asset=BuildObj($objct,{'EF' => {'F' => BuildObj($objct+1,{})},
+		'F' => "($node)",
+		'Type' => '/Filespec',
+		'UF' => "($node)"});
 
-	PutObj($objct);
-	$objct++;
-	$obj[$objct]->{STREAM}=join('',@f);
-	PutObj($objct);
-	$objct++;
-	my $config=BuildObj($objct,{'Instances' => [BuildObj($objct+1,{'Params' => { 'Binding' => '/Background'}, 'Asset' => $asset})],
-				    'Subtype' => '/Flash'});
+    PutObj($objct);
+    $objct++;
+    $obj[$objct]->{STREAM}=join('',@f);
+    PutObj($objct);
+    $objct++;
+    my $config=BuildObj($objct,{'Instances' => [BuildObj($objct+1,{'Params' => { 'Binding' => '/Background'}, 'Asset' => $asset})],
+		    'Subtype' => '/Flash'});
 
-	PutObj($objct);
-	$objct++;
-	PutObj($objct);
-	$objct++;
+    PutObj($objct);
+    $objct++;
+    PutObj($objct);
+    $objct++;
 
-	my ($x,$y)=split(' ',PutXY($xpos,$ypos));
+    my ($x,$y)=split(' ',PutXY($xpos,$ypos));
 
-	push(@{$cpage->{Annots}},BuildObj($objct,{'RichMediaContent' => {'Subtype' => '/Flash', 'Configurations' => [$config], 'Assets' => {'Names' => [ "($node)", $asset ] }},
-						  'P' => "$cpageno 0 R",
-						  'RichMediaSettings' => { 'Deactivation' => { 'Condition' => '/PI',
-												'Type' => '/RichMediaDeactivation'},
-									   'Activation' => { 	'Condition' => '/PV',
-												'Type' => '/RichMediaActivation'}},
-						  'F' => 68,
-						  'Subtype' => '/RichMedia',
-						  'Type' => '/Annot',
-						  'Rect' => "[ $x $y ".($x+$wid)." ".($y+$hgt)." ]",
-						  'Border' => [0,0,0]}));
+    push(@{$cpage->{Annots}},BuildObj($objct,{'RichMediaContent' => {'Subtype' => '/Flash', 'Configurations' => [$config], 'Assets' => {'Names' => [ "($node)", $asset ] }},
+			'P' => "$cpageno 0 R",
+			'RichMediaSettings' => { 'Deactivation' => { 'Condition' => '/PI',
+						'Type' => '/RichMediaDeactivation'},
+				    'Activation' => { 	'Condition' => '/PV',
+						'Type' => '/RichMediaActivation'}},
+			'F' => 68,
+			'Subtype' => '/RichMedia',
+			'Type' => '/Annot',
+			'Rect' => "[ $x $y ".($x+$wid)." ".($y+$hgt)." ]",
+			'Border' => [0,0,0]}));
 
-	PutObj($objct);
+    PutObj($objct);
 
-	return $xonm;
+    return $xonm;
 }
 
 sub LoadPDF
 {
-	my $pdfnm=shift;
-	my $wid=shift;
-	my $hgt=shift;
-	my $type=shift;
-	my $mat=[1,0,0,1,0,0];
-	my $pdf;
-	my $pdftxt='';
-	my $strmlen=0;
-	my $curobj=-1;
-	my $instream=0;
-	my $cont;
+    my $pdfnm=shift;
+    my $wid=shift;
+    my $hgt=shift;
+    my $type=shift;
+    my $mat=[1,0,0,1,0,0];
+    my $pdf;
+    my $pdftxt='';
+    my $strmlen=0;
+    my $curobj=-1;
+    my $instream=0;
+    my $cont;
 
-	if (!open(PD,"<$pdfnm"))
+    if (!open(PD,"<$pdfnm"))
+    {
+	Msg(0,"Failed to open PDF '$pdfnm'");
+	return undef;
+    }
+
+    my $hdr=<PD>;
+
+    $/="\r" if (length($hdr) > 10);
+
+    while (<PD>)
+    {
+	chomp;
+
+	s/\n//;
+
+	if (m/endstream(\s+.*)?$/)
 	{
-		Msg(0,"Failed to open PDF '$pdfnm'");
+	    $instream=0;
+	    $_="endstream";
+	    $_.=$1 if defined($1)
+	}
+
+	next if $instream;
+
+	if (m'/Length\s+(\d+)(\s+\d+\s+R)?')
+	{
+	    if (!defined($2))
+	    {
+		$strmlen=$1;
+	    }
+	    else
+	    {
+		$strmlen=0;
+	    }
+	}
+
+	if (m'^(\d+) \d+ obj')
+	{
+	    $curobj=$1;
+	    $pdf->[$curobj]->{OBJ}=undef;
+	}
+
+	if (m'stream\s*$' and ! m/^endstream/)
+	{
+	    if ($curobj > -1)
+	    {
+		$pdf->[$curobj]->{STREAMPOS}=[tell(PD),$strmlen];
+		seek(PD,$strmlen,1);
+		$instream=1;
+	    }
+	    else
+	    {
+		Msg(0,"Parsing PDF '$pdfnm' failed");
 		return undef;
+	    }
 	}
 
-	my $hdr=<PD>;
+	$pdftxt.=$_.' ';
+    }
 
-	$/="\r" if (length($hdr) > 10);
+    close(PD);
 
-	while (<PD>)
-	{
-		chomp;
-
-		s/\n//;
-		
-		if (m/endstream(\s+.*)?$/)
-		{
-			$instream=0;
-			$_="endstream";
-			$_.=$1 if defined($1)
-		}
-
-		next if $instream;
-		
-		if (m'/Length\s+(\d+)(\s+\d+\s+R)?')
-		{
-			if (!defined($2))
-			{
-				$strmlen=$1;
-			}
-			else
-			{
-				$strmlen=0;
-			}
-		}
-		
-		if (m'^(\d+) \d+ obj')
-		{
-			$curobj=$1;
-			$pdf->[$curobj]->{OBJ}=undef;
-		}
-
-		if (m'stream\s*$' and ! m/^endstream/)
-		{
-			if ($curobj > -1)
-			{
-				$pdf->[$curobj]->{STREAMPOS}=[tell(PD),$strmlen];
-				seek(PD,$strmlen,1);
-				$instream=1;
-			}
-			else
-			{
-				Msg(0,"Parsing PDF '$pdfnm' failed");
-				return undef;
-			}
-		}
-
-		$pdftxt.=$_.' ';
-	}
-
-	close(PD);
-
-	open(PD,"<$pdfnm");
+    open(PD,"<$pdfnm");
 #	$pdftxt=~s/\]/ \]/g;
-	my (@pdfwds)=split(' ',$pdftxt);
-	my $wd;
+    my (@pdfwds)=split(' ',$pdftxt);
+    my $wd;
 
-	while ($wd=nextwd(\@pdfwds),length($wd))
+    while ($wd=nextwd(\@pdfwds),length($wd))
+    {
+	if ($wd=~m/\d+/ and defined($pdfwds[1]) and $pdfwds[1]=~m/^obj(.*)/)
 	{
-		if ($wd=~m/\d+/ and defined($pdfwds[1]) and $pdfwds[1]=~m/^obj(.*)/)
-		{
-			$curobj=$wd;
-			shift(@pdfwds); shift(@pdfwds);
-			unshift(@pdfwds,$1) if defined($1) and length($1);
-			$pdf->[$curobj]->{OBJ}=ParsePDFObj(\@pdfwds);
-		}
-		elsif ($wd eq 'trailer' and !exists($pdf->[0]->{OBJ}))
-		{
-			$pdf->[0]->{OBJ}=ParsePDFObj(\@pdfwds);
-		}
-		else
-		{
+	    $curobj=$wd;
+	    shift(@pdfwds); shift(@pdfwds);
+	    unshift(@pdfwds,$1) if defined($1) and length($1);
+	    $pdf->[$curobj]->{OBJ}=ParsePDFObj(\@pdfwds);
+	}
+	elsif ($wd eq 'trailer' and !exists($pdf->[0]->{OBJ}))
+	{
+	    $pdf->[0]->{OBJ}=ParsePDFObj(\@pdfwds);
+	}
+	else
+	{
 #			print "Skip '$wd'\n";
-		}
 	}
+    }
 
-	my $catalog=${$pdf->[0]->{OBJ}->{Root}};
-	my $page=FindPage(1,$pdf);
-	my $xobj=++$objct;
+    my $catalog=${$pdf->[0]->{OBJ}->{Root}};
+    my $page=FindPage(1,$pdf);
+    my $xobj=++$objct;
 
-	# Load the streamas
+    # Load the streamas
 
-	foreach my $o (@{$pdf})
+    foreach my $o (@{$pdf})
+    {
+	if (exists($o->{STREAMPOS}))
 	{
-		if (exists($o->{STREAMPOS}))
-		{
-			my $l;
+	    my $l;
 
-			$l=$o->{OBJ}->{Length} if exists($o->{OBJ}->{Length});
+	    $l=$o->{OBJ}->{Length} if exists($o->{OBJ}->{Length});
 
-			$l=$pdf->[$$l]->{OBJ} if (defined($l) && ref($l) eq 'OBJREF');
+	    $l=$pdf->[$$l]->{OBJ} if (defined($l) && ref($l) eq 'OBJREF');
 
-			Msg(1,"Unable to determine length of stream \@$o->{STREAMPOS}->[0]") if !defined($l);
+	    Msg(1,"Unable to determine length of stream \@$o->{STREAMPOS}->[0]") if !defined($l);
 
-			sysseek(PD,$o->{STREAMPOS}->[0],0);
-			Msg(0,'Failed to read all the stream') if $l != sysread(PD,$o->{STREAM},$l);
+	    sysseek(PD,$o->{STREAMPOS}->[0],0);
+	    Msg(0,'Failed to read all the stream') if $l != sysread(PD,$o->{STREAM},$l);
 
-			if (exists($o->{OBJ}->{'Filter'}) and $o->{OBJ}->{'Filter'} eq '/FlateDecode')
-			{
-				$o->{STREAM}=Compress::Zlib::uncompress($o->{STREAM});
-				delete($o->{OBJ }->{'Filter'});
-			}
-		}
+	    if (exists($o->{OBJ}->{'Filter'}) and $o->{OBJ}->{'Filter'} eq '/FlateDecode')
+	    {
+		$o->{STREAM}=Compress::Zlib::uncompress($o->{STREAM});
+		delete($o->{OBJ }->{'Filter'});
+	    }
 	}
+    }
 
-	close(PD);
-	
-	# Find BBox
-	my $BBox;
-	my $insmap={};
+    close(PD);
 
-	foreach my $k (qw( MediaBox ArtBox TrimBox BleedBox CropBox ))
-	{
-		$BBox=FindKey($pdf,$page,$k);
-		last if $BBox;
-	}
+    # Find BBox
+    my $BBox;
+    my $insmap={};
 
-	$BBox=[0,0,595,842] if !defined($BBox);
+    foreach my $k (qw( MediaBox ArtBox TrimBox BleedBox CropBox ))
+    {
+	$BBox=FindKey($pdf,$page,$k);
+	last if $BBox;
+    }
 
-	my $xscale=$wid/($BBox->[2]-$BBox->[0]+1);
-	my $yscale=($hgt<=0)?$xscale:($hgt/($BBox->[3]-$BBox->[1]+1));
-	$hgt=($BBox->[3]-$BBox->[1]+1)*$yscale;
+    $BBox=[0,0,595,842] if !defined($BBox);
 
-	if ($type eq "import")
-	{
-		$mat->[0]=$xscale;
-		$mat->[3]=$yscale;
-	}
-	
-	# Find Resource
+    my $xscale=$wid/($BBox->[2]-$BBox->[0]+1);
+    my $yscale=($hgt<=0)?$xscale:($hgt/($BBox->[3]-$BBox->[1]+1));
+    $hgt=($BBox->[3]-$BBox->[1]+1)*$yscale;
 
-	my $res=FindKey($pdf,$page,'Resources');
-	my $xonm="XO$xobj";
+    if ($type eq "import")
+    {
+	$mat->[0]=$xscale;
+	$mat->[3]=$yscale;
+    }
 
-	# Map inserted objects to current PDF
+    # Find Resource
 
-	MapInsValue($pdf,$page,'',$insmap,$xobj,$pdf->[$page]->{OBJ});
+    my $res=FindKey($pdf,$page,'Resources');
+    my $xonm="XO$xobj";
+
+    # Map inserted objects to current PDF
+
+    MapInsValue($pdf,$page,'',$insmap,$xobj,$pdf->[$page]->{OBJ});
 #
 #	Many PDFs include 'Resources' at the 'Page' level but if 'Resources' is held at a higher level (i.e 'Pages')
 #	then we need to include its objects as well.
 #
-	MapInsValue($pdf,$page,'',$insmap,$xobj,$res) if !exists($pdf->[$page]->{OBJ}->{Resources});
-	
-	# Copy Resources
+    MapInsValue($pdf,$page,'',$insmap,$xobj,$res) if !exists($pdf->[$page]->{OBJ}->{Resources});
 
-	my %incres=%{$res};
+    # Copy Resources
 
-	$incres{ProcSet}=['/PDF', '/Text', '/ImageB', '/ImageC', '/ImageI'];
+    my %incres=%{$res};
 
-	($mat->[4],$mat->[5])=split(' ',PutXY($xpos,$ypos));
-	$pages->{'Resources'}->{'XObject'}->{$xonm}=BuildObj($xobj,{'Type' => '/XObject', 'BBox' => $BBox, 'Name' => "/$xonm", 'FormType' => 1, 'Subtype' => '/Form', 'Length' => 0, 'Type' => "/XObject", 'Resources' => \%incres});
+    $incres{ProcSet}=['/PDF', '/Text', '/ImageB', '/ImageC', '/ImageI'];
 
-	BuildStream($xobj,$pdf,$pdf->[$page]->{OBJ}->{Contents});
-		
-	return([$xonm,$BBox] );
+    ($mat->[4],$mat->[5])=split(' ',PutXY($xpos,$ypos));
+    $pages->{'Resources'}->{'XObject'}->{$xonm}=BuildObj($xobj,{'Type' => '/XObject', 'BBox' => $BBox, 'Name' => "/$xonm", 'FormType' => 1, 'Subtype' => '/Form', 'Length' => 0, 'Type' => "/XObject", 'Resources' => \%incres});
+
+    BuildStream($xobj,$pdf,$pdf->[$page]->{OBJ}->{Contents});
+
+    return([$xonm,$BBox] );
 }
 
 sub BuildStream
 {
-	my $xobj=shift;
-	my $pdf=shift;
-	my $val=shift;
-	my $strm='';
-	my $objs;
-	my $refval=ref($val);
+    my $xobj=shift;
+    my $pdf=shift;
+    my $val=shift;
+    my $strm='';
+    my $objs;
+    my $refval=ref($val);
 
-	if ($refval eq 'OBJREF')
-	{
-		push(@{$objs}, $val);
-	}
-	elsif ($refval eq 'ARRAY')
-	{
-		$objs=$val;
-	}
-	else
-	{
-		Msg(0,"unexpected 'Contents'");
-	}
+    if ($refval eq 'OBJREF')
+    {
+	push(@{$objs}, $val);
+    }
+    elsif ($refval eq 'ARRAY')
+    {
+	$objs=$val;
+    }
+    else
+    {
+	Msg(0,"unexpected 'Contents'");
+    }
 
-	foreach my $o (@{$objs})
-	{
-		$strm.="\n" if $strm;
-		$strm.=$pdf->[$$o]->{STREAM} if exists($pdf->[$$o]->{STREAM});
-	}
+    foreach my $o (@{$objs})
+    {
+	$strm.="\n" if $strm;
+	$strm.=$pdf->[$$o]->{STREAM} if exists($pdf->[$$o]->{STREAM});
+    }
 
-	$obj[$xobj]->{STREAM}=$strm;
+    $obj[$xobj]->{STREAM}=$strm;
 }
-	
+
 
 sub MapInsHash
 {
-	my $pdf=shift;
-	my $o=shift;
-	my $insmap=shift;
-	my $parent=shift;
-	my $val=shift;
-	
+    my $pdf=shift;
+    my $o=shift;
+    my $insmap=shift;
+    my $parent=shift;
+    my $val=shift;
 
-	foreach my $k (keys(%{$val}))
-	{
-		MapInsValue($pdf,$o,$k,$insmap,$parent,$val->{$k}) if $k ne 'Contents';
-	}
+
+    foreach my $k (keys(%{$val}))
+    {
+	MapInsValue($pdf,$o,$k,$insmap,$parent,$val->{$k}) if $k ne 'Contents';
+    }
 }
 
 sub MapInsValue
 {
-	my $pdf=shift;
-	my $o=shift;
-	my $k=shift;
-	my $insmap=shift;
-	my $parent=shift;
-	my $val=shift;
-	my $refval=ref($val);
+    my $pdf=shift;
+    my $o=shift;
+    my $k=shift;
+    my $insmap=shift;
+    my $parent=shift;
+    my $val=shift;
+    my $refval=ref($val);
 
-	if ($refval eq 'OBJREF')
+    if ($refval eq 'OBJREF')
+    {
+	if ($k ne 'Parent')
 	{
-		if ($k ne 'Parent')
-		{
-			if (!exists($insmap->{IMP}->{$$val}))
-			{
-				$objct++;
-				$insmap->{CUR}->{$objct}=$$val;
-				$insmap->{IMP}->{$$val}=$objct;
-				$obj[$objct]->{DATA}=$pdf->[$$val]->{OBJ};
-				$obj[$objct]->{STREAM}=$pdf->[$$val]->{STREAM} if exists($pdf->[$$val]->{STREAM});
-				MapInsValue($pdf,$$val,'',$insmap,$o,$pdf->[$$val]->{OBJ});
-			}
-			
-			$$val=$insmap->{IMP}->{$$val};
-		}
-		else
-		{
-			$$val=$parent;
-		}
+	    if (!exists($insmap->{IMP}->{$$val}))
+	    {
+		$objct++;
+		$insmap->{CUR}->{$objct}=$$val;
+		$insmap->{IMP}->{$$val}=$objct;
+		$obj[$objct]->{DATA}=$pdf->[$$val]->{OBJ};
+		$obj[$objct]->{STREAM}=$pdf->[$$val]->{STREAM} if exists($pdf->[$$val]->{STREAM});
+		MapInsValue($pdf,$$val,'',$insmap,$o,$pdf->[$$val]->{OBJ});
+	    }
+
+	    $$val=$insmap->{IMP}->{$$val};
 	}
-	elsif ($refval eq 'ARRAY')
+	else
 	{
-		foreach my $v (@{$val})
-		{
-			MapInsValue($pdf,$o,'',$insmap,$parent,$v)
-		}
+	    $$val=$parent;
 	}
-	elsif ($refval eq 'HASH')
+    }
+    elsif ($refval eq 'ARRAY')
+    {
+	foreach my $v (@{$val})
 	{
-		MapInsHash($pdf,$o,$insmap,$parent,$val);
+	    MapInsValue($pdf,$o,'',$insmap,$parent,$v)
 	}
+    }
+    elsif ($refval eq 'HASH')
+    {
+	MapInsHash($pdf,$o,$insmap,$parent,$val);
+    }
 
 }
 
 sub FindKey
 {
-	my $pdf=shift;
-	my $page=shift;
-	my $k=shift;
+    my $pdf=shift;
+    my $page=shift;
+    my $k=shift;
 
-	if (exists($pdf->[$page]->{OBJ}->{$k}))
+    if (exists($pdf->[$page]->{OBJ}->{$k}))
+    {
+	my $val=$pdf->[$page]->{OBJ}->{$k};
+	$val=$pdf->[$$val]->{OBJ} if ref($val) eq 'OBJREF';
+	return($val);
+    }
+    else
+    {
+	if (exists($pdf->[$page]->{OBJ}->{Parent}))
 	{
-		my $val=$pdf->[$page]->{OBJ}->{$k};
-		$val=$pdf->[$$val]->{OBJ} if ref($val) eq 'OBJREF';
-		return($val);
+	    return(FindKey($pdf,${$pdf->[$page]->{OBJ}->{Parent}},$k));
 	}
-	else
-	{
-		if (exists($pdf->[$page]->{OBJ}->{Parent}))
-		{
-			return(FindKey($pdf,${$pdf->[$page]->{OBJ}->{Parent}},$k));
-		}
-	}
+    }
 
-	return(undef);
+    return(undef);
 }
 
 sub FindPage
 {
-	my $wantpg=shift;
-	my $pdf=shift;
-	my $catalog=${$pdf->[0]->{OBJ}->{Root}};
-	my $pages=${$pdf->[$catalog]->{OBJ}->{Pages}};
-	
-	return(NextPage($pdf,$pages,\$wantpg));
+    my $wantpg=shift;
+    my $pdf=shift;
+    my $catalog=${$pdf->[0]->{OBJ}->{Root}};
+    my $pages=${$pdf->[$catalog]->{OBJ}->{Pages}};
+
+    return(NextPage($pdf,$pages,\$wantpg));
 }
 
 sub NextPage
 {
-	my $pdf=shift;
-	my $pages=shift;
-	my $wantpg=shift;
-	my $ret;
+    my $pdf=shift;
+    my $pages=shift;
+    my $wantpg=shift;
+    my $ret;
 
-	if ($pdf->[$pages]->{OBJ}->{Type} eq '/Pages')
+    if ($pdf->[$pages]->{OBJ}->{Type} eq '/Pages')
+    {
+	foreach my $kid (@{$pdf->[$pages]->{OBJ}->{Kids}})
 	{
-		foreach my $kid (@{$pdf->[$pages]->{OBJ}->{Kids}})
-		{
-			$ret=NextPage($pdf,$$kid,$wantpg);
-			last if $$wantpg<=0;
-		}
+	    $ret=NextPage($pdf,$$kid,$wantpg);
+	    last if $$wantpg<=0;
 	}
-	elsif ($pdf->[$pages]->{OBJ}->{Type} eq '/Page')
-	{
-		$$wantpg--;
-		$ret=$pages;
-	}
+    }
+    elsif ($pdf->[$pages]->{OBJ}->{Type} eq '/Page')
+    {
+	$$wantpg--;
+	$ret=$pages;
+    }
 
-	return($ret);
+    return($ret);
 }
 
 sub nextwd
 {
-	my $pdfwds=shift;
+    my $pdfwds=shift;
 
-	my $wd=shift(@{$pdfwds});
+    my $wd=shift(@{$pdfwds});
 
-	return('') if !defined($wd);
-	
-	if ($wd=~m/^(.*?)(<<|>>|\[|\])(.*)/)
+    return('') if !defined($wd);
+
+    if ($wd=~m/^(.*?)(<<|>>|\[|\])(.*)/)
+    {
+	if (defined($1) and length($1))
 	{
-		if (defined($1) and length($1))
-		{
-			unshift(@{$pdfwds},$3) if defined($3) and length($3);
-			unshift(@{$pdfwds},$2);
-			$wd=$1;
-		}
-		else
-		{
-			unshift(@{$pdfwds},$3) if defined($3) and length($3);
-			$wd=$2;
-		}
+	    unshift(@{$pdfwds},$3) if defined($3) and length($3);
+	    unshift(@{$pdfwds},$2);
+	    $wd=$1;
 	}
-	
-	return($wd);
+	else
+	{
+	    unshift(@{$pdfwds},$3) if defined($3) and length($3);
+	    $wd=$2;
+	}
+    }
+
+    return($wd);
 }
 
 sub ParsePDFObj
 {
-	
-	my $pdfwds=shift;
-	my $rtn;
-	my $wd;
 
-	while ($wd=nextwd($pdfwds),length($wd))
+    my $pdfwds=shift;
+    my $rtn;
+    my $wd;
+
+    while ($wd=nextwd($pdfwds),length($wd))
+    {
+	if ($wd eq 'stream' or $wd eq 'endstream')
 	{
-		if ($wd eq 'stream' or $wd eq 'endstream')
-		{
-			next;
-		}
-		elsif ($wd eq 'endobj' or $wd eq 'startxref')
-		{
-			last;
-		}
-		else
-		{
-			unshift(@{$pdfwds},$wd);
-			$rtn=ParsePDFValue($pdfwds);
-		}
+	    next;
 	}
+	elsif ($wd eq 'endobj' or $wd eq 'startxref')
+	{
+	    last;
+	}
+	else
+	{
+	    unshift(@{$pdfwds},$wd);
+	    $rtn=ParsePDFValue($pdfwds);
+	}
+    }
 
-	return($rtn);
+    return($rtn);
 }
 
 sub ParsePDFHash
 {
-	my $pdfwds=shift;
-	my $rtn={};
-	my $wd;
-	
-	while ($wd=nextwd($pdfwds),length($wd))
+    my $pdfwds=shift;
+    my $rtn={};
+    my $wd;
+
+    while ($wd=nextwd($pdfwds),length($wd))
+    {
+	if ($wd eq '>>')
 	{
-		if ($wd eq '>>')
-		{
-			last;
-		}
-
-		my (@w)=split('/',$wd,3);
-
-		if ($w[0])
-		{
-			Msg(0,"PDF Dict Key '$wd' does not start with '/'");
-			exit 1;
-		}
-		else
-		{
-			unshift(@{$pdfwds},"/$w[2]") if $w[2];
-			$wd=$w[1];
-			(@w)=split('\(',$wd,2);
-			$wd=$w[0];
-			unshift(@{$pdfwds},"($w[1]") if defined($w[1]);
-			(@w)=split('\<',$wd,2);
-			$wd=$w[0];
-			unshift(@{$pdfwds},"<$w[1]") if defined($w[1]);
-
-			$rtn->{$wd}=ParsePDFValue($pdfwds);
-		}
+	    last;
 	}
 
-	return($rtn);
+	my (@w)=split('/',$wd,3);
+
+	if ($w[0])
+	{
+	    Msg(0,"PDF Dict Key '$wd' does not start with '/'");
+	    exit 1;
+	}
+	else
+	{
+	    unshift(@{$pdfwds},"/$w[2]") if $w[2];
+	    $wd=$w[1];
+	    (@w)=split('\(',$wd,2);
+	    $wd=$w[0];
+	    unshift(@{$pdfwds},"($w[1]") if defined($w[1]);
+	    (@w)=split('\<',$wd,2);
+	    $wd=$w[0];
+	    unshift(@{$pdfwds},"<$w[1]") if defined($w[1]);
+
+	    $rtn->{$wd}=ParsePDFValue($pdfwds);
+	}
+    }
+
+    return($rtn);
 }
 
 sub ParsePDFValue
 {
-	my $pdfwds=shift;
-	my $rtn;
-	my $wd=nextwd($pdfwds);
+    my $pdfwds=shift;
+    my $rtn;
+    my $wd=nextwd($pdfwds);
 
-	if ($wd=~m/^\d+$/ and $pdfwds->[0]=~m/^\d+$/ and $pdfwds->[1]=~m/^R(\]|\>|\/)?/)
+    if ($wd=~m/^\d+$/ and $pdfwds->[0]=~m/^\d+$/ and $pdfwds->[1]=~m/^R(\]|\>|\/)?/)
+    {
+	shift(@{$pdfwds});
+	if (defined($1) and length($1))
 	{
-		shift(@{$pdfwds});
-		if (defined($1) and length($1))
-		{
-			$pdfwds->[0]=substr($pdfwds->[0],1);
-		}
-		else
-		{
-			shift(@{$pdfwds});
-		}
-		return(bless(\$wd,'OBJREF'));
+	    $pdfwds->[0]=substr($pdfwds->[0],1);
 	}
-
-	if ($wd eq '<<')
+	else
 	{
-		return(ParsePDFHash($pdfwds));
+	    shift(@{$pdfwds});
 	}
+	return(bless(\$wd,'OBJREF'));
+    }
 
-	if ($wd eq '[')
+    if ($wd eq '<<')
+    {
+	return(ParsePDFHash($pdfwds));
+    }
+
+    if ($wd eq '[')
+    {
+	return(ParsePDFArray($pdfwds));
+    }
+
+    if ($wd=~m/(.*?)(\(.*)$/)
+    {
+	if (defined($1) and length($1))
 	{
-		return(ParsePDFArray($pdfwds));
+	    unshift(@{$pdfwds},$2);
+	    $wd=$1;
 	}
-
-	if ($wd=~m/(.*?)(\(.*)$/)
+	else
 	{
-		if (defined($1) and length($1))
-		{
-			unshift(@{$pdfwds},$2);
-			$wd=$1;
-		}
-		else
-		{
-			return(ParsePDFString($wd,$pdfwds));
-		}
+	    return(ParsePDFString($wd,$pdfwds));
 	}
+    }
 
-	if ($wd=~m/(.*?)(\<.*)$/)
+    if ($wd=~m/(.*?)(\<.*)$/)
+    {
+	if (defined($1) and length($1))
 	{
-		if (defined($1) and length($1))
-		{
-			unshift(@{$pdfwds},$2);
-			$wd=$1;
-		}
-		else
-		{
-			return(ParsePDFHexString($wd,$pdfwds));
-		}
+	    unshift(@{$pdfwds},$2);
+	    $wd=$1;
 	}
-
-	if ($wd=~m/(.+?)(\/.*)$/)
+	else
 	{
-		if (defined($2) and length($2))
-		{
-			unshift(@{$pdfwds},$2);
-			$wd=$1;
-		}
+	    return(ParsePDFHexString($wd,$pdfwds));
 	}
+    }
 
-	return($wd);
+    if ($wd=~m/(.+?)(\/.*)$/)
+    {
+	if (defined($2) and length($2))
+	{
+	    unshift(@{$pdfwds},$2);
+	    $wd=$1;
+	}
+    }
+
+    return($wd);
 }
 
 sub ParsePDFString
 {
-	my $wd=shift;
-	my $rtn='';
-	my $pdfwds=shift;
-	my $lev=0;
+    my $wd=shift;
+    my $rtn='';
+    my $pdfwds=shift;
+    my $lev=0;
 
-	while (length($wd))
+    while (length($wd))
+    {
+	$rtn.=' ' if length($rtn);
+
+	while ($wd=~m/(?<!\\)\(/g) {$lev++;}
+	while ($wd=~m/(?<!\\)\)/g) {$lev--;}
+
+
+	if ($lev<=0 and $wd=~m/^(.*?\))([^)]+)$/)
 	{
-		$rtn.=' ' if length($rtn);
-
-		while ($wd=~m/(?<!\\)\(/g) {$lev++;}
-		while ($wd=~m/(?<!\\)\)/g) {$lev--;}
-		
-		
-		if ($lev<=0 and $wd=~m/^(.*?\))([^)]+)$/)
-		{
-			unshift(@{$pdfwds},$2) if defined($2) and length($2);
-			$wd=$1;
-		}
-
-		$rtn.=$wd;
-		
-		last if $lev <= 0;
-
-		$wd=nextwd($pdfwds);
+	    unshift(@{$pdfwds},$2) if defined($2) and length($2);
+	    $wd=$1;
 	}
 
-	return($rtn);
+	$rtn.=$wd;
+
+	last if $lev <= 0;
+
+	$wd=nextwd($pdfwds);
+    }
+
+    return($rtn);
 }
 
 sub ParsePDFHexString
 {
-	my $wd=shift;
-	my $rtn='';
-	my $pdfwds=shift;
-	my $lev=0;
-	
-	if ($wd=~m/^(<.+?>)(.*)/)
-	{
-		unshift(@{$pdfwds},$2) if defined($2) and length($2);
-		$rtn=$1;
-	}
-	
-	return($rtn);
+    my $wd=shift;
+    my $rtn='';
+    my $pdfwds=shift;
+    my $lev=0;
+
+    if ($wd=~m/^(<.+?>)(.*)/)
+    {
+	unshift(@{$pdfwds},$2) if defined($2) and length($2);
+	$rtn=$1;
+    }
+
+    return($rtn);
 }
 
 sub ParsePDFArray
 {
-	my $pdfwds=shift;
-	my $rtn=[];
-	my $wd;
-	
-	while (1)
-	{
-		$wd=ParsePDFValue($pdfwds);
-		last if $wd eq ']' or length($wd)==0;
-		push(@{$rtn},$wd);
-	}
+    my $pdfwds=shift;
+    my $rtn=[];
+    my $wd;
 
-	return($rtn);
+    while (1)
+    {
+	$wd=ParsePDFValue($pdfwds);
+	last if $wd eq ']' or length($wd)==0;
+	push(@{$rtn},$wd);
+    }
+
+    return($rtn);
 }
-		
+
 sub Msg
 {
-	my ($lev,$msg)=@_;
+    my ($lev,$msg)=@_;
 
-	print STDERR "$env{SourceFile}: " if exists($env{SourceFile});
-	print STDERR "$msg\n";
-	exit 1 if $lev;
+    print STDERR "$env{SourceFile}: " if exists($env{SourceFile});
+    print STDERR "$msg\n";
+    exit 1 if $lev;
 }
 
 sub PutXY
 {
-	my ($x,$y)=(@_);
-	
-	if ($frot)
-	{
-		return("$y $x");
-	}
-	else
-	{
-		$y=$mediabox[3]-$y;
-		return("$x $y");
-	}
+    my ($x,$y)=(@_);
+
+    if ($frot)
+    {
+	return("$y $x");
+    }
+    else
+    {
+	$y=$mediabox[3]-$y;
+	return("$x $y");
+    }
 }
 
 sub GraphY
 {
-	my $y=shift;
-	
-	if ($frot)
-	{
-		return($y);
-	}
-	else
-	{
-		return($mediabox[3]-$y);
-	}
+    my $y=shift;
+
+    if ($frot)
+    {
+	return($y);
+    }
+    else
+    {
+	return($mediabox[3]-$y);
+    }
 }
 
 sub Put
 {
-	my $msg=shift;
-	
-	print $msg;
-	$fct+=length($msg);
+    my $msg=shift;
+
+    print $msg;
+    $fct+=length($msg);
 }
 
 sub PutObj
 {
-	my $ono=shift;
-	my $msg="$ono 0 obj ";
-	$obj[$ono]->{XREF}=$fct;
-	if (exists($obj[$ono]->{STREAM}))
+    my $ono=shift;
+    my $msg="$ono 0 obj ";
+    $obj[$ono]->{XREF}=$fct;
+    if (exists($obj[$ono]->{STREAM}))
+    {
+	if (!$debug)
 	{
-		if (!$debug)
-		{
-			$obj[$ono]->{STREAM}=Compress::Zlib::compress($obj[$ono]->{STREAM});
-			$obj[$ono]->{DATA}->{'Filter'}=['/FlateDecode'];
-		}
-		
-		$obj[$ono]->{DATA}->{'Length'}=length($obj[$ono]->{STREAM});
+	    $obj[$ono]->{STREAM}=Compress::Zlib::compress($obj[$ono]->{STREAM});
+	    $obj[$ono]->{DATA}->{'Filter'}=['/FlateDecode'];
 	}
-	PutField(\$msg,$obj[$ono]->{DATA});
-	PutStream(\$msg,$ono) if exists($obj[$ono]->{STREAM});
-	Put($msg."endobj\n");
+
+	$obj[$ono]->{DATA}->{'Length'}=length($obj[$ono]->{STREAM});
+    }
+    PutField(\$msg,$obj[$ono]->{DATA});
+    PutStream(\$msg,$ono) if exists($obj[$ono]->{STREAM});
+    Put($msg."endobj\n");
 }
 
 sub PutStream
 {
-	my $msg=shift;
-	my $ono=shift;
-	
-	# We could 'flate' here
-	$$msg.="stream\n$obj[$ono]->{STREAM}endstream\n";
+    my $msg=shift;
+    my $ono=shift;
+
+    # We could 'flate' here
+    $$msg.="stream\n$obj[$ono]->{STREAM}endstream\n";
 }
 
 sub PutField
 {
-	my $pmsg=shift;
-	my $fld=shift;
-	my $term=shift||"\n";
-	my $typ=ref($fld);
+    my $pmsg=shift;
+    my $fld=shift;
+    my $term=shift||"\n";
+    my $typ=ref($fld);
 
-	if ($typ eq '')
+    if ($typ eq '')
+    {
+	$$pmsg.="$fld$term";
+    }
+    elsif ($typ eq 'ARRAY')
+    {
+	$$pmsg.='[';
+	foreach my $cell (@{$fld})
 	{
-		$$pmsg.="$fld$term";
+	    PutField($pmsg,$cell,' ');
 	}
-	elsif ($typ eq 'ARRAY')
+	$$pmsg.="]$term";
+    }
+    elsif ($typ eq 'HASH')
+    {
+	$$pmsg.='<< ';
+	foreach my $key (sort keys %{$fld})
 	{
-		$$pmsg.='[';
-		foreach my $cell (@{$fld})
-		{
-			PutField($pmsg,$cell,' ');
-		}
-		$$pmsg.="]$term";
+	    $$pmsg.="/$key ";
+	    PutField($pmsg,$fld->{$key});
 	}
-	elsif ($typ eq 'HASH')
-	{
-		$$pmsg.='<< ';
-		foreach my $key (sort keys %{$fld})
-		{
-			$$pmsg.="/$key ";
-			PutField($pmsg,$fld->{$key});
-		}
-		$$pmsg.=">>$term";
-	}
-	elsif ($typ eq 'OBJREF')
-	{
-		$$pmsg.="$$fld 0 R$term";
-	}
+	$$pmsg.=">>$term";
+    }
+    elsif ($typ eq 'OBJREF')
+    {
+	$$pmsg.="$$fld 0 R$term";
+    }
 }
 
 sub BuildObj
 {
-	my $ono=shift;
-	my $val=shift;
+    my $ono=shift;
+    my $val=shift;
 
-	$obj[$ono]->{DATA}=$val;
+    $obj[$ono]->{DATA}=$val;
 
-	return("$ono 0 R ");
+    return("$ono 0 R ");
 }
 
 sub LoadFont
 {
-	my $fontno=shift;
-	my $fontnm=shift;
-	my $ofontnm=$fontnm;
+    my $fontno=shift;
+    my $fontnm=shift;
+    my $ofontnm=$fontnm;
 
-	return $fontlst{$fontno}->{OBJ} if (exists($fontlst{$fontno}));
+    return $fontlst{$fontno}->{OBJ} if (exists($fontlst{$fontno}));
 
-	my $f;
-	OpenFile(\$f,$fontdir,"$fontnm");
+    my $f;
+    OpenFile(\$f,$fontdir,"$fontnm");
 
-	if (!defined($f) and $Foundry)
+    if (!defined($f) and $Foundry)
+    {
+	# Try with no foundry
+	$fontnm=~s/.*?-//;
+	OpenFile(\$f,$fontdir,$fontnm);
+    }
+
+    Msg(1,"Failed to open font '$ofontnm'") if !defined($f);
+
+    my $foundry='';
+    $foundry=$1 if $fontnm=~m/^(.*?)-/;
+    my $stg=1;
+    my %fnt;
+    my @fntbbox=(0,0,0,0);
+    my $capheight=0;
+    my $lastchr=0;
+    my $t1flags=0;
+    my $fixwid=-1;
+    my $ascent=0;
+    my $charset='';
+
+    while (<$f>)
+    {
+	chomp;
+
+	s/^ +//;
+	s/^#.*// if $stg == 1;
+	next if $_ eq '';
+
+	if ($stg == 1)
 	{
-		# Try with no foundry
-		$fontnm=~s/.*?-//;
-		OpenFile(\$f,$fontdir,$fontnm);
+	    my ($key,$val)=split(' ',$_,2);
+
+	    $key=lc($key);
+	    $stg=2,next if $key eq 'kernpairs';
+	    $stg=3,next if lc($_) eq 'charset';
+
+	    $fnt{$key}=$val
 	}
-	
-	Msg(1,"Failed to open font '$ofontnm'") if !defined($f);
-
-	my $foundry='';
-	$foundry=$1 if $fontnm=~m/^(.*?)-/;
-	my $stg=1;
-	my %fnt;
-	my @fntbbox=(0,0,0,0);
-	my $capheight=0;
-	my $lastchr=0;
-	my $t1flags=0;
-	my $fixwid=-1;
-	my $ascent=0;
-	my $charset='';
-
-	while (<$f>)
+	elsif ($stg == 2)
 	{
-		chomp;
+	    $stg=3,next if lc($_) eq 'charset';
 
-		s/^ +//;
-		s/^#.*// if $stg == 1;
-		next if $_ eq '';
-		
-		if ($stg == 1)
-		{
-			my ($key,$val)=split(' ',$_,2);
-
-			$key=lc($key);
-			$stg=2,next if $key eq 'kernpairs';
-			$stg=3,next if lc($_) eq 'charset';
-			
-			$fnt{$key}=$val
-		}
-		elsif ($stg == 2)
-		{
-			$stg=3,next if lc($_) eq 'charset';
-
-			my ($ch1,$ch2,$k)=split;
-			$fnt{KERN}->{$ch1}->{$ch2}=$k;
-		}
-		else
-		{
-			my (@r)=split;
-			my (@p)=split(',',$r[1]);
-
-			if ($r[1] eq '"')
-			{
-				$fnt{GNM}->{$r[0]}=$lastchr;
-				next;
-			}
-			
-			$r[0]='u0020' if $r[3] == 32;
-			next if $r[3] >255;
-			$fnt{GNM}->{$r[0]}=$r[3];
-			$fnt{GNO}->[$r[3]]='/'.$r[4];
-			$fnt{WID}->[$r[3]]=$p[0];
-			$lastchr=$r[3] if $r[3] > $lastchr;
-			$fixwid=$p[0] if $fixwid == -1;
-			$fixwid=-2 if $fixwid > 0 and $p[0] != $fixwid;
-
-			$fntbbox[1]=-$p[2] if defined($p[2]) and -$p[2] < $fntbbox[1];
-			$fntbbox[2]=$p[0] if $p[0] > $fntbbox[2];
-			$fntbbox[3]=$p[1] if defined($p[1]) and $p[1] > $fntbbox[3];
-			$ascent=$p[1] if defined($p[1]) and $p[1] > $ascent and $r[3] >= 32 and $r[3] < 128;
-			$charset.='/'.$r[4] if defined($r[4]);
-			$capheight=$p[1] if length($r[4]) == 1 and $r[4] ge 'A' and $r[4] le 'Z' and $p[1] > $capheight;
-		}
-	}
-
-	close($f);
-
-	unshift(@{$fnt{GNO}},0);
-
-	foreach my $glyph (@{$fnt{GNO}})
-	{
-		$glyph='/.notdef' if !defined($glyph);
-	}
-	
-	foreach my $w (@{$fnt{WID}})
-	{
-		$w=0 if !defined($w);
-	}
-	
-	my $fno=0;
-	my $slant=0;
-	$slant=-$fnt{'slant'} if exists($fnt{'slant'});
-	$fnt{'spacewidth'}=700 if !exists($fnt{'spacewidth'});
-
-	$t1flags|=2**0 if $fixwid > -1;
-	$t1flags|=(exists($fnt{'special'}))?2**2:2**5;
-	$t1flags|=2**6 if $slant != 0;
-	my $fontkey="$foundry $fnt{internalname}";
-	
-	if (exists($download{$fontkey}))
-	{
-		# Not a Base Font
-		my ($l1,$l2,$l3,$t1stream)=GetType1($download{$fontkey});
-		Msg(0,"Incorrect font format for '$fontkey' ($l1)") if !defined($t1stream);
-		$fno=++$objct;
-		$fontlst{$fontno}->{OBJ}=BuildObj($objct,
-						  {'Type' => '/Font',
-						  'Subtype' => '/Type1',
-						  'BaseFont' => '/'.$fnt{internalname},
-						  'Widths' => $fnt{WID},
-						  'FirstChar' => 0,
-						  'LastChar' => $lastchr,
-						  'Encoding' => BuildObj($objct+1,
-									  {'Type' => '/Encoding',
-									  'Differences' => $fnt{GNO}
-									  }
-									  ),
-						  'FontDescriptor' => BuildObj($objct+2,
-										{'Type' => '/FontDescriptor',
-										'FontName' => '/'.$fnt{internalname},
-										'Flags' => $t1flags,
-										'FontBBox' => \@fntbbox,
-										'ItalicAngle' => $slant,
-										'Ascent' => $ascent,
-										'Descent' => $fntbbox[1],
-										'CapHeight' => $capheight,
-										'StemV' => 0,
-										'CharSet' => "($charset)",
-										'FontFile' => BuildObj($objct+3,
-													{'Length1' => $l1,
-													'Length2' => $l2,
-													'Length3' => $l3
-													}
-													)
-										}
-										)
-						  }
-						  );
-						  
-		$objct+=3;
-		$fontlst{$fontno}->{NM}='/F'.$fontno;
-		$pages->{'Resources'}->{'Font'}->{'F'.$fontno}=$fontlst{$fontno}->{OBJ};
-		$fontlst{$fontno}->{FNT}=\%fnt;
-		$obj[$objct]->{STREAM}=$t1stream;
-		
+	    my ($ch1,$ch2,$k)=split;
+	    $fnt{KERN}->{$ch1}->{$ch2}=$k;
 	}
 	else
 	{
-		$fno=++$objct;
-		$fontlst{$fontno}->{OBJ}=BuildObj($objct,
-						  {'Type' => '/Font',
-						  'Subtype' => '/Type1',
-						  'BaseFont' => '/'.$fnt{internalname},
-						  'Encoding' => BuildObj($objct+1,
-									 {'Type' => '/Encoding',
-									  'Differences' => $fnt{GNO}
-									 }
-									 )
-						  }
-						);
-		$objct+=1;
-		$fontlst{$fontno}->{NM}='/F'.$fontno;
-		$pages->{'Resources'}->{'Font'}->{'F'.$fontno}=$fontlst{$fontno}->{OBJ};
-		$fontlst{$fontno}->{FNT}=\%fnt;
-	}
+	    my (@r)=split;
+	    my (@p)=split(',',$r[1]);
 
-	PutObj($fno);
-	PutObj($fno+1);
-	PutObj($fno+2) if defined($obj[$fno+2]);
-	PutObj($fno+3) if defined($obj[$fno+3]);
+	    if ($r[1] eq '"')
+	    {
+		$fnt{GNM}->{$r[0]}=$lastchr;
+		next;
+	    }
+
+	    $r[0]='u0020' if $r[3] == 32;
+	    next if $r[3] >255;
+	    $fnt{GNM}->{$r[0]}=$r[3];
+	    $fnt{GNO}->[$r[3]]='/'.$r[4];
+	    $fnt{WID}->[$r[3]]=$p[0];
+	    $lastchr=$r[3] if $r[3] > $lastchr;
+	    $fixwid=$p[0] if $fixwid == -1;
+	    $fixwid=-2 if $fixwid > 0 and $p[0] != $fixwid;
+
+	    $fntbbox[1]=-$p[2] if defined($p[2]) and -$p[2] < $fntbbox[1];
+	    $fntbbox[2]=$p[0] if $p[0] > $fntbbox[2];
+	    $fntbbox[3]=$p[1] if defined($p[1]) and $p[1] > $fntbbox[3];
+	    $ascent=$p[1] if defined($p[1]) and $p[1] > $ascent and $r[3] >= 32 and $r[3] < 128;
+	    $charset.='/'.$r[4] if defined($r[4]);
+	    $capheight=$p[1] if length($r[4]) == 1 and $r[4] ge 'A' and $r[4] le 'Z' and $p[1] > $capheight;
+	}
+    }
+
+    close($f);
+
+    unshift(@{$fnt{GNO}},0);
+
+    foreach my $glyph (@{$fnt{GNO}})
+    {
+	$glyph='/.notdef' if !defined($glyph);
+    }
+
+    foreach my $w (@{$fnt{WID}})
+    {
+	$w=0 if !defined($w);
+    }
+
+    my $fno=0;
+    my $slant=0;
+    $slant=-$fnt{'slant'} if exists($fnt{'slant'});
+    $fnt{'spacewidth'}=700 if !exists($fnt{'spacewidth'});
+
+    $t1flags|=2**0 if $fixwid > -1;
+    $t1flags|=(exists($fnt{'special'}))?2**2:2**5;
+    $t1flags|=2**6 if $slant != 0;
+    my $fontkey="$foundry $fnt{internalname}";
+
+    if (exists($download{$fontkey}))
+    {
+	# Not a Base Font
+	my ($l1,$l2,$l3,$t1stream)=GetType1($download{$fontkey});
+	Msg(0,"Incorrect font format for '$fontkey' ($l1)") if !defined($t1stream);
+	$fno=++$objct;
+	$fontlst{$fontno}->{OBJ}=BuildObj($objct,
+			{'Type' => '/Font',
+			'Subtype' => '/Type1',
+			'BaseFont' => '/'.$fnt{internalname},
+			'Widths' => $fnt{WID},
+			'FirstChar' => 0,
+			'LastChar' => $lastchr,
+			'Encoding' => BuildObj($objct+1,
+				    {'Type' => '/Encoding',
+				    'Differences' => $fnt{GNO}
+				    }
+				    ),
+			'FontDescriptor' => BuildObj($objct+2,
+					{'Type' => '/FontDescriptor',
+					'FontName' => '/'.$fnt{internalname},
+					'Flags' => $t1flags,
+					'FontBBox' => \@fntbbox,
+					'ItalicAngle' => $slant,
+					'Ascent' => $ascent,
+					'Descent' => $fntbbox[1],
+					'CapHeight' => $capheight,
+					'StemV' => 0,
+					'CharSet' => "($charset)",
+					'FontFile' => BuildObj($objct+3,
+						    {'Length1' => $l1,
+						    'Length2' => $l2,
+						    'Length3' => $l3
+						    }
+						    )
+					}
+					)
+			}
+			);
+
+	$objct+=3;
+	$fontlst{$fontno}->{NM}='/F'.$fontno;
+	$pages->{'Resources'}->{'Font'}->{'F'.$fontno}=$fontlst{$fontno}->{OBJ};
+	$fontlst{$fontno}->{FNT}=\%fnt;
+	$obj[$objct]->{STREAM}=$t1stream;
+
+    }
+    else
+    {
+	$fno=++$objct;
+	$fontlst{$fontno}->{OBJ}=BuildObj($objct,
+			{'Type' => '/Font',
+			'Subtype' => '/Type1',
+			'BaseFont' => '/'.$fnt{internalname},
+			'Encoding' => BuildObj($objct+1,
+				    {'Type' => '/Encoding',
+				    'Differences' => $fnt{GNO}
+				    }
+				    )
+			}
+			);
+	$objct+=1;
+	$fontlst{$fontno}->{NM}='/F'.$fontno;
+	$pages->{'Resources'}->{'Font'}->{'F'.$fontno}=$fontlst{$fontno}->{OBJ};
+	$fontlst{$fontno}->{FNT}=\%fnt;
+    }
+
+    PutObj($fno);
+    PutObj($fno+1);
+    PutObj($fno+2) if defined($obj[$fno+2]);
+    PutObj($fno+3) if defined($obj[$fno+3]);
 }
 
 sub GetType1
 {
-	my $file=shift;
-	my ($l1,$l2,$l3);		# Return lengths
-	my ($head,$body,$tail);		# Font contents
-	my $f;
+    my $file=shift;
+    my ($l1,$l2,$l3);		# Return lengths
+    my ($head,$body,$tail);		# Font contents
+    my $f;
 
-	OpenFile(\$f,$fontdir,"$file");
-	Msg(1,"Failed to open '$file'") if !defined($f);
+    OpenFile(\$f,$fontdir,"$file");
+    Msg(1,"Failed to open '$file'") if !defined($f);
 
-	my $l=<$f>;
+    my $l=<$f>;
 
-	if (substr($l,0,1) eq "\x80")
+    if (substr($l,0,1) eq "\x80")
+    {
+	# PFB file
+	sysseek($f,0,0);
+	my $hdr='';
+	$l1=$l2=$l3=0;
+	my $typ=0;
+	my $data='';
+	my $sl=0;
+
+	while ($typ != 3)
 	{
-		# PFB file
-		sysseek($f,0,0);
-		my $hdr='';
-		$l1=$l2=$l3=0;
-		my $typ=0;
-		my $data='';
-		my $sl=0;
+	    my $chk=sysread($f,$hdr,6);
 
-		while ($typ != 3)
+	    if ($chk < 2)
+	    {
+		# eof($f) uses buffered i/o (since file was open not sysopen)
+		# which screws up next sysread. So this will terminate loop if font
+		# has no terminating section type 3.
+		last if $l3;
+		return(5,$l2,$l3,undef);
+	    }
+
+	    $typ=ord(substr($hdr,1,1));
+
+	    if ($chk == 6)
+	    {
+		$sl=unpack('L',substr($hdr,2,4));
+		$chk=sysread($f,$data,$sl);
+		return(1,$l2,$l3,undef) if $chk != $sl;
+	    }
+
+	    if ($typ == 1)
+	    {
+		if ($l2 == 0)
 		{
-			my $chk=sysread($f,$hdr,6);
-
-			if ($chk < 2)
-			{
-				# eof($f) uses buffered i/o (since file was open not sysopen)
-				# which screws up next sysread. So this will terminate loop if font
-				# has no terminating section type 3.
-				last if $l3;
-				return(5,$l2,$l3,undef);
-			}
-			
-			$typ=ord(substr($hdr,1,1));
-
-			if ($chk == 6)
-			{
-				$sl=unpack('L',substr($hdr,2,4));
-				$chk=sysread($f,$data,$sl);
-				return(1,$l2,$l3,undef) if $chk != $sl;
-			}
-
-			if ($typ == 1)
-			{
-				if ($l2 == 0)
-				{
-					# First text bit(s) must be head
-					$head.=$data;
-					$l1+=$sl;
-				}
-				else
-				{
-					# A text bit after the binary sections must be tail
-					$tail.=$data;
-					$l3+=$sl;
-				}
-			}
-			elsif ($typ == 2)
-			{
-				return(2,$l2,$l3,undef) if $l3; # Found a binary bit after the tail
-				$body.=$data;
-				$l2+=$sl;
-			}
-			elsif ($typ != 3)
-			{
-				# What segment type is this!
-				return(3,$l2,$l3,undef);
-			}
-		}
-
-		close($f);
-		return($l1,$l2,$l3,"$head$body$tail");
-	}
-
-	my (@lines)=(<$f>);
-	unshift(@lines,$l);
-
-	close($f);
-
-	Msg(1,"Font file '$file' must be an Adobe type 1 font file") if $lines[0]!~m/\%\!PS.Adobe/i;
-	$head=$body=$tail='';
-	
-	foreach my $line (@lines)
-	{
-		if (!defined($l1))
-		{
-			if (length($line) > 19 and $line=~s/^(currentfile eexec)//)
-			{
-				$head.=$1;
-				$l1=length($head);
-				redo;
-			}
-			
-			$head.=$line;
-			
-			if ($line=~m/eexec$/)
-			{
-				#				chomp($head);
-				#				$head.="\x0d";
-				$l1=length($head);
-			}
-		}
-		elsif (!defined($l2))
-		{
-			#$line=~s/(\0\0)0+$/&1/;
-			if ($line=~m/^0+$/)
-			{
-				$l2=length($body);
-				$tail=$line;
-			}
-			else
-			{
-				chomp($line);
-				$body.=pack('H*',$line);
-			}
+		    # First text bit(s) must be head
+		    $head.=$data;
+		    $l1+=$sl;
 		}
 		else
 		{
-			$tail.=$line;
+		    # A text bit after the binary sections must be tail
+		    $tail.=$data;
+		    $l3+=$sl;
 		}
+	    }
+	    elsif ($typ == 2)
+	    {
+		return(2,$l2,$l3,undef) if $l3; # Found a binary bit after the tail
+		$body.=$data;
+		$l2+=$sl;
+	    }
+	    elsif ($typ != 3)
+	    {
+		# What segment type is this!
+		return(3,$l2,$l3,undef);
+	    }
 	}
-	
-	$l1=length($head);
-	$l2=length($body);
-	$l3=length($tail);
-	
+
+	close($f);
 	return($l1,$l2,$l3,"$head$body$tail");
+    }
+
+    my (@lines)=(<$f>);
+    unshift(@lines,$l);
+
+    close($f);
+
+    Msg(1,"Font file '$file' must be an Adobe type 1 font file") if $lines[0]!~m/\%\!PS.Adobe/i;
+    $head=$body=$tail='';
+
+    foreach my $line (@lines)
+    {
+	if (!defined($l1))
+	{
+	    if (length($line) > 19 and $line=~s/^(currentfile eexec)//)
+	    {
+		$head.=$1;
+		$l1=length($head);
+		redo;
+	    }
+
+	    $head.=$line;
+
+	    if ($line=~m/eexec$/)
+	    {
+		#				chomp($head);
+		#				$head.="\x0d";
+		$l1=length($head);
+	    }
+	}
+	elsif (!defined($l2))
+	{
+	    #$line=~s/(\0\0)0+$/&1/;
+	    if ($line=~m/^0+$/)
+	    {
+		$l2=length($body);
+		$tail=$line;
+	    }
+	    else
+	    {
+		chomp($line);
+		$body.=pack('H*',$line);
+	    }
+	}
+	else
+	{
+	    $tail.=$line;
+	}
+    }
+
+    $l1=length($head);
+    $l2=length($body);
+    $l3=length($tail);
+
+    return($l1,$l2,$l3,"$head$body$tail");
 }
 
 
 sub OutStream
 {
-	my $ono=shift;
+    my $ono=shift;
 
-	IsGraphic();
-	$stream.="Q\n";
-	$obj[$ono]->{STREAM}=$stream;
-	$obj[$ono]->{DATA}->{Length}=length($stream);
-	$stream='';
-	PutObj($ono);
+    IsGraphic();
+    $stream.="Q\n";
+    $obj[$ono]->{STREAM}=$stream;
+    $obj[$ono]->{DATA}->{Length}=length($stream);
+    $stream='';
+    PutObj($ono);
 }
 
 sub do_p
 {
-	# Start of pages
+    # Start of pages
 
-	if ($cpageno > 0)
-	{
-		PutObj($cpageno);
-		OutStream($cpageno+1);
-	}
-	
-	$cpageno=++$objct;
+    if ($cpageno > 0)
+    {
+	PutObj($cpageno);
+	OutStream($cpageno+1);
+    }
 
-	push(@{$pages->{Kids}},BuildObj($objct,
-					 {'Type' => '/Page',
-					 'Group' => {'CS' => '/DeviceRGB', 'S' => '/Transparency'},
-					 'Parent' => '2 0 R',
-					 'Contents' => [ BuildObj($objct+1,
-								{'Length' => 0}
-								) ],
-					 }
-					 )
-	    );
-	$objct+=1;
-	$cpage=$obj[$cpageno]->{DATA};
-	$pages->{'Count'}++;
-	$stream="q 1 0 0 1 0 0 cm\n";
-	$mode='g';
-	$curfill='';
-	@mediabox=@defaultmb;
+    $cpageno=++$objct;
+
+    push(@{$pages->{Kids}},BuildObj($objct,
+		    {'Type' => '/Page',
+		    'Group' => {'CS' => '/DeviceRGB', 'S' => '/Transparency'},
+		    'Parent' => '2 0 R',
+		    'Contents' => [ BuildObj($objct+1,
+				{'Length' => 0}
+				) ],
+		    }
+		    )
+	);
+    $objct+=1;
+    $cpage=$obj[$cpageno]->{DATA};
+    $pages->{'Count'}++;
+    $stream="q 1 0 0 1 0 0 cm\n";
+    $mode='g';
+    $curfill='';
+    @mediabox=@defaultmb;
 }
 
 sub do_f
 {
-	my $par=shift;
+    my $par=shift;
 
 #	IsText();
-	$cft="$par";
-	$fontchg=1;
+    $cft="$par";
+    $fontchg=1;
 #	$stream.="/F$cft $cftsz Tf\n" if $cftsz;
-	$widtbl=CacheWid($par);
-	$origwidtbl=$fontlst{$par}->{FNT}->{WID};
-	$krntbl=$fontlst{$par}->{FNT}->{KERN};
+    $widtbl=CacheWid($par);
+    $origwidtbl=$fontlst{$par}->{FNT}->{WID};
+    $krntbl=$fontlst{$par}->{FNT}->{KERN};
 }
 
 sub CacheWid
 {
-	my $par=shift;
+    my $par=shift;
 
-	if (!defined($fontlst{$par}->{CACHE}->{$cftsz}))
-	{
-		$fontlst{$par}->{CACHE}->{$cftsz}=BuildCache($fontlst{$par}->{FNT}->{WID});
-	}
-	
-	return($fontlst{$par}->{CACHE}->{$cftsz});
+    if (!defined($fontlst{$par}->{CACHE}->{$cftsz}))
+    {
+	$fontlst{$par}->{CACHE}->{$cftsz}=BuildCache($fontlst{$par}->{FNT}->{WID});
+    }
+
+    return($fontlst{$par}->{CACHE}->{$cftsz});
 }
 
 sub BuildCache
 {
-	my $wid=shift;
-	return([]);
-	my @cwid;
+    my $wid=shift;
+    return([]);
+    my @cwid;
 
-	foreach my $w (@{$wid})
-	{
-		push(@cwid,$w*$cftsz);
-	}
+    foreach my $w (@{$wid})
+    {
+	push(@cwid,$w*$cftsz);
+    }
 
-	return(\@cwid);
+    return(\@cwid);
 }
 
 sub IsText
 {
-	if ($mode eq 'g')
+    if ($mode eq 'g')
+    {
+	$xpos+=$pendmv/$unitwidth;
+	$stream.="q BT\n$matrix ".PutXY($xpos,$ypos)." Tm\n";
+	$poschg=0;
+	$fontchg=0;
+	$pendmv=0;
+	$matrixchg=0;
+	$tmxpos=$xpos;
+	$stream.=$textcol."\n", $curfill=$textcol if $textcol ne $curfill;
+	if (defined($cft))
 	{
-		$xpos+=$pendmv/$unitwidth;
-		$stream.="q BT\n$matrix ".PutXY($xpos,$ypos)." Tm\n";
-		$poschg=0;
-		$fontchg=0;
-		$pendmv=0;
-		$matrixchg=0;
-		$tmxpos=$xpos;
-		$stream.=$textcol."\n", $curfill=$textcol if $textcol ne $curfill;
-		if (defined($cft))
-		{
-			$whtsz=$fontlst{$cft}->{FNT}->{spacewidth}*$cftsz;
-			$stream.="/F$cft $cftsz Tf\n";
-		}
+	    $whtsz=$fontlst{$cft}->{FNT}->{spacewidth}*$cftsz;
+	    $stream.="/F$cft $cftsz Tf\n";
 	}
+    }
 
-	if ($poschg or $matrixchg)
-	{
-		PutLine(0) if $matrixchg;
-		$stream.="$matrix ".PutXY($xpos,$ypos)." Tm\n", $poschg=0;
-		$tmxpos=$xpos;
-		$matrixchg=0;
-	}
+    if ($poschg or $matrixchg)
+    {
+	PutLine(0) if $matrixchg;
+	$stream.="$matrix ".PutXY($xpos,$ypos)." Tm\n", $poschg=0;
+	$tmxpos=$xpos;
+	$matrixchg=0;
+    }
 
-	if ($fontchg)
-	{
-		PutLine(0);
-		$whtsz=$fontlst{$cft}->{FNT}->{spacewidth}*$cftsz;
-		$stream.="/F$cft $cftsz Tf\n" if $cftsz and defined($cft);
-		$fontchg=0;
-	}
+    if ($fontchg)
+    {
+	PutLine(0);
+	$whtsz=$fontlst{$cft}->{FNT}->{spacewidth}*$cftsz;
+	$stream.="/F$cft $cftsz Tf\n" if $cftsz and defined($cft);
+	$fontchg=0;
+    }
 
-	$mode='t';
+    $mode='t';
 }
 
 sub IsGraphic
 {
-	if ($mode eq 't')
-	{
-		PutLine();
-		$stream.="ET Q\n";
-		$xpos+=($pendmv-$nomove)/$unitwidth;
-		$pendmv=0;
-		$nomove=0;
-		$stream.=$strkcol."\n", $curstrk=$strkcol if $strkcol ne $curstrk;
-		$curfill=$fillcol;
-	}
-	$mode='g';
+    if ($mode eq 't')
+    {
+	PutLine();
+	$stream.="ET Q\n";
+	$xpos+=($pendmv-$nomove)/$unitwidth;
+	$pendmv=0;
+	$nomove=0;
+	$stream.=$strkcol."\n", $curstrk=$strkcol if $strkcol ne $curstrk;
+	$curfill=$fillcol;
+    }
+    $mode='g';
 }
 
 sub do_s
 {
-	my $par=shift;
-	$par/=$unitwidth;
+    my $par=shift;
+    $par/=$unitwidth;
 
-	if ($par != $cftsz and defined($cft))
-	{
-		PutLine();
-		$cftsz=$par;
+    if ($par != $cftsz and defined($cft))
+    {
+	PutLine();
+	$cftsz=$par;
 #		$stream.="/F$cft $cftsz Tf\n";
-		$fontchg=1;
-		$widtbl=CacheWid($cft);
-	}
+	$fontchg=1;
+	$widtbl=CacheWid($cft);
+    }
 }
 
 sub do_m
 {
-	# Groff uses /m[] for text & graphic stroke, and /M[] (DF?) for graphic fill.
-	# PDF uses G/RG/K for graphic stroke, and g/rg/k for text & graphic fill.
-	#
-	# This means that we must maintain g/rg/k state separately for text colour & graphic fill (this is
-	# probably why 'gs' maintains seperate graphic states for text & graphics when distilling PS -> PDF).
-	#
-	# To facilitate this:-
-	#
-	#	$textcol	= current groff stroke colour
-	#	$fillcol	= current groff fill colour
-	#	$curfill	= current PDF fill colour
-	
-	my $par=shift;
-	my $mcmd=substr($par,0,1);
+    # Groff uses /m[] for text & graphic stroke, and /M[] (DF?) for graphic fill.
+    # PDF uses G/RG/K for graphic stroke, and g/rg/k for text & graphic fill.
+    #
+    # This means that we must maintain g/rg/k state separately for text colour & graphic fill (this is
+    # probably why 'gs' maintains seperate graphic states for text & graphics when distilling PS -> PDF).
+    #
+    # To facilitate this:-
+    #
+    #	$textcol	= current groff stroke colour
+    #	$fillcol	= current groff fill colour
+    #	$curfill	= current PDF fill colour
 
-	$par=substr($par,1);
-	$par=~s/^ +//;
-	
+    my $par=shift;
+    my $mcmd=substr($par,0,1);
+
+    $par=substr($par,1);
+    $par=~s/^ +//;
+
 #	IsGraphic();
 
-	$textcol=set_col($mcmd,$par,0);
-	$strkcol=set_col($mcmd,$par,1);
+    $textcol=set_col($mcmd,$par,0);
+    $strkcol=set_col($mcmd,$par,1);
 
-	if ($mode eq 't')
-	{
-		PutLine();
-		$stream.=$textcol."\n";
-		$curfill=$textcol;
-	}
-	else
-	{
-		$stream.="$strkcol\n";
-		$curstrk=$strkcol;
-	}
+    if ($mode eq 't')
+    {
+	PutLine();
+	$stream.=$textcol."\n";
+	$curfill=$textcol;
+    }
+    else
+    {
+	$stream.="$strkcol\n";
+	$curstrk=$strkcol;
+    }
 }
 
 sub set_col
 {
-	my $mcmd=shift;
-	my $par=shift;
-	my $upper=shift;
-	my @oper=('g','k','rg');
+    my $mcmd=shift;
+    my $par=shift;
+    my $upper=shift;
+    my @oper=('g','k','rg');
 
-	@oper=('G','K','RG') if $upper;
+    @oper=('G','K','RG') if $upper;
 
-	if ($mcmd eq 'd')
-	{
-		# default colour
-		return("0 $oper[0]");
-	}
-	
-	my (@c)=split(' ',$par);
-	
-	if ($mcmd eq 'c')
-	{
-		# Text CMY
-		return(($c[0]/65535).' '.($c[1]/65535).' '.($c[2]/65535)." 0 $oper[1]");
-	}
-	elsif ($mcmd eq 'k')
-	{
-		# Text CMYK
-		return(($c[0]/65535).' '.($c[1]/65535).' '.($c[2]/65535).' '.($c[3]/65535)." $oper[1]");
-	}
-	elsif ($mcmd eq 'g')
-	{
-		# Text Grey
-		return(($c[0]/65535)." $oper[0]");
-	}
-	elsif ($mcmd eq 'r')
-	{
-		# Text RGB0
-		return(($c[0]/65535).' '.($c[1]/65535).' '.($c[2]/65535)." $oper[2]");
-	}
+    if ($mcmd eq 'd')
+    {
+	# default colour
+	return("0 $oper[0]");
+    }
+
+    my (@c)=split(' ',$par);
+
+    if ($mcmd eq 'c')
+    {
+	# Text CMY
+	return(($c[0]/65535).' '.($c[1]/65535).' '.($c[2]/65535)." 0 $oper[1]");
+    }
+    elsif ($mcmd eq 'k')
+    {
+	# Text CMYK
+	return(($c[0]/65535).' '.($c[1]/65535).' '.($c[2]/65535).' '.($c[3]/65535)." $oper[1]");
+    }
+    elsif ($mcmd eq 'g')
+    {
+	# Text Grey
+	return(($c[0]/65535)." $oper[0]");
+    }
+    elsif ($mcmd eq 'r')
+    {
+	# Text RGB0
+	return(($c[0]/65535).' '.($c[1]/65535).' '.($c[2]/65535)." $oper[2]");
+    }
 }
-	
+
 sub do_D
 {
-	my $par=shift;
-	my $Dcmd=substr($par,0,1);
-	
+    my $par=shift;
+    my $Dcmd=substr($par,0,1);
+
+    $par=substr($par,1);
+    $xpos+=$pendmv/$unitwidth;
+    $pendmv=0;
+
+    IsGraphic();
+
+    if ($Dcmd eq 'F')
+    {
+	my $mcmd=substr($par,0,1);
+
 	$par=substr($par,1);
-	$xpos+=$pendmv/$unitwidth;
-	$pendmv=0;
-	
-	IsGraphic();
+	$par=~s/^ +//;
 
-	if ($Dcmd eq 'F')
+	$fillcol=set_col($mcmd,$par,0);
+	$stream.="$fillcol\n";
+	$curfill=$fillcol;
+    }
+    elsif ($Dcmd eq 'f')
+    {
+	my $mcmd=substr($par,0,1);
+
+	$par=substr($par,1);
+	$par=~s/^ +//;
+	($par)=split(' ',$par);
+
+	if ($par >= 0 and $par <= 1000)
 	{
-		my $mcmd=substr($par,0,1);
-		
-		$par=substr($par,1);
-		$par=~s/^ +//;
-		
-		$fillcol=set_col($mcmd,$par,0);
-		$stream.="$fillcol\n";
-		$curfill=$fillcol;
+	    $fillcol=set_col('g',int((1000-$par)*65535/1000),0);
 	}
-	elsif ($Dcmd eq 'f')
+	else
 	{
-		my $mcmd=substr($par,0,1);
-		
-		$par=substr($par,1);
-		$par=~s/^ +//;
-		($par)=split(' ',$par);
-		
-		if ($par >= 0 and $par <= 1000)
-		{
-			$fillcol=set_col('g',int((1000-$par)*65535/1000),0);
-		}
-		else
-		{
-			$fillcol=lc($textcol);
-		}
-
-		$stream.="$fillcol\n";
-		$curfill=$fillcol;
+	    $fillcol=lc($textcol);
 	}
-	elsif ($Dcmd eq '~')
+
+	$stream.="$fillcol\n";
+	$curfill=$fillcol;
+    }
+    elsif ($Dcmd eq '~')
+    {
+	# B-Spline
+	my (@p)=split(' ',$par);
+	my ($nxpos,$nypos);
+
+	foreach my $p (@p) { $p/=$unitwidth; }
+	$stream.=PutXY($xpos,$ypos)." m\n";
+	$xpos+=($p[0]/2);
+	$ypos+=($p[1]/2);
+	$stream.=PutXY($xpos,$ypos)." l\n";
+
+	for (my $i=0; $i < $#p-1; $i+=2)
 	{
-		# B-Spline
-		my (@p)=split(' ',$par);
-		my ($nxpos,$nypos);
-		
-		foreach my $p (@p) { $p/=$unitwidth; }
-		$stream.=PutXY($xpos,$ypos)." m\n";
-		$xpos+=($p[0]/2);
-		$ypos+=($p[1]/2);
-		$stream.=PutXY($xpos,$ypos)." l\n";
-		
-		for (my $i=0; $i < $#p-1; $i+=2)
-		{
-			$nxpos=(($p[$i]*$tnum)/(2*$tden));
-			$nypos=(($p[$i+1]*$tnum)/(2*$tden));
-			$stream.=PutXY(($xpos+$nxpos),($ypos+$nypos))." ";
-			$nxpos=($p[$i]/2 + ($p[$i+2]*($tden-$tnum))/(2*$tden));
-			$nypos=($p[$i+1]/2 + ($p[$i+3]*($tden-$tnum))/(2*$tden));
-			$stream.=PutXY(($xpos+$nxpos),($ypos+$nypos))." ";
-			$nxpos=(($p[$i]-$p[$i]/2) + $p[$i+2]/2);
-			$nypos=(($p[$i+1]-$p[$i+1]/2) + $p[$i+3]/2);
-			$stream.=PutXY(($xpos+$nxpos),($ypos+$nypos))." c\n";
-			$xpos+=$nxpos;
-			$ypos+=$nypos;
-		}
-		
-		$xpos+=($p[$#p-1]-$p[$#p-1]/2);
-		$ypos+=($p[$#p]-$p[$#p]/2);
-		$stream.=PutXY($xpos,$ypos)." l\nS\n";
-		$poschg=1;
+	    $nxpos=(($p[$i]*$tnum)/(2*$tden));
+	    $nypos=(($p[$i+1]*$tnum)/(2*$tden));
+	    $stream.=PutXY(($xpos+$nxpos),($ypos+$nypos))." ";
+	    $nxpos=($p[$i]/2 + ($p[$i+2]*($tden-$tnum))/(2*$tden));
+	    $nypos=($p[$i+1]/2 + ($p[$i+3]*($tden-$tnum))/(2*$tden));
+	    $stream.=PutXY(($xpos+$nxpos),($ypos+$nypos))." ";
+	    $nxpos=(($p[$i]-$p[$i]/2) + $p[$i+2]/2);
+	    $nypos=(($p[$i+1]-$p[$i+1]/2) + $p[$i+3]/2);
+	    $stream.=PutXY(($xpos+$nxpos),($ypos+$nypos))." c\n";
+	    $xpos+=$nxpos;
+	    $ypos+=$nypos;
 	}
-	elsif ($Dcmd eq 'p' or $Dcmd eq 'P')
+
+	$xpos+=($p[$#p-1]-$p[$#p-1]/2);
+	$ypos+=($p[$#p]-$p[$#p]/2);
+	$stream.=PutXY($xpos,$ypos)." l\nS\n";
+	$poschg=1;
+    }
+    elsif ($Dcmd eq 'p' or $Dcmd eq 'P')
+    {
+	# B-Spline
+	my (@p)=split(' ',$par);
+	my ($nxpos,$nypos);
+
+	foreach my $p (@p) { $p/=$unitwidth; }
+	$stream.=PutXY($xpos,$ypos)." m\n";
+
+	for (my $i=0; $i < $#p; $i+=2)
 	{
-		# B-Spline
-		my (@p)=split(' ',$par);
-		my ($nxpos,$nypos);
-		
-		foreach my $p (@p) { $p/=$unitwidth; }
-		$stream.=PutXY($xpos,$ypos)." m\n";
-		
-		for (my $i=0; $i < $#p; $i+=2)
-		{
-			$xpos+=($p[$i]);
-			$ypos+=($p[$i+1]);
-			$stream.=PutXY($xpos,$ypos)." l\n";
-		}
-
-		if ($Dcmd eq 'p')
-		{
-			$stream.="s\n";
-		}
-		else
-		{
-			$stream.="f\n";
-		}
-		$poschg=1;
+	    $xpos+=($p[$i]);
+	    $ypos+=($p[$i+1]);
+	    $stream.=PutXY($xpos,$ypos)." l\n";
 	}
-	elsif ($Dcmd eq 'c')
+
+	if ($Dcmd eq 'p')
 	{
-		# Stroke circle
-		$par=substr($par,1);
-		my (@p)=split(' ',$par);
-		
-		DrawCircle($p[0],$p[0]);
-		$stream.="s\n";
-		$poschg=1;
+	    $stream.="s\n";
 	}
-	elsif ($Dcmd eq 'C')
+	else
 	{
-		# Fill circle
-		$par=substr($par,1);
-		my (@p)=split(' ',$par);
-		
-		DrawCircle($p[0],$p[0]);
-		$stream.="f\n";
-		$poschg=1;
+	    $stream.="f\n";
 	}
-	elsif ($Dcmd eq 'e')
+	$poschg=1;
+    }
+    elsif ($Dcmd eq 'c')
+    {
+	# Stroke circle
+	$par=substr($par,1);
+	my (@p)=split(' ',$par);
+
+	DrawCircle($p[0],$p[0]);
+	$stream.="s\n";
+	$poschg=1;
+    }
+    elsif ($Dcmd eq 'C')
+    {
+	# Fill circle
+	$par=substr($par,1);
+	my (@p)=split(' ',$par);
+
+	DrawCircle($p[0],$p[0]);
+	$stream.="f\n";
+	$poschg=1;
+    }
+    elsif ($Dcmd eq 'e')
+    {
+	# Stroke ellipse
+	$par=substr($par,1);
+	my (@p)=split(' ',$par);
+
+	DrawCircle($p[0],$p[1]);
+	$stream.="s\n";
+	$poschg=1;
+    }
+    elsif ($Dcmd eq 'E')
+    {
+	# Fill ellipse
+	$par=substr($par,1);
+	my (@p)=split(' ',$par);
+
+	DrawCircle($p[0],$p[1]);
+	$stream.="f\n";
+	$poschg=1;
+    }
+    elsif ($Dcmd eq 'l')
+    {
+	# Line To
+	$par=substr($par,1);
+	my (@p)=split(' ',$par);
+
+	foreach my $p (@p) { $p/=$unitwidth; }
+	$stream.=PutXY($xpos,$ypos)." m\n";
+	$xpos+=$p[0];
+	$ypos+=$p[1];
+	$stream.=PutXY($xpos,$ypos)." l\n";
+
+	$stream.="s\n";
+	$poschg=1;
+    }
+    elsif ($Dcmd eq 't')
+    {
+	# Line Thickness
+	$par=substr($par,1);
+	my (@p)=split(' ',$par);
+
+	foreach my $p (@p) { $p/=$unitwidth; }
+	#		$xpos+=$p[0]*100;		# WTF!!!
+	#int lw = ((font::res/(72*font::sizescale))*linewidth*env->size)/1000;
+	$p[0]=(($desc{res}/(72*$desc{sizescale}))*$linewidth*$cftsz)/1000 if $p[0] < 0;
+	$lwidth=$p[0];
+	$stream.="$p[0] w\n";
+	$poschg=1;
+    }
+    elsif ($Dcmd eq 'a')
+    {
+	# Arc
+	$par=substr($par,1);
+	my (@p)=split(' ',$par);
+	my $rad180=3.14159;
+	my $rad360=$rad180*2;
+	my $rad90=$rad180/2;
+
+	foreach my $p (@p) { $p/=$unitwidth; }
+
+	# Documentation is wrong. Groff does not use Dh1,Dv1 as centre of the circle!
+
+	my $centre=adjust_arc_centre(\@p);
+
+	# Using formula here : http://www.tinaja.com/glib/bezcirc2.pdf
+	# First calculate angle between start and end point
+
+	my ($startang,$r)=RtoP(-$centre->[0],$centre->[1]);
+	my ($endang,$r2)=RtoP(($p[0]+$p[2])-$centre->[0],-($p[1]+$p[3]-$centre->[1]));
+	$endang+=$rad360 if $endang < $startang;
+	my $totang=($endang-$startang)/4;	# do it in 4 pieces
+
+	# Now 1 piece
+
+	my $x0=cos($totang/2);
+	my $y0=sin($totang/2);
+	my $x3=$x0;
+	my $y3=-$y0;
+	my $x1=(4-$x0)/3;
+	my $y1=((1-$x0)*(3-$x0))/(3*$y0);
+	my $x2=$x1;
+	my $y2=-$y1;
+
+	# Rotate to start position and draw 4 pieces
+
+	foreach my $j (0..3)
 	{
-		# Stroke ellipse
-		$par=substr($par,1);
-		my (@p)=split(' ',$par);
-		
-		DrawCircle($p[0],$p[1]);
-		$stream.="s\n";
-		$poschg=1;
+	    PlotArcSegment($totang/2+$startang+$j*$totang,$r,$xpos+$centre->[0],GraphY($ypos+$centre->[1]),$x0,$y0,$x1,$y1,$x2,$y2,$x3,$y3);
 	}
-	elsif ($Dcmd eq 'E')
-	{
-		# Fill ellipse
-		$par=substr($par,1);
-		my (@p)=split(' ',$par);
-		
-		DrawCircle($p[0],$p[1]);
-		$stream.="f\n";
-		$poschg=1;
-	}
-	elsif ($Dcmd eq 'l')
-	{
-		# Line To
-		$par=substr($par,1);
-		my (@p)=split(' ',$par);
-		
-		foreach my $p (@p) { $p/=$unitwidth; }
-		$stream.=PutXY($xpos,$ypos)." m\n";
-		$xpos+=$p[0];
-		$ypos+=$p[1];
-		$stream.=PutXY($xpos,$ypos)." l\n";
-		
-		$stream.="s\n";
-		$poschg=1;
-	}
-	elsif ($Dcmd eq 't')
-	{
-		# Line Thickness
-		$par=substr($par,1);
-		my (@p)=split(' ',$par);
-		
-		foreach my $p (@p) { $p/=$unitwidth; }
-		#		$xpos+=$p[0]*100;		# WTF!!!
-		#int lw = ((font::res/(72*font::sizescale))*linewidth*env->size)/1000;
-		$p[0]=(($desc{res}/(72*$desc{sizescale}))*$linewidth*$cftsz)/1000 if $p[0] < 0;
-		$lwidth=$p[0];
-		$stream.="$p[0] w\n";
-		$poschg=1;
-	}
-	elsif ($Dcmd eq 'a')
-	{
-		# Arc
-		$par=substr($par,1);
-		my (@p)=split(' ',$par);
-		my $rad180=3.14159;
-		my $rad360=$rad180*2;
-		my $rad90=$rad180/2;
 
-		foreach my $p (@p) { $p/=$unitwidth; }
+	$xpos+=$p[0]+$p[2];
+	$ypos+=$p[1]+$p[3];
 
-		# Documentation is wrong. Groff does not use Dh1,Dv1 as centre of the circle!
-
-		my $centre=adjust_arc_centre(\@p);
-
-		# Using formula here : http://www.tinaja.com/glib/bezcirc2.pdf
-		# First calculate angle between start and end point
-
-		my ($startang,$r)=RtoP(-$centre->[0],$centre->[1]);
-		my ($endang,$r2)=RtoP(($p[0]+$p[2])-$centre->[0],-($p[1]+$p[3]-$centre->[1]));
-		$endang+=$rad360 if $endang < $startang;
-		my $totang=($endang-$startang)/4;	# do it in 4 pieces
-
-		# Now 1 piece
-
-		my $x0=cos($totang/2);
-		my $y0=sin($totang/2);
-		my $x3=$x0;
-		my $y3=-$y0;
-		my $x1=(4-$x0)/3;
-		my $y1=((1-$x0)*(3-$x0))/(3*$y0);
-		my $x2=$x1;
-		my $y2=-$y1;
-
-		# Rotate to start position and draw 4 pieces
-
-		foreach my $j (0..3)
-		{
-			PlotArcSegment($totang/2+$startang+$j*$totang,$r,$xpos+$centre->[0],GraphY($ypos+$centre->[1]),$x0,$y0,$x1,$y1,$x2,$y2,$x3,$y3);
-		}
-
-		$xpos+=$p[0]+$p[2];
-		$ypos+=$p[1]+$p[3];
-
-		$poschg=1;
-	}
+	$poschg=1;
+    }
 }
 
 sub deg
 {
-	return int($_[0]*180/3.14159);
+    return int($_[0]*180/3.14159);
 }
 
 sub adjust_arc_centre
 {
-	# Taken from geometry.cpp
-	
-	# We move the center along a line parallel to the line between
-	# the specified start point and end point so that the center
-	# is equidistant between the start and end point.
-	# It can be proved (using Lagrange multipliers) that this will
-	# give the point nearest to the specified center that is equidistant
-	# between the start and end point.
+    # Taken from geometry.cpp
 
-	my $p=shift;
-	my @c;
-	my $x = $p->[0] + $p->[2];	# (x, y) is the end point
-	my $y = $p->[1] + $p->[3];
-	my $n = $x*$x + $y*$y;
-	if ($n != 0)
-	{
-		$c[0]= $p->[0];
-		$c[1] = $p->[1];
-		my $k = .5 - ($c[0]*$x + $c[1]*$y)/$n;
-		$c[0] += $k*$x;
-		$c[1] += $k*$y;
-		return(\@c);
-	}
-	else
-	{
-		return(undef);
-	}
+    # We move the center along a line parallel to the line between
+    # the specified start point and end point so that the center
+    # is equidistant between the start and end point.
+    # It can be proved (using Lagrange multipliers) that this will
+    # give the point nearest to the specified center that is equidistant
+    # between the start and end point.
+
+    my $p=shift;
+    my @c;
+    my $x = $p->[0] + $p->[2];	# (x, y) is the end point
+    my $y = $p->[1] + $p->[3];
+    my $n = $x*$x + $y*$y;
+    if ($n != 0)
+    {
+	$c[0]= $p->[0];
+	$c[1] = $p->[1];
+	my $k = .5 - ($c[0]*$x + $c[1]*$y)/$n;
+	$c[0] += $k*$x;
+	$c[1] += $k*$y;
+	return(\@c);
+    }
+    else
+    {
+	return(undef);
+    }
 }
 
 
 sub PlotArcSegment
 {
-	my ($ang,$r,$transx,$transy,$x0,$y0,$x1,$y1,$x2,$y2,$x3,$y3)=@_;
-	my $cos=cos($ang);
-	my $sin=sin($ang);
-  my @mat=($cos,$sin,-$sin,$cos,0,0);
-	my $lw=$lwidth/$r;
-	
-	$stream.="q $r 0 0 $r $transx $transy cm ".join(' ',@mat)." cm $lw w $x0 $y0 m $x1 $y1 $x2 $y2 $x3 $y3 c S Q\n";
+    my ($ang,$r,$transx,$transy,$x0,$y0,$x1,$y1,$x2,$y2,$x3,$y3)=@_;
+    my $cos=cos($ang);
+    my $sin=sin($ang);
+    my @mat=($cos,$sin,-$sin,$cos,0,0);
+    my $lw=$lwidth/$r;
+
+    $stream.="q $r 0 0 $r $transx $transy cm ".join(' ',@mat)." cm $lw w $x0 $y0 m $x1 $y1 $x2 $y2 $x3 $y3 c S Q\n";
 }
 
 sub DrawCircle
 {
-	my $hd=shift;
-	my $vd=shift;
-	my $hr=$hd/2/$unitwidth;
-	my $vr=$vd/2/$unitwidth;
-	my $kappa=0.5522847498;
-	$hd/=$unitwidth;
-	$vd/=$unitwidth;
-	
+    my $hd=shift;
+    my $vd=shift;
+    my $hr=$hd/2/$unitwidth;
+    my $vr=$vd/2/$unitwidth;
+    my $kappa=0.5522847498;
+    $hd/=$unitwidth;
+    $vd/=$unitwidth;
 
-	$stream.=PutXY(($xpos+$hd),$ypos)." m\n";
-	$stream.=PutXY(($xpos+$hd),($ypos+$vr*$kappa))." ".PutXY(($xpos+$hr+$hr*$kappa),($ypos+$vr))." ".PutXY(($xpos+$hr),($ypos+$vr))." c\n";
-	$stream.=PutXY(($xpos+$hr-$hr*$kappa),($ypos+$vr))." ".PutXY(($xpos),($ypos+$vr*$kappa))." ".PutXY(($xpos),($ypos))." c\n";
-	$stream.=PutXY(($xpos),($ypos-$vr*$kappa))." ".PutXY(($xpos+$hr-$hr*$kappa),($ypos-$vr))." ".PutXY(($xpos+$hr),($ypos-$vr))." c\n";
-	$stream.=PutXY(($xpos+$hr+$hr*$kappa),($ypos-$vr))." ".PutXY(($xpos+$hd),($ypos-$vr*$kappa))." ".PutXY(($xpos+$hd),($ypos))." c\n";
-	$xpos+=$hd;
 
-	$poschg=1;
+    $stream.=PutXY(($xpos+$hd),$ypos)." m\n";
+    $stream.=PutXY(($xpos+$hd),($ypos+$vr*$kappa))." ".PutXY(($xpos+$hr+$hr*$kappa),($ypos+$vr))." ".PutXY(($xpos+$hr),($ypos+$vr))." c\n";
+    $stream.=PutXY(($xpos+$hr-$hr*$kappa),($ypos+$vr))." ".PutXY(($xpos),($ypos+$vr*$kappa))." ".PutXY(($xpos),($ypos))." c\n";
+    $stream.=PutXY(($xpos),($ypos-$vr*$kappa))." ".PutXY(($xpos+$hr-$hr*$kappa),($ypos-$vr))." ".PutXY(($xpos+$hr),($ypos-$vr))." c\n";
+    $stream.=PutXY(($xpos+$hr+$hr*$kappa),($ypos-$vr))." ".PutXY(($xpos+$hd),($ypos-$vr*$kappa))." ".PutXY(($xpos+$hd),($ypos))." c\n";
+    $xpos+=$hd;
+
+    $poschg=1;
 }
 
 sub FindCircle
 {
-	my ($x1,$y1,$x2,$y2,$x3,$y3)=@_;
-	my ($Xo, $Yo);
-	
-	my $x=$x2+$x3;
-	my $y=$y2+$y3;
-	my $n=$x**2+$y**2;
+    my ($x1,$y1,$x2,$y2,$x3,$y3)=@_;
+    my ($Xo, $Yo);
 
-	if ($n)
-	{
-		my $k=.5-($x2*$x + $y2*$y)/$n;
-		return(sqrt($n),$x2+$k*$x,$y2+$k*$y);
-	}
-	else
-	{
-		return(-1);
-	}
-	
+    my $x=$x2+$x3;
+    my $y=$y2+$y3;
+    my $n=$x**2+$y**2;
+
+    if ($n)
+    {
+	my $k=.5-($x2*$x + $y2*$y)/$n;
+	return(sqrt($n),$x2+$k*$x,$y2+$k*$y);
+    }
+    else
+    {
+	return(-1);
+    }
+
 }
 
 sub PtoR
 {
-	my ($theta,$r)=@_;
-	
-	return($r*cos($theta),$r*sin($theta));
+    my ($theta,$r)=@_;
+
+    return($r*cos($theta),$r*sin($theta));
 }
 
 sub RtoP
 {
-	my ($x,$y)=@_;
-	
-	return(atan2($y,$x),sqrt($x**2+$y**2));
+    my ($x,$y)=@_;
+
+    return(atan2($y,$x),sqrt($x**2+$y**2));
 }
 
 sub PutLine
 {
 
-	my $f=shift;
+    my $f=shift;
 
-	IsText() if !defined($f);
-	
-	return if (scalar(@lin) == 0) or (!defined($lin[0]->[0]) and $#lin == 0);
+    IsText() if !defined($f);
+
+    return if (scalar(@lin) == 0) or (!defined($lin[0]->[0]) and $#lin == 0);
 
 #	$stream.="% --- wht=$whtsz, pend=$pendmv, nomv=$nomove\n" if $debug;
-	$pendmv-=$nomove;
-	$lin[$#lin]->[1]=-$pendmv/$cftsz if ($pendmv != 0);
+    $pendmv-=$nomove;
+    $lin[$#lin]->[1]=-$pendmv/$cftsz if ($pendmv != 0);
 
-	if (0)
+    if (0)
+    {
+	if (scalar(@lin) == 1 and (!defined($lin[0]->[1]) or $lin[0]->[1] == 0))
 	{
-		if (scalar(@lin) == 1 and (!defined($lin[0]->[1]) or $lin[0]->[1] == 0))
-		{
-			$stream.="($lin[0]->[0]) Tj\n";
-		}
-		else
-		{
-			$stream.="[";
-			
-			foreach my $wd (@lin)
-			{
-				$stream.="($wd->[0]) " if defined($wd->[0]);
-				$stream.="$wd->[1] " if defined($wd->[1]) and $wd->[1] != 0;
-			}
-			
-			$stream.="] TJ\n";
-		}
+	    $stream.="($lin[0]->[0]) Tj\n";
 	}
 	else
 	{
-		if (scalar(@lin) == 1 and (!defined($lin[0]->[1]) or $lin[0]->[1] == 0))
-		{
-			$stream.="0 Tw ($lin[0]->[0]) Tj\n";
-		}
-		else
-		{
-			if ($wt>=-1 or $#lin == 0 or $lin[0]->[1]>=0)
-			{
-				$stream.="0 Tw [";
+	    $stream.="[";
 
-				foreach my $wd (@lin)
-				{
-					$stream.="($wd->[0]) " if defined($wd->[0]);
-					$stream.="$wd->[1] " if defined($wd->[1]) and $wd->[1] != 0;
-				}
+	    foreach my $wd (@lin)
+	    {
+		$stream.="($wd->[0]) " if defined($wd->[0]);
+		$stream.="$wd->[1] " if defined($wd->[1]) and $wd->[1] != 0;
+	    }
 
-				$stream.="] TJ\n";
-			}
-			else
-			{
-	# 			$stream.="\%dg  0 Tw [";
-	#
-	# 			foreach my $wd (@lin)
-	# 			{
-	#  				$stream.="($wd->[0]) " if defined($wd->[0]);
-	# 				$stream.="$wd->[1] " if defined($wd->[1]) and $wd->[1] != 0;
-	# 			}
-	#
-	# 			$stream.="] TJ\n";
-	#
-	#				my $wt=$lin[0]->[1]||0;
-
-	# 			while ($wt < -$whtsz/$cftsz)
-	# 			{
-	# 				$wt+=$whtsz/$cftsz;
-	# 			}
-
-				$stream.=sprintf( "%.3f Tw ",-($whtsz+$wt*$cftsz)/$unitwidth );
-				$stream.="[(";
-
-				foreach my $wd (@lin)
-				{
-					my $wwt=$wd->[1]||0;
-
-					while ($wwt <= $wt+.1)
-					{
-						$wwt-=$wt;
-						$wd->[0].=' ';
-					}
-
-					if (abs($wwt) < .1 or $wwt == 0)
-					{
-						$stream.="$wd->[0]" if defined($wd->[0]);
-					}
-					else
-					{
-						$stream.="$wd->[0]) $wwt (" if defined($wd->[0]);
-					}
-				}
-				$stream.=")] TJ\n";
-			}
-		}
+	    $stream.="] TJ\n";
 	}
+    }
+    else
+    {
+	if (scalar(@lin) == 1 and (!defined($lin[0]->[1]) or $lin[0]->[1] == 0))
+	{
+	    $stream.="0 Tw ($lin[0]->[0]) Tj\n";
+	}
+	else
+	{
+	    if ($wt>=-1 or $#lin == 0 or $lin[0]->[1]>=0)
+	    {
+		$stream.="0 Tw [";
 
-	@lin=();
-	$xpos+=$pendmv/$unitwidth;
-	$pendmv=0;
-	$nomove=0;
-	$wt=-1;
+		foreach my $wd (@lin)
+		{
+		    $stream.="($wd->[0]) " if defined($wd->[0]);
+		    $stream.="$wd->[1] " if defined($wd->[1]) and $wd->[1] != 0;
+		}
+
+		$stream.="] TJ\n";
+	    }
+	    else
+	    {
+    # 			$stream.="\%dg  0 Tw [";
+    #
+    # 			foreach my $wd (@lin)
+    # 			{
+    #  				$stream.="($wd->[0]) " if defined($wd->[0]);
+    # 				$stream.="$wd->[1] " if defined($wd->[1]) and $wd->[1] != 0;
+    # 			}
+    #
+    # 			$stream.="] TJ\n";
+    #
+    #				my $wt=$lin[0]->[1]||0;
+
+    # 			while ($wt < -$whtsz/$cftsz)
+    # 			{
+    # 				$wt+=$whtsz/$cftsz;
+    # 			}
+
+		$stream.=sprintf( "%.3f Tw ",-($whtsz+$wt*$cftsz)/$unitwidth );
+		$stream.="[(";
+
+		foreach my $wd (@lin)
+		{
+		    my $wwt=$wd->[1]||0;
+
+		    while ($wwt <= $wt+.1)
+		    {
+			$wwt-=$wt;
+			$wd->[0].=' ';
+		    }
+
+		    if (abs($wwt) < .1 or $wwt == 0)
+		    {
+			$stream.="$wd->[0]" if defined($wd->[0]);
+		    }
+		    else
+		    {
+			$stream.="$wd->[0]) $wwt (" if defined($wd->[0]);
+		    }
+		}
+		$stream.=")] TJ\n";
+	    }
+	}
+    }
+
+    @lin=();
+    $xpos+=$pendmv/$unitwidth;
+    $pendmv=0;
+    $nomove=0;
+    $wt=-1;
 }
 
 sub  LoadAhead
 {
-	my $no=shift;
+    my $no=shift;
 
-	foreach my $j (1..$no)
-	{
-		my $lin=<>;
-		chomp($lin);
-		$lct++;
-		
-		push(@ahead,$lin);
-		$stream.="%% $lin\n" if $debug;
-	}
+    foreach my $j (1..$no)
+    {
+	my $lin=<>;
+	chomp($lin);
+	$lct++;
+
+	push(@ahead,$lin);
+	$stream.="%% $lin\n" if $debug;
+    }
 }
 
 sub do_V
 {
-	my $par=shift;
+    my $par=shift;
 
-	if ($mode eq 't')
-	{
-		PutLine();
-	}
-	else
-	{
-		$xpos+=$pendmv/$unitwidth;
-		$pendmv=0;
-	}
-	
-	$ypos=$par/$unitwidth;
-	
-	LoadAhead(1);
-	
-	if (substr($ahead[0],0,1) eq 'H')
-	{
-		$xpos=substr($ahead[0],1)/$unitwidth;
-		
-		@ahead=();
-		
-	}
+    if ($mode eq 't')
+    {
+	PutLine();
+    }
+    else
+    {
+	$xpos+=$pendmv/$unitwidth;
+	$pendmv=0;
+    }
 
-	$nomove=$pendmv=0;
-	$poschg=1;
+    $ypos=$par/$unitwidth;
+
+    LoadAhead(1);
+
+    if (substr($ahead[0],0,1) eq 'H')
+    {
+	$xpos=substr($ahead[0],1)/$unitwidth;
+
+	@ahead=();
+
+    }
+
+    $nomove=$pendmv=0;
+    $poschg=1;
 }
 
 sub do_v
 {
-	my $par=shift;
-	
-	PutLine();
-	
-	$ypos+=$par/$unitwidth;
-		
-	$poschg=1;
+    my $par=shift;
+
+    PutLine();
+
+    $ypos+=$par/$unitwidth;
+
+    $poschg=1;
 }
 
 sub TextWid
 {
-	my $txt=shift;
-	my $w=0;
+    my $txt=shift;
+    my $w=0;
 
-	foreach my $c (split('',$txt))
-	{
-		my $cn=ord($c);
-		$widtbl->[$cn]=$origwidtbl->[$cn]*$cftsz if !defined($widtbl->[$cn]);
-		$w+=$widtbl->[$cn];
-	}
+    foreach my $c (split('',$txt))
+    {
+	my $cn=ord($c);
+	$widtbl->[$cn]=$origwidtbl->[$cn]*$cftsz if !defined($widtbl->[$cn]);
+	$w+=$widtbl->[$cn];
+    }
 
-	return($w/$unitwidth);
+    return($w/$unitwidth);
 }
 
 sub do_t
 {
-	my $par=shift;
-	my $wid=TextWid($par);
+    my $par=shift;
+    my $wid=TextWid($par);
 
-	$par=reverse(split('',$par)) if $xrev;
-	if ($n_flg and defined($mark))
-	{
-		$mark->{ypos}=$ypos;
-		$mark->{xpos}=$xpos;
-	}
+    $par=reverse(split('',$par)) if $xrev;
+    if ($n_flg and defined($mark))
+    {
+	$mark->{ypos}=$ypos;
+	$mark->{xpos}=$xpos;
+    }
 
-	$n_flg=0;
-	IsText();
-	
-	$xpos+=$wid;
-	$xpos+=($pendmv-$nomove)/$unitwidth;
-	
-	$stream.="% == '$par'=$wid 'xpos=$xpos\n" if $debug;
-	$par=~s/\\/\\\\/g;
-	$par=~s/\)/\\)/g;
-	$par=~s/\(/\\(/g;
+    $n_flg=0;
+    IsText();
 
-	# $pendmv = 'h' move since last 't'
-	# $nomove = width of char(s) added by 'C', 'N' or 'c'
-	# $w-flg  = 'w' seen since last t
+    $xpos+=$wid;
+    $xpos+=($pendmv-$nomove)/$unitwidth;
 
-	if ($fontchg)
-	{
-		PutLine();
-		$whtsz=$fontlst{$cft}->{FNT}->{spacewidth}*$cftsz;
-		$stream.="/F$cft $cftsz Tf\n", $fontchg=0 if $fontchg && defined($cft);
-	}
+    $stream.="% == '$par'=$wid 'xpos=$xpos\n" if $debug;
+    $par=~s/\\/\\\\/g;
+    $par=~s/\)/\\)/g;
+    $par=~s/\(/\\(/g;
 
-	$gotT=1;
+    # $pendmv = 'h' move since last 't'
+    # $nomove = width of char(s) added by 'C', 'N' or 'c'
+    # $w-flg  = 'w' seen since last t
 
-	$stream.="% --- wht=$whtsz, pend=$pendmv, nomv=$nomove\n" if $debug;
-	
+    if ($fontchg)
+    {
+	PutLine();
+	$whtsz=$fontlst{$cft}->{FNT}->{spacewidth}*$cftsz;
+	$stream.="/F$cft $cftsz Tf\n", $fontchg=0 if $fontchg && defined($cft);
+    }
+
+    $gotT=1;
+
+    $stream.="% --- wht=$whtsz, pend=$pendmv, nomv=$nomove\n" if $debug;
+
 # 	if ($w_flg && $#lin > -1)
 # 	{
 # 		$lin[$#lin]->[0].=' ';
@@ -2801,128 +2801,128 @@ sub do_t
 # 		$dontglue=1 if $pendmv==0;
 # 	}
 
-	$wt=-$pendmv/$cftsz if $w_flg and $wt==-1;
-	$pendmv-=$nomove;
-	$nomove=0;
-	$w_flg=0;
+    $wt=-$pendmv/$cftsz if $w_flg and $wt==-1;
+    $pendmv-=$nomove;
+    $nomove=0;
+    $w_flg=0;
 
-	if ($xrev)
+    if ($xrev)
+    {
+	PutLine(0) if $#lin > -1;
+	MakeMatrix(1);
+	$stream.="$matrix ".PutXY($xpos,$ypos)." Tm\n", $poschg=0;
+	$stream.="0 Tw ";
+	$stream.="($par) Tj\n";
+	MakeMatrix();
+	$stream.="$matrix ".PutXY($xpos,$ypos)." Tm\n", $poschg=0;
+	$matrixchg=0;
+	return;
+    }
+
+    if ($pendmv)
+    {
+	if ($#lin == -1)
 	{
-		PutLine(0) if $#lin > -1;
-		MakeMatrix(1);
-		$stream.="$matrix ".PutXY($xpos,$ypos)." Tm\n", $poschg=0;
-		$stream.="0 Tw ";
-		$stream.="($par) Tj\n";
-		MakeMatrix();
-		$stream.="$matrix ".PutXY($xpos,$ypos)." Tm\n", $poschg=0;
-		$matrixchg=0;
-		return;
-	}
-	
-	if ($pendmv)
-	{
-		if ($#lin == -1)
-		{
-			push(@lin,[undef,-$pendmv/$cftsz]);
-		}
-		else
-		{
-			$lin[$#lin]->[1]=-$pendmv/$cftsz;
-		}
-		
-		push(@lin,[$par,undef]);
-#		$xpos+=$pendmv/$unitwidth;
-		$pendmv=0
+	    push(@lin,[undef,-$pendmv/$cftsz]);
 	}
 	else
 	{
-		if ($#lin == -1)
-		{
-			push(@lin,[$par,undef]);
-		}
-		else
-		{
-			$lin[$#lin]->[0].=$par;
-		}
+	    $lin[$#lin]->[1]=-$pendmv/$cftsz;
 	}
+
+	push(@lin,[$par,undef]);
+#		$xpos+=$pendmv/$unitwidth;
+	$pendmv=0
+    }
+    else
+    {
+	if ($#lin == -1)
+	{
+	    push(@lin,[$par,undef]);
+	}
+	else
+	{
+	    $lin[$#lin]->[0].=$par;
+	}
+    }
 }
 
 sub do_h
 {
-	$pendmv+=shift;
+    $pendmv+=shift;
 }
 
 sub do_H
 {
-	my $par=shift;
-	
-	if ($mode eq 't')
-	{
-		PutLine();
-	}
-	else
-	{
-		$xpos+=$pendmv/$unitwidth;
-		$pendmv=0;
-	}
+    my $par=shift;
 
-	my $newx=$par/$unitwidth;
-	$stream.=sprintf("%.3f",$newx-$tmxpos)." 0 Td\n" if $mode eq 't';
-	$tmxpos=$xpos=$newx;
-	$pendmv=$nomove=0;
+    if ($mode eq 't')
+    {
+	PutLine();
+    }
+    else
+    {
+	$xpos+=$pendmv/$unitwidth;
+	$pendmv=0;
+    }
+
+    my $newx=$par/$unitwidth;
+    $stream.=sprintf("%.3f",$newx-$tmxpos)." 0 Td\n" if $mode eq 't';
+    $tmxpos=$xpos=$newx;
+    $pendmv=$nomove=0;
 }
 
 sub do_C
 {
-	my $par=shift;
-	my $nm;
-	
-	($par,$nm)=FindChar($par);
+    my $par=shift;
+    my $nm;
 
-	do_t($par);
-	$nomove=$nm;
+    ($par,$nm)=FindChar($par);
+
+    do_t($par);
+    $nomove=$nm;
 }
 
 sub FindChar
 {
-	my $chnm=shift;
+    my $chnm=shift;
 
-	if (exists($fontlst{$cft}->{FNT}->{GNM}->{$chnm}))
-	{
-		my $ch=$fontlst{$cft}->{FNT}->{GNM}->{$chnm};
-		return(chr($ch),$fontlst{$cft}->{FNT}->{WID}->[$ch]*$cftsz);
-	}
-	else
-	{
-		return(' ');
-	}
+    if (exists($fontlst{$cft}->{FNT}->{GNM}->{$chnm}))
+    {
+	my $ch=$fontlst{$cft}->{FNT}->{GNM}->{$chnm};
+	return(chr($ch),$fontlst{$cft}->{FNT}->{WID}->[$ch]*$cftsz);
+    }
+    else
+    {
+	return(' ');
+    }
 }
 
 sub do_c
 {
-	my $par=shift;
+    my $par=shift;
 
-	push(@ahead,substr($par,1));
-	$par=substr($par,0,1);
-	my $ch=ord($par);
-	do_t($ch);
-	$nomove=$fontlst{$cft}->{FNT}->{WID}->[$ch]*$cftsz;
+    push(@ahead,substr($par,1));
+    $par=substr($par,0,1);
+    my $ch=ord($par);
+    do_t($ch);
+    $nomove=$fontlst{$cft}->{FNT}->{WID}->[$ch]*$cftsz;
 }
 
 sub do_N
 {
-	my $par=shift;
+    my $par=shift;
 
-	do_t(chr($par));
-	$nomove=$fontlst{$cft}->{FNT}->{WID}->[$par]*$cftsz;
+    do_t(chr($par));
+    $nomove=$fontlst{$cft}->{FNT}->{WID}->[$par]*$cftsz;
 }
 
 sub do_n
 {
-	$gotT=0;
-	PutLine();
-	$pendmv=$nomove=0;
-	$n_flg=1;
-	@lin=();
-	PutHotSpot($xpos) if defined($mark);
+    $gotT=0;
+    PutLine();
+    $pendmv=$nomove=0;
+    $n_flg=1;
+    @lin=();
+    PutHotSpot($xpos) if defined($mark);
 }
