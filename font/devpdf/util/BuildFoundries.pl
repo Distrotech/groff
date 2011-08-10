@@ -1,7 +1,7 @@
-#!@PERLPATH@ -w
+#!/usr/bin/perl -w
 #
-#  BuildFoundries: Given a Foundry file generate groff and download files
-#  Deri James:     Monday 07 Feb 2011
+#   BuildFoundries   : Given a Foundry file generate groff and download files
+#   Deri James       : Monday 07 Feb 2011
 
 # Copyright (C) 2011 Free Software Foundation, Inc.
 #      Written by Deri James <deri@chuzzlewit.demon.co.uk>
@@ -24,6 +24,7 @@
 use strict;
 
 my $where=shift||'';
+my $devps=shift||'../devps';
 chdir $where if $where ne '';
 my (%foundry,%flg,@downloadpreamble,%download);
 my $GSpath=FindGSpath();
@@ -36,6 +37,7 @@ LoadFoundry("Foundry");
 WriteDownload("download");
 
 exit $warn;
+
 
 
 sub LoadFoundry
@@ -67,7 +69,8 @@ sub LoadFoundry
 	if (lc($r[0]) eq 'foundry')
 	{
 	    $foundry=uc($r[1]);
-	    $foundrypath=$r[2];
+	    $foundrypath=$r[2].' : '.$devps;
+	    $foundrypath=~s/\(gs\)/$GSpath /;
 	}
 	else
 	{
@@ -92,10 +95,11 @@ sub LoadFoundry
 		# Don't run afmtodit, just copy the grops font file
 
 		my $gotf=1;
+		my $gropsfnt=LocateFile($devps,$r[0],0);
 
-		if (-r "../devps/$r[0]")
+		if ($gropsfnt ne '' and -r "$gropsfnt")
 		{
-		    my $psfont=UseGropsVersion($r[0]);
+		    my $psfont=UseGropsVersion($gropsfnt);
 		    if (!PutDownload($psfont,LocatePF($foundrypath,$r[5]),uc($r[1])))
 		    {
 			if (uc($r[1]) ne 'Y')
@@ -106,6 +110,7 @@ sub LoadFoundry
 			}
 		    }
 		    print STDERR "Copied grops font $gfont...\n" if $gotf;
+
 		}
 		else
 		{
@@ -211,9 +216,11 @@ sub LocatePF
 sub LocateFile
 {
     my $path=shift;
-    my $file=shift;
+    my $files=shift;
     my $tryafm=shift;
 
+    foreach my $file (split('!',$files))
+    {
     if ($file=~m'/')
     {
 	# path given with file name so no need to search the paths
@@ -234,11 +241,7 @@ sub LocateFile
 	return('');
     }
 
-    if ($path eq '(gs)')
-    {
-	$path=$GSpath;
-    }
-    elsif ($path eq '(tex)')
+	if ($path eq '(tex)')
     {
 	my $res=`kpsewhich $file`;
 	return '' if $?;
@@ -246,10 +249,11 @@ sub LocateFile
 	return($res);
     }
 
-    my (@paths)=split(':',$path);
+	my (@paths)=split(/ (:|;)/,$path);
 
     foreach my $p (@paths)
     {
+	    next if !defined($p) or $p eq ';' or $p eq ':';
 	$p=~s/^\s+//;
 	$p=~s/\s+$//;
 
@@ -268,13 +272,14 @@ sub LocateFile
 	    }
 	}
     }
+    }
 
     return('');
 }
 
 sub FindGSpath
 {
-    my (@res)=`gs -h 2>/dev/null`;
+    my (@res)=`@GROFF_GHOSTSCRIPT_INTERPRETERS@ -h 2>/dev/null`;
     return '' if $?;
     my $buildpath='';
     my $stg=1;
@@ -308,8 +313,10 @@ sub UseGropsVersion
 {
     my $gfont=shift;
     my $psfont='';
+    my (@gfa)=split('/',$gfont);
+    my $gfontbase=pop(@gfa);
 
-    if (open(GF,"<../devps/$gfont"))
+    if (open(GF,"<$gfont"))
     {
 	my (@gf)=(<GF>);
 	my @ps=grep(/^internalname /,@gf);
@@ -327,7 +334,7 @@ sub UseGropsVersion
 
 	if ($psfont)
 	{
-	    if (open(GF,">$gfont"))
+	    if (open(GF,">$gfontbase"))
 	    {
 		local $"='';
 		print GF "@gf";

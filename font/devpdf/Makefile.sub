@@ -17,10 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 DEV=pdf
-GROFF_FONT_FILES=`cd $(DESTDIR)$(fontsubdir); \
-                  grep -l internalname * | grep -v Makefile.sub`
-ENC_FILES=`cd $(DESTDIR)$(fontsubdir); ls enc`
-MAP_FILES=`cd $(DESTDIR)$(fontsubdir); ls map`
+GROFF_FONT_FILES=`cd $(top_builddir)/font/devpdf \
+                  && find * -maxdepth 0 -type f ! -name Makefile.sub \
+                            -exec grep -l internalname {} \;`
+ENC_FILES=`cd $(top_builddir)/font/devpdf; ls enc/*`
+MAP_FILES=`cd $(top_builddir)/font/devpdf; ls map/*`
 
 UTILFILES=\
   BuildFoundries
@@ -28,14 +29,17 @@ UTILFILES=\
 MOSTLYCLEANADD=\
   download \
   DESC \
+  Foundry \
   util/BuildFoundries \
   $(GROFF_FONT_FILES) \
   $(ENC_FILES) \
   $(MAP_FILES)
-#MOSTLYCLEANDIRADD=enc map
+
+MOSTLYCLEANDIRADD=enc map
 
 DEVFILES=\
   Foundry
+
 #DEVSCRIPTS=util/BuildFoundries
 
 DISTFILES=\
@@ -51,21 +55,53 @@ all: DESC BuildFoundries
 
 DESC: DESC.in
 	-rm -f DESC
-	cat $(srcdir)/DESC.in >DESC
+	cat $(srcdir)/DESC.in >$(top_builddir)/font/devpdf/DESC
 	if test "$(PAGE)" = A4; then \
-	  echo "papersize a4" >>DESC; \
+	  echo "papersize a4" >>$(top_builddir)/font/devpdf/DESC; \
 	else \
-	  echo "papersize letter" >>DESC; \
+	  echo "papersize letter" >>$(top_builddir)/font/devpdf/DESC; \
 	fi
+	-rm -f Foundry
+	cat $(srcdir)/Foundry.in >$(top_builddir)/font/devpdf/Foundry
 
 BuildFoundries: util/BuildFoundries.pl $(SH_DEPS_SED_SCRIPT)
+	-test -d $(top_builddir)/font/devpdf/enc \
+	  || $(mkinstalldirs) $(top_builddir)/font/devpdf/enc
+	-test -d $(top_builddir)/font/devpdf/map \
+	  || $(mkinstalldirs) $(top_builddir)/font/devpdf/map
+	cp -f $(top_srcdir)/font/devps/text.enc \
+	  $(top_builddir)/font/devpdf/enc
+	cp -f $(top_srcdir)/font/devps/symbolmap \
+	  $(top_builddir)/font/devpdf/map
+	cp -f $(top_srcdir)/font/devps/generate/dingbats.map \
+	  $(top_builddir)/font/devpdf/map
+	cp -f $(top_srcdir)/font/devps/generate/textmap \
+	  $(top_builddir)/font/devpdf/map
+	cp -f $(top_srcdir)/font/devps/generate/symbolchars \
+	  $(top_builddir)/font/devpdf/map
 	-test -d util || $(mkinstalldirs) util
 	$(RM) util/$@
+	if test -n "$(PERLPATH)"; then \
+	  sed -f $(SH_DEPS_SED_SCRIPT) \
+	    -e "s|/usr/bin/perl|$(PERLPATH)|" \
+	    -e "s|@GROFF_GHOSTSCRIPT_INTERPRETERS@|$(GHOSTSCRIPT)|" \
+	    -e "s|@VERSION@|$(version)$(revision)|" \
+	    -e "s|@GROFF_FONT_DIR@|$(fontdir)|" \
+	    $(srcdir)/util/BuildFoundries.pl \
+	    >$(top_builddir)/font/devpdf/util/$@ ;\
+	else \
 	sed -f $(SH_DEPS_SED_SCRIPT) \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
-	    -e "s|@PERLPATH@|$(PERLPATH)|" \
-	    -e "s|@GROFF_FONT_DIR@|$(fontdir)|" $(srcdir)/util/BuildFoundries.pl > util/$@
+	    -e "s|@GROFF_FONT_DIR@|$(fontdir)|" \
+	    $(srcdir)/util/BuildFoundries.pl \
+	    >$(top_builddir)/font/devpdf/util/$@ ;\
+	fi
 	chmod +x util/$@
+	echo "# foundry	ps name	psfile" > $(top_builddir)/font/devpdf/download
+	PATH="$(top_builddir)/src/utils/afmtodit:${GROFF_PATH_SEPARATOR}${PATH}" \
+	  util/BuildFoundries $(top_builddir)/font/devpdf \
+	    '$(top_srcdir)/font/devps : $(top_builddir)/font/devps' \
+	  >> $(top_builddir)/font/devpdf/download
 
 install_data:
 	-test -d $(DESTDIR)$(fontsubdir) \
@@ -83,25 +119,16 @@ install_data:
 	  fi; \
 	done
 	$(RM) $@
-	cp -f $(DESTDIR)$(fontdir)/devps/text.enc \
-	  $(DESTDIR)$(fontsubdir)/enc
-	cp -f $(srcdir)/../devps/symbolmap \
-	  $(DESTDIR)$(fontsubdir)/map
-	cp -f $(DESTDIR)$(fontdir)/devps/generate/dingbats.map \
-	  $(DESTDIR)$(fontsubdir)/map
-	cp -f $(DESTDIR)$(fontdir)/devps/generate/textmap \
-	  $(DESTDIR)$(fontsubdir)/map
-	cp -f $(DESTDIR)$(fontdir)/devps/generate/symbolchars \
-	  $(DESTDIR)$(fontsubdir)/map
-	echo "# foundry	ps name	psfile" > $(DESTDIR)$(fontsubdir)/download
-	util/BuildFoundries $(DESTDIR)$(fontsubdir) \
-	  > $(DESTDIR)$(fontsubdir)/download
 
 uninstall_sub:
 	for f in $(MOSTLYCLEANADD); do \
 	  $(RM) $(DESTDIR)$(fontsubdir)/$$f; \
 	done
-	rmdir $(DESTDIR)$(fontsubdir)/enc
-	rmdir $(DESTDIR)$(fontsubdir)/map
-	rmdir $(DESTDIR)$(fontsubdir)/util
-	rmdir $(DESTDIR)$(fontsubdir)
+	-test -d $(DESTDIR)$(fontsubdir)/enc \
+	  && rmdir $(DESTDIR)$(fontsubdir)/enc
+	-test -d $(DESTDIR)$(fontsubdir)/map \
+	  && rmdir $(DESTDIR)$(fontsubdir)/map
+	-test -d $(DESTDIR)$(fontsubdir)/util \
+	  && rmdir $(DESTDIR)$(fontsubdir)/util
+	-test -d $(DESTDIR)$(fontsubdir) \
+	  && rmdir $(DESTDIR)$(fontsubdir)

@@ -91,6 +91,8 @@ my $thislev=1;
 my $mark=undef;
 my $suspendmark=undef;
 my $n_flg=1;
+my $pginsert=-1;    # Growth point for kids array
+my %pgnames;        # 'names' of pages for switchtopage
 
 my %ppsz=(	'ledger'=>[1224,792],
 	'legal'=>[612,1008],
@@ -131,9 +133,13 @@ my $version=0;
 
 #Load_Config();
 
-GetOptions("F=s" => \$fd, 'l' => \$frot, 'p=s' => \$fpsz, 'd!' => \$debug, 'v' => \$version, 'e' => \$embedall, 'fy=s' => \$Foundry);
+GetOptions("F=s" => \$fd, 'l' => \$frot, 'p=s' => \$fpsz, 'd!' => \$debug, 'v' => \$version, 'e' => \$embedall, 'y=s' => \$Foundry);
 
-print "GNU gropdf (groff) version $cfg{GROFF_VERSION}\n", exit if $version;
+if ($version)
+{
+    print "GNU gropdf (groff) version $cfg{GROFF_VERSION}\n";
+    exit;
+}
 
 # Search for 'font directory': paths in -f opt, shell var GROFF_FONT_PATH, default paths
 
@@ -191,6 +197,7 @@ my %info=('Creator' => "(groff version $cfg{GROFF_VERSION})",
 while (<>)
 {
     chomp;
+    s/\r$//;
     $lct++;
 
     do 	# The ahead buffer behaves like 'ungetc'
@@ -470,7 +477,7 @@ sub OpenFile
     my $dirs=shift;
     my $fnm=shift;
 
-    if (substr($fnm,0,1)  eq '/')
+    if (substr($fnm,0,1)  eq '/' or substr($fnm,1,1) eq ':') # dos
     {
 	return if -r "$fnm" and open($$f,"<$fnm");
     }
@@ -557,7 +564,7 @@ sub do_x
 	$cat=$obj[$objct]->{DATA};
 	$objct++;
 	$pages=$obj[2]->{DATA};
-        Put("%PDF-1.4\n%âãÏÓ\n");
+	Put("%PDF-1.4\n\x25\xe2\xe3\xcf\xd3\n");
     }
     elsif ($xcmd eq 'X')
     {
@@ -865,6 +872,85 @@ sub do_x
 	    {
 		$mark=$suspendmark;
 		$suspendmark=undef;
+	    }
+	    elsif (lc($xprm[1]) eq 'pagename')
+	    {
+		if ($pginsert > -1)
+		{
+		    $pgnames{$xprm[2]}=$pages->{Kids}->[$pginsert];
+		}
+		else
+		{
+		    $pgnames{$xprm[2]}='top';
+		}
+	    }
+	    elsif (lc($xprm[1]) eq 'switchtopage')
+	    {
+		my $ba=$xprm[2];
+		my $want=$xprm[3];
+
+		if ($pginsert > -1)
+		{
+		    if (!defined($want) or $want eq '')
+		    {
+			# no before/after
+			$want=$ba;
+			$ba='before';
+		    }
+
+		    if (!defined($ba) or $ba eq '' or $ba eq 'bottom')
+		    {
+			$pginsert=$#{$pages->{Kids}};
+		    }
+		    elsif ($ba eq 'top')
+		    {
+			$pginsert=-1;
+		    }
+		    else
+		    {
+			if (exists($pgnames{$want}))
+			{
+			    my $ref=$pgnames{$want};
+
+			    if ($ref eq 'top')
+			    {
+				$pginsert=-1;
+			    }
+			    else
+			    {
+
+				foreach my $j (0..$#{$pages->{Kids}})
+				{
+				    if ($ref eq $pages->{Kids}->[$j])
+				    {
+					if ($ba eq 'before')
+					{
+					    $pginsert=$j-1;
+					    return;
+					}
+					elsif ($ba eq 'after')
+					{
+					    $pginsert=$j;
+					    return;
+					}
+					else
+					{
+					    Msg(0,"Parameter must be top|bottom|before|after not '$ba'");
+					    return;
+					}
+				    }
+				}
+
+				Msg(0,"Can't find page ref '$ref'");
+			    }
+			}
+			else
+			{
+			    Msg(0,"Can't find page named '$want'");
+			}
+		    }
+
+		}
 	    }
 	}
 	elsif (lc(substr($xprm[0],0,9)) eq 'papersize')
@@ -2056,7 +2142,7 @@ sub do_p
 
     $cpageno=++$objct;
 
-    push(@{$pages->{Kids}},BuildObj($objct,
+    my $thispg=BuildObj($objct,
 		    {'Type' => '/Page',
 		    'Group' => {'CS' => '/DeviceRGB', 'S' => '/Transparency'},
 		    'Parent' => '2 0 R',
@@ -2064,8 +2150,10 @@ sub do_p
 				{'Length' => 0}
 				) ],
 		    }
-		    )
 	);
+
+    splice(@{$pages->{Kids}},++$pginsert,0,$thispg);
+
     $objct+=1;
     $cpage=$obj[$cpageno]->{DATA};
     $pages->{'Count'}++;
@@ -2693,6 +2781,7 @@ sub  LoadAhead
     {
 	my $lin=<>;
 	chomp($lin);
+	$lin=~s/\r$//;
 	$lct++;
 
 	push(@ahead,$lin);
