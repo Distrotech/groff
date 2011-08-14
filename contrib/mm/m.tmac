@@ -2072,7 +2072,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"
 .nr ds*old-ll \\n[.l]
 .nr ds*old-in \\n[.i]
-.misc@push ds-ll \\n[.l]
+.misc@push ds-in \\n[ds*old-in] \" Saving indent and line length of
+.misc@push ds-ll \\n[ds*old-ll] \" the text outside the display.
 .misc@push ds-form \\n[ds*format]
 .nr ds*i \\n[.i]
 .nr ds*ftmp \\n[.f]
@@ -2095,7 +2096,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" **********
 .nr ds*width \\n[dl]
 .nr ds*height \\n[dn]
-.misc@pop-nr ds-ll ds*old-ll
+.misc@pop-nr ds-ll ds*old-ll \" Restore indent and
+.misc@pop-nr ds-in ds*old-in \" line length
 .misc@pop-nr ds-form ds*format
 .\"
 .\" **********
