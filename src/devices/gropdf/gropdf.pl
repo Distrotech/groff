@@ -30,6 +30,7 @@ my %cfg;
 
 $cfg{GROFF_VERSION}='@VERSION@';
 $cfg{GROFF_FONT_PATH}='@GROFF_FONT_DIR@';
+binmode(STDOUT);
 
 my @obj;	# Array of PDF objects
 my $objct=0;	# Count of Objects
@@ -1995,6 +1996,7 @@ sub GetType1
 
     OpenFile(\$f,$fontdir,"$file");
     Msg(1,"Failed to open '$file'") if !defined($f);
+    binmode($f);
 
     my $l=<$f>;
 
