@@ -8948,8 +8948,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   on or off.
 \#
 .MAC HDRFTR_RULE END   \"To print rule under header/over footer.
-.    if \\n[#HEADERS_ON] \{ .nr #HDRFTR_RULE_GAP \\n[#HEADER_RULE_GAP] \}
-.    if \\n[#FOOTERS_ON] \{ .nr #HDRFTR_RULE_GAP \\n[#FOOTER_RULE_GAP] \}
+.    if r#HEADERS_ON \{\
+.       if \\n[#HEADERS_ON]=1 \{ .nr #HDRFTR_RULE_GAP \\n[#HEADER_RULE_GAP] \}
+.    \}
+.    if r#FOOTERS_ON \{\
+.       if \\n[#FOOTERS_ON]=1 \{ .nr #HDRFTR_RULE_GAP \\n[#FOOTER_RULE_GAP] \}
+.    \}
 .    if '\\$0'HDRFTR_RULE_INTERNAL' \{\
 .       ie \\n[#USERDEF_HDRFTR] \{\
 .          nr #CAP_HEIGHT_ADJUST \\n[#HDRFTR_HEIGHT]
@@ -10776,11 +10780,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 \!.  TQ
 .    di
 .    ev
-.\" End collection of head for TOC
+.\" End collection of subhead for TOC
 .\" Process subhead
 .    nr #ARG_NUM 0 1
 .    if r#QUOTE    \{ .rr #QUOTE    \}
 .    if r#Q_AT_TOP \{ .rr #Q_AT_TOP \}
+.    nr #SUBHEAD 1
 .    ev SUBHEAD
 .    ll \\n[#L_LENGTH]u
 .    ta \\n(.lu
@@ -11042,7 +11047,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \!.  TQ
 .    di
 .    ev
-.\" End collection of head for TOC
+.\" End collection of subsubhead for TOC
 .\" Process subsubhead
 .    nr #ARG_NUM 0 1
 .    if r#QUOTE    \{ .rr #QUOTE    \}
@@ -11071,16 +11076,19 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#PRINT_STYLE]=2 \{ .nr #SSH_LEAD_ADJUST \\n[#LEAD]/8 \}
 .    ie \\n[#START] \{ .RLD 1v \}
 .    el \{\
-.       if \\n[#PRINT_STYLE]=1 \{\
-.          if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
-.       \}
-.       if \\n[#PRINT_STYLE]=2 \{\
-.          ie \\n[#PP_SPACE]=1 \{\
-.             ie !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
-.             el \{ .RLD \\n[#DOC_LEAD]u \}
-.          \}
-.          el \{\
+.       ie \\n[#SUBHEAD]=1 \{ . \}
+.       el \{\
+.          if \\n[#PRINT_STYLE]=1 \{\
 .             if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
+.          \}
+.          if \\n[#PRINT_STYLE]=2 \{\
+.             ie \\n[#PP_SPACE]=1 \{\
+.                ie !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
+.                el \{ .RLD \\n[#DOC_LEAD]u \}
+.             \}
+.             el \{\
+.                if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
+.             \}
 .          \}
 .       \}
 .    \}
@@ -11695,6 +11703,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if r#QUOTE     \{ .rr #QUOTE     \}
 .       if r#END_QUOTE \{ .rr #END_QUOTE \}
 .       if r#HEAD      \{ .rr #HEAD      \}
+.       if r#SUBHEAD   \{ .rr #SUBHEAD   \}
 .       if r#EPIGRAPH  \{ .rr #EPIGRAPH  \}
 .       if r#Q_FITS    \{ .rr #Q_FITS    \}
 .       if r#LINEBREAK \{ .rr #LINEBREAK \}
