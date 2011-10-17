@@ -1,3 +1,15 @@
+2011-10-17  Ingo Schwarze  <schwarze@openbsd.org>
+
+	Do not use INSTALL_DATA and INSTALL_SCRIPT during build phase.
+
+	* Makefile.sub (groffer): Replace INSTALL_DATA and
+	INSTALL_SCRIPT with `cp'.  Otherwise the build phase might
+	fail with `permission denied' if you use the `-o root' flag
+	of the `install' command.  The use of INSTALL_* is an abuse
+	anyway because it's not installing anything at that point;
+	it's just copying files around locally, within in the build
+	directories.
+
 2011-03-21  Jan Vcelak <jvcelak@redhat.com>
 	    Bernd Warken
 
