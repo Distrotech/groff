@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001, 2004, 2009
+/* Copyright (C) 1989-1992, 2000, 2001, 2004, 2009, 2011
      Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -66,10 +66,10 @@ extern "C" const char *Version_string;
 
 struct char_info_word {
   unsigned char width_index;
-  char height_index;
-  char depth_index;
-  char italic_index;
-  char tag;
+  unsigned char height_index;
+  unsigned char depth_index;
+  unsigned char italic_index;
+  unsigned char tag;
   unsigned char remainder;
 };
 

@@ -1,6 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
-                 2006, 2009
+/* Copyright (C) 1989-1992, 2000-2006, 2009, 2011
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -3211,7 +3210,7 @@ const char *sptoa(int sp)
   double factor = 10.0;
   double val = s;
   int decimal_point = 0;
-  do  {
+  do {
     double v = ceil(s*factor);
     if (v > INT_MAX)
       break;
@@ -3314,8 +3313,8 @@ void environment::print_env()
 	       ? "on"
 	       : margin_character_flags == MARGIN_CHARACTER_NEXT
 		   ? "next"
-		   : margin_character_flags == MARGIN_CHARACTER_ON
-					       | MARGIN_CHARACTER_NEXT
+		   : margin_character_flags == (MARGIN_CHARACTER_ON
+						| MARGIN_CHARACTER_NEXT)
 		       ? "on, next"
 		       : "none");
     errprint("  margin character distance: %1u\n",

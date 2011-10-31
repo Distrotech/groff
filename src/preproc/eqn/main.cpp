@@ -1,6 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2005, 2007,
-                 2009
+/* Copyright (C) 1989-1992, 2000-2002, 2005, 2007, 2009, 2011
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -112,13 +111,14 @@ void do_file(FILE *fp, const char *filename)
       inline_flag = 0;
       yyparse();
       restore_compatibility();
-      if (non_empty_flag) 
+      if (non_empty_flag) {
 	if (output_format == mathml)
 	  putchar('\n');
         else {
 	  printf(".lf %d\n", current_lineno - 1);
 	  output_string();
 	}
+      }
       if (output_format == troff)
 	printf(".lf %d\n", current_lineno);
       put_string(linebuf, stdout);

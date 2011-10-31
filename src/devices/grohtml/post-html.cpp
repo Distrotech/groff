@@ -1,6 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009,
- *               2010
+/* Copyright (C) 2000-2007, 2009-2011
  * Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote post-html.cpp
@@ -3614,9 +3613,7 @@ void html_printer::lookahead_for_tables (void)
   text_glob  *start_of_table = NULL;
   text_glob  *last           = NULL;
   colType     type_of_col    = none;
-  int         left           = 0;
   int         found_col      = FALSE;
-  int         seen_text      = FALSE;
   int         ncol           = 0;
   int         colmin         = 0;		// pacify compiler
   int         colmax         = 0;		// pacify compiler
@@ -3646,9 +3643,7 @@ void html_printer::lookahead_for_tables (void)
       }
 
       start_of_line = g;
-      seen_text = FALSE;
       ncol = 0;
-      left = next_horiz_pos(g, nf);
       if (found_col)
 	last = g;
       found_col = FALSE;
@@ -3713,14 +3708,10 @@ void html_printer::lookahead_for_tables (void)
       } else if (! g->is_a_tag())
 	update_min_max(type_of_col, &colmin, &colmax, g);
 
-      if ((! g->is_a_tag()) || g->is_tab())
-	seen_text = TRUE;
-
       if ((g->is_col() || g->is_tab() || g->is_tab0())
 	  && (start_of_line != NULL) && (start_of_table == NULL)) {
 	start_of_table = insert_tab_ts(start_of_line);
 	start_of_line = NULL;
-	seen_text = FALSE;
       } else if (g->is_ce() && (start_of_table != NULL)) {
 	add_table_end("*** CE ***");
 	start_of_table->remember_table(tbl);
@@ -3782,9 +3773,7 @@ void html_printer::lookahead_for_tables (void)
 	  nf = calc_nf(g, nf);
 	} while ((g != NULL) && (g->is_br() || (nf && g->is_eol())));
 	start_of_line = g;
-	seen_text = FALSE;
 	ncol = 0;
-	left = next_horiz_pos(g, nf);
 	if (found_col)
 	  last = g;
 	found_col = FALSE;

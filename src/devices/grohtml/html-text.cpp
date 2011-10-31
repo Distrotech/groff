@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2009
+/* Copyright (C) 2000-2005, 2007, 2009, 2011
  * Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-text.cpp
@@ -873,9 +873,8 @@ void html_text::emit_space (void)
 
 void html_text::remove_def (tag_definition *t)
 {
-  tag_definition *p    = stackptr;
-  tag_definition *l    = 0;
-  tag_definition *q    = 0;
+  tag_definition *p = stackptr;
+  tag_definition *l = 0;
     
   while ((p != 0) && (p != t)) {
     l = p;
@@ -886,12 +885,10 @@ void html_text::remove_def (tag_definition *t)
       stackptr = stackptr->next;
       if (stackptr == NULL)
 	lastptr = NULL;
-      q = stackptr;
     } else if (l == 0) {
       error("stack list pointers are wrong");
     } else {
       l->next = p->next;
-      q = p->next;
       if (l->next == NULL)
 	lastptr = l;
     }
