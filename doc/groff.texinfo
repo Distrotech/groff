@@ -6018,6 +6018,10 @@ details of formatting parameters.
 Define or set registers using the @code{nr} request or the @code{\R}
 escape.
 
+Although the following requests and escapes can be used to create
+registers, simply using an undefined register will cause it to be
+set to zero.
+
 @DefreqList {nr, ident value}
 @DefescListEnd {\\R, ', ident value, '}
 Set number register @var{ident} to @var{value}.  If @var{ident} doesn't
@@ -10521,6 +10525,10 @@ with a default scale indicator of @samp{z}.
 convenience (i.e.@: there are no built-in strings exept @code{.T}, but
 even this is a read-write string variable).
 
+Although the following requests can be used to create strings,
+simply using an undefined string will cause it to be defined as empty.
+@xref{Identifiers}.
+
 @DefreqList {ds, name [@Var{string}]}
 @DefreqItem {ds1, name [@Var{string}]}
 @DefescItem {\\*, , n, }
@@ -11242,6 +11250,10 @@ restarting the next iteration.
 A @dfn{macro} is a collection of text and embedded commands which can be
 invoked multiple times.  Use macros to define common operations.
 @xref{Strings}, for a (limited) alternative syntax to call macros.
+
+Although the following requests can be used to create macros,
+simply using an undefined macro will cause it to be defined as empty.
+@xref{Identifiers}.
 
 @DefreqList {de, name [@Var{end}]}
 @DefreqItem {de1, name [@Var{end}]}
@@ -12727,6 +12739,10 @@ page, footnotes, tables of contents, and indices.
 For orthogonality it is said that @code{gtroff} is in the @dfn{top-level
 diversion} if no diversion is active (i.e., the data is diverted to the
 output device).
+
+Although the following requests can be used to create diversions,
+simply using an undefined diversion will cause it to be defined as empty.
+@xref{Identifiers}.
 
 @DefreqList {di, macro}
 @DefreqListEnd {da, macro}
