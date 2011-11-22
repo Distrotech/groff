@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 1999-2000, 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009
+Copyright (C) 1999-2005, 2007-2009, 2011
 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of this
@@ -518,7 +518,7 @@ configuration-file examples.
 .
 The
 .B EE
-macro restores the previous font.
+macro restores filling and restores the previous font.
 .
 .IP
 These macros are defined on many (but not all) legacy Unix systems
@@ -1100,6 +1100,15 @@ and not copylefted; manual page authors concerned about
 portability to legacy Unix systems are encouraged to copy these
 definitions into their pages, and maintainers of troff
 or its workalikes are encouraged to re-use them.
+.
+.IP
+Note that the definitions for these macros are read after the call of
+.BR TH ,
+so they will replace macros of the same names given at the beginning of
+your file.
+If you must use your own definitions for these macros, they must be
+given after calling
+.BR TH .
 .
 .TP
 .B man.local
