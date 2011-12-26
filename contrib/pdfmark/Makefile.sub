@@ -1,4 +1,4 @@
-# Copyright (C) 2005, 2006, 2009 Free Software Foundation, Inc.
+# Copyright (C) 2005, 2006, 2009, 2011 Free Software Foundation, Inc.
 #      Written by Keith Marshall (keith.d.marshall@ntlworld.com)
 # 
 # This file is part of groff.
@@ -65,6 +65,9 @@ PDFROFF=\
 	$(PDFROFF) -mspdf --stylesheet=$(srcdir)/cover.ms $< >$@
 
 all: pdfroff $(make_pdfdoc)
+
+# The pdf files use the local script to generate.
+$(PDFDOCFILES): pdfroff
 
 pdfdoc: gnu.eps $(PDFDOCFILES)
 
