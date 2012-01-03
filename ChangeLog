@@ -1,3 +1,21 @@
+2012-01-03  Ingo Schwarze  <schwarze@usta.de>
+
+	Improve parallel builds.
+
+	Some hdtbl and mom examples want PostScript formatting which
+	requires the `DESC' file to be ready; however, the top-level
+	`Makefile.in' doesn't currently enforce the proper order of building
+	of `font/dev' before `contrib/hdtbl', `contrib/mom', and so on.
+
+	Given that `font/dev' and the contrib examples are in different
+	child processes of the recursive make system, it doesn't seem
+	possible to solve this using clean Makefile dependencies.  We now
+	enforce the order by splitting the shell command invoking recursive
+	make in the top level `Makefile.in'.
+
+	* Makefile.in (ALLDIRS): Remove `OTHERDIRS'.
+	(`$(TARGETS)'): Handle `OTHERDIRS' separately.
+
 2012-01-03  Kristaps Dzonsons  <kristaps@bsd.lv>
 
 	[mdoc] Add `-isoC-2011'.

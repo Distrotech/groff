@@ -1,4 +1,4 @@
-# Copyright (C) 1989-2006, 2009-2011
+# Copyright (C) 1989-2006, 2009-2012
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
@@ -617,6 +617,8 @@ OTHERDIRS=\
   font/devpdf \
   contrib/gdiffmk
   
+# OTHERDIRS is handled specially in the `$(TARGETS)' rule to avoid
+# dependency problems with parallel builds.
 ALLDIRS=\
   $(INCDIRS) \
   $(LIBDIRS) \
@@ -624,8 +626,8 @@ ALLDIRS=\
   $(DEVDIRS) \
   $(XDEVDIRS) \
   $(OTHERDEVDIRS) \
-  $(TTYDEVDIRS) \
-  $(OTHERDIRS)
+  $(TTYDEVDIRS)
+# $(OTHERDIRS)
 EXTRADIRS=\
   font/devps/generate \
   font/devdvi/generate \
@@ -686,13 +688,14 @@ ENVSETUP=\
 	fi
 
 do=all
-dodirs=$(ALLDIRS) dot
+dodirs=$(ALLDIRS) $(OTHERDIRS) dot
 # Default target for subdir_Makefile
 subdir=src/roff/troff
 
 
 $(TARGETS):
-	@$(ENVSETUP); $(MAKE) $(MAKE_K_FLAG) do=$@ $(dodirs)
+	@$(ENVSETUP); $(MAKE) $(MAKE_K_FLAG) do=$@ $(ALLDIRS)
+	@$(ENVSETUP); $(MAKE) $(MAKE_K_FLAG) do=$@ $(OTHERDIRS) dot
 
 dot: FORCE
 	@$(ENVSETUP); \
