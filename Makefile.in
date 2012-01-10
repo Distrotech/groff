@@ -546,7 +546,13 @@ MDEFINES= \
   "top_srcdir=$(top_srcdir)" \
   "version=$(version)"
 
-MAKE_K_FLAG=`case "$(MAKEFLAGS)" in *k*) echo ' -k ';; esac`
+MAKE_K_FLAG=`for f in x $(MAKEFLAGS); do \
+               case $$f in \
+                 *=* | --[!k]*);; \
+                 *k*) echo ' -k ';; \
+               esac; \
+             done`
+
 
 INCDIRS=\
   src/include
