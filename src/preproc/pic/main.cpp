@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001, 2002, 2003, 2006, 2009
+/* Copyright (C) 1989-1992, 2000, 2001, 2002, 2003, 2006, 2009, 2012
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -316,6 +316,10 @@ void do_file(const char *filename)
   enum { START, MIDDLE, HAD_DOT, HAD_P, HAD_PS, HAD_l, HAD_lf } state = START;
   for (;;) {
     int c = getc(fp);
+    while (invalid_input_char(c)) {
+      error("invalid input character code %1", int(c));
+      c = getc(fp);
+    }
     if (c == EOF)
       break;
     switch (state) {
