@@ -6,6 +6,12 @@
 	track kerning (.tkf).
 	(do_x, do_p, do_t): If pages are reordered using `pagename' and
 	`switchtopage' keep track of outline bookmarks.
+	(do_x): Handle multiple files on gropdf command line, stitch
+	multiple groff_out files together.  In the main read loop any argc
+	values not consumed by options are taken as input files and
+	processed in order.  What prevented it working properly before is
+	the way an `x i' (initialize) record has been handled.  It now
+	processes the initialization code only in the first file.
 	(PutHotSpot): Allow user to control size of hotspot bounding box on
 	clickable links by setting PDFHREF.LEADING
 
@@ -157,7 +163,7 @@
 	install 'util/BuildFoundries', only used in 'make'.
 
 	* src/devices/gropdf/gropdf.pl (<top>, GetType1): Make STDOUT and
-	any font files read to be accessed in binary rather than text mode. 
+	any font files read to be accessed in binary rather than text mode.
 	Prevents errors when running on systems set up for UTF-8.
 
 2011-08-10  Deri James  <deri@chuzzlewit.demon.co.uk>
@@ -270,7 +276,7 @@
 
 	mdoc: Update various strings related to Mac OS X and FreeBSD.
 
-	* tmac/doc-common: Add strings for FreeBSD 8.2 and Darwin 9.7-11.0. 
+	* tmac/doc-common: Add strings for FreeBSD 8.2 and Darwin 9.7-11.0.
 	* tmac/doc-syms: Add strings -lbsm and -lSystem.
 
 2011-03-29  Christian Weisgerber  <naddy@mips.inka.de>
@@ -293,7 +299,7 @@
 	* Makefile.in ($TARGETS): We must not pass `$MDEFINES' recursively
 	down to the sub-makes started in src/libs/gnulib, because that
 	directory has its own values for `$top_srcdir' etc., and overriding
-	those from the command line will cause the build to fail. 
+	those from the command line will cause the build to fail.
 	Currently, `$MAKEOVERRIDES' will prevent the recursive passing of
 	those overrides with GNU make, but not with other make(1)
 	implementations.  It looks like all targets that require `$MDEFINES'
