@@ -4,7 +4,7 @@
 #	Deri James	: 4th May 2009
 #
 
-# Copyright (C) 2011 Free Software Foundation, Inc.
+# Copyright (C) 2011, 2012 Free Software Foundation, Inc.
 #      Written by Deri James <deri@chuzzlewit.demon.co.uk>
 #
 # This file is part of groff.
@@ -66,6 +66,8 @@ my $mode='g';	# Graphic (g) or Text (t) mode;
 my $xpos=0;	# Current X position
 my $ypos=0;	# Current Y position
 my $tmxpos=0;
+my $kernadjust=0;
+my $curkern=0;
 my $widtbl;	# Pointer to width table for current font size
 my $origwidtbl; # Pointer to width table
 my $krntbl;	# Pointer to kern table
@@ -84,6 +86,7 @@ my $suppress=0;	# Suppress processing?
 my %incfil;	# Included Files
 my @outlev=([0,undef,0,0]);	# Structure pdfmark /OUT entries
 my $curoutlev=\@outlev;
+my $curoutlevno=0;	# Growth point for @curoutlev
 my $Foundry='';
 my $xrev=0;	# Reverse x direction of font
 my $matrixchg=0;
@@ -94,6 +97,7 @@ my $suspendmark=undef;
 my $n_flg=1;
 my $pginsert=-1;    # Growth point for kids array
 my %pgnames;        # 'names' of pages for switchtopage
+my @outlines=();    # State of Bookmark Outlines at end of each page
 
 my %ppsz=(	'ledger'=>[1224,792],
 	'legal'=>[612,1008],
@@ -234,6 +238,7 @@ while (<>)
 	do_V($lin),next if ($cmd eq 'V');
 	do_v($lin),next if ($cmd eq 'v');
 	do_t($lin),next if ($cmd eq 't');
+	do_u($lin),next if ($cmd eq 'u');
 	do_C($lin),next if ($cmd eq 'C');
 	do_c($lin),next if ($cmd eq 'c');
 	do_N($lin),next if ($cmd eq 'N');
@@ -547,25 +552,28 @@ sub do_x
     }
     elsif ($xcmd eq 'i')	# Initialise
     {
-	$objct++;
-	@defaultmb=@mediabox;
-	BuildObj($objct,{'Pages' => BuildObj($objct+1,
-			    {'Kids' => [],
-			    'Count' => 0,
-			    'Type' => '/Pages',
-			    'Rotate' => $rot,
-			    'MediaBox' => \@defaultmb,
-			    'Resources' =>
-				{'Font' => {},
-				'ProcSet' => ['/PDF', '/Text', '/ImageB', '/ImageC', '/ImageI']}
-			    }
-			    ),
-	    'Type' =>  '/Catalog'});
+	if ($objct == 0)
+	{
+	    $objct++;
+	    @defaultmb=@mediabox;
+	    BuildObj($objct,{'Pages' => BuildObj($objct+1,
+				{'Kids' => [],
+				'Count' => 0,
+				'Type' => '/Pages',
+				'Rotate' => $rot,
+				'MediaBox' => \@defaultmb,
+				'Resources' =>
+				    {'Font' => {},
+				    'ProcSet' => ['/PDF', '/Text', '/ImageB', '/ImageC', '/ImageI']}
+				}
+				),
+		'Type' =>  '/Catalog'});
 
-	$cat=$obj[$objct]->{DATA};
-	$objct++;
-	$pages=$obj[2]->{DATA};
-	Put("%PDF-1.4\n\x25\xe2\xe3\xcf\xd3\n");
+	    $cat=$obj[$objct]->{DATA};
+	    $objct++;
+	    $pages=$obj[2]->{DATA};
+	    Put("%PDF-1.4\n\x25\xe2\xe3\xcf\xd3\n");
+	}
     }
     elsif ($xcmd eq 'X')
     {
@@ -695,6 +703,7 @@ sub do_x
 			    my $thisoutlev=$curoutlev->[$#{$curoutlev}]->[1];
 			    $thisoutlev->[0]=[0,$curoutlev,0,$levsgn];
 			    $curoutlev=$thisoutlev;
+			    $curoutlevno=$#{$curoutlev};
 			    $thislev++;
 			}
 			elsif ($lev < $thislev)
@@ -709,13 +718,17 @@ sub do_x
 				$curoutlev=$nxtoutlev;
 				$thislev--;
 			    }
+
+    			    $curoutlevno=$#{$curoutlev};
 			}
 
-			push(@{$curoutlev},$this);
+# 			push(@{$curoutlev},$this);
+			splice(@{$curoutlev},++$curoutlevno,0,$this);
 			$curoutlev->[0]->[2]++;
 		    }
 		    else
 		    {
+			# This code supports old pdfmark.tmac, unused by pdf.tmac
 			while ($curoutlev->[0]->[0] == 0 and defined($curoutlev->[0]->[1]))
 			{
 			    $curoutlev=$curoutlev->[0]->[1];
@@ -856,8 +869,8 @@ sub do_x
 	    }
 	    elsif (lc($xprm[1]) eq 'markstart')
 	    {
-		$mark={'rst' => $xprm[2]/$unitwidth, 'rsb' => $xprm[3]/$unitwidth, 'xpos' => $xpos,
-			    'ypos' => $ypos, 'pdfmark' => join(' ',@xprm[4..$#xprm])};
+		$mark={'rst' => ($xprm[2]+$xprm[4])/$unitwidth, 'rsb' => ($xprm[3]-$xprm[4])/$unitwidth, 'xpos' => $xpos-($xprm[4]/$unitwidth),
+			    'ypos' => $ypos, 'lead' => $xprm[4]/$unitwidth, 'pdfmark' => join(' ',@xprm[5..$#xprm])};
 	    }
 	    elsif (lc($xprm[1]) eq 'markend')
 	    {
@@ -899,11 +912,11 @@ sub do_x
 			$ba='before';
 		    }
 
-		    if (!defined($ba) or $ba eq '' or $ba eq 'bottom')
+		    if (!defined($ba) or $ba eq '' or $want eq 'bottom')
 		    {
 			$pginsert=$#{$pages->{Kids}};
 		    }
-		    elsif ($ba eq 'top')
+		    elsif ($want eq 'top')
 		    {
 			$pginsert=-1;
 		    }
@@ -919,30 +932,35 @@ sub do_x
 			    }
 			    else
 			    {
-
-				foreach my $j (0..$#{$pages->{Kids}})
+				FIND: while (1)
 				{
-				    if ($ref eq $pages->{Kids}->[$j])
+				    foreach my $j (0..$#{$pages->{Kids}})
 				    {
-					if ($ba eq 'before')
+					if ($ref eq $pages->{Kids}->[$j])
 					{
-					    $pginsert=$j-1;
-					    return;
+					    if ($ba eq 'before')
+					    {
+						$pginsert=$j-1;
+						last FIND;
+					    }
+					    elsif ($ba eq 'after')
+					    {
+						$pginsert=$j;
+						last FIND;
+					    }
+					    else
+					    {
+						Msg(0,"Parameter must be top|bottom|before|after not '$ba'");
+						last FIND;
+					    }
 					}
-					elsif ($ba eq 'after')
-					{
-					    $pginsert=$j;
-					    return;
-					}
-					else
-					{
-					    Msg(0,"Parameter must be top|bottom|before|after not '$ba'");
-					    return;
-					}
-				    }
-				}
 
-				Msg(0,"Can't find page ref '$ref'");
+				    }
+
+				    Msg(0,"Can't find page ref '$ref'");
+				    last FIND
+
+				}
 			    }
 			}
 			else
@@ -951,6 +969,14 @@ sub do_x
 			}
 		    }
 
+		    if ($pginsert < 0)
+		    {
+			($curoutlev,$curoutlevno,$thislev)=(\@outlev,0,1);
+		    }
+		    else
+		    {
+			($curoutlev,$curoutlevno,$thislev)=(@{$outlines[$pginsert]});
+		    }
 		}
 	    }
 	}
@@ -978,7 +1004,7 @@ sub PutHotSpot
     my $annotno=BuildObj(++$objct,ParsePDFValue(\@xwds));
     my $annot=$obj[$objct];
     $annot->{DATA}->{Type}='/Annot';
-    $annot->{DATA}->{Rect}=[$mark->{xpos},$mark->{ypos}-$mark->{rsb},$endx,$mark->{ypos}-$mark->{rst}];
+    $annot->{DATA}->{Rect}=[$mark->{xpos},$mark->{ypos}-$mark->{rsb},$endx+$mark->{lead},$mark->{ypos}-$mark->{rst}];
     FixRect($annot->{DATA}->{Rect}); # Y origin to ll
     push(@{$cpage->{Annots}},$annotno);
 }
@@ -2155,6 +2181,7 @@ sub do_p
 	);
 
     splice(@{$pages->{Kids}},++$pginsert,0,$thispg);
+    splice(@outlines,$pginsert,0,[$curoutlev,$#{$curoutlev}+1,$thislev]);
 
     $objct+=1;
     $cpage=$obj[$cpageno]->{DATA};
@@ -2874,6 +2901,13 @@ sub do_t
     # $nomove = width of char(s) added by 'C', 'N' or 'c'
     # $w-flg  = 'w' seen since last t
 
+    if ($kernadjust != $curkern)
+    {
+	PutLine();
+	$stream.="$kernadjust Tc\n";
+	$curkern=$kernadjust;
+    }
+
     if ($fontchg)
     {
 	PutLine();
@@ -2936,6 +2970,16 @@ sub do_t
 	    $lin[$#lin]->[0].=$par;
 	}
     }
+}
+
+sub do_u
+{
+    my $par=shift;
+
+    $par=m/([+-]?\d+) (.*)/;
+    $kernadjust=$1/$unitwidth;
+    do_t($2);
+    $kernadjust=0;
 }
 
 sub do_h
