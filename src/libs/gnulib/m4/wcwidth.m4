@@ -1,5 +1,5 @@
-# wcwidth.m4 serial 18
-dnl Copyright (C) 2006-2010 Free Software Foundation, Inc.
+# wcwidth.m4 serial 22
+dnl Copyright (C) 2006-2012 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -18,7 +18,7 @@ AC_DEFUN([gl_FUNC_WCWIDTH],
   AC_CHECK_HEADERS_ONCE([wchar.h])
   AC_CHECK_FUNCS_ONCE([wcwidth])
 
-  AC_CHECK_DECLS([wcwidth], [], [], [
+  AC_CHECK_DECLS([wcwidth], [], [], [[
 /* AIX 3.2.5 declares wcwidth in <string.h>. */
 #include <string.h>
 /* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
@@ -29,13 +29,15 @@ AC_DEFUN([gl_FUNC_WCWIDTH],
 #include <stdio.h>
 #include <time.h>
 #include <wchar.h>
-])
+]])
   if test $ac_cv_have_decl_wcwidth != yes; then
     HAVE_DECL_WCWIDTH=0
   fi
 
   if test $ac_cv_func_wcwidth = yes; then
+    HAVE_WCWIDTH=1
     dnl On MacOS X 10.3, wcwidth(0x0301) (COMBINING ACUTE ACCENT) returns 1.
+    dnl On OpenBSD 5.0, wcwidth(0x05B0) (HEBREW POINT SHEVA) returns 1.
     dnl On OSF/1 5.1, wcwidth(0x200B) (ZERO WIDTH SPACE) returns 1.
     dnl This leads to bugs in 'ls' (coreutils).
     AC_CACHE_CHECK([whether wcwidth works reasonably in UTF-8 locales],
@@ -68,8 +70,10 @@ int main ()
     {
       if (wcwidth (0x0301) > 0)
         result |= 1;
-      if (wcwidth (0x200B) > 0)
+      if (wcwidth (0x05B0) > 0)
         result |= 2;
+      if (wcwidth (0x200B) > 0)
+        result |= 4;
     }
   return result;
 }]])],
@@ -89,13 +93,8 @@ changequote([,])dnl
       *yes) ;;
       *no) REPLACE_WCWIDTH=1 ;;
     esac
-  fi
-  if test $ac_cv_func_wcwidth != yes || test $REPLACE_WCWIDTH = 1; then
-    AC_LIBOBJ([wcwidth])
-  fi
-  if test $ac_cv_func_wcwidth != yes || test $REPLACE_WCWIDTH = 1 \
-     || test $HAVE_DECL_WCWIDTH = 0; then
-    gl_REPLACE_WCHAR_H
+  else
+    HAVE_WCWIDTH=0
   fi
   dnl We don't substitute HAVE_WCWIDTH. We assume that if the system does not
   dnl have the wcwidth function, then it does not declare it.
