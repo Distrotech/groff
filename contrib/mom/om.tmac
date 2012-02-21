@@ -2476,7 +2476,7 @@ end
 .    char \\*[$PAD_MARKER] \R'#SPACE_TO_END \En(.l-\Enp'\R'#PAD_SPACE \En[#SPACE_TO_END]/\En[#PAD_COUNT]'
 .    di PAD_STRING
 .    fam \\*[$FAMILY_FOR_PAD]
-\\f]\\*[$FONT_FOR_PAD]]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
+\\f[\\*[$FONT_FOR_PAD]]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
 .    br
 .    di
 .    char \\*[$PAD_MARKER] \h'\En[#PAD_SPACE]u'
@@ -5675,6 +5675,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       SS DEFAULT
 .       if \\n[#UNDERLINE_QUOTES]=1 \{ .UNDERLINE_QUOTES         \}
 .       if \\n[#UNDERLINE_QUOTES]=0 \{ .UNDERLINE_QUOTES OFF     \}
+.\" +Doctype underlining (if NAMED)
+.       if !r#DOCTYPE_UNDERLINE \{ .nr #DOCTYPE_UNDERLINE 1 \}
 .\" +Quotes and blockquotes
 .       if !r#Q_OFFSET_VALUE \{\
 .          if '\\*[$Q_OFFSET_VALUE]'' \{ .QUOTE_INDENT 1 \}
@@ -7831,7 +7833,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             \}
 .             ie \\n[#SINGLE_SPACE]=0 \{ .sp 2 \}
 .             el \{ .sp \}
-.             UNDERSCORE2 4p "\\*[$DOC_TYPE]"
+.             ie \\n[#DOCTYPE_UNDERLINE] \{\
+.                UNDERSCORE2 4p "\\*[$DOC_TYPE]"
+.             \}
+.             el \{\
+.                PRINT "\\*[$DOC_TYPE]"
+.             \}
 .             if \\n[#SINGLE_SPACE]=1 \{ .sp \}
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
