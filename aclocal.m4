@@ -12,9 +12,11 @@
 # PARTICULAR PURPOSE.
 
 m4_include([m4/codeset.m4])
+m4_include([m4/fcntl-o.m4])
 m4_include([m4/glibc21.m4])
 m4_include([m4/groff.m4])
 m4_include([m4/iconv.m4])
 m4_include([m4/lib-ld.m4])
 m4_include([m4/lib-link.m4])
 m4_include([m4/lib-prefix.m4])
+m4_include([m4/localcharset.m4])
