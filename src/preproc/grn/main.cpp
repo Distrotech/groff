@@ -119,7 +119,7 @@ extern POINT *PTMakePoint(double x, double y, POINT **pplist);
 #define BIG	999999999999.0	/* unweildly large floating number */
 
 
-static char sccsid[] = "@(#) (Berkeley) 8/5/85, 12/28/99";
+/* static char sccsid[] = "@(#) (Berkeley) 8/5/85, 12/28/99"; */
 
 int res;			/* the printer's resolution goes here */
 

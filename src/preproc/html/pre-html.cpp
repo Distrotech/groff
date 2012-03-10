@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2007, 2008, 2009
+/* Copyright (C) 2000-2004, 2007-2009, 2012
  * 	Free Software Foundation, Inc.
  * Written by Gaius Mulley (gaius@glam.ac.uk).
  *
@@ -1205,11 +1205,12 @@ static void alterDeviceTo(int argc, char *argv[], int toImage)
   }
   else {
     while (i < argc) {
-      if (strcmp(argv[i], IMAGE_DEVICE) == 0)
+      if (strcmp(argv[i], IMAGE_DEVICE) == 0) {
 	if (dialect == xhtml)
 	  argv[i] = (char *)"-Txhtml";
 	else
 	  argv[i] = (char *)"-Thtml";
+      }
       i++;
     }
     argv[troff_arg] = (char *)"groff";	/* use groff -Z */

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2004, 2009
+/* Copyright (C) 1989-1992, 2001, 2002, 2004, 2009, 2012
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -355,7 +355,7 @@ static int parse_expr(units *v, int scale_indicator,
     case '*':
       if (v2 < 0) {
 	if (*v > 0) {
-	  if (*v > -(unsigned)INT_MIN / -(unsigned)v2)
+	  if ((unsigned)*v > -(unsigned)INT_MIN / -(unsigned)v2)
 	    overflow = 1;
 	}
 	else if (-(unsigned)*v > INT_MAX / -(unsigned)v2)
