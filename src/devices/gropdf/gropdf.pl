@@ -23,13 +23,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use strict;
-use Getopt::Long;
+use Getopt::Long qw(:config bundling);
 use Compress::Zlib;
 
 my %cfg;
 
 $cfg{GROFF_VERSION}='@VERSION@';
 $cfg{GROFF_FONT_PATH}='@GROFF_FONT_DIR@';
+$cfg{RT_SEP}='@RT_SEP@';
 binmode(STDOUT);
 
 my @obj;	# Array of PDF objects
@@ -98,6 +99,8 @@ my $n_flg=1;
 my $pginsert=-1;    # Growth point for kids array
 my %pgnames;        # 'names' of pages for switchtopage
 my @outlines=();    # State of Bookmark Outlines at end of each page
+my $custompaper=0;  # Has there been an X papersize
+my $textenccmap=''; # CMap for groff text.enc encoding
 
 my %ppsz=(	'ledger'=>[1224,792],
 	'legal'=>[612,1008],
@@ -128,6 +131,29 @@ my %ppsz=(	'ledger'=>[1224,792],
 	'c5'=>[459,649],
 	'c6'=>[323,459] );
 
+my $ucmap=<<'EOF';
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CIDSystemInfo
+<< /Registry (Adobe)
+/Ordering (UCS)
+/Supplement 0
+>> def
+/CMapName /Adobe-Identity-UCS def
+/CMapType 2 def
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+2 beginbfrange
+<008b> <008f> [<00660066> <00660069> <0066006c> <006600660069> <00660066006C>]
+<00ad> <00ad> <002d>
+endbfrange
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end
+EOF
 
 my $fd;
 my $frot;
@@ -135,10 +161,12 @@ my $fpsz;
 my $embedall=0;
 my $debug=0;
 my $version=0;
+my $stats=0;
+my $unicodemap;
 
 #Load_Config();
 
-GetOptions("F=s" => \$fd, 'l' => \$frot, 'p=s' => \$fpsz, 'd!' => \$debug, 'v' => \$version, 'e' => \$embedall, 'y=s' => \$Foundry);
+GetOptions("F=s" => \$fd, 'l' => \$frot, 'p=s' => \$fpsz, 'd!' => \$debug, 'v' => \$version, 'e' => \$embedall, 'y=s' => \$Foundry, 's' => \$stats, 'u:s' => \$unicodemap);
 
 if ($version)
 {
@@ -146,11 +174,30 @@ if ($version)
     exit;
 }
 
+if (defined($unicodemap))
+{
+    if ($unicodemap eq '')
+    {
+	$ucmap='';
+    }
+    elsif (-r $unicodemap)
+    {
+	local $/;
+	open(F,"<$unicodemap") or die "gropdf: Failed to open '$unicodemap'";
+	($ucmap)=(<F>);
+	close(F);
+    }
+    else
+    {
+	Msg(0,"Failed to find '$unicodemap' - ignoring");
+    }
+}
+
 # Search for 'font directory': paths in -f opt, shell var GROFF_FONT_PATH, default paths
 
 my $fontdir=$cfg{GROFF_FONT_PATH};
-$fontdir=$ENV{GROFF_FONT_PATH}.':'.$fontdir if exists($ENV{GROFF_FONT_PATH});
-$fontdir=$fd.':'.$fontdir if defined($fd);
+$fontdir=$ENV{GROFF_FONT_PATH}.$cfg{RT_SEP}.$fontdir if exists($ENV{GROFF_FONT_PATH});
+$fontdir=$fd.$cfg{RT_SEP}.$fontdir if defined($fd);
 
 $rot=90 if $frot;
 $matrix="0 1 -1 0" if $frot;
@@ -267,6 +314,19 @@ my $info=BuildObj(++$objct,\%info);
 
 PutObj($objct);
 
+foreach my $fontno (keys %fontlst)
+{
+    my $o=$fontlst{$fontno}->{FNT};
+    my $p=GetObj($fontlst{$fontno}->{OBJ});
+
+    if (exists($p->{LastChar}) and $p->{LastChar} > 255)
+    {
+	$p->{LastChar} = 255;
+	splice(@{$o->{GNO}},256);
+	splice(@{$o->{WID}},256);
+    }
+}
+
 foreach my $o (3..$objct)
 {
     PutObj($o) if (!exists($obj[$o]->{XREF}));
@@ -287,7 +347,8 @@ foreach my $xr (@obj)
     printf("%010d 00000 n \n",$xr->{XREF});
 }
 
-print "trailer\n<<\n/Info $info\n/Root 1 0 R\n/Size $objct\n>>\nstartxref\n$fct\n\%\%EOF\n\% Pages=$pages->{Count}\n";
+print "trailer\n<<\n/Info $info\n/Root 1 0 R\n/Size $objct\n>>\nstartxref\n$fct\n\%\%EOF\n";
+print "\% Pages=$pages->{Count}\n" if $stats;
 
 
 sub MakeMatrix
@@ -431,6 +492,10 @@ sub ToPoints
     {
 	return($num*6);
     }
+    elsif ($unit eq 'z')
+    {
+	return($num/$unitwidth);
+    }
     else
     {
 	Msg(1,"Unknown scaling factor '$unit'");
@@ -488,7 +553,7 @@ sub OpenFile
 	return if -r "$fnm" and open($$f,"<$fnm");
     }
 
-    my (@dirs)=split(':',$dirs);
+    my (@dirs)=split($cfg{RT_SEP},$dirs);
 
     foreach my $dir (@dirs)
     {
@@ -683,6 +748,7 @@ sub do_x
 		    my $annot=$obj[$objct];
 		    $annot->{DATA}->{Type}='/Annot';
 		    FixRect($annot->{DATA}->{Rect}); # Y origin to ll
+		    FixPDFColour($annot->{DATA});
 		    push(@{$cpage->{Annots}},$annotno);
 		}
 		elsif ($pdfmark=~m/(.+) \/OUT/)
@@ -988,7 +1054,50 @@ sub do_x
 	    @mediabox=(0,0,$px,$py);
 	    my @mb=@mediabox;
 	    $matrixchg=1;
+	    $custompaper=1;
 	    $cpage->{MediaBox}=\@mb;
+	}
+    }
+}
+
+sub FixPDFColour
+{
+    my $o=shift;
+    my $a=$o->{C};
+    my @r=();
+    my $c=$a->[0];
+
+    if ($#{$a}==3)
+    {
+	if ($c > 1)
+	{
+	    foreach my $j (0..2)
+	    {
+		push(@r,sprintf("%1.3f",$a->[$j]/0xffff));
+	    }
+
+	    $o->{C}=\@r;
+	}
+    }
+    elsif (substr($c,0,1) eq '#')
+    {
+	if (length($c) == 7)
+	{
+	    foreach my $j (0..2)
+	    {
+		push(@r,sprintf("%1.3f",hex(substr($c,$j*2+1,2))/0xff));
+	    }
+
+	    $o->{C}=\@r;
+	}
+	elsif (length($c) == 14)
+	{
+	    foreach my $j (0..2)
+	    {
+		push(@r,sprintf("%1.3f",hex(substr($c,$j*4+2,4))/0xffff));
+	    }
+
+	    $o->{C}=\@r;
 	}
     }
 }
@@ -1005,6 +1114,7 @@ sub PutHotSpot
     my $annot=$obj[$objct];
     $annot->{DATA}->{Type}='/Annot';
     $annot->{DATA}->{Rect}=[$mark->{xpos},$mark->{ypos}-$mark->{rsb},$endx+$mark->{lead},$mark->{ypos}-$mark->{rst}];
+    FixPDFColour($annot->{DATA});
     FixRect($annot->{DATA}->{Rect}); # Y origin to ll
     push(@{$cpage->{Annots}},$annotno);
 }
@@ -1029,7 +1139,7 @@ sub GetPoints
 {
     my $val=shift;
 
-    $val=ToPoints($1,$2) if ($val=~m/(-?[\d.]+)([cipn])/);
+    $val=ToPoints($1,$2) if ($val=~m/(-?[\d.]+)([cipnz])/);
 
     return $val;
 }
@@ -1762,7 +1872,7 @@ sub PutObj
     $obj[$ono]->{XREF}=$fct;
     if (exists($obj[$ono]->{STREAM}))
     {
-	if (!$debug)
+	if (!$debug && !exists($obj[$ono]->{DATA}->{'Filter'}))
 	{
 	    $obj[$ono]->{STREAM}=Compress::Zlib::compress($obj[$ono]->{STREAM});
 	    $obj[$ono]->{DATA}->{'Filter'}=['/FlateDecode'];
@@ -1899,7 +2009,7 @@ sub LoadFont
 	    }
 
 	    $r[0]='u0020' if $r[3] == 32;
-	    next if $r[3] >255;
+#	    next if $r[3] >255;
 	    $fnt{GNM}->{$r[0]}=$r[3];
 	    $fnt{GNO}->[$r[3]]='/'.$r[4];
 	    $fnt{WID}->[$r[3]]=$p[0];
@@ -2007,10 +2117,21 @@ sub LoadFont
 	$fontlst{$fontno}->{FNT}=\%fnt;
     }
 
-    PutObj($fno);
-    PutObj($fno+1);
-    PutObj($fno+2) if defined($obj[$fno+2]);
-    PutObj($fno+3) if defined($obj[$fno+3]);
+    if (defined($fnt{encoding}) and $fnt{encoding} eq 'text.enc' and $ucmap ne '')
+    {
+	if ($textenccmap eq '')
+	{
+	    $textenccmap = BuildObj($objct+1,{});
+	    $objct++;
+	    $obj[$objct]->{STREAM}=$ucmap;
+	}
+	$obj[$fno]->{DATA}->{'ToUnicode'}=$textenccmap;
+    }
+
+#     PutObj($fno);
+#     PutObj($fno+1);
+#     PutObj($fno+2) if defined($obj[$fno+2]);
+#     PutObj($fno+3) if defined($obj[$fno+3]);
 }
 
 sub GetType1
@@ -2164,6 +2285,7 @@ sub do_p
 
     if ($cpageno > 0)
     {
+	$cpage->{MediaBox}=\@mediabox if $custompaper;
 	PutObj($cpageno);
 	OutStream($cpageno+1);
     }
@@ -2189,7 +2311,7 @@ sub do_p
     $stream="q 1 0 0 1 0 0 cm\n";
     $mode='g';
     $curfill='';
-    @mediabox=@defaultmb;
+#    @mediabox=@defaultmb;
 }
 
 sub do_f
@@ -2248,6 +2370,7 @@ sub IsText
 	    $whtsz=$fontlst{$cft}->{FNT}->{spacewidth}*$cftsz;
 	    $stream.="/F$cft $cftsz Tf\n";
 	}
+	$stream.="$curkern Tc\n";
     }
 
     if ($poschg or $matrixchg)
@@ -2256,6 +2379,7 @@ sub IsText
 	$stream.="$matrix ".PutXY($xpos,$ypos)." Tm\n", $poschg=0;
 	$tmxpos=$xpos;
 	$matrixchg=0;
+	$stream.="$curkern Tc\n";
     }
 
     if ($fontchg)
@@ -2768,8 +2892,16 @@ sub PutLine
     # 				$wt+=$whtsz/$cftsz;
     # 			}
 
-		$stream.=sprintf( "%.3f Tw ",-($whtsz+$wt*$cftsz)/$unitwidth );
-		$stream.="[(";
+		$stream.=sprintf( "%.3f Tw ",-($whtsz+$wt*$cftsz)/$unitwidth-$curkern );
+		if (!defined($lin[0]->[0]) and defined($lin[0]->[1]))
+		{
+		    $stream.="[ $lin[0]->[1] (";
+		    shift @lin;
+		}
+		else
+		{
+		    $stream.="[(";
+		}
 
 		foreach my $wd (@lin)
 		{
@@ -2787,6 +2919,7 @@ sub PutLine
 		    }
 		    else
 		    {
+			$wwt=sprintf("%.3f",$wwt);
 			$stream.="$wd->[0]) $wwt (" if defined($wd->[0]);
 		    }
 		}
@@ -2936,11 +3069,13 @@ sub do_t
 	PutLine(0) if $#lin > -1;
 	MakeMatrix(1);
 	$stream.="$matrix ".PutXY($xpos,$ypos)." Tm\n", $poschg=0;
+	$stream.="$curkern Tc\n";
 	$stream.="0 Tw ";
 	$stream.="($par) Tj\n";
 	MakeMatrix();
 	$stream.="$matrix ".PutXY($xpos,$ypos)." Tm\n", $poschg=0;
 	$matrixchg=0;
+	$stream.="$curkern Tc\n";
 	return;
     }
 
@@ -3021,15 +3156,45 @@ sub do_C
 sub FindChar
 {
     my $chnm=shift;
+    my $fnt=$fontlst{$cft}->{FNT};
 
-    if (exists($fontlst{$cft}->{FNT}->{GNM}->{$chnm}))
+    if (exists($fnt->{GNM}->{$chnm}))
     {
-	my $ch=$fontlst{$cft}->{FNT}->{GNM}->{$chnm};
-	return(chr($ch),$fontlst{$cft}->{FNT}->{WID}->[$ch]*$cftsz);
+	my $ch=$fnt->{GNM}->{$chnm};
+	$ch=RemapChr($ch,$fnt,$chnm) if ($ch > 255);
+
+	return(chr($ch),$fnt->{WID}->[$ch]*$cftsz);
     }
     else
     {
 	return(' ');
+    }
+}
+
+sub RemapChr
+{
+    my $ch=shift;
+    my $fnt=shift;
+    my $chnm=shift;
+    my $unused=0;
+
+    foreach my $un (2..$#{$fnt->{GNO}})
+    {
+	$unused=$un,last if $fnt->{GNO}->[$un] eq '/.notdef';
+    }
+
+    if (--$unused <= 255)
+    {
+	$fnt->{GNM}->{$chnm}=$unused++;
+	$fnt->{GNO}->[$unused]=$fnt->{GNO}->[$ch+1];
+	$fnt->{WID}->[$unused]=$fnt->{WID}->[$ch+1];
+	$ch=$unused-1;
+	return($ch);
+    }
+    else
+    {
+	Msg(0,"Too many glyphs used in font '$cft'");
+	return(32);
     }
 }
 
@@ -3040,13 +3205,26 @@ sub do_c
     push(@ahead,substr($par,1));
     $par=substr($par,0,1);
     my $ch=ord($par);
-    do_t($ch);
+    do_N($ch);
     $nomove=$fontlst{$cft}->{FNT}->{WID}->[$ch]*$cftsz;
 }
 
 sub do_N
 {
     my $par=shift;
+
+    if ($par > 255)
+    {
+	my $fnt=$fontlst{$cft}->{FNT};
+	my $chnm='';
+
+	foreach my $c (keys %{$fnt->{GNM}})
+	{
+	    $chnm=$c,last if $fnt->{GNM}->{$c} == $par;
+	}
+
+	$par=RemapChr($par,$fnt,$chnm);
+    }
 
     do_t(chr($par));
     $nomove=$fontlst{$cft}->{FNT}->{WID}->[$par]*$cftsz;

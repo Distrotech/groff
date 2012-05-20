@@ -30,7 +30,7 @@ MOSTLYCLEANADD=\
 RM=rm -f
 
 
-all: gropdf 
+all: gropdf
 
 
 gropdf: gropdf.pl $(SH_DEPS_SED_SCRIPT)
@@ -38,7 +38,8 @@ gropdf: gropdf.pl $(SH_DEPS_SED_SCRIPT)
 	sed -f $(SH_DEPS_SED_SCRIPT) \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
 	    -e "s|@PERLPATH@|$(PERLPATH)|" \
-	    -e "s|@GROFF_FONT_DIR@|$(fontdir)|" $(srcdir)/gropdf.pl >$@
+	    -e "s|@GROFF_FONT_DIR@|$(fontpath)|" \
+	    -e "s|@RT_SEP@|$(RT_SEP)|" $(srcdir)/gropdf.pl >$@
 	chmod +x $@
 
 install_data:

@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 2011
+Copyright (C) 2011-2012
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -43,12 +43,13 @@ gropdf \- PDF driver for groff
 .SH SYNOPSIS
 .
 .SY gropdf
-.OP \-delv
+.OP \-delvs
 .OP \-F dir
 \#.OP \-I dir
 .OP \-p papersize
 \#.OP \-w n
 .OP \-y foundry
+.OP \-u [cmapfile]
 .RI [ files
 .IR .\|.\|. ]
 .YS
@@ -188,7 +189,30 @@ Set the foundry to use for selecting fonts of the same name.
 .
 .TP
 .B \-e
-Forces gropdf to embed ALL fonts (even the 14 base PDF fonts). 
+Forces
+.B gropdf
+to embed ALL fonts (even the 14 base PDF fonts).
+.
+.TP
+.B \-s
+Append a comment line to end of PDF showing statistics,
+i.e. number of pages in document.
+Ghostscript's
+.B ps2pdf
+complains about this line if it is included, but works anyway.
+.
+.TP
+.B \-u
+.TQ
+.BI \-u cmapfilename
+.B Gropdf
+normally includes a ToUnicode CMap with any font created using
+.B text.enc
+as the encoding file,
+this makes it easier to search for words which contain ligatures.
+You can include your own CMap by specifying a
+.I cmapfilename
+or have no CMap at all by omitting the argument.
 .
 .
 .SH USAGE
@@ -677,17 +701,17 @@ The following tags are supported:
 .BI "\[rs]X'pdf: pdfpic " "file alignment width height line-length" '
 Place an image of the specified
 .I width
-containing the PDF drawing from file 
+containing the PDF drawing from file
 .I file
-of desired 
+of desired
 .I width
 and
 .I height
-(if 
+(if
 .I height
 is missing or zero then it is scaled proportionally).
 .
-If 
+If
 .I alignment
 is
 .B \-L
@@ -701,7 +725,7 @@ a
 .I linelength
 greater than the width of the drawing is required as well.
 .
-If 
+If
 .I width
 is specified as zero then the width is scaled in proportion to the height.
 .
@@ -804,52 +828,7 @@ will now load successfully.
 .SS TrueType and other font formats
 .
 .B gropdf
-does not support TrueType fonts natively within the PDF files it generates
-(but does support any fonts if they are in an imported PDF).
-.
-However, TrueType fonts can be used with
-.B gropdf
-if converted first to
-.B Type\~42
-format, a special PostScript wrapper equivalent to the PFA format mentioned
-in
-.BR \%pfbtops (@MAN1EXT@).
-.
-There are several different methods to generate a Type\~42
-wrapper and most of them involve the use of a PostScript
-interpreter such as Ghostscript \[en] see
-.BR gs (1).
-.
-.LP
-Yet, the easiest method involves the use of the application
-.BR ttftot42 (1).
-.
-This program uses
-.BR freetype (3)
-(version 1.3.1) to generate Type\~42
-font wrappers and well-formed AFM files that can be fed to the
-.BR \%afmtodit (@MAN1EXT@)
-script to create appropriate metric files.
-.
-The resulting font wrappers should be added to groff's
-.B download
-file.
-.
-.B ttftot42
-source code can be downloaded from
-.UR ftp://\:www.giga.or.at/\:pub/\:nih/\:ttftot42/
-ftp://\:www.giga.or.at/\:pub/\:nih/\:ttftot42/
-.UE .
-.
-.LP
-Another solution for creating Type\~42 wrappers is to use FontForge,
-available from
-.UR http://\:fontforge.sf.net
-http://\:fontforge.sf.net
-.UE .
-.
-This font editor can convert most outline font formats.
-.
+does not support any other fonts except Adobe Type 1 (PFA or PFB).
 .
 .SH FONT INSTALLATION
 .
@@ -865,8 +844,8 @@ as a step-by-step font installation guide for
 .LI
 Convert your font to something groff understands.
 .
-This is either a PostScript Type\~1 font in either PFA or PFB format or a
-PostScript Type\~42 font, together with an AFM file.
+This is either a PostScript Type\~1 font in either PFA or PFB,
+together with an AFM file.
 .
 .IP
 The very first line in a PFA/PFB file contains this:
@@ -879,29 +858,6 @@ The very first line in a PFA/PFB file contains this:
 .IP
 A PFB file has this also in the first line, but the string is
 preceded with some binary bytes.
-.
-.IP
-The very first characters in a Type\~42 font file look like this:
-.
-.RS
-.IP
-.B %!PS-TrueTypeFont
-.RE
-.
-.IP
-This is a wrapper format for TrueType fonts.
-.
-Old PS printers might not support it (this is, they don't have a
-built-in TrueType font interpreter).
-.
-.IP
-For TrueType fonts, try
-.B ttftot42
-or
-.BR fontforge .
-For all other font formats use
-.B fontforge
-which can convert most outline font formats.
 .
 .LI
 Convert the AFM file to a groff font description file with the

@@ -1,3 +1,58 @@
+2012-05-20  Deri James  <deri@chuzzlewit.demon.co.uk>
+
+	* doc/groff.texinfo: Add extra info about `.asciify'.
+	Document new gropdf options -u and -s.
+
+	* src/devices/gropdf/gropdf.man: Remove references to Type 42 fonts,
+	they do not work in PDFs.
+	Document new option -s which adds `statistics' line to end of PDF
+	file showing number of pages in document.  This has always been the
+	default behaviour (to add this line), all other software seems to
+	ignore it as intended, but `gs' sometimes complains, so the default
+	is now to omit the statistics.
+	Document new option -u[cmapfilename] to allow a user ToUnicode CMap
+	instead of gropdf's default.  If no `cmapfilename' given then do not
+	include any ToUnicode CMap.
+
+	* src/devices/gropdf/gropdf.pl <top>: Allow `bundled' flags on
+	command line (i.e. -de = -d -e).
+	Use $RT_SEP as multi path separator, not hard coded `:'.  Update all
+	users.
+	New flags -u and -s.
+	Once a custom papersize has been set as \X'papersize x,y' make it
+	sticky so all following pages use custom size.
+	When importing pdf with \X'pdf: pdfpic ...' do not compress objects
+	which are already compressed!  This caused problems with PDFs
+	created with ImageMagick, now fixed.
+	(IsText, PutLine, do_t): The troff `u' command can contain a kerning
+	adjustment number, this was not being handled, now fixed.
+	(do_c): The troff `c' command was not being handled correctly, now
+	fixed.
+	(FindChar, RemapChr, do_N): Handle fonts with more than 255 glyphs.
+	($ucmap): Define CMap ToUnicode to convert ligatures
+	(fl,fi,ff,ffl,ffi) back to individual characters, useful for
+	cut'n'paste and text searching.
+	(LoadFont): Handle it.
+	(ToPoints, GetPoints): Handle `z' unit.
+	(do_x, FixPDFColour, PutHotSpot): Allow Annotation colour to be
+	groff colour, i.e. 0-65535 *3, or #rrggbb, or #rrrrbbbbgggg.
+	(do_p):The papersize width/length in switch -p were reversed,
+	corrected.
+
+	* src/devices/gropdf/Makefile.sub (gropdf): Use $RT_SEP.
+	Use $fontpath rather than $fontdir (this ensures site-font is
+	included in searches).
+
+	* tmac/pdf.tmac (PDFBOOKMARK.VIEW, PDFHREF.VIEW, PDFPAGE.Y): Fix
+	strings.
+	(pdfbookmark): Correct handling of bookmark levels.
+	Convert \[em] to hyphen in bookmarks
+	Rather use -N than -T for "named" bookmarks (-T already used for "tag"
+	in pdfmark.tmac)
+	(.pdfclean): New macro which attempts to asciify bookmark text.
+	(.pdfpagename): New wrapper macro for \X'pdf: pagename'.
+	(.pdfswitchtopage): New wrapper macro for \X'pdf: switchtopage'.
+
 2012-03-10  Werner LEMBERG  <wl@gnu.org>
 
 	Fix compiler warnings.
@@ -379,11 +434,11 @@
 	    Bernd Warken
 
 	[groffer] Remove hardcoded path to 'libdir/groff/groffer' directory.
-	
+
 	* configure.ac: add GROFFERDIR variables.
-	
+
 	* Makefile.in: add and handle variable groffer_dir
-	
+
 	* m4/groff.m4: set up the --with-grofferdir command line option.
 
 2011-03-18  Werner LEMBERG  <wl@gnu.org>

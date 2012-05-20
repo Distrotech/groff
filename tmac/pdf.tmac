@@ -144,7 +144,7 @@
 .\" the page width to the viewing window, with the bookmarked entry
 .\" located at the top of the viewable area.
 .\"
-.ds PDFBOOKMARK.VIEW /FitH -\\n[PDFPAGE.Y] u
+.ds PDFBOOKMARK.VIEW /FitH \\n[PDFPAGE.Y] u
 .\"
 .\" "PDFOUTLINE.FOLDLEVEL" controls how the document outline will be
 .\" displayed.  It is a number, defining the maximum heading level
@@ -189,7 +189,7 @@
 .   \"
 .      nr pdf:bm.lev 0+\\$1
 .      if \\n[pdf:bm.lev]==0 .nr pdf:bm.lev 1
-.      if \\n[pdf:bm.lev]>\\n[PDFOUTLINE.FOLDLEVEL] .nr pdf:bm.lev \\n[pdf:bm.lev]*-1
+.      if \\n[pdf:bm.lev]-1==\\n[PDFOUTLINE.FOLDLEVEL] .nr pdf:bm.lev \\n[pdf:bm.lev]*-1
 .      nr pdf:bm.abslev 0+\\n[pdf:bm.lev]
 .      if \\n[pdf:bm.lev]<0 .nr pdf:bm.abslev 0+\\n[pdf:bm.abslev]*-1
 .      if \\n[pdf:bm.abslev]>\\n[pdf:bm.nl] .nr pdf:bm.nl \\n[pdf:bm.nl]+1
@@ -213,18 +213,24 @@
 .      pdf:href.sety
 .         ds pdf:cleaned \\$*
 .         ev pdfcln
+.         tr \[em]-
 .         nf
 .         box pdf:clean
 .         nop \\$*
-.         sp -1
+.         fl
 .         box
+.         chop pdf:clean
 .         asciify pdf:clean
+.         length pdf:clean:len \\*[pdf:clean]
 .         ds pdf:cleaned \\*[pdf:clean]
+.         rm pdf:clean
 .         ev
+.         tr \[em]\[em]
 .      ds pdf:look(\\*[PDFBOOKMARK.NAME]) \\*[pdf:cleaned]
 .      if dPDF.EXPORT .tm .ds pdf:look(\\*[PDFBOOKMARK.NAME]) \\*[pdf:cleaned]
 .      pdfmark /Dest /\\*[PDFBOOKMARK.NAME] /View [\\*[PDFBOOKMARK.VIEW]] /DEST
-.      pdfmark /Dest /\\*[PDFBOOKMARK.NAME] /Title (\\*[pdf:cleaned]) /Level \\n[pdf:bm.lev] /OUT
+.      nop \!x X ps:exec [/Dest /\\*[PDFBOOKMARK.NAME] /Title (\\*[pdf:cleaned]) /Level \\n[pdf:bm.lev] /OUT pdfmark
+.\".      pdfmark /Dest /\\*[PDFBOOKMARK.NAME] /Title "(\\*[pdf:cleaned])" /Level \\n[pdf:bm.lev] /OUT
 .      pdf:href.options.clear
 .      rr PDFPAGE.Y
 .      rm pdf:cleaned
@@ -240,6 +246,25 @@
 .   nop \!.pdfbookmark \\$@
 .   \}
 ..
+.
+.de pdfclean
+.  ie '\\n(.z'' \{\
+.         ds pdfcleaned \\$*
+.         ev pdfcln
+.         tr \[em]-
+.         nf
+.         box pdf:clean
+.         nop \\*[\\*[pdfcleaned]]
+.         fl
+.         box
+.         chop pdf:clean
+.         asciify pdf:clean
+.         ev
+.         ds \\*[pdfcleaned] "\\*[pdf:clean]
+.         rm pdf:clean
+.         tr \[em]\[em]
+.  el .nop \!.pdfclean \\$@
+..
 .\"
 .\" =============================================================
 .\" Module PDFHREF: Create Hypertext References in a PDF Document
@@ -248,7 +273,7 @@
 .\" "PDFHREF.VIEW" controls how the document will be displayed,
 .\" when the user follows a link to a named reference.
 .\"
-.ds PDFHREF.VIEW     /FitH -\\n[PDFPAGE.Y] u
+.ds PDFHREF.VIEW     /FitH \\n[PDFPAGE.Y] u
 .\"
 .\" This default setting will fit the page width to the viewing
 .\" window, with the bookmarked entry located close to the top
@@ -278,7 +303,7 @@
 .\" in groff's basic units; don't forget to append grops' "u"
 .\" conversion operator, when writing the pdfmark!
 .\"
-.nr PDFPAGE.Y \\n(nl-\\n[PDFHREF.VIEW.LEADING]
+.nr PDFPAGE.Y (\\n[PDFHREF.VIEW.LEADING]-\\n(nl)
 ..
 .\" When we create a link "hot-spot" ...
 .\" "PDFHREF.LEADING" sets the distance above the top of the glyph
@@ -647,7 +672,7 @@
 .   \" limits of its bounding box(es), as the before and after output
 .   \" text positions.
 .   \"
-.   if dPDFHREF.COLOUR .defcolor pdf:href.colour rgb \\*[PDFHREF.COLOUR]
+\#.   if dPDFHREF.COLOUR .defcolor pdf:href.colour rgb \\*[PDFHREF.COLOUR]
 .   nr pdf:bm.width \\w'\\*[PDFHREF.DESC]'
 .   nop \&\m[\\*[PDFHREF.TEXT.COLOUR]]\X'pdf: markstart \\n[rst] \\n[rsb] \\n[PDFHREF.LEADING] \\*[pdf:href.link]'\\*[PDFHREF.DESC]\X'pdf: markend'\m[]\c
 .   \"
@@ -734,6 +759,12 @@
 ..
 .de pdfmarkrestart
 .nop \!x X pdf: markrestart
+..
+.de pdfpagename
+.nop \!x X pdf: pagename \\$1
+..
+.de pdfswitchtopage
+.nop \!x X pdf: switchtopage \\$*
 ..
 .\"
 .\" pdf.tmac: end of file / vim: ft=groff

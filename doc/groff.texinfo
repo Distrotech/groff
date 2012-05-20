@@ -26,7 +26,7 @@
 @copying
 This manual documents GNU @code{troff} version 1.21.
 
-Copyright @copyright{} 1994-2011 Free Software Foundation, Inc.
+Copyright @copyright{} 1994-2012 Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -472,7 +472,7 @@ developing GNU and promoting software freedom.''
 @title groff
 @subtitle The GNU implementation of @code{troff}
 @subtitle Edition 1.21
-@subtitle Winter 2010
+@subtitle Spring 2012
 @author by Trent A.@tie{}Fisher
 @author and Werner Lemberg (@email{bug-groff@@gnu.org})
 
@@ -13012,6 +13012,10 @@ the following sets register@tie{}@code{n} to@tie{}1.
 .x
 @endExample
 
+Note that @code{asciify} cannot return all items in a diversion back
+to their source equivalent, nodes such as @code{\N[...]} will still
+remain as nodes, so the result cannot be guaranteed to be a pure string.
+
 @xref{Copy-in Mode}.
 @endDefreq
 
@@ -15198,6 +15202,18 @@ file.  See the @cite{groff_font(5)} manual page for details.
 
 @item -v
 Print the version number.
+
+@item -s
+Append a comment line to end of PDF showing statistics, i.e. number of
+pages in document.  Ghostscript's @cite{ps2pdf(1)} complains about this
+line if it is included, but works anyway.
+
+@item -u@var{filename}
+@code{gropdf} normally includes a ToUnicode CMap with any font created
+using @file{text.enc} as the encoding file, this makes it easier to
+search for words which contain ligatures.  You can include your own CMap
+by specifying a @var{filename} or have no CMap at all by omitting the
+@var{filename}.
 @end table
 
 @c ---------------------------------------------------------------------
@@ -15434,7 +15450,7 @@ options:
 
 @table @option
 @item -a@var{bits}
-Use this number of @var{bits} (= 1, 2 or 4) for text antialiasing. 
+Use this number of @var{bits} (= 1, 2 or 4) for text antialiasing.
 Default: @var{bits} = 4.
 
 @item -a0
