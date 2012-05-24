@@ -131,25 +131,25 @@ sub process {
       $Groff{'soelim'}++ if $level;
     } elsif (/^\.TS$Sp/) {
       $_ = <FILE>;
-      if (!/^\./) {
+      if (!/^\./ || /^\.so/) {
 	$Groff{'tbl'}++;
 	$Groff{'soelim'}++ if $level;
       }
     } elsif (/^\.EQ$Sp/) {
       $_ = <FILE>;
-      if (!/^\./ || /^\.[0-9]/) {
+      if (!/^\./ || /^\.[0-9]/ || /^\.so/) {
 	$Groff{'eqn'}++;
 	$Groff{'soelim'}++ if $level;
       }
     } elsif (/^\.GS$Sp/) {
       $_ = <FILE>;
-      if (!/^\./) {
+      if (!/^\./ || /^\.so/) {
 	$Groff{'grn'}++;
 	$Groff{'soelim'}++ if $level;
       }
     } elsif (/^\.G1$Sp/) {
       $_ = <FILE>;
-      if (!/^\./) {
+      if (!/^\./ || /^\.so/) {
 	$Groff{'grap'}++;
 	$Groff{'soelim'}++ if $level;
       }
@@ -160,7 +160,7 @@ sub process {
 #	&process($1, $level);
 #      } else {
 #	$_ = <FILE>;
-#	if (!/^\./ || /^\.ps/) {
+#	if (!/^\./ || /^\.ps/ || /^\.so/) {
 #	  $Groff{'pic'}++;
 #	  $Groff{'soelim'}++ if $level;
 #	}
@@ -243,6 +243,22 @@ sub process {
       s/^.so *//;
       s/\\\".*//;
       s/ .*$//;
+      # The next if-clause catches e.g.
+      #
+      #   .EQ
+      #   .so foo
+      #   .EN
+      #
+      # However, the code is not fully correct since it is too generous.
+      # Theoretically, we should check for .so only within preprocessor
+      # blocks like .EQ/.EN or .TS/.TE; but it doesn't harm if we call
+      # soelim even if we don't need to.
+      if ( $Groff{'pic'} || $Groff{'tbl'} || $Groff{'eqn'} ||
+	   $Groff{'grn'} || $Groff{'grap'} || $Groff{'refer'} ||
+	   $Groff{'refer_open'} || $Groff{'refer_close'} ||
+	   $Groff{'chem'} ) {
+	$Groff{'soelim'}++;
+      }
       &process($_, $level + 1) unless /\\/ || $_ eq "";
     }
   }
