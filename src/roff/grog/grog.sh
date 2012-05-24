@@ -5,7 +5,7 @@
 # Source file position: <groff-source>/src/roff/grog/grog.sh
 # Installed position: <prefix>/bin/grog
 
-# Copyright (C) 1993, 2006, 2009, 2011 Free Software Foundation, Inc.
+# Copyright (C) 1993, 2006, 2009, 2011-2012 Free Software Foundation, Inc.
 # Written by James Clark, maintained by Werner Lemberg.
 # Rewritten by and put under GPL Bernd Warken.
 
@@ -159,7 +159,8 @@ eval sed "'s/[ 	]*$//'" '--' "${filespec}" \
 | @EGREP@ \
     '^\.(cstart|P|PS|[PLI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|.* Oo|Oc|.* Oc|NH|TL|TS|TE|EQ|TH|TL|NH|SH|\[|\]|R1|GS|G1|PH|SA|SO_START|SO_END)' \
 | awk '
-/^\.SO_START$/ { so = 1 }
+/^\.SO_START$/ { so = 1
+  soelim = soelim||chem||eqn||grap||grn||pic||tbl||refer||(refer_start && !refer_end) }
 /^\.SO_END$/ { so = 0 }
 /^\.cstart$/ { chem++; if (so > 0) soelim++ }
 /^\.TS/ { tbl++; in_tbl = 1; if (so > 0) soelim++; }
