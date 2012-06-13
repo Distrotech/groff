@@ -301,6 +301,7 @@ while (<>)
 
 if ($cpageno > 0)
 {
+    $cpage->{MediaBox}=\@mediabox if $custompaper;
     PutObj($cpageno);
     OutStream($cpageno+1);
 }
