@@ -311,7 +311,7 @@ developing GNU and promoting software freedom.''
 @end macro
 
 
-@c our example macro
+@c our example macros
 
 @macro Example
 @example
@@ -321,6 +321,16 @@ developing GNU and promoting software freedom.''
 @macro endExample
 @end group
 @end example
+@end macro
+
+@macro CartoucheExample
+@cartouche
+@example
+@end macro
+
+@macro endCartoucheExample
+@end example
+@end cartouche
 @end macro
 
 
@@ -3217,8 +3227,7 @@ The following is example mark-up for a title page.
 @cindex title page, example markup
 @cindex example markup, title page
 
-@Example
-@cartouche
+@CartoucheExample
 .RP
 .TL
 The Inevitability of Code Bloat
@@ -3246,8 +3255,7 @@ user demand.
 .AE
 
 ... the rest of the paper follows ...
-@end cartouche
-@endExample
+@endCartoucheExample
 
 @c ---------------------------------------------------------------------
 
@@ -3297,8 +3305,7 @@ This is a Berkeley extension.
 
 The following markup uses all four paragraph macros.
 
-@Example
-@cartouche
+@CartoucheExample
 .NH 2
 Cases used in the study
 .LP
@@ -3328,8 +3335,7 @@ Underground Press, March 2002.
 A definitive work that answers all questions
 and criticisms about the quality and usability of
 free software.
-@end cartouche
-@endExample
+@endCartoucheExample
 
 The @code{PORPHANS} register (@pxref{ms Document Control Registers})
 operates in conjunction with each of these macros, to inhibit the
@@ -3617,8 +3623,7 @@ a break.
 The first workaround uses the @code{br} request to force a break after
 printing the term or label.
 
-@Example
-@cartouche
+@CartoucheExample
 A glossary-style list:
 .IP lawyers 0.4i
 Two or more attorneys.
@@ -3627,16 +3632,14 @@ Two or more attorneys.
 Firearms, preferably large-caliber.
 .IP money
 Gotta pay for those lawyers and guns!
-@end cartouche
-@endExample
+@endCartoucheExample
 
 The second workaround uses the @code{\p} escape to force the break.
 Note the space following the escape; this is important.  If you omit the
 space, @code{groff} prints the first word on the same line as the term
 or label (if it fits) @strong{then} breaks the line.
 
-@Example
-@cartouche
+@CartoucheExample
 A glossary-style list:
 .IP lawyers 0.4i
 Two or more attorneys.
@@ -3644,8 +3647,7 @@ Two or more attorneys.
 \p Firearms, preferably large-caliber.
 .IP money
 Gotta pay for those lawyers and guns!
-@end cartouche
-@endExample
+@endCartoucheExample
 
 To set nested lists, use the @code{RS} and @code{RE} macros.
 @xref{Indentation values in ms}, for more information.
@@ -3654,8 +3656,7 @@ To set nested lists, use the @code{RS} and @code{RE} macros.
 
 For example:
 
-@Example
-@cartouche
+@CartoucheExample
 .IP \[bu] 2
 Lawyers:
 .RS
@@ -3668,8 +3669,7 @@ and Howe.
 .RE
 .IP \[bu]
 Guns
-@end cartouche
-@endExample
+@endCartoucheExample
 
 Produces:
 
@@ -3897,8 +3897,7 @@ the preprocessor and the format of the bibliographic database.
 The following is an example of how to set up a table that may print
 across two or more pages.
 
-@Example
-@cartouche
+@CartoucheExample
 .TS H
 allbox expand;
 cb | cb .
@@ -3910,8 +3909,7 @@ l | l .
 ... the rest of the table follows...
 .CW
 .TE
-@end cartouche
-@endExample
+@endCartoucheExample
 
 @c ---------------------------------------------------------------------
 
@@ -4084,8 +4082,7 @@ they cannot indent a heading based on its level.  The easiest way to
 work around this is to add tabs to the table of contents string.  The
 following is an example:
 
-@Example
-@cartouche
+@CartoucheExample
 .NH 1
 Introduction
 .XS
@@ -4101,8 +4098,7 @@ Methodology
 .XE
 .LP
 ...
-@end cartouche
-@endExample
+@endCartoucheExample
 
 You can manually create a table of contents by beginning with the
 @code{XS} macro for the first entry, specifying the page number for that
@@ -4110,8 +4106,7 @@ entry as the argument to @code{XS}.  Add subsequent entries using the
 @code{XA} macro, specifying the page number for that entry as the
 argument to @code{XA}.  The following is an example:
 
-@Example
-@cartouche
+@CartoucheExample
 .XS 1
 Introduction
 .XA 2
@@ -4120,8 +4115,7 @@ A Brief History of the Universe
 Details of Galactic Formation
 ...
 .XE
-@end cartouche
-@endExample
+@endCartoucheExample
 @endDefmac
 
 @Defmac {TC, [@code{no}], ms}
