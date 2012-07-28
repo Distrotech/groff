@@ -16,8 +16,10 @@
 .\"	@(#)me.7	6.4 (Berkeley) 4/13/90
 .\"
 .\" Modified for groff by jjc@jclark.com
+.\" Changed to use TBL and eliminate low-level troff hackery by ESR
+.\" (this enables it to be lifted to structural markup).
 .hc %
-.TH GROFF_ME @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
+.TH GROFF_ME 7 "31 December 2010" "Groff Version 1.21"
 .UC 3
 .SH NAME
 groff_me \- troff macros for formatting papers
@@ -36,7 +38,7 @@ This version can be used with both GNU troff and Unix troff.
 This package of
 .I troff
 macro definitions provides a canned formatting
-facility for tech%nical papers in various formats.
+facility for technical papers in various formats.
 .PP
 The macro requests are defined below.
 Many
@@ -44,17 +46,16 @@ Many
 requests are unsafe in conjunction with
 this package, however, these requests may be used with
 impunity after the first .pp:
-.nf
-.IP
-.ta \w'.sz +n  'u
-\&.bp	begin new page
-\&.br	break output line here
-\&.sp n	insert n spacing lines
-\&.ls n	(line spacing) n=1 single, n=2 double space
-\&.na	no alignment of right margin
-\&.ce n	center next n lines
-\&.ul n	underline next n lines
-.fi
+.TS
+l l.
+\&.bp   	begin new page
+\&.br   	break output line here
+\&.sp n 	insert n spacing lines
+\&.ls n 	(line spacing) n=1 single, n=2 double space
+\&.na   	no alignment of right margin
+\&.ce n		center next n lines
+\&.ul n 	underline next n lines
+.TE
 .PP
 Output of the
 .I pic,
@@ -65,12 +66,12 @@ and
 preprocessors
 is acceptable as input.
 .SH FILES
-@MACRODIR@/me.tmac (a wrapper file for e.tmac)
+/usr/share/groff/1.21/tmac/me.tmac (a wrapper file for e.tmac)
 .br
-@MACRODIR@/e.tmac
+/usr/share/groff/1.21/tmac/e.tmac
 .SH "SEE ALSO"
-.BR groff (@MAN1EXT@),
-.BR @g@troff (@MAN1EXT@)
+.BR groff (1),
+.BR troff (1)
 .br
 \-me Reference Manual, Eric P. Allman
 .br
@@ -82,51 +83,28 @@ see
 .I "The \-me Reference Manual"
 for interesting details.
 .PP
-.ta \w'.eh \'x\'y\'z\'  'u +\w'Initial 'u +\w'Cause 'u
-.br
-.di x
-			\ka
-.br
-.di
-.na
-.in \nau
-.ti 0
-Request	Initial	Cause	Explanation
-.ti 0
+.TS
+expand;
+l l l l.
+Request	Initial	Causes	Explanation
 	Value	Break
-.br
-.in \nau
-.ti 0
-\&.(c	-	yes	Begin centered block
-.ti 0
-\&.(d	-	no	Begin delayed text
-.ti 0
-\&.(f	-	no	Begin footnote
-.ti 0
-\&.(l	-	yes	Begin list
-.ti 0
-\&.(q	-	yes	Begin major quote
-.ti 0
-\&.(x \fIx\fR	-	no	Begin indexed item in index
-.I x
-.ti 0
-\&.(z	-	no	Begin floating keep
-.ti 0
-\&.)c	-	yes	End centered block
-.ti 0
-\&.)d	-	yes	End delayed text
-.ti 0
-\&.)f	-	yes	End footnote
-.ti 0
-\&.)l	-	yes	End list
-.ti 0
-\&.)q	-	yes	End major quote
-.ti 0
-\&.)x	-	yes	End index item
-.ti 0
-\&.)z	-	yes	End floating keep
-.ti 0
-\&.++ \fIm H\fR	-	no	Define paper section.
+_
+\&.(c	\-	yes	Begin centered block
+\&.(d	\-	no	Begin delayed text
+\&.(f	\-	no	Begin footnote
+\&.(l	\-	yes	Begin list
+\&.(q	\-	yes	Begin major quote
+\&.(x \fIx\fR	\-	no	Begin indexed item in index
+\&.(z	\-	no	Begin floating keep
+\&.)c	\-	yes	End centered block
+\&.)d	\-	yes	End delayed text
+\&.)f	\-	yes	End footnote
+\&.)l	\-	yes	End list
+\&.)q	\-	yes	End major quote
+\&.)x	\-	yes	End index item
+\&.)z	\-	yes	End floating keep
+\&.++ \fIm H\fR	\-	no	T{
+Define paper section.
 .I m
 defines the part of the paper, and can be
 .B C
@@ -142,23 +120,24 @@ defines the part of the paper, and can be
 or
 .B RA
 (appendix renumbered from page one).
-.ti 0
-\&.+c \fIT\fR	-	yes	Begin chapter (or appendix, etc., as
+T}
+\&.+c \fIT\fR	\-	yes	T{
+Begin chapter (or appendix, etc., as
 set by .++).
 .I T
 is the chapter title.
-.ti 0
+T}
 \&.1c	1	yes	One column format on a new page.
-.ti 0
 \&.2c	1	yes	Two column format.
-.ti 0
-\&.EN	-	yes	Space after equation
+\&.EN	\-	yes	T{
+Space after equation
 produced by
 .I eqn
 or
 .IR neqn .
-.ti 0
-\&.EQ \fIx y\fR	-	yes	Precede equation; break out and
+T}
+\&.EQ \fIx y\fR	\-	yes	T{
+Precede equation; break out and
 add space.
 Equation number is
 .IR y .
@@ -170,112 +149,100 @@ to indent equation (default),
 to left-adjust the equation, or
 .I C
 to center the equation.
-.ti 0
-\&.GE	-	yes	End \fIgremlin\fP picture.
-.ti 0
-\&.GS	-	yes	Begin \fIgremlin\fP picture.
-.ti 0
-\&.PE	-	yes	End \fIpic\fP picture.
-.ti 0
-\&.PS	-	yes	Begin \fIpic\fP picture.
-.ti 0
-\&.TE	-	yes	End table.
-.ti 0
-\&.TH	-	yes	End heading section of table.
-.ti 0
-\&.TS \fIx\fR	-	yes	Begin table; if \fIx\fR is
+T}
+\&.GE	\-	yes	End \fIgremlin\fP picture.
+\&.GS	\-	yes	Begin \fIgremlin\fP picture.
+\&.PE	\-	yes	End \fIpic\fP picture.
+\&.PS	\-	yes	Begin \fIpic\fP picture.
+\&.TE	\-	yes	End table.
+\&.TH	\-	yes	End heading section of table.
+\&.TS \fIx\fR	\-	yes	T{
+Begin table; if \fIx\fR is
 .I H
 table has repeated heading.
-.ti 0
-\&.b \fIx\fR	no	no	Print
+T}
+\&.b \fIx\fR	no	no	T{
+Print
 .I x
 in boldface; if no argument switch to boldface.
-.ti 0
-\&.ba \fI+n\fR	0	yes	Augments the base indent by
+T}
+\&.ba \fI+n\fR	0	yes	T{
+Augments the base indent by
 .I n.
 This indent is used to set the indent on regular text
 (like paragraphs).
-.ti 0
+T}
 \&.bc	no	yes	Begin new column
-.ti 0
-\&.bi \fIx\fR	no	no	Print
+\&.bi \fIx\fR	no	no	T{
+Print
 .I x
 in bold italics (nofill only)
-.ti 0
-\&.bu	-	yes	Begin bulleted paragraph
-.ti 0
+T}
+\&.bu	\-	yes	Begin bulleted paragraph
 \&.bx \fIx\fR	no	no	Print \fIx\fR in a box (nofill only).
-.ti 0
 \&.ef \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set even footer to x  y  z
-.ti 0
 \&.eh \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set even header to x  y  z
-.ti 0
 \&.fo \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set footer to x  y  z
-.ti 0
-\&.hx	-	no	Suppress headers and footers on next page.
-.ti 0
+\&.hx	\-	no	Suppress headers and footers on next page.
 \&.he \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set header to x  y  z
-.ti 0
-\&.hl	-	yes	Draw a horizontal line
-.ti 0
-\&.i \fIx\fR	no	no	Italicize
+\&.hl	\-	yes	Draw a horizontal line
+\&.i \fIx\fR	no	no	T{
+Italicize
 .I x;
 if
 .I x
 missing, italic text follows.
-.ti 0
-\&.ip \fIx y\fR	no	yes	Start indented paragraph,
+T}
+\&.ip \fIx y\fR	no	yes	T{
+Start indented paragraph,
 with hanging tag
 .IR x .
 Indentation is
 .I y
 ens (default 5).
-.ti 0
+T}
 \&.lp	yes	yes	Start left-blocked paragraph.
-.ti 0
 \&.np	1	yes	Start numbered paragraph.
-.ti 0
 \&.of \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set odd footer to x  y  z
-.ti 0
 \&.oh \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set odd header to x  y  z
-.ti 0
-\&.pd	-	yes	Print delayed text.
-.ti 0
-\&.pp	no	yes	Begin paragraph.
+\&.pd	\-	yes	Print delayed text.
+\&.pp	no	yes	T{
+Begin paragraph.
 First line indented.
-.ti 0
+T}
 \&.r	yes	no	Roman text follows.
-.ti 0
-\&.re	-	no	Reset tabs to default values.
-.ti 0
-\&.sh \fIn x\fR	-	yes	Section head follows,
+\&.re	\-	no	Reset tabs to default values.
+\&.sh \fIn x\fR	\-	yes	T{
+Section head follows,
 font automatically bold.
 .I n
 is level of section,
 .I x
 is title of section.
-.ti 0
-\&.sk	no	no	Leave the next page blank.
+T}
+\&.sk	no	no	T{
+Leave the next page blank.
 Only one page is remembered ahead.
-.ti 0
-\&.sm \fIx\fR	-	no	Set
+T}
+\&.sm \fIx\fR	\-	no	T{
+Set
 .I x
 in a smaller pointsize.
-.ti 0
-\&.sz \fI+n\fR	10p	no	Augment the point size by
+T}
+\&.sz \fI+n\fR	10p	no	T{
+Augment the point size by
 .I n
 points.
-.ti 0
+T}
 \&.tp	no	yes	Begin title page.
-.ti 0
-\&.u \fIx\fR	-	no	Underline argument (even in \fItroff\fR).
+\&.u \fIx\fR	\-	no	T{
+Underline argument (even in \fItroff\fR).
 (Nofill only).
-.ti 0
-\&.uh	-	yes	Like .sh but unnumbered.
-.ti 0
-\&.xp \fIx\fR	-	no	Print index
-.I x.
-.ad
+T}
+\&.uh	\-	yes	Like .sh but unnumbered.
+\&.xp \fIx\fR	\-	no	Print index.
+.TE
+
 .
 .\" Local Variables:
 .\" mode: nroff
