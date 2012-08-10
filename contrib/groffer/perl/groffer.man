@@ -13,7 +13,7 @@ groffer \- display groff files and man\~pages on X and tty
 This file was written by Bernd Warken.
 ..
 .de copyleft
-Copyright (C) 2001, 2002, 2004-2006, 2009-2011
+Copyright (C) 2001, 2002, 2004-2006, 2009-2012
   Free Software Foundation, Inc.
 .
 .P
@@ -55,7 +55,7 @@ You can also visit
 .\" Setup
 .\" --------------------------------------------------------------------
 .
-.ds Ellipsis "\&.\|.\|.\""
+.ds Ellipsis "\&.\|.\|.\&\"
 .
 .\" --------------------------------------------------------------------
 .\" Macro definitions
@@ -299,8 +299,8 @@ Long options can be abbreviated in several ways.
 .RS
 .P
 .SY
-.OP "-h~\fR|\fB\~--help"
-.OP "-v~\fR|\fB\~--version"
+.OP -h\~\fR|\fB\~--help
+.OP -v\~\fR|\fB\~--version
 .YS
 .RE
 .
@@ -330,8 +330,8 @@ Long options can be abbreviated in several ways.
 .OP --tty\-viewer prog
 .OP --www
 .OP --www\-viewer prog
-.OP --x --X
-.OP --x\-viewer --X\-viewer prog
+.OP --x\~\fR|\fB\~--X
+.OP --x\-viewer\~\fR|\fB\~--X\-viewer prog
 .YS
 .RE
 .
@@ -340,8 +340,10 @@ Long options can be abbreviated in several ways.
 .I options related to \%groff
 .RS
 .P
-.OP -T~\fR|\fB\~--device device
-.OP -Z~\fR|\fB\~--intermediate\-output~\fR|\fB\~--ditroff
+.SY
+.OP -T\~\fR|\fB\~--device device
+.OP -Z\~\fR|\fB\~--intermediate\-output\~\fR|\fB\~--ditroff
+.YS
 .P
 All further
 .B \%groff
@@ -351,16 +353,19 @@ short options are accepted.
 .
 .TP
 .I options for man\~pages
+.RS
+.P
 .SY
 .OP --apropos
 .OP --apropos\-data
 .OP --apropos\-devel
 .OP --apropos\-progs
 .OP --man
-.OP --no-man
-.OP --no-special
+.OP --no\-man
+.OP --no\-special
 .OP --whatis
 .YS
+.RE
 .
 .
 .TP
@@ -373,14 +378,14 @@ short options are accepted.
 .OP --ditroff
 .OP --extension suffix
 .OP --locale language
-.OP --local-file
-.OP "--location~\fR|\fB\~--where"
+.OP --local\-file
+.OP --location\~\fR|\fB\~--where
 .OP --manpath dir1:dir2:\*[Ellipsis]
-.OP --no-location
+.OP --no\-location
 .OP --pager program
 .OP --sections sec1:sec2:\*[Ellipsis]
 .OP --systems sys1,sys2,\*[Ellipsis]
-.OP --troff-device device
+.OP --troff\-device device
 .YS
 .P
 Further long options of \f[CR]GNU\f[]
@@ -394,17 +399,17 @@ are accepted as well.
 .RS
 .P
 .SY
-.OP --bd~\fR|\fB\~--bordercolor pixels
-.OP --bg~\fR|\fB\~--background color
-.OP --bw~\fR|\fB\~--borderwidth pixels
+.OP --bd\~\fR|\fB\~--bordercolor pixels
+.OP --bg\~\fR|\fB\~--background color
+.OP --bw\~\fR|\fB\~--borderwidth pixels
 .OP --display X-display
-.OP --fg~\fR|\fB\~--foreground color
-.OP --fn~\fR|\fB\~--ft~\fR|\fB\~--font font_name
+.OP --fg\~\fR|\fB\~--foreground color
+.OP --fn\~\fR|\fB\~--ft\~\fR|\fB\~--font font_name
 .OP --geometry size_pos
 .OP --resolution value
 .OP --rv
 .OP --title string
-.OP --xrm X-resource
+.OP --xrm X\-resource
 .YS
 .RE
 .
@@ -584,13 +589,13 @@ All other arguments are ignored.
 .
 .
 .TP
-.OP -h\fR|\fR--help
+.B -h\~\fR|\fB\~--help
 Print help information with a short explanation of options to
 standard output.
 .
 .
 .TP
-.OP -v\fR\fB--version
+.B -v\~\fR|\fB\~--version
 Print version information to standard output.
 .
 .
@@ -676,7 +681,7 @@ and restart option processing using only the rest of the command line.
 .
 .
 .TP
-.B --default\-modes mode1,mode2,\*[Ellipsis]
+.BI --default\-modes \ mode1,mode2,\*[Ellipsis]
 Set the sequence of modes for
 .I \%auto\~mode
 to the comma separated list given in the argument.
@@ -700,7 +705,7 @@ Equivalent to
 .
 .
 .TP
-.B --dvi\-viewer prog
+.BI --dvi\-viewer \ prog
 Choose a viewer program for
 .IR \%dvi\~mode .
 .
@@ -712,7 +717,7 @@ Known \%\f[CR]X\~Window\f[]
 viewers include
 .BR \%xdvi (1)
 and
-.BR \%dvilx (1)
+.BR \%dvilx (1).
 .
 In each case, arguments can be provided additionally.
 .
@@ -741,7 +746,7 @@ In each case, arguments can be provided additionally.
 .
 .
 .TP
-.BI --mode value
+.BI --mode \ value
 .
 Set the display mode.
 .
@@ -771,7 +776,6 @@ viewer program.
 By default, the formatted input is displayed with the
 .BR \%xdvi (1)
 program.
-.BR --dvi .
 .
 .
 .TP
@@ -874,22 +878,22 @@ program being distributed together with
 But the standard \%\f[CR]X\~Window\f[] tool
 .BR \%xditview (1)
 can also be chosen with the option
-.B --x\-viewer .
+.BR --x\-viewer .
 The default resolution is
-.BR 75\~dpi ,
+.BR 75dpi ,
 but
-.B 100\~dpi
+.B 100dpi
 are also possible.
 .
 The default
 .I groff
 device
 for the resolution of
-.B 75\~dpi
+.B 75dpi
 is
 .BR X75\-12 ,
 for
-.B 100\~dpi
+.B 100dpi
 it is
 .BR X100 .
 .
@@ -898,9 +902,9 @@ The corresponding
 for the actual device is generated and the result is displayed.
 .
 For a resolution of
-.BR 100\~dpi ,
+.BR 100dpi ,
 the default width of the geometry of the display program is chosen to
-.BR 850\~dpi .
+.BR 850dpi .
 .
 .
 .TP
@@ -948,7 +952,7 @@ Equivalent to
 .
 .
 .TP
-.B --pdf\-viewer prog
+.BI --pdf\-viewer \ prog
 Choose a viewer program for
 .IR \%pdf\~mode .
 .
@@ -964,7 +968,7 @@ Equivalent to
 .
 .
 .TP
-.B --ps\-viewer prog
+.BI --ps\-viewer \ prog
 Choose a viewer program for
 .IR \%ps\~mode .
 .
@@ -982,7 +986,7 @@ In each case, arguments can be provided additionally.
 .
 .TP
 .B --source
-Equivalent
+Equivalent to
 .BR --mode=source .
 .
 .
@@ -1007,7 +1011,7 @@ Equivalent to
 .
 .
 .TP
-.B --tty\-viewer prog
+.BI --tty\-viewer \ prog
 Choose a text pager for mode
 .IR tty .
 The standard pager is
@@ -1015,7 +1019,7 @@ The standard pager is
 This option is equivalent to
 .I man
 option
-.BR --pager=prog .
+.BR --pager=\fIprog\fP .
 The option argument can be a file name or a program to be searched in
 .Env_var $PATH ;
 arguments can be provided additionally.
@@ -1028,19 +1032,19 @@ Equivalent to
 .
 .
 .TP
-.B --www\-viewer prog
+.BI --www\-viewer \ prog
 Equivalent to
-.B --html\-viewer .
+.BR --html\-viewer .
 .
 .
 .TP
-.B --X~\fR|\fB\~--x
+.B --X\~\fR|\fB\~--x
 Equivalent to
 .BR --mode=x .
 .
 .
 .TP
-.B --X\-viewer -- x\-viewer prog
+.BI --X\-viewer\~\fR|\fB\~--x\-viewer \ prog
 Choose a viewer program for
 .IR \%x\~mode .
 Suitable viewer programs are
@@ -1103,7 +1107,7 @@ option
 .B -Z
 .B \%groffer
 was designed to be switched into
-.I \%groff\~mode ;
+.IR \%groff\~mode ;
 the
 .I \%groffer
 viewing features are disabled there.
@@ -1125,7 +1129,7 @@ sequences in
 .
 .
 .TP
-.BI --m file
+.BI --m \ file
 Add
 .I \%file
 as a
@@ -1136,7 +1140,7 @@ This is useful in case it cannot be recognized automatically.
 .
 .
 .TP
-.BI --P opt_or_arg
+.BI --P \ opt_or_arg
 Send the argument
 .I \%opt_or_arg
 as an option or option argument to the actual
@@ -1145,7 +1149,7 @@ postprocessor.
 .
 .
 .TP
-.B --T \fIdevname\fR ~\fR|\fB\~ --device \fIdevname\fR
+.B --T \fIdevname\fR\~\fR|\fB\~--device \fIdevname\fR
 .
 This option determines
 .BR \%groff 's
@@ -1206,7 +1210,7 @@ device for a better display.
 .
 .
 .TP
-.B -Z~\fR|\fB\~--intermediate-output~\fR|\fB\~--ditroff
+.B -Z\~\fR|\fB\~--intermediate-output\~\fR|\fB\~--ditroff
 Switch into
 .I \%groff\~mode
 and format the input with the
@@ -1401,7 +1405,7 @@ is first tested whether it is an existing file.
 .
 .
 .TP
-.B --no-man~\fR|\fB\~--local-file
+.B --no-man\~\fR|\fB\~--local-file
 Do not check for
 .IR \%man\~pages .
 .
@@ -1414,10 +1418,10 @@ option.
 .TP
 .B --no-special
 Disable former calls of
-.B --all ,
-.B --apropos* ,
+.BR --all ,
+.BR --apropos* ,
 and
-.B --whatis .
+.BR --whatis .
 .
 .
 .\" --------------------------------------------------------------------
@@ -1438,10 +1442,10 @@ so most of them are just ignored.
 These ignored
 .B man
 options are
-.B --catman ,
-.B --troff ,
+.BR --catman ,
+.BR --troff ,
 and
-.B --update .
+.BR --update .
 .
 .
 .P
@@ -1471,13 +1475,13 @@ retrieve all suitable documents instead of only one.
 .
 .
 .TP
-.B -7\fR\fB--ascii
+.B -7\~\fR|\fB\~--ascii
 In
 .IR \%text\~modes ,
 display ASCII translation of special characters for critical environment.
 .
 This is equivalent to
-.BR "groff -mtty_char" ;
+.BR "groff \%-mtty_char" ;
 see
 .BR groff_tmac (@MAN5EXT@).
 .
@@ -1488,11 +1492,11 @@ Produce
 .IR "groff intermediate output" .
 This is equivalent to
 .B \%groffer
-.B -Z .
+.BR -Z .
 .
 .
 .TP
-.BI --extension suffix
+.BI --extension \ suffix
 Restrict
 .I \%man\~page
 search to file names that have
@@ -1508,13 +1512,13 @@ extension is
 .
 .
 .TP
-.BI --locale language
+.BI --locale \ language
 .
 Set the language for
 .IR \%man\~pages .
 .
 This has the same effect, but overwrites
-.Env_var $LANG
+.Env_var $LANG .
 .
 .
 .TP
@@ -1526,14 +1530,14 @@ Print the location of the retrieved files to standard error.
 .B --no-location
 Do not display the location of retrieved files; this resets a former
 call to
-.B --location .
+.BR --location .
 .
 This was added by
 .BR \%groffer .
 .
 .
 .TP
-.BI --manpath "'dir1:dir2:\*[Ellipsis]'"
+.BI --manpath \ 'dir1:dir2:\*[Ellipsis]'
 Use the specified search path for retrieving
 .I \%man\~pages
 instead of the program defaults.
@@ -1550,11 +1554,11 @@ Set the pager program in
 default is
 .BR \%less .
 This is equivalent to
-.B --tty\-viewer .
+.BR --tty\-viewer .
 .
 .
 .TP
-.BI --sections "'sec1:sec2:\*[Ellipsis]'"
+.BI --sections \ sec1:sec2:\*[Ellipsis]
 Restrict searching for
 .I \%man\~pages
 to the given
@@ -1563,7 +1567,7 @@ a colon-separated list.
 .
 .
 .TP
-.BI --systems "'sys1,sys2,\*[Ellipsis]'"
+.BI --systems \ sys1,sys2,\*[Ellipsis]
 Search for
 .I \%man\~pages
 for the given operating systems; the argument
@@ -1574,7 +1578,7 @@ is a comma-separated list.
 .TP
 .B --where
 Equivalent to
-.B --location .
+.BR --location .
 .
 .
 .\" --------------------------------------------------------------------
@@ -1603,7 +1607,7 @@ options, for example,
 uses the option
 .B --font
 for the \%\f[CR]X\~Window\f[] option
-.B -font .
+.BR -font .
 .
 .
 .P
@@ -1614,78 +1618,78 @@ for more details on these options and their arguments.
 .
 .
 .TP
-.BI --background color
+.BI --background \ color
 Set the background color of the viewer window.
 .
 .
 .TP
-.BI --bd pixels
+.BI --bd \ pixels
 This is equivalent to
-.B --bordercolor .
+.BR --bordercolor .
 .
 .
 .TP
-.BI --bg color
+.BI --bg \ color
 This is equivalent to
-.B --background .
+.BR --background .
 .
 .
 .TP
-.B --bw pixels
+.BI --bw \ pixels
 This is equivalent to
-.B --borderwidth .
+.BR --borderwidth .
 .
 .
 .TP
-.BI --bordercolor pixels
+.BI --bordercolor \ pixels
 Specifies the color of the border surrounding the viewer window.
 .
 .
 .TP
-.BI --borderwidth pixels
+.BI --borderwidth \ pixels
 Specifies the width in pixels of the border surrounding the viewer
 window.
 .
 .
 .TP
-.BI --display X-display
+.BI --display \ X-display
 Set the \%\f[CR]X\~Window\f[] display on which the viewer program
 shall be started, see the \%\f[CR]X\~Window\f[] documentation for the
 syntax of the argument.
 .
 .
 .TP
-.BI --foreground color
+.BI --foreground \ color
 Set the foreground color of the viewer window.
 .
 .
 .TP
-.BI --fg color
+.BI --fg \ color
 This is equivalent to
-.B -foreground .
+.BR -foreground .
 .
 .
 .TP
-.B --fn font_name
+.BI --fn \ font_name
 This is equivalent to
-.B --font .
+.BR --font .
 .
 .
 .TP
-.BI --font font_name
+.BI --font \ font_name
 Set the font used by the viewer window.
 .
 The argument is an \%\f[CR]X\~Window\f[] font name.
 .
 .
 .TP
-.BI --ft font_name
+.BI --ft \ font_name
 This is equivalent to
-.B --font .
+.BR --font .
 .
 .
 .TP
-.BI --geometry size_pos
+.BI --geometry \ size_pos
 Set the geometry of the display window, that means its size and its
 starting position.
 .
@@ -1695,7 +1699,7 @@ for the syntax of the argument.
 .
 .
 .TP
-.BI --resolution value
+.BI --resolution \ value
 Set \%\f[CR]X\~Window\f[] resolution in dpi (dots per inch) in some
 viewer programs.
 .
@@ -1707,7 +1711,7 @@ and
 Actually, the default resolution for
 .B \%groffer
 is set to
-.BR 75\~dpi .
+.BR 75dpi .
 The resolution also sets the default device in
 .IR "mode x" .
 .
@@ -1718,12 +1722,12 @@ Reverse foreground and background color of the viewer window.
 .
 .
 .TP
-.BI --title "'some text'"
+.BI --title "\ 'some text'"
 Set the title for the viewer window.
 .
 .
 .TP
-.BI --xrm "'resource'"
+.BI --xrm \ 'resource'
 Set \f[CR]\%X\~Window\f[] resource.
 .
 .
@@ -1734,7 +1738,7 @@ Set \f[CR]\%X\~Window\f[] resource.
 .TP
 .B --debug
 Enable all debugging options
-.B --debug\-\fItype\fP .
+.BR --debug\-\fItype\fP .
 .
 The temporary files are kept and not deleted, the
 .B grog
@@ -1763,7 +1767,7 @@ Enable two debugging informations.
 .
 Print the name of the temporary directory and keep the temporary
 files, do not delete them during the run of
-.BR \% groffer .
+.BR \%groffer .
 .
 .
 .TP
@@ -1781,7 +1785,7 @@ Print the name of the temporary directory.
 .TP
 .B --do-nothing
 This is like
-.B --version ,
+.BR --version ,
 but without the output; no viewer is started.
 .
 This makes only sense in development.
@@ -1977,7 +1981,7 @@ If you want to look up a
 called
 .B -
 use the argument
-.BR "man:\-" .
+.BR man:\- .
 .
 .
 .Topic
@@ -2152,7 +2156,7 @@ Known viewers for the graphical display modes and their standard
 .Topic
 in a PDF viewer
 .nh
-.RI ( \%pdf\~mode ),
+.RI ( \%pdf\~mode )
 .hy
 .
 .Topic
@@ -2160,14 +2164,14 @@ in a web browser
 .nh
 .RI ( html
 or
-.IR \%www\~mode ).
+.IR \%www\~mode )
 .hy
 .RE
 .
 .Topic
 in a Postscript viewer
 .nh
-.RI ( \%ps\~mode ),
+.RI ( \%ps\~mode )
 .hy
 .
 .Topic
@@ -2178,12 +2182,12 @@ viewers such as
 or
 .BR \%xditview (1)
 (in
-.IR \%x\~mode ),
+.IR \%x\~mode )
 .
 .Topic
 in a dvi viewer program
 .nh
-.RI ( \%dvi\~mode ),
+.RI ( \%dvi\~mode )
 .hy
 .
 .
@@ -2239,7 +2243,7 @@ is chosen for
 This can be changed by specifying option
 .B -T
 or
-.BR --device .
+.BR \%--device .
 .
 .
 .P
@@ -2328,7 +2332,7 @@ short options are supported by
 .
 .
 .\" --------------------------------------------------------------------
-.SH "MAN\~PAGE\~SEARCHING"
+.SH "MAN PAGE SEARCHING"
 .\" --------------------------------------------------------------------
 .
 The default behavior of
@@ -2366,7 +2370,7 @@ error, but processing is continued.
 .
 .
 .\" --------------------------------------------------------------------
-.SS "Search Algoritm"
+.SS "Search Algorithm"
 .\" --------------------------------------------------------------------
 .
 Let us now assume that a
@@ -2964,7 +2968,7 @@ or
 .BR \%bzip2 (1)
 it is decompressed on-the-fly.
 .
-This includes the \f[CR]GNU\f[]
+This includes the \f[CR]GNU\fP
 .BR \%.gz ,
 .BR \%.bz2 ,
 and the traditional
@@ -2986,7 +2990,7 @@ other programs.
 .
 All environment variables of
 .BR \%groff (@MAN1EXT@)
-and \f[CR]GNU\f[]
+and \f[CR]GNU\fP
 .BR \%man (1)
 and some standard system variables are honored.
 .
@@ -3022,7 +3026,7 @@ The following variables have a special meaning for
 .
 .TP
 .Env_var \%$DISPLAY
-If this variable is set this indicates that the \%\f[CR]X\~Window\f[]
+If this variable is set this indicates that the \%\f[CR]X\~Window\fP
 system is running.
 .
 Testing this variable decides on whether graphical or text output is
@@ -3031,14 +3035,14 @@ generated.
 This variable should not be changed by the user carelessly, but it can
 be used to start the graphical
 .B \%groffer
-on a remote \%\f[CR]X\~Window\f[] terminal.
+on a remote \%\f[CR]X\~Window\fP terminal.
 .
 For example, depending on your system,
 .B \%groffer
 can be started on the second monitor by the command
 .sp
 .EX
-\fIsh#\fR DISPLAY=:0.1\~groffer\~ what.ever &
+\fIsh#\fR DISPLAY=:0.1\~groffer\~what.ever &
 .EE
 .
 .
@@ -3073,7 +3077,7 @@ is a character set or encoding identifier like ISO-8859-1 or UTF-8;
 see
 .BR \%setlocale (3).
 .
-The locale values \f[CR]C\f[] and \%\f[CR]POSIX\f[]
+The locale values \f[CR]C\fP and \%\f[CR]POSIX\fP
 stand for the default, i.e. the
 .I \%man\~page
 directories without a language prefix.
@@ -3091,7 +3095,7 @@ variable to the
 program
 .sp
 .EX
-\fIsh#\fR PAGER=cat\~groffer\~ anything
+\fIsh#\fR PAGER=cat\~groffer\~anything
 .EE
 .sp
 .
@@ -3194,7 +3198,7 @@ If set, this variable contains the directories in which the
 trees are stored.
 .
 This is overridden by option
-.BR --manpath .
+.BR \%--manpath .
 .
 .
 .TP
@@ -3354,9 +3358,9 @@ or
 #
 # groffer options that are used in each call of groffer
 \-\-foreground=DarkBlue
-\-\-resolution 100
+\-\-resolution=100
 \-\-x\-viewer=gxditview \-geometry 900x1200
-\-\-pdf\-viewer xpdf \-z 150
+\-\-pdf\-viewer xpdf \-Z 150
 .fi
 .hy
 .ft
@@ -3383,7 +3387,7 @@ in all viewers that support this, such as
 .
 .Topic
 Use a resolution of
-.B 100\~dpi
+.B 100dpi
 in all viewers that support this, such as
 .BR \%gxditview .
 .
@@ -3399,16 +3403,16 @@ Force
 as the
 .I \%x-mode
 viewer using the geometry option for setting the width to
-.B 900\~dpi
+.B 900px
 and the height to
-.BR 1200\~dpi .
+.BR 1200px .
 This geometry is suitable for a resolution of
-.BR 100\~dpi .
+.BR 100dpi .
 .
 .
 .Topic
 Use
-.BR \%xpdf (@MAN1EXT@)
+.BR \%xpdf (1)
 as the
 .I \%pdf-mode
 viewer with the argument
@@ -3431,19 +3435,20 @@ The following examples, however, show that
 .B \%groffer
 has much more fancy capabilities.
 .
-.
+.sp
 .EX
 \fIsh#\fR\~groffer\~/usr/local/share/doc/groff/meintro.ms.gz
 .EE
+.sp
 Decompress, format and display the compressed file
 .File_name meintro.ms.gz
 in the directory
 .File_name /usr/local/share/doc/groff ,
 using the standard viewer
 .B \%gxditview
-as graphical viewer when in \%\f[CR]X\~Window\f[], or the
+as graphical viewer when in \%\f[CR]X\~Window\fP, or the
 .BR \%less (1)
-pager program when not in \%\f[CR]X\~Window\f[].
+pager program when not in \%\f[CR]X\~Window\fP.
 .
 .sp
 .EX
@@ -3539,7 +3544,7 @@ The formatted files are concatenated and displayed in one piece.
 .
 .sp
 .EX
-\fIsh#\fR\~LANG=de\~groffer\~--man\~--www\~--www-viever=galeon\~ls
+\fIsh#\fR\~LANG=de\~groffer\~--man\~--www\~--www-viewer=galeon\~ls
 .EE
 .sp
 Retrieve the German
@@ -3593,7 +3598,7 @@ This is a set of abbreviated arguments, it is determined as
 .
 .sp
 .EX
-\fIsh#\fR\~cat\~file.gz\~|\~groffer\~-Z\~-mfoo"
+\fIsh#\fR\~cat\~file.gz\~|\~groffer\~-Z\~-mfoo
 .EE
 .sp
 .
@@ -3605,12 +3610,12 @@ transported to the
 without post-processing
 .RB ( groff
 option
-.B -Z ),
+.BR -Z ),
 using macro package
 .I \%foo
 .RB ( groff
 option
-.B -m ) .
+.BR -m ).
 .
 .
 .sp
@@ -3620,7 +3625,7 @@ option
 .EX
 .sp
 .
-Display the word \f[CB]WOW!\f[] in a small window in constant-width
+Display the word \f[CB]WOW!\fP in a small window in constant-width
 bold font, using color yellow on red background.
 .
 .
@@ -3636,9 +3641,9 @@ program is written in Perl, the Perl version during writing was v5.8.8.
 .P
 .B \%groffer
 provides its own parser for command line arguments that is compatible
-to both \%\f[CR]POSIX\f[]
+to both \%\f[CR]POSIX\fP
 .BR \%getopts (1)
-and \%\f[CR]GNU\f[]
+and \%\f[CR]GNU\fP
 .BR \%getopt (1).
 It can handle option arguments and file names containing white space
 and a large set of special characters.
@@ -3659,7 +3664,7 @@ option or a combination thereof; for example, the
 short option combination
 .B -Qmfoo
 is equivalent to
-.B -Q\~\-m\~foo .
+.BR -Q\~\-m\~foo .
 .
 .
 .Topic
@@ -3707,7 +3712,7 @@ The free mixing of options and
 .I \%filespec
 parameters follows the GNU principle.
 .
-That does not fulfill the strange option behavior of \%\f[CR]POSIX\f[]
+That does not fulfill the strange option behavior of \%\f[CR]POSIX\fP
 that ends option processing as soon as the first non-option argument
 has been reached.
 .
@@ -3779,13 +3784,6 @@ Internally,
 tries to guess the
 .B \%groff
 command line options from the input using this program.
-.
-.
-.TP
-.BR \%@g@chem (@MAN1EXT@)
-Preprocessor of
-.I groff
-that is run automatically.
 .
 .
 .TP
@@ -3889,7 +3887,7 @@ or
 .TP
 .BR \%less (1)
 Standard pager program for the
-.I \%tty\~mode .
+.IR \%tty\~mode .
 .
 .
 .P
