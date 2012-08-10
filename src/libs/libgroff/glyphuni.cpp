@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003, 2004, 2006, 2009
+/* Copyright (C) 2002, 2003, 2004, 2006, 2009, 2012
    Free Software Foundation, Inc.
      Written by Werner Lemberg <wl@gnu.org>
 
@@ -273,6 +273,7 @@ struct S {
   { "vZ", "017D" },
   { "vz", "017E" },
   { "Fn", "0192" },
+  { ".j", "0237" },
   { "ah", "02C7" },
   { "ab", "02D8" },
   { "a.", "02D9" },
