@@ -2,8 +2,9 @@
 <!--
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004, 2005, 2006, 2009, 2010, 2011 Free Software Foundation, Inc.
-Written by Peter Schaffter.
+Copyright (C) 2004, 2005, 2006, 2009, 2010,
+2011, 2012 Free Software Foundation, Inc.
+Written by Peter Schaffter (peter@schaffter.ca).
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -14,12 +15,13 @@ Texts, and with no Back-Cover Texts.
 A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
 -->
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
-  <title>Mom -- Inserting images into mom documents</title>
+  <title>Mom -- Graphics and floats</title>
   <link rel="stylesheet" type="text/css" href="stylesheet.css" />
 </head>
 
@@ -37,23 +39,225 @@ FDL in the main directory of the groff source package.
 </tr>
 </table>
 
-<h1 class="docs">Inserting images into a document</h1>
+<h1 class="docs">Graphics and floats</h1>
+
+<div style="width: 55%; margin: auto;">
+<ul class="no-enumerator" style="margin-left: -1em;">
+  <li><a href="#images-intro">Introduction to inserting images and graphics</a>
+  <li><a href="#converting">Image conversion and file processing</a>
+  <ul style="margin-left: -.5em; list-style-type: disc;">
+    <li><a href="#pdf">PDF</a></li>
+    <li><a href="#eps">EPS</a></li>
+  </ul></li>
+  <li><a href="#pdf-image">The PDF_IMAGE macro</a></li>
+  <li><a href="#pspic">The PSPIC macro</a></li>
+  <li><a href="#floats-intro">Introduction to floats</a></li>
+  <li><a href="#float">The FLOAT macro</a>
+  <ul style="margin-left: -.5em; list-style-type: disc;">
+		<li><a href="#tbl-with-float">Using tbl with FLOAT</a></li>
+	</ul></li>
+</ul>
+</div>
+
+<div class="rule-medium"><hr/></div>
+
+<h2 id="images-intro" class="docs">Introduction to inserting images and graphics</h2>
 
 <p>
-You can insert images into a document by using the PSPIC
-macro. PSPIC isn&#8217;t actually part of mom; it comes packaged
-with groff itself.  Images must be in PostScript format, either
-straight .ps or .eps (Encapsulated PostScript).  If you have the
-ImageMagick suite of programmes installed on your system, a simple way
-to convert most image formats to .eps is with <kbd>convert</kbd>, at
-the command line, as in this jpg&nbsp;=>&nbsp;eps example:
+In order to include images in mom documents, the images must be in
+either PDF (.pdf) or EPS (.eps) format.  Each format requires its own
+macro, but both take the same arguments, and in the same order.
+</p>
+
+<p>
+Please note that there are differences in the way the files
+containing PDF and EPS images must be processed, hence documents may
+not contain a mix.
+</p>
+
+<h3 id=converting class="docs">Image conversion and file processing</h3>
+
+<p>
+When your image files are not in PDF or EPS format&mdash;jpgs,
+for example&mdash;you must convert them before including them in
+a mom document.  Any utility for converting images may used.  The
+ImageMagick suite of programmes, present on most GNU/Linux
+systems, contains <b>convert</b>, which is simple and effective.
+</p>
+
+<h4 id="pdf" class="docs">PDF</h4>
+
+<p>
+Assuming a jpg image, conversion to PDF is done like this:
 <br/>
 <span class="pre-in-pp">
-  convert &lt;filename&gt;.jpg &lt;filename&gt;.eps 
+  convert &lt;image&gt;.jpg &lt;image&gt;.pdf
 </span>
-There have been reports of trouble with PostScript level 2 images,
-so don&#8217;t save your images in this format.
+Any image type supported by <b>convert</b> may be converted this
+way.
 </p>
+
+<p>
+Mom files containing PDF images must be processed using
+groff&#8217;s pdf driver.  Use of
+<a href="using.html#pdfmom" style="font-weight: bold">pdfmom</a>
+is strongly recommended, which natively invokes the pdf driver.
+<br/>
+<span class="pre-in-pp">
+  pdfmom doc.mom &gt; doc.pdf
+</span>
+</p>
+
+<h4 id="eps" class="docs">EPS</h4>
+
+<p>
+Assuming a jpg image, conversion to EPS is done like this:
+<br/>
+<span class="pre-in-pp">
+  convert &lt;image&gt;.jpg &lt;image&gt;.eps
+</span>
+Any image type supported by <b>convert</b> may be converted this
+way.  There have been reports of trouble with PostScript level 2
+images, so don&#8217;t save your images in this format.
+</p>
+
+<p>
+Mom files containing EPS images must be processed using
+groff&#8217;s postscript driver.  Use of
+<a href="using.html#pdfmom" style="font-weight: bold">pdfmom</a>,
+which can be told to use the postscript driver, is strongly
+recommended.
+<br/>
+<span class="pre-in-pp">
+  pdfmom -Tps doc.mom &gt; doc.pdf
+</span>
+</p>
+
+<!-- -PDF_IMAGE- -->
+
+<div class="macro-id-overline">
+<h3 id="pdf-image" class= "macro-id">PDF_IMAGE</h3>
+</div>
+
+<div class="box-macro-args">
+Macro: <b>PDF_IMAGE</b> <kbd class="macro-args">[ -L | -C | -R | -I &lt;indent&gt; ] \
+<br/>
+&lt;pdf image&gt; &lt;width&gt; &lt;height&gt; \
+<br/>
+[ SCALE &lt;factor&gt; ] [ ADJUST +|-&lt;vertical adjustment&gt; ]</kbd>
+</div>
+<p class="requires">
+&bull;&nbsp;<span style="font-style: normal">
+<kbd>&lt;indent&gt;</kbd>,
+<kbd>&lt;width&gt;</kbd>,
+<kbd>&lt;height&gt;</kbd></span>
+and
+<span style="font-style: normal">
+<kbd>&lt;vertical adjustment&gt;</kbd></span>
+require a
+<a href="definitions.html#unitofmeasure">unit of measure</a>
+</p>
+
+<p>
+Unlike
+<a href="#pspic">PSPIC</a>,
+which it resembles, PDF_IMAGE requires that the pdf image&#8217;s
+dimensions (the bounding box,
+<a href="#bounding-box">see below</a>)
+be supplied each time it&#8217;s called.
+</p>
+
+<p>
+The first optional argument tells mom how to align the image
+horizontally, with <kbd>-L</kbd>, <kbd>-C</kbd>, and <kbd>-R</kbd>
+standing for left, centre and right respectively.  If you need more
+precise placement, the <kbd>-I</kbd> argument allows you to give an
+indent from the left margin.  Thus, to indent a PDF image 6
+<a href="definitions.html#picaspoints">picas</a>
+from the left margin
+<br/>
+<span class="pre-in-pp">
+  .PDF_IMAGE -I 6P &lt;remaining arguments&gt;
+</span>
+If you omit the first argument, the image will be centred.
+</p>
+
+<p>
+<kbd>&lt;pdf image&gt;</kbd> must be in PDF format, with a .pdf
+extension.  If it is not, mom will abort with a message.  See <a
+href="#pdf">here</a> for instructions on converting image formats to
+PDF.
+</p>
+
+<p id="bounding-box">
+<kbd>&lt;width&gt;</kbd> and <kbd>&lt;height&gt;</kbd> are the
+dimensions of the image&#8217;s bounding box.  The most reliable way
+of getting the bounding box is with the utility, <strong>pdfinfo</strong>:
+<br/>
+<span class="pre-in-pp">
+  pdfinfo &lt;image.pdf&gt; | grep "Page *size"
+</span>
+This will spit out a line that looks like this:
+<br/>
+<span class="pre-in-pp">
+  Page size:      width x height pts
+</span>
+<kbd>pts</kbd> means
+<a href="definitions.html#picaspoints">points</a>,
+therefore the unit of measure appended to <kbd>&lt;width&gt;</kbd>
+and <kbd>&lt;height&gt;</kbd> must be <kbd>p</kbd>.
+</p>
+
+<p>
+The optional <kbd>SCALE</kbd> argument allows you to scale the image
+by <kbd>&lt;factor&gt;</kbd>.  The factor is a percentage of the
+image&#8217;s original dimensions, thus
+<br/>
+<span class="pre-in-pp">
+ SCALE 50
+</span>
+scales the image to 50 percent of its original size.  No percent
+sign or unit of measure should be appended.
+</p>
+
+<p>
+The final optional argument is the vertical adjustment to apply to
+the image.  A plus value raises the image
+<span style="font-style: italic">within the space allotted for it</span>;
+a negative value lowers it.  The value must have a unit of measure
+appended.
+</p>
+
+<p>
+Remember that mom files with embedded PDF images must be processed
+with
+<br/>
+<span class="pre-in-pp">
+ pdfmom doc.mom &gt; doc.pdf
+</span>
+</p>
+
+<div class="box-tip">
+<p class="tip-top">
+<span class="note">Note:</span>
+Mom automatically applies shimming after PDF_IMAGE.  See
+<a href="docprocessing.html#shim">SHIM</a>
+for a discussion of shimming, and how to disable it.
+<p>
+
+<p class="tip-bottom">
+<span class="note">Additional note:</span>
+Mom treats images inserted into a document with PDF_IMAGE like
+<a href="#floats-intro">floats</a>,
+which is to say that if the image doesn&#8217;t fit on the output
+page, she will defer it to the top of the next page while continuing
+to process
+<a href="definitions.html#running">running text</a>.
+<kbd>ADJUST</kbd> is ignored whenever an image is deferred, and a
+message is printed to stderr advising you where the deferment has
+taken place.
+</p>
+</div>
 
 <!-- -PSPIC- -->
 
@@ -66,12 +270,19 @@ Macro: <b>PSPIC</b> <kbd class="macro-args">[ -L | -R | -I &lt;n&gt; ] &lt;file&
 </div>
 
 <p>
-<kbd>man groff-tmac</kbd> contains the documentation for PSPIC, but
+PSPIC is not actually part of mom, but rather a macro included with
+every groff installation.  Although its arguments are identical to
+PDF_IMAGE (except for <kbd>SCALE</kbd> and <kbd>ADJUST</kbd>, which
+are missing), its behaviour is slightly different.
+</p>
+
+<p>
+<kbd>man groff_tmac</kbd> contains the documentation for PSPIC, but
 I&#8217;ll repeat it here with a few modifications for clarity.
 </p>
 
 <div class="examples-container">
-<h3 id="groff-tmac" class="docs" style="margin-top: .5em;">From groff-tmac</h3>
+<h3 id="groff-tmac" class="docs" style="margin-top: .5em;">From <span style="text-transform: none">groff_tmac</span></h3>
 <p style="margin-top: .5em; margin-bottom: .5em;">
 <kbd>&lt;file&gt;</kbd> is the name of the file containing the
 image; <kbd>width</kbd> and <kbd>height</kbd> give the desired
@@ -82,7 +293,7 @@ attached; the default unit of measure is
 <kbd>i</kbd>.  PSPIC will scale the graphic
 uniformly in the x and y directions so that it is no more than
 <kbd>width</kbd> wide and <kbd>height</kbd> high.  By default, the
-graphic will be horizontally centered.  The <kbd>-L</kbd> and
+graphic will be horizontally centred.  The <kbd>-L</kbd> and
 <kbd>-R</kbd> options cause the graphic to be left-aligned and
 right-aligned, respectively.  The <kbd>-I</kbd> option causes
 the graphic to be indented by <kbd>&lt;n&gt;</kbd>;  the default unit of
@@ -92,13 +303,27 @@ measure is <kbd>m</kbd>
 </div>
 
 <p>
-Unless you&#8217;re a PostScript whiz and have futzed around with
-bounding boxes and whatnot, it&#8217;s unlikely that your image will
-occupy an easily predictable and precise amount of space on the
-page.  This is particularly significant when it comes to the amount
-of vertical space occupied by the image.  A certain amount of
-manual tweaking of the vertical placement of the image will
-probably be required, via the
+It is not necessary to pass PSPIC the
+<kbd>&lt;width&gt;</kbd> and <kbd>&lt;height&gt;</kbd> arguments unless
+you are scaling the image, in which case you will most likely need
+the original dimensions of the EPS image&#8217;s bounding box.
+These can be found with
+<span class="pre-in-pp">
+ gs -q -dBATCH -dNOPAUSE -sDEVICE=bbox &lt;image file&gt;.pdf 2&gt;&amp;1 \
+ | grep "%%BoundingBox" | cut -d " " -f4,5
+</span>
+The two digits returned are in
+<a href="definitions.html#picaspoints">points</a>,
+therefore the
+<a href="definitions.html#unitofmeasure">unit of measure</a>
+<kbd>p</kbd> must be appended to them.
+</p>
+
+<p>
+Because PSPIC lacks the <kbd>ADJUST</kbd> option offered by
+<a href="#pdf-image">PDF_IMAGE</a>
+a certain amount of manual tweaking of the vertical placement of the
+image will probably be required, typically by using the
 <a href="typesetting.html#ald">ALD</a>
 and
 <a href="typesetting.html#rld">RLD</a>
@@ -106,14 +331,189 @@ macros.
 </p>
 
 <p>
-Additionally, images inserted into
+Additionally, EPS images inserted into
 <a href="definitions.html#running">running text</a>
 will almost certainly disrupt the baseline placement of running
 text.  In order to get mom back on track after
 invoking <kbd>.PSPIC</kbd>, I strongly recommend using the
 <a href="docprocessing.html#shim">SHIM</a>
 macro so that the bottom margin of running text falls where it
-should.
+should.  Please note that with PDF_IMAGE, this is not necessary.
+</p>
+
+<p>
+Remember that mom files with embedded EPS images must be processed
+with
+<br/>
+<span class="pre-in-pp">
+ pdfmom -Tps doc.mom &gt; doc.pdf
+</span>
+</p>
+
+<div class="rule-medium"><hr/></div>
+
+<h2 id="floats-intro" class="docs">Introduction to floats</h2>
+
+<p>
+Images and graphics (including those created with
+<strong>tbl</strong> and <strong>pic</strong>) sometimes do not
+fit on the output page of a PDF or PostScript document at the
+place they&#8217;re inserted in the input file.  It&#8217;s
+necessary, therefore, to defer them to the next page while carrying
+on with
+<a href="definitions.html#running">running text</a>.
+</p>
+
+<p>
+Whenever you need this functionality (tables, for example, generally
+need only appear near related text, not at a precise location), mom
+provides the FLOAT macro.
+</p>
+
+<p>
+Floats are usually used for images and graphics, but can contain
+anything you like, including text.  Whatever&#8217;s in the
+float will be kept together as a block, output immediately if
+there&#8217;s room, or deferred to the top of the next output page
+when there isn&#8217;t; running text continues to the bottom of the
+previous page without interruption.
+</p>
+
+<p>
+In the case of a float that doesn&#8217;t fit being followed by
+one that does, the second is output in position and the first is
+deferred.  In the case of two or more that don&#8217;t fit, they are
+output in order on the next page.
+</p>
+
+<p>
+A key distinction between a float and a
+<a href="docelement.html#quote">QUOTE</a>
+or
+<a href="docelement.html#blockquote">BLOCKQUOTE</a>
+is that while a float keeps everything together and defers output if
+necessary, quotes and blockquotes are output immediately, and may
+start on one page and finish on the next.
+</p>
+
+<p>
+Floats always deposit a break before they begin, which means the
+line beforehand will not be
+<a href="definitions.html#filled">filled</a>.
+Floats, therefore, cannot be inserted in the middle of a paragraph
+without studying the output file and determining where to break or
+<a href="typesetting.html#spread">spread</a>
+the line before the float.
+</p>
+
+<p id="float-spacing">
+Floats begin on the baseline immediately below the running text
+preceding them.  No additional whitespace surrounds them, above or
+below.  Running text below a float is, however,
+<a href="docprocessing.html#shim">shimmed</a>,
+unless shimming has been disabled with <kbd>.NO_SHIM</kbd>.  This
+usually results in a small amount of extra whitespace after the
+float.  The <kbd>ADJUST</kbd> argument to FLOAT allows you to
+fine-tune the vertical centering.
+</p>
+
+<p>
+If you&#8217;d like more space around a float, you must add it
+manually, for example with 
+<a href="typesetting.html#ald">ALD</a>
+or
+<a href="typesetting.html#space">SPACE</a>.
+</p>
+
+<!-- -FLOAT- -->
+
+<div class="macro-id-overline">
+<h3 id="float" class= "macro-id">FLOAT</h3>
+</div>
+
+<div class="box-macro-args">
+Macro: <b>FLOAT</b> <kbd class="macro-args">ADJUST [ +|-&lt;amount&gt; ] | &lt;anything&gt;</kbd>
+</div>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+FLOAT is intended for use with the document processing macros only.
+</p>
+</div>
+
+<p style="margin-top: -.5em">
+To begin a float, simply invoke <kbd>.FLOAT</kbd> and follow it with
+whatever you want the float to contain.  When you&#8217;re done,
+invoke <kbd>.FLOAT&nbsp;OFF</kbd> (or <kbd>QUIT, END, X</kbd>, etc).
+</p>
+
+<p>
+The <kbd>ADJUST</kbd> argument tells mom to raise
+(<kbd>+</kbd>) or lower (<kbd>-</kbd>) the float <i>within the space
+allotted to it</i> by the specified amount.
+<kbd>&lt;amount&gt;</kbd> must have a
+<a href="definitions.html#unitofmeasure">unit of measure</a>
+appended.  <kbd>ADJUST</kbd> gives you precise control over
+the vertical centering of floats, allowing you to compensate for
+unequal spacing that may result of from the automatic shimming of
+floats (or the absence thereof).  See
+<a href="docprocessing.html#shim">SHIM</a>
+for a discussion of automatic shimming.
+</p>
+
+<p>
+<kbd>ADJUST</kbd> is ignored whenever a float is deferred to
+the following page.
+</p>
+
+<div class="box-tip">
+<p class="tip-top">
+<span class="note">Note:</span>
+Floats use
+<a href="definitions.html#filled">no-fill mode</a>,
+with each input line beginning at the left margin.  If this is not
+what you want, you must specify the preferred horizontal alignment
+<i>within the float</i> (eg
+<a href="typesetting.html#lrc">CENTER</a>
+or
+<a href="typesetting.html#lrc">RIGHT</a>).
+</p>
+
+<p class="tip-bottom">
+Furthermore, if you want text
+<a href="definitions.html#filled">filled</a>,
+you must specify
+<a href="typesetting.html#quad"><kbd>.QUAD&nbsp;L|R|C</kbd></a>
+or
+<a href="typesetting.html#justify"><kbd>.JUSTIFY</kbd></a>&mdash;again,
+within the float.
+</p>
+</div>
+
+<h4 id="tbl-with-float" class="docs">Using tbl with FLOAT</h4>
+
+<p>
+Unboxed tables created with <strong>tbl</strong> (see <kbd>man
+tbl(1)</kbd>) may be put in a float with the usual start and end
+macros, <kbd>.TS</kbd> and <kbd>.TE</kbd>.
+</p>
+
+<p>
+Boxed tables don&#8217;t play nice with FLOAT, and require that you
+pass the argument <kbd>BOXED</kbd> to <kbd>.TS</kbd>, otherwise mom
+cannot guarantee the vertical spacing of the float will be
+<a href="#float-spacing">as described</a>.
+<br/>
+<span class="pre-in-pp">
+  .FLOAT
+  .TS BOXED
+  &lt;tbl commands&gt;
+  .TE
+  .FLOAT OFF
+</span>
+You may put text (or anything else you like) above or below the
+table; mom will ensure the float is spaced correctly.
 </p>
 
 <div class="rule-long"><hr/></div>

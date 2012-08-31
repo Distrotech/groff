@@ -2,8 +2,9 @@
 <!--
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004, 2005, 2006, 2009, 2010, 2011 Free Software Foundation, Inc.
-Written by Peter Schaffter.
+Copyright (C) 2004, 2005, 2006, 2009, 2010,
+2011, 2012 Free Software Foundation, Inc.
+Written by Peter Schaffter (peter@schaffter.ca).
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -14,6 +15,7 @@ Texts, and with no Back-Cover Texts.
 A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
 -->
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -72,25 +74,11 @@ FDL in the main directory of the groff source package.
   <li><a href="#pp">PP</a></li>
   <li><a href="#pp-control">Paragraph control</a></li>
 </ul>
-<h3 class="toc toc-docproc-header"><a class="header-link" href="#head-intro">Main heads</a></h3>
+<h3 class="toc toc-docproc-header"><a class="header-link" href="#heading-intro">Headings</a></h3>
 <ul class="toc-docproc" style="margin-top: .5em;">
-  <li><a href="#head">HEAD</a></li>
-  <li><a href="#head-control">Head control</a></li>
-</ul>
-<h3 class="toc toc-docproc-header"><a class="header-link" href="#subhead-intro">Subheads</a></h3>
-<ul class="toc-docproc" style="margin-top: .5em;">
-  <li><a href="#subhead">SUBHEAD</a></li>
-  <li><a href="#subhead-control">Subhead control</a></li>
-</ul>
-<h3 class="toc toc-docproc-header"><a class="header-link" href="#subsubhead-intro">Subsubheads</a></h3>
-<ul class="toc-docproc" style="margin-top: .5em;">
-  <li><a href="#subsubhead">SUBSUBHEAD</a></li>
-  <li><a href="#subsubhead-control">Subsubhead control</a></li>
-</ul>
-<h3 class="toc toc-docproc-header"><a class="header-link" href="#parahead-intro">Paragraph heads</a></h3>
-<ul class="toc-docproc" style="margin-top: .5em;">
-  <li><a href="#parahead">PARAHEAD</a></li>
-  <li><a href="#parahead-control">Parahead control</a></li>
+  <li><a href="#heading">HEADING</a></li>
+  <li><a href="#heading-control">Heading control</a></li>
+  <li><a href="#oldstyle-headings-intro">Oldstyle headings</a></li>
 </ul>
 <h3 class="toc toc-docproc-header"><a class="header-link" href="#linebreak-intro">Linebreaks (section breaks)</a></h3>
 <ul class="toc-docproc" style="margin-top: .5em;">
@@ -107,13 +95,13 @@ FDL in the main directory of the groff source package.
   <li><a href="#blockquote">BLOCKQUOTE</a></li>
   <li><a href="#blockquote-control">Blockquote control</a></li>
 </ul>
-</div>
-<div class="mini-toc-col-2" style="margin-top: 1.5em;">
 <h3 class="toc toc-docproc-header"><a class="header-link" href="#code-intro">Inserting code snippets</a></h3>
 <ul class="toc-docproc" style="margin-top: .5em;">
   <li><a href="#code">CODE</a></li>
   <li><a href="#code-control">Code control</a></li>
 </ul>
+</div>
+<div class="mini-toc-col-2" style="margin-top: 1.5em;">
 <h3 class="toc toc-docproc-header"><a class="header-link" href="#list-intro">Nested lists</a></h3>
 <ul class="toc-docproc" style="margin-top: .5em;">
   <li><a href="#list">LIST</a></li>
@@ -137,9 +125,8 @@ FDL in the main directory of the groff source package.
 </ul>
 <h3 class="toc toc-docproc-header"><a class="header-link" href="#margin-notes-intro">Margin notes</a></h3>
 <ul class="toc-docproc" style="margin-top: .5em;">
-  <li><a href="#mn-init">MN_INIT</a></li>
+  <li><a href="#mn-init">MN_INIT (set margin notes parameters)</a></li>
   <li><a href="#mn">MN</a></li>
-  <li><a href="#margin-notes-control">Margin notes control</a></li>
 </ul>
 <h3 class="toc toc-docproc-header"><a class="header-link" href="#finis-intro">Document termination string</a></h3>
 <ul class="toc-docproc" style="margin-top: .5em;">
@@ -158,23 +145,16 @@ Once you&#8217;ve completed the setup for a document (see
 <a href="docprocessing.html#docprocessing-tut">Setting up a mom document</a>),
 formatting it is a snap.  Simply invoke the appropriate tag for
 each document element as you need it.  The tags are macros that
-tell mom: &#8220;This is a paragraph; this is a subhead; this is a
+tell mom: &#8220;This is a paragraph; this is a heading; this is a
 footnote,&#8221; and so on.
 </p>
 
 <p>
-The list of tags is actually quite small&mdash;ideal for the users
-mom brought herself into being for (see
-<a href="intro.html#intro-intro">Who mom is meant for</a>).
-However, the list of macros that control the appearance of the tags
-upon output is extensive.  Generally, for each tag, there are
+Generally, for each tag, there are
 <a href="definitions.html#controlmacro">control macros</a>
 for the tag&#8217;s family, font and point size.  Where appropriate,
 there are macros to control leading, indents, quad and special
 features as well.
-</p>
-
-<p>
 Mom has tasteful defaults for all the tags, hence you only use the
 control macros when you want to change the way she does things.
 This is usually done prior to
@@ -203,7 +183,7 @@ tag, and what mom&#8217;s defaults for the tag are.
 
 <p>
 The control macros may be used at any time during the course of a
-document (i.e. before or after
+document (ie before or after
 <a href="docprocessing.html#start">START</a>).
 The changes you make alter all subsequent invocations of the
 affected tag until you make another change, either by passing new
@@ -244,8 +224,7 @@ mightily.
 The family, font, point size, colour and leading control macros have
 no effect in
 <a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>,
-which sets everything in Courier roman, 12/24 (i.e. 12-point type on
-a linespace of 24 points).
+except where noted throughout this documentation.
 </p>
 
 <p class="tip-bottom">
@@ -276,11 +255,11 @@ the form <kbd>+&lt;n&gt;</kbd> or <kbd>-&lt;n&gt;</kbd> where
 &lt;n&gt; is the number of
 <a href="definitions.html#picaspoints">points</a>
 larger (+) or smaller (-) than the point size of paragraphs
-you want the document element to be.  For example, to change
-subheads to 1-1/2 points larger than the type in paragraphs, do
+you want the document element to be.  For example, to set
+blockquotes 2 points smaller than the type in paragraphs, do
 <br/>
 <span class="pre-in-pp">
-  .SUBHEAD_SIZE +1.5
+  .BLOCKQUOTE_SIZE -2
 </span>
 There&#8217;s no need for a
 <a href="definitions.html#unitofmeasure">unit of measure</a>
@@ -295,13 +274,14 @@ name pre-defined (or &#8220;initialized&#8221;) with
 <a href="color.html#newcolor">NEWCOLOR</a>
 or
 <a href="color.html#xcolor">XCOLOR</a>.
-For example, if you want your heads to be red, once you&#8217;ve defined
-or initialized the color, red,
+For example, if you want your
+<a href="#linebreak">author linebreaks</a>
+to be red, once you&#8217;ve defined or initialized the colour, red,
 <br/>
 <span class="pre-in-pp">
-  .HEAD_COLOR red
+  .LINEBREAK_COLOR red
 </span>
-will turn your heads red.
+will turn them red.
 </p>
 
 <h4 id="lead" class="docs" style="margin-top: -.5em; margin-bottom: -.75em;">Lead/linespacing</h4>
@@ -318,7 +298,7 @@ For example, to set footnotes
 <span class="pre-in-pp">
   .FOOTNOTE_AUTOLEAD 0
 </span>
-To set footnotes with a 1-point lead (i.e. with the line spacing
+To set footnotes with a 1-point lead (ie with the line spacing
 one point greater than the footnote&#8217;s point size), do
 <br/>
 <span class="pre-in-pp">
@@ -357,8 +337,8 @@ particular tag.  For example,
   .PARA_INDENT       2m
   .BLOCKQUOTE_INDENT 2
 </span>
-means that blockquotes will be indented from the left margin by
-twice the size of the paragraph indent, or 4
+means that blockquotes will be indented from the left and right
+margins by twice the size of the paragraph indent, or 4
 <a href="definitions.html#em">ems</a>.
 </p>
 
@@ -372,7 +352,7 @@ and 6
 regardless of the paragraph indent.
 <br/>
 <span class="pre-in-pp">
-  .PARA_INDENT        2m
+  .PARA_INDENT       2m
   .BLOCKQUOTE_INDENT 3P+6p
 </span>
 </p>
@@ -396,7 +376,7 @@ are controlled by macros that end in _UNDERLINE.
 <p>
 Page elements that are separated from
 <a href="definitions.html#running">running text</a>
-by a rule (i.e. page headers, page footers and footnotes) are
+by a rule (ie page headers, page footers and footnotes) are
 controlled by macros that end in _RULE_WEIGHT.
 </p>
 
@@ -467,8 +447,8 @@ equally from both the left and right margins.
 
 <p>
 If a block-style epigraph runs to more than one paragraph (unlikely,
-but conceivable), you <i>must</i> introduce every
-paragraph&mdash;including the first&mdash;with the
+but conceivable), you must introduce every paragraph&mdash;including
+the first&mdash;with the
 <a href="#pp">PP</a>
 tag.
 </p>
@@ -476,16 +456,35 @@ tag.
 <div class="box-tip">
 <p class="tip">
 <span class="note">Note:</span>
-EPIGRAPH should only be used at the top of a document (i.e. just
+EPIGRAPH should only be used at the top of a document (ie just
 after
 <a href="docprocessing.html#start">START</a>)
-or after
-<a href="#head-intro">heads</a>.
-The latter is not especially recommended, but it does work.  In all
-other places where you want quotes or cited text, use
+or after headings.  The latter is not especially recommended, but it
+does work.  In all other places where you want quotes or cited text,
+use
 <a href="#quote">QUOTE</a>
 or
 <a href="#blockquote">BLOCKQUOTE</a>.
+</p>
+</div>
+
+<div class="box-tip">
+<p class="tip">
+<span class="tip">Tip:</span>
+If you&#8217;re setting a document in
+<a href="docprocessing.html#columns">columns</a>
+and you&#8217;d like to add or subtract space after the epigraph,
+the place to do it is inside the epigraph, like this:
+<br/>
+<span class="pre-in-pp">
+  .EPIGRAPH
+  A notable quote.
+  .SP 1v
+  .EPIGRAPH OFF
+</span>
+If you were to add the <kbd>.SP 1v</kbd> outside the epigraph, the
+space would be added to the top of the leftmost column only,
+resulting in unbalanced columns.
 </p>
 </div>
 
@@ -518,29 +517,18 @@ See
 <h3 id="epigraph-indent" class="docs notes" style="margin-bottom: -.75em;">Note on EPIGRAPH_INDENT</h3>
 
 <p style="margin-top: .5em;">
-Prior to version 1.4-b, mom allowed only the passing of an integer
-to the macro, EPIGRAPH_INDENT.  The integer represented the amount
-by which to multiply the argument passed to
-<a href="#para-indent">PARA_INDENT</a>
-to arrive at an indent for block style epigraphs.
+If you pass EPIGRAPH_INDENT an integer with no unit of measure
+appended, the integer represents the amount by which to multiply
+PARA_INDENT to arrive at an indent for block style epigraphs.  If
+you append a unit of measure to the argument, the indent will be
+precisely the amount specified.
 </p>
 
 <p>
-As of version 1.4-b, you can now append a
-<a href="definitions.html#unitofmeasure">unit of measure</a>
-to the argument passed to EPIGRAPH_INDENT, thus setting an absolute
-indent, relative to nothing.  The old behaviour is still respected,
-though; in other words, if you pass EPIGRAPH_INDENT an integer with
-no unit of measure appended, the integer represents the amount by
-which to multiply PARA_INDENT to arrive at an indent for block style
-epigraphs.
-</p>
-
-<p>
-Please also note that if your PARA_INDENT is <kbd>0</kbd> (i.e. no
-indenting of the first line of paragraphs), you <i>must</i> set an
+Please also note that if your PARA_INDENT is <kbd>0</kbd> (ie
+no indenting of the first line of paragraphs), you must set an
 EPIGRAPH_INDENT yourself, with a unit of measure appended to the
-argument. Mom has no default for EPIGRAPH_INDENT if paragraph first
+argument.  Mom has no default for EPIGRAPH_INDENT if paragraph first
 lines are not being indented.
 </p>
 
@@ -574,29 +562,48 @@ you are in your document are taken care of automatically.
 
 <p>
 By default, mom does not indent the first paragraph of a document,
-nor paragraphs that fall immediately after
-<a href="#head-intro">heads</a>
-or
-<a href="#subhead-intro">subheads</a>.
-The first paragraphs of blockquotes and block-style epigraphs are
-also not indented.  This behaviour can be changed with the control
-macro
+nor paragraphs that fall immediately after headings.  The first
+paragraphs of blockquotes and block-style epigraphs are also not
+indented.  This behaviour can be changed with the control macro
 <kbd><a href="#para-indent-first">INDENT_FIRST_PARAS</a></kbd>.
 </p>
 
 <p>
-In contrast to some other macro sets, mom does not deposit a blank
-line between paragraphs.  If you want her to do so, use the control
-macro PARA_SPACE.  (I don&#8217;t recommend using this macro with
+Mom does not deposit a blank line between paragraphs.  If you want
+her to do so, use the control macro
+<a href="#pp-space">PARA_SPACE</a>.
+(I don&#8217;t recommend using this macro with
 <a href="typesetting.html#printstyle">PRINTSTYLE TYPEWRITE</a>.)
 </p>
 
+<div class="box-tip">
+<p class="tip">
+<span class="tip">Tip:</span>
+If you'd like to add a small amount of space between paragraphs,
+less than the full linespace provided by PARA_SPACE, 
+you can create a macro that adds it automatically, like this:
+<br/>
+<span class="pre-in-pp">
+  .MAC PP2 END
+  .    ALD .25v
+  .    PP
+  .END
+</span>
+Introducing a paragraph with <kbd>.PP2</kbd> will add a space equal
+to one-quarter of the prevailing linespace before the start of the
+paragraph.  Initial paragraphs, ie those at the start of a document,
+or after a heading or
+<a href="#linebreak-intro">linebreak</a>,
+should still be introduced with
+<kbd>.PP</kbd>.
+</div>
+
 <p>
-Note that mom does not provide &#8220;orphan control&#8221; for
-paragraphs (i.e. even if only one line of a paragraph fits at the
+Note that mom does not provide widow or orphan control for
+paragraphs (ie even if only one line of a paragraph fits at the
 bottom of a page, she will set it on that page).  The reason for
 this is that writers of fiction often have single-line paragraphs
-(e.g. in dialogue).  Groff&#8217;s simplistic orphan control will
+(eg in dialogue).  Groff&#8217;s simplistic orphan control will
 break these one-liners&mdash;if they fall at the bottom of the
 page&mdash;to a new page, which is not what you want.
 </p>
@@ -652,7 +659,8 @@ new paragraph.  See
 for more details.  In addition to regular text paragraphs, you can
 use PP in
 <a href="#epigraph-intro">epigraphs</a>,
-<a href="#blockquote-intro">blockquotes</a>
+<a href="#blockquote-intro">blockquotes</a>,
+<a href="#endnote-intro">endnotes</a>
 and
 <a href="#footnote-intro">footnotes</a>.
 </p>
@@ -674,7 +682,7 @@ tags.
   <li><a href="#pp-just-quad">Justification/quad control</a></li>
   <li><a href="#para-indent">First-line indent control</a></li>
   <li><a href="#para-indent-first">Initial paragraphs indent control</a></li>
-  <li><a href="#pp-space">Paragraph spacing control</a></li>
+  <li><a href="#pp-space">Inter-paragraph spacing</a></li>
 </ol>
 </div>
 
@@ -697,7 +705,13 @@ every element in the document.
 If you wish to change the family for regular text paragraphs only,
 invoke <kbd>.FAMILY</kbd> immediately after <kbd>.PP</kbd> in every
 paragraph whose family you wish to differ from the prevailing
-document family.
+document family.  Alternatively, set the family and font for
+paragraphs with PP_FONT, giving it a complete family+font name, eg
+<br/>
+<span class="pre-in-pp">
+  PP_FONT TI
+</span>
+which would make the font used in paragraphs Times Roman Italic.
 </p>
 
 <p>
@@ -724,7 +738,8 @@ PP_FONT may be used before or after
 <a href="docprocessing.html#start">START</a>.
 Only regular text paragraphs are affected; paragraphs in
 <a href="#epigraph-intro">epigraphs</a>,
-<a href="#blockquote-intro">blockquotes</a>
+<a href="#blockquote-intro">blockquotes</a>,
+<a href="#endnote-intro">endnotes</a>,
 and
 <a href="#footnote-intro">footnotes</a>
 remain at their default setting (medium roman) unless you change
@@ -758,7 +773,7 @@ wish a colourized paragraph, you must use the macro,
 <a href="color.html#color">COLOR</a>,
 or the
 <a href="definitions.html#inline">inline escape</a>,
-<a href="color.html#color-inline"><kbd>\*[&lt;colorname&gt;]</kbd></a>,
+<a href="color.html#color-inline"><kbd>\*[&lt;colourname&gt;]</kbd></a>,
 <i>after</i> <kbd>.PP</kbd>.  The colour must be one pre-defined (or
 &#8220;initialized&#8221;) with
 <a href="color.html#newcolor">NEWCOLOR</a>
@@ -789,23 +804,6 @@ For example, assuming you have defined the colour, blue,
 the first paragraph will be blue, the head and subhead will be in
 the document&#8217;s default colour (usually black), and the second
 paragraph will be in blue.
-</p>
-
-<p>
-The one document element that is affected by changing the colour of
-paragraphs is
-<a href="#parahead">paraheads</a>,
-since paraheads are attached directly to the body of paragraphs.
-In other words, if you change the colour of a paragraph and do not
-reset the paragraph colour back to its default, subsequent paraheads
-will appear in the same colour as your paragraphs unless you have
-explicitly told mom you want a pre-defined (or
-&#8220;initialized&#8221;) color (usually black) for your paraheads.
-</p>
-
-<p>
-See the footnote to
-<a href="#parahead-color">PARAHEAD_COLOR</a>.
 </p>
 
 <h4 id="pp-leading" class="docs" style="margin-top: -.25em;">4. Leading</h4>
@@ -853,7 +851,7 @@ is 16 points, adjusted to fill the page.
 <h4 id="pp-just-quad" class="docs" style="margin-top: -.25em;">5. Justification/quad</h4>
 
 <p>
-The justification/quad-direction of regular text paragraphs (i.e.
+The justification/quad-direction of regular text paragraphs (ie
 <a href="definitions.html#just">justified</a>,
 or
 <a href="definitions.html#filled">filled</a>
@@ -873,9 +871,10 @@ afterwards.
 <p>
 Please note that either method of setting the paragraph
 justification/quad-direction also affects
-<a href="#epigraph-intro">epigraphs</a>
-and
+<a href="#epigraph-intro">epigraphs</a>,
 <a href="#footnote-intro">footnotes</a>,
+and
+<a href="#endnote-intro">endnotes</a>,
 but not
 <a href="#blockquote-intro">blockquotes</a>
 (whose default is quad left unless you change it with
@@ -948,10 +947,12 @@ Mom&#8217;s default PARA_INDENT is 2 ems for
 
 <p>
 By default, mom does not indent the first paragraph of a document,
-nor the first paragraph after a head or subhead, nor the first
-paragraphs of
+nor the first paragraph after a heading or
+<a href="#linebreak-intro">linebreak</a>,
+nor the first paragraphs of
 <a href="#epigraph-intro">epigraphs</a>,
-<a href="#blockquote-intro">blockquotes</a>
+<a href="#blockquote-intro">blockquotes</a>,
+<a href="#endnote-intro">endnotes</a>
 or
 <a href="#footnote-intro">footnotes</a>
 that run to more than one paragraph.
@@ -967,7 +968,7 @@ argument (<b>OFF, QUIT, Q, X</b>...) cancels its effect, meaning
 that first paragraphs will once again not be indented.
 </p>
 
-<h4 id="pp-space" class="docs">8. Spacing paragraphs</h4>
+<h4 id="pp-space" class="docs">8. Inter-paragraph spacing</h4>
 
 <p>
 By default, mom does not insert a blank line between
@@ -979,16 +980,21 @@ PARA_SPACE is a toggle macro, therefore passing it any argument
 paragraphs will once again not be separated by a blank line.
 </p>
 
+<p>
+PARA_SPACE is not recommended for use with PRINTSTYLE TYPEWRITE
+unless you give PRINTSTYLE the <kbd>SINGLESPACE</kbd> option.
+</p>
+
 <div class="box-tip">
 <p class="tip-top">
 <span class="note">Note:</span>
 If PARA_SPACE is on, mom spaces only those paragraphs that come
 after an initial paragraph.  Initial paragraphs are those that come
 immediately after the
-<a href="definitions.html#docheader">docheader</a>,
+<a href="definitions.html#docheader">docheader</a>
+(ie the start of a document),
 <a href="#epigraph-intro">epigraphs</a>,
-<a href="#head-intro">heads</a>,
-<a href="#subhead-intro">subheads</a>
+<a href="#heading-intro">headings</a>,
 and
 <a href="#linebreak-intro">linebreaks</a>.
 (The first paragraph after these document elements requires no
@@ -1005,1032 +1011,453 @@ expect the blank line to appear.
 </p>
 </div>
 
+<p>
+If you would like to space paragraphs by less than a full linespace,
+the way to do it is by creating a wrapper macro around PP that adds
+space before each paragraph, like this,
+<br/>
+<span class="pre-in-pp">
+  .MAC PP2 END
+  .  ALD 6p
+  .  PP
+  .END
+</span>
+which inserts 6
+<a href="definitions.html#picaspoints">points</a>
+of space before each paragraph.  Initial paragraphs, as described
+above, should still be introduced with <kbd>PP</kbd>; only subsequent
+ones require <kbd>.PP2</kbd>.
+</p>
+
+<p>
+If you would like the extra space to be a fraction of the current
+<a href="definitions.html#leading">leading</a>,
+use the groff number register, <kbd>\n[.v]</kbd> and divide it by
+the fraction you want.  For example, <kbd>.ALD \n[.v]/4</kbd> inserts
+1/4 linespacing between paragraphs.
+</p>
+
+<p>
+You may write the macro, above, in low-level groff if you wish:
+<br/>
+<span class="pre-in-pp">
+  .de PP2
+  . sp 6p
+  . PP
+  ..
+</span>
+</p>
+
 <div class="rule-short"><hr/></div>
 
 <!-- ==================================================================== -->
 
-<h2 id="head-intro" class="macro-group">Main heads</h2>
+<h2 id="heading-intro" class="macro-group">Headings</h2>
 
 <ul style="margin-left: -.5em;">
-  <li><a href="#head">Tag: HEAD</a></li>
-  <li><a href="#head-control">Head control macros and defaults</a></li>
+  <li><a href="#heading">Tag: HEADING</a></li>
+  <li><a href="#head-spacing-notes">Spacing of headings</a></li>
+  <li><a href="#heading-control">Heading control macros and defaults</a></li>
+  <li><a href="#prefix-chapter-number">Prefixing chapter numbers</a></li>
+  <li><a href="#oldstyle-headings">Oldstyle headings</a>
+  <ul style="list-style-type: circle; margin-left: -1.25em">
+    <li><a href="#parahead">Important information about PARAHEAD</a>
+    <ul style="list-style-type: square; margin-left: -1.25em">
+      <li><a href="#parahead-usage">Correct usage of paraheads</a></li>
+    </ul></li>
+  </ul></li>
 </ul>
 
 <p>
-Main heads&mdash;or, in this documentation, just
-&#8220;heads&#8221;&mdash;should be used any place you want titles
-to introduce major sections of a document.  If you wish, mom can
-number your heads for you.  Head numbers can also be included
-hierarchically in numbered
-<a href="#subhead-intro">subheads</a>
-and
-<a href="#parahead-intro">paraheads</a>.
+Heads, subheads, and deeper levels of section headings are handled by 
+a single macro, HEADING, to which you pass an argument stating the
+desired level.  <kbd>.HEADING 1 &quot;&lt;text&gt;&quot;</kbd>, for
+example, would be a main head; <kbd>.HEADING 2
+&quot;&lt;text&gt;&quot;</kbd> would be a subhead; etc.
 </p>
 
 <p>
-By default, heads are centred on the page, underlined, all in caps.
-A double linespace precedes each head.  In
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>,
-heads are bold, slightly larger than paragraph text.
+In addition to printing headings in the body of your document,
+HEADING collects the heading as an entry for the Table of Contents,
+if the document is to have one, and the
+<a href="definitions.html#pdfoutline">PDF outline</a>.
+With the <kbd>NAMED</kbd> argument, it furthermore acts as a
+bookmark for
+<a href="definitions.html#pdflink">PDF links</a>.
 </p>
 
 <p>
-If these defaults don&#8217;t suit you, you can change them with the
-head control macros.
+Headings can also be numbered on a per-heading-level basis,
+hierarchically and concatenatively, eg
+<br/>
+<span class="pre-in-pp">
+  1.
+  1.1
+  1.2
+  1.2.1
+  2.
+  2.1
+  2.2
+  2.2.1
+</span>
+By default, a blank line precedes headings, regardless of the level.
+Mom initially sets up a very basic style for nine levels of heading,
+of which you can have an infinite number, although as has been said,
+if you need more than four levels of heading, you should consider
+re-organizing your material.  The pared-down style of mom&#8217;s
+defaults is intentional; it is expected that you will design
+headings to your own specifications with the
+<a href="definitions.html#controlmacro">control macro</a>,
+<a href="#heading-style">HEADING_STYLE</a>.
+</p>
+
+<p>
+It is very good practice, and strongly recommended, that you respect
+the hierarchy of headings, using level-1 for main heads, level-2 for
+subheads, level-3 for subsubheads, etc.  The ease of designing and
+re-designing the style for each level, plus mom&#8217;s very basic
+defaults, are meant, in part, to prevent the whimsical misuse of
+a particular heading level just because its style appeals to you.
 </p>
 
 <!-- -HEAD- -->
 
 <div class="macro-id-overline">
-<h3 id="head" class="macro-id">HEAD</h3>
+<h3 id="heading" class="macro-id">HEADING</h3>
 </div>
 
 <div class="box-macro-args">
-Macro: <b>HEAD</b> <kbd class="macro-args">&quot;&lt;text of head&gt;&quot; [ &quot;&lt;2nd line&gt;&quot; [ &quot;&lt;3rd line&gt;&quot; ... ] ]</kbd>
+Macro: <b>HEADING</b> <kbd class="macro-args">&lt;level&gt; [
+PARAHEAD ] [ NAMED &lt;pdf-id&gt; ] &quot;&lt;heading text&gt;&quot;
 </div>
 
 <p>
-The argument to HEAD is the text of the head, surrounded by
-double-quotes.  If you need additional lines for a head, simply
-surround each line with double-quotes.
+The first argument to HEADING is the <kbd>level</kbd>.  Level 1 is
+analogous to a main head; level 2 is analogous to a subhead; level 3
+is analogous to a subsubhead; etc.
+</p>
+
+<p>
+The second (optional) argument, <kbd>PARAHEAD</kbd>, instructs mom
+that the heading should be treated as a
+<a href="definitions.html#parahead">paragraph head</a>.
+If HEADING is being used to create a parahead, it must come after
+<a href="#pp">PP</a>,
+not before.
+</p>
+
+<p>
+The indent applied to a parahead is the same as what would be
+expected from a paragraph without the parahead (see
+<a href="#para-indent-first">Indenting initial paragraphs</a>).
+If you wish that a paragraph introduced by a parahead not be
+indented, use
+<a href="#para-indent">PARA_INDENT</a>
+to set the paragraph indent to zero, then reset the indent for
+subsequent paragraphs.
+</p>
+
+<p>
+The optional third argument, <kbd>NAMED &lt;id&gt;</kbd>, gives the
+heading a unique, non-printing identifier that allows it to
+referenced from anywhere in the final PDF document with the PDF_LINK
+macro, provided the mom file is processed with
+<a href="using.html#pdfmom" style="font-weight: bold">pdfmom</a>.
+PDF_LINK usage is explained in the manual,
+<a href="http://www.schaffter.ca/mom/pdf/mom-pdf.pdf"><span class="book-title">Producing PDFs with groff and mom</span></a>.
+</p>
+
+<p>
+The final argument is the text of the heading, surrounded by double
+quotes.  Long headings that are likely to exceed the current
+line length should be broken into chunks, each surrounded by
+double-quotes, like this:
+<br/>
+<span class="pre-in-pp">
+  .HEADING 1 "A needlessly long but instructive" "first level heading"
+</span>
 </p>
 
 <div class="box-tip">
 <p class="tip">
 <span class="note">Note:</span>
-If a head falls near the bottom of an output page and mom is unable
-to fit the head <i>plus at least one line of text underneath it</i>,
-she will set the head at the top of the next page.
+If a heading falls near the bottom of an output page and mom is
+unable to fit the heading plus at least one line of text underneath
+it, she will set the head at the top of the next page.
+</p>
+</div>
+
+<div class="box-tip">
+<h3 id="head-spacing-notes" class="docs" style="padding-top: 9px; font-size: 100%; text-transform: none">Spacing of headings</h3>
+
+<p>
+As described above, mom inserts a blank line before each heading.
+If the leading of your document never changes, and you introduce no
+additional space into the text&mdash;as, for example, between
+paragraphs&mdash;this will result in perfectly equal whitespace before
+each heading.
+</p>
+
+<p>
+If, however, you disrupt the regular placement of text on
+mom&#8217;s baseline grid, HEADING adds as much whitespace to the
+blank line as is necessary to get things back on track.  The extra
+whitespace is always less than the current leading and therefore
+usually doesn't draw attention to itself.  This, along with a
+similar strategy for whitespace around quotes and blockquotes, is
+what allows mom to balance the bottom margins of pages effectively.
+The manual,
+<a href="http://www.schaffter.ca/mom/pdf/mom-pdf.pdf"><span class="book-title">Producing PDFs with groff and mom</span></a>,
+demonstrates this well: the inter-paragraph spacing is 1/3 of the
+leading, yet mom is able to produce a document with good page-rhythm
+and evenly balanced bottom margins.
+</p>
+
+<p>
+It occasionally happens that the extra whitespace becomes noticeable,
+typically when the amount of whitespace approaches the value of the
+current leading.  The result looks like two blank lines instead of
+one.  When this happens, a simple but effective fix is to reduce the
+space before the heading by backing up one line, either with
+<br/>
+<span class="pre-in-pp">
+  .SPACE -1v
+</span>
+or
+<br/>
+<span class="pre-in-pp">
+  .RLD -1v
+</span>
+This results in slightly less whitespace than normal, but the
+difference is usually not apparent.
 </p>
 
 <p class="tip-bottom">
-<span class="additional-note">Additional note:</span>
-If an
-<a href="definitions.html#inputline">input line</a>
-in a head (i.e. one of the lines surrounded by double-quotes) has
-to be broken by mom in order to fit the current line-length (say,
-a narrow column measure), the head underline (underscore) will not
-behave.  You&#8217;ll recognize the problem as soon as you preview
-your document.  If you encounter a head that misbehaves with respect
-to underlining, the solution is to supply each line <i>as you want
-it</i> as a separate argument (surrounded by double-quotes) to the
-HEAD macro.
-</p>
-
-<p>
-For example, if mom breaks
+If you&#8217;d prefer that mom not add flexible whitespace to
+headings, invoke the macro
 <br/>
 <span class="pre-in-pp">
-  .HEAD "This is a very, very, very long head"
+  .NO_SHIM
 </span>
-into<br/>
-<span class="pre-in-pp">
-  This is a very, very, very
-          long head        
-</span>
-you&#8217;ll see the misbehaving underscore and should change the
-argument to HEAD to
+either in the style sheet section of your document (ie after
+PRINTSTYLE but before START), which will globally disable whitespace
+adjustment not only before headings, but around quotes and
+blockquotes as well, or on a per-instance basis.  <kbd>.NO_SHIM</kbd>
+is disabled by issuing
 <br/>
 <span class="pre-in-pp">
-    .HEAD "This is a very, very very" "long head"
+  .NO_SHIM OFF
 </span>
+Please note that <kbd>.NO_SHIM</kbd> also disables mom&#8217;s
+automatic shimming around quotes, blockquotes, after PDF images and
+floats, and
+<a href="docprocessing.html#shim">SHIM</a>
+macro itself.
 </p>
 </div>
 
 <div class="defaults-container" style="background-color: #ded4bd; border: none;">
-<h3 id="head-control" class="docs defaults">HEAD control macros and defaults</h3>
+<h3 id="heading-control" class="defaults" style="margin-left: 6px; margin-bottom: -1em">HEADING control and defaults</h3>
 
-<p class="defaults">
-There are, in addition to the usual family/font/size/quad control
-macros, a number of macros to manage head numbering, spacing,
-underlining, and so on.  Check them out if you&#8217;re unhappy with
-mom&#8217;s defaults.
+<div style="padding-left: 15px; padding-right: 15px">
+<p style="margin-bottom: 1em">
+By default, mom pre-initializes nine levels of headings to use
+the bold font of the prevailing document family, with a baseline
+adjustment of 1/10 of the current
+<a href="definitions.html#leading">leading</a>.
+In addition, level-1 headings are 3 points larger than running text,
+level 2-headings 2 points larger, and level 3-headings 1 point
+larger.  The remaining 6 levels are the same size as running text.
+A single blank line precedes all levels of heading.
 </p>
-<ol style="margin-top: .5em; padding-bottom: .5em;">
-  <li><a href="#head-general">Family/font/size/colour/quad</a></li>
-  <li><a href="#head-caps">Capitalizing heads</a></li>
-  <li><a href="#head-space">Pre-head space</a></li>
-  <li><a href="#head-underline">Underscoring</a></li>
-  <li><a href="#number-heads">Numbering</a></li>
-  <li><a href="#reset-head-number">Reset head numbering</a></li>
-  <li><a href="#head-inlines">Vertical inline escapes inside heads</a></li>
-</ol>
-</div>
 
-<h4 id="head-general" class="docs" style="margin-top: -1.5em; margin-bottom: .5em;">1. Family/font/size/colour/quad</h4>
+<h4 id="heading-style" class="docs" style="margin-bottom: -.5em">The HEADING_STYLE macro</h4>
 
-<div class="defaults-container" style="padding-bottom: 8px;">
-<p class="defaults" style="padding-top: 6px;">
-See
-<a href="#control-macro-args">Arguments to the control macros</a>.
+<p>
+Styling heads is accomplished with a single macro,
+<br/>
+<span class="pre-in-pp">
+  .HEADING_STYLE&nbsp;&lt;level&gt;
+</span>
+where <kbd>&lt;level&gt;</kbd> is the numeric heading level to which
+the style applies.
 </p>
+
+<p>
+HEADING_STYLE takes any or all of the following arguments,
+which may be given in any order:
+<br/>
 <span class="pre defaults">
-.HEAD_FAMILY default = prevailing document family
-.HEAD_FONT   default = bold, underlined (TYPESET); roman,underlined (TYPEWRITE)
-.HEAD_SIZE   default = +1 (TYPESET); 0 (TYPEWRITE)
-.HEAD_COLOR  default = black
-.HEAD_QUAD   default = CENTER
-</span>
-</div>
-
-<h4 id="head-caps" class="docs" style="margin-top: -1.25em;">2. Capitalizing heads</h4>
-
-<p>
-By default, mom sets heads in caps, regardless of the
-<a href="definitions.html#stringargument">string(s)</a>
-you give to
-<a href="#head">HEAD</a>.
-To change this behaviour, do
-<br/>
-<span class="pre-in-pp">
-  .HEAD_CAPS OFF
-</span>
-HEAD_CAPS is a toggle macro, therefore you can use any argument you
-like instead of <kbd>OFF</kbd> to disable it (e.g. <b>END, QUIT, Q,
-X</b>...).  To turn HEAD_CAPS back on, simply invoke it without an
-argument.
-</p>
-
-<h4 id="head-space" class="docs" style="margin-top: -.25em;">3. Pre-head space</h4>
-
-<p>
-By default, mom deposits 2 blank lines prior to every head when your
-<a href="docprocessing.html#printstyle">PRINTSTYLE</a>
-is <kbd>TYPESET</kbd>.  If you&#8217;d prefer just a single blank
-line, do
-<br/>
-<span class="pre-in-pp">
-  .HEAD_SPACE OFF
-</span>
-HEAD_SPACE is a toggle macro, therefore you can use any argument
-you like instead of <kbd>OFF</kbd> (<kbd>END, QUIT, Q, X</kbd>...).
-To restore the space before heads to 2 blank lines, invoke
-<kbd>.HEAD_SPACE</kbd> without an argument.
-</p>
-
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-HEAD_SPACE has no effect on PRINTSTYLE <kbd>TYPEWRITE</kbd>.
-</p>
-</div>
-
-<h4 id="head-underline" class="docs" style="margin-top: -.25em;">4. Underscoring</h4>
-
-<p>
-By default, mom underlines heads.  To change this behaviour, do
-<br/>
-<span class="pre-in-pp">
-  .HEAD_UNDERLINE OFF
-</span>
-HEAD_UNDERLINE can be used as a toggle macro, therefore you can
-use any argument you like instead of <kbd>OFF</kbd> (<kbd>END,
-QUIT, Q, X</kbd>...) to turn it off, or invoke it by itself to
-turn head underlining on.
-</p>
-
-<p>
-In addition to toggling head underlining on or off, as of
-version 1.5 of mom, you can use HEAD_UNDERLINE to set the weight
-of the underline and its distance from the head, like this:
-<br/>
-<span class="pre-in-pp">
-  .HEAD_UNDERLINE &lt;weight&gt; [&lt;gap&gt;]
-</span>
-The <kbd>weight</kbd> argument is in points, or fractions thereof,
-and must not have the
-<a href="definitions.html#unitofmeasure">unit of measure</a>,
-<kbd>p</kbd>, appended.  Like
-<a href="inlines.html#rule-weight">RULE_WEIGHT</a>,
-weights must be greater than 0 and less than 100.  Mom&#8217;s
-default for head underlines is 1/2 point.
-</p>
-
-<p>
-The <kbd>gap</kbd> argument determines the distance from the
-baseline of the head to the upper edge of the underline.  It can
-be given using any unit of measure, and must have the unit of
-measure appended to the argument.  Mom&#8217;s default gap for head
-underlines is 2 points.
-</p>
-
-<p>
-As an example, suppose you want your heads underlined with a
-4-point rule separated from the head by 3 points.  The way to
-accomplish it is:
-<br/>
-<span class="pre-in-pp">
-  .HEAD_UNDERLINE 4 3p
-</span>
-If you wanted the same thing, but were content with mom&#8217;s
-default gap of 2 points,
-<br/>
-<span class="pre-in-pp">
-  .HEAD_UNDERLINE 4
-</span>
-would do the trick.
-</p>
-
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-If you supply a weight to HEAD_UNDERLINE, and optionally a gap, you
-also turn the underlining of heads on; if this is not what you want,
-you must turn head underlining off manually afterwards.
-</p>
-</div>
-
-<h4 id="number-heads" class="docs" style="margin-top: -.25em;">5. Numbering</h4>
-
-<p>
-If you&#8217;d like your heads numbered, simply invoke
-<span class="pre-in-pp">
-  .NUMBER_HEADS
-</span>
-with no argument. Mom will number all subsequent heads automatically
-(in ascending order, naturally).
-</p>
-
-<p>
-If, in addition to numbering heads, you also request that
-<a href="#subhead-intro">subheads</a>
-and/or
-<a href="#parahead-intro">paraheads</a>
-be numbered, the head number will be included in their numbers (each
-number separated by a period [dot]).
-</p>
-
-<p>
-Should you wish to stop head numbering, invoke
-<kbd>.NUMBER_HEADS</kbd> with any argument (<kbd>OFF, QUIT, END,
-X</kbd>...).  Head numbering will cease, and the head number will
-not be included in the numbering of subheads and/or paraheads.
-</p>
-
-<p>
-See also
-<a href="#prefix-chapter-number">Prefixing chapter numbers</a>
-if you&#8217;d like chapter numbers prepended to the head numbers.
-</p>
-
-<h4 id="reset-head-number" class="docs" style="margin-top: -.25em;">6. Reset head numbering</h4>
-
-<p>
-Should you wish to reset the head number to &#8220;1&#8221;,
-invoke
-<span class="pre-in-pp">
-  .RESET_HEAD_NUMBER
-</span>
-with no argument.  If, for some reason, you want mom to use a head
-number that is not the next in ascending order (i.e. the last head
-number + 1), invoke <kbd>.RESET_HEAD_NUMBER</kbd> with the number
-you want, e.g.
-<br/>
-<span class="pre-in-pp">
-  .RESET_HEAD_NUMBER 6
-</span>
-Your next head will be numbered &#8220;6&#8221; and subsequent heads will
-be numbered in ascending order from &#8220;6&#8221;.
-</p>
-
-<h4 id="head-inlines" class="docs" style="margin-top: -.25em;">7. Vertical inline escapes inside heads</h4>
-
-<p>
-If you need to adjust the
-<a href="definitions.html#baseline">baseline</a>
-position of a head (e.g. the head falls at the top of a column and
-you want its
-<a href="definitions.html#ascender">ascenders</a>
-to line up with the ascenders of
-<a href="definitions.html#running">running text</a>
-in other columns), you can embed a vertical motion
-<a href="definitions.html#inlines">inline escape</a>
-(either
-<a href="inlines.html#inline-vertical-mom">mom</a>&#8217;s
-or
-<a href="inlines.html#inline-vertical-groff">groff</a>&#8217;s
-in the string(s) you pass to HEAD.
-</p>
-
-<p>
-For example,
-<br/>
-<span class="pre-in-pp" style="margin-bottom: -1em;">
-  .HEAD "\*[DOWN 3p]Text of head"
-</span>
-or
-<span class="pre-in-pp" style="margin-top: -.5em;">
-  .HEAD "\v'3p'Text of head"
-</span>
-will lower the baseline of the head by three points.  Note that
-there&#8217;s no need to reverse the sense of the inline escape.
-</p>
-
-<p>
-In the case of heads that run to more than one line, you must embed
-the escape in the string for each line, like this:
-<br/>
-<span class="pre-in-pp" style="margin-bottom: -1em;">
-  .HEAD "\*[DOWN 3p]First line" "\[DOWN 3p]Next line" 
-</span>
-or
-<span class="pre-in-pp" style="margin-top: -.5em;">
-  .HEAD "\v'3p'First line" "\v'3p'Next line" 
+  FAMILY &lt;family&gt;
+  FONT   &lt;font&gt;
+  SIZE   &lt;+|-size&gt;
+  QUAD   &lt;direction&gt;
+  COLOR  &lt;colour&gt;
+  UNDERSCORE  &lt;weight&gt; &lt;gap&gt; | NO_UNDERSCORE
+  UNDERSCORE2 &lt;weight&gt; &lt;gap1&gt; &lt;gap2&gt; | NO_UNDERSCORE2
+  CAPS | NO_CAPS
+  BASELINE_ADJUST &lt;amount to raise heading from the baseline&gt;
+  SPACE_AFTER | NO_SPACE_AFTER
+  NUMBER | NO_NUMBER
 </span>
 </p>
 
-<div class="rule-short"><hr/></div>
-
-<!-- ==================================================================== -->
-
-<h2 id="subhead-intro" class="macro-group">Subheads</h2>
-
-<ul style="margin-left: -.5em;">
-  <li><a href="#subhead">Tag: SUBHEAD</a></li>
-  <li><a href="#subhead-control">Subhead control macros</a></li>
-</ul>
-
-<p>
-Subheads should be used any place you want titles to introduce
-sections of a document below heads.  If you wish, mom can
-number subheads for you.  Subhead numbers can also be included
-hierarchically in numbered
-<a href="#subsubhead-intro">subsubheads</a>.
-</p>
-
-<p>
-By default, subheads are flush left.  In
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>,
-they are set bold, slightly larger than paragraph text.  In
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>,
-they are underlined.  A single linespace precedes them in both
-printstyles, and a tiny space adjustment raises them slightly
-above text that comes afterwards for greater clarity in document
-structuring.
-</p>
-
-<p>
-If these defaults don&#8217;t suit you, you can change them with the
-subhead control macros.
-</p>
-
-<!-- -SUBHEAD- -->
-
-<div class="macro-id-overline">
-<h3 id="subhead" class="macro-id">SUBHEAD</h3>
-</div>
-
-<div class="box-macro-args">
-Macro: <b>SUBHEAD</b> <kbd class="macro-args">&quot;&lt;text of subhead&gt;&quot; [ &quot;&lt;2nd line&gt;&quot; [ &quot;&lt;3rd line&gt;&quot; ... ] ]</kbd>
-</div>
-
-<p>
-The argument to SUBHEAD is the text of the subhead, surrounded by
-double-quotes.  If you need additional lines for a subhead, simply
-surround each line with double-quotes.
-</p>
-
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-If a subhead falls near the bottom of an output page and mom
-is unable to fit the subhead <i>plus at least one line of text
-underneath it</i>, she will set the subhead at the top of the next
-page.
-</p>
-</div>
-
-<div class="defaults-container" style="background-color: #ded4bd; border: none;">
-<h3 id="subhead-control" class="docs defaults">SUBHEAD control macros and defaults</h3>
-
-<p class="defaults">
-In addition to the usual family/font/size/quad control macros, there
-are macros to manage subhead numbering and vertical placement.
-</p>
-
-<ol style="margin-top: .5em; padding-bottom: .5em;">
-  <li><a href="#subhead-general">Family/font/size/colour/quad</a></li>
-  <li><a href="#number-subheads">Numbering</a></li>
-  <li><a href="#reset-subhead-number">Reset subhead numbering</a></li>
-  <li><a href="#subhead-baseline-adjust">Baseline adjustment</a></li>
-  <li><a href="#subhead-inlines">Vertical inline escapes inside subheads</a></li>
-</ol>
-</div>
-
-<h4 id="subhead-general" class="docs" style="margin-top: -1.5em; margin-bottom: .5em;">1. Family/font/size/quad</h4>
-
-<div class="defaults-container" style="padding-bottom: 8px;">
-<p class="defaults" style="padding-top: 6px;">
-See
+<p class="defaults" style="margin-bottom: 1em">
+The arguments to <kbd>FAMILY</kbd>, <kbd>FONT</kbd>,
+<kbd>SIZE</kbd>, <kbd>QUAD</kbd>, and
+<kbd>COLOR</kbd> are the same as
+those you&#8217;d give to the
+<a href="#docelement-control">control macros</a>
+ending in _FAMILY, _FONT, _SIZE, _QUAD, or _COLOR.  See
 <a href="#control-macro-args">Arguments to the control macros</a>.
 </p>
-<span class="pre defaults" style="padding-bottom: -1em;">
-.SUBHEAD_FAMILY default = prevailing document family
-.SUBHEAD_FONT   default = bold (TYPESET); italic, ie underlined (TYPEWRITE)
-.SUBHEAD_SIZE   default = +.5 (TYPESET); 0 (TYPEWRITE)
-.SUBHEAD_COLOR  default = black
-.SUBHEAD_QUAD   default = LEFT
-</span>
-</div>
 
-<h4 id="number-subheads" class="docs" style="margin-top: -1.25em;">2. Number subheads</h4>
-
-<p>
-If you&#8217;d like your subheads numbered, simply invoke
-<kbd>.NUMBER_SUBHEADS</kbd> with no argument. Mom
-will number all subsequent subheads automatically (in ascending
-order, naturally).
+<p class="defaults" style="margin-bottom: 1em">
+<kbd>UNDERSCORE</kbd> and <kbd>UNDERSCORE2</kbd> require that a
+weight for the underscore be given, in points (decimal fractions
+allowed), but without the unit of measure <kbd>p</kbd> appended.
+They also require that the underscore's distance from the baseline
+be supplied; in the case of UNDERSCORE2, an additional gap argument
+representing the distance between the two underscores must be
+provided.
 </p>
 
-<p>
-If, in addition to numbering subheads, you also request that
-<a href="#head-intro">heads</a>
-be numbered, the head number will be included in the subhead number
-(separated by a period [dot]).
+<p class="defaults" style="margin-bottom: 1em">
+The <kbd>CAPS</kbd> argument capitalizes the text of a heading
+level in the body of a document but not in the Table of
+Contents, where capitalization of entries is controlled by
+<a href="tables-of-contents.html#toc-entry-style">TOC_ENTRY_STYLE&nbsp;&lt;n&gt;</a>.
 </p>
 
-<p>
-Should you wish to stop subhead numbering, invoke
-<kbd>.NUMBER_SUBHEADS</kbd> with any argument (<kbd>OFF, QUIT, END,
-X</kbd>...).  Subhead numbering will cease, and the subhead number
-will not be included in the numbering of paraheads.
-</p>
-
-<p>
-See also
-<a href="#prefix-chapter-number">Prefixing chapter numbers</a>
-if you&#8217;d like chapter numbers prepended to the subhead numbers.
-</p>
-
-<h4 id="reset-subhead-number" class="docs" style="margin-top: -.25em;">3. Reset subhead numbering</h4>
-
-<p>
-Should you wish to reset the subhead number to &#8220;1&#8221;,
-invoke
-<span class="pre-in-pp">
-  .RESET_SUBHEAD_NUMBER
-</span>
-with no argument.  If, for some reason, you want mom to use a
-subhead number that is not the next in ascending order (i.e. the
-last subhead number + 1), invoke <kbd>.RESET_SUBHEAD_NUMBER</kbd>
-with the number you want, e.g.
-<br/>
-<span class="pre-in-pp">
-  .RESET_SUBHEAD_NUMBER 4
-</span>
-
-Your next subhead will be numbered &#8220;4&#8221; and subsequent
-subheads will be numbered in ascending order from &#8220;4&#8221;.
-</p>
-
-<h4 id="subhead-baseline-adjust" class="docs" style="margin-top: -.25em;">4. Baseline adjustment</h4>
-
-<p>
-For aesthetic reasons and to clarify document structure, mom raises
-subheads slightly above the
-<a href="definitions.html#baseline">baseline</a>
-on which they would otherwise fall.  In 
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>,
-the amount is 1/8 of the prevailing
-<a href="definitions.html#leading">leading</a>.  In
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>,
-it&#8217;s 1/5 of the prevailing leading.
-</p>
-
-<p>
-If you would prefer mom not exhibit this behaviour, or if you would
-like to change the amount by which she raises the subhead, use the
-macro <kbd>.SUBHEAD_BASELINE_ADJUST</kbd>.  With an argument of 0 (zero),
-subhead baseline adjustment will be disabled.  Any other numeric
-argument, with a
+<p class="defaults" style="margin-bottom: 1em">
+<kbd>BASELINE_ADJUST</kbd> allows you to raise a heading slightly
+above the baseline on which it would otherwise sit.  For aesthetic
+reasons, it is often desirable to introduce a small amount of space
+between a heading and the text following it.  Since headings are
+preceded by a blank line, it is preferable to move the heading
+upward than to lower the text following it.  The argument to
+BASELINE_ADJUST is the amount by which to raise the heading.  It
+requires no <kbd>+</kbd> or <kbd>-</kbd> sign, and must have a
 <a href="definitions.html#unitofmeasure">unit of measure</a>
-appended directly onto the argument, will cause mom to raise your
-subheads by the amount you specify.
+appended to it.
 </p>
 
-<h4 id="subhead-inlines" class="docs" style="margin-top: -.25em;">5. Vertical inline escapes inside subheads</h4>
-
-<p>
-See
-<a href="#head-inlines">Vertical inline escapes inside heads</a>.
-The information there applies equally to subheads.
+<p class="defaults" style="margin-bottom: 1em">
+<kbd>SPACE_AFTER</kbd> inserts a blank line equal to the current
+<a href="definitions.html#leading">leading</a> after a HEADING.
+If you'd like a full linespace after a heading level, use
+<kbd>SPACE_AFTER</kbd>.  If you'd like additional space before a
+heading level, you must introduce it yourself with
+<a href="typesetting.html#space">SPACE</a>
+or
+<a href="typesetting.html#ald">ALD</a>.
 </p>
 
-<div class="rule-short"><hr/></div>
-
-<!-- ==================================================================== -->
-
-<h2 id="subsubhead-intro" class="macro-group">Subsubheads</h2>
-
-<ul style="margin-left: -.5em;">
-  <li><a href="#subsubhead">Tag: SUBSUBHEAD</a></li>
-  <li><a href="#subsubhead-control">Subsubhead control macros</a></li>
-</ul>
-
-<p>
-Subsubheads should be used any place you want titles to introduce
-sections of a document below subheads.  If you wish, mom can
-number subsubheads for you.  Subsubhead numbers can also be included
-hierarchically in numbered
-<a href="#parahead-intro">paraheads</a>.
+<p class="defaults" style="margin-bottom: 1em">
+<kbd>NUMBER</kbd> and <kbd>NO_NUMBER</kbd> allow you to determine
+whether mom prepends a hierarchic numbering scheme to a heading
+level in the body of a document.  Numbering of Table of Contents
+entries is controlled separately with
+<a href="tables-of-contents.html#toc-entry-numbers">TOC_ENTRY_NUMBERS</a>.
+Mom also has a special macro to toggle whether to prefix a chapter
+number to numbered headings and Table of Contents entries,
+<a href="prefix-chapter-number">PREFIX_CHAPTER_NUMBER</a>.
 </p>
 
-<p>
-By default, subsubheads are flush left.  In
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>,
-they are set in italic, slightly larger than paragraph text.  In
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>,
-they are set roman at the same size as the prevailing type.  A
-single linespace precedes them in both printstyles, and a tiny space
-adjustment raises them slightly above text that comes afterwards for
-greater clarity in document structuring.
-</p>
-
-<p>
-If these defaults don&#8217;t suit you, you can change them with the
-subsubhead control macros.
-</p>
-
-<!-- -SUBSUBHEAD- -->
-
-<div class="macro-id-overline">
-<h3 id="subsubhead" class="macro-id">SUBSUBHEAD</h3>
-</div>
-
-<div class="box-macro-args">
-Macro: <b>SUBSUBHEAD</b> <kbd class="macro-args">&quot;&lt;text of subsubhead&gt;&quot; [ &quot;&lt;2nd line&gt;&quot; [ &quot;&lt;3rd line&gt;&quot; ... ] ]</kbd>
-</div>
-
-<p>
-The argument to SUBSUBHEAD is the text of the subsubhead, surrounded by
-double-quotes.  If you need additional lines for a subsubhead, simply
-surround each line with double-quotes.
-</p>
-
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-If a subsubhead falls near the bottom of an output page and mom
-is unable to fit the subsubhead <i>plus at least one line of text
-underneath it</i>, she will set the subsubhead at the top of the next
-page.
-</p>
-</div>
-
-<div class="defaults-container" style="background-color: #ded4bd; border: none;">
-<h3 id="subsubhead-control" class="docs defaults">SUBSUBHEAD control macros and defaults</h3>
-
-<p class="defaults">
-In addition to the usual family/font/size/quad control macros, there
-are macros to manage subsubhead numbering.
-</p>
-
-<ol style="margin-top: .5em; padding-bottom: .5em;">
-  <li><a href="#subsubhead-general">Family/font/size/colour/quad</a></li>
-  <li><a href="#number-subsubheads">Numbering</a></li>
-  <li><a href="#reset-subsubhead-number">Reset subsubhead numbering</a></li>
-  <li><a href="#subsubhead-baseline-adjust">Baseline adjustment</a></li>
-  <li><a href="#subsubhead-inlines">Vertical inline escapes inside subsubheads</a></li>
-</ol>
-</div>
-
-<h4 id="subsubhead-general" class="docs" style="margin-top: -1.5em; margin-bottom: .5em;">1. Family/font/size/quad</h4>
-
-<div class="defaults-container" style="padding-bottom: 8px;">
-<p class="defaults" style="padding-top: 6px;">
-See
-<a href="#control-macro-args">Arguments to the control macros</a>.
-</p>
-<span class="pre defaults" style="padding-bottom: -1em;">
-.SUBSUBHEAD_FAMILY default = prevailing document family
-.SUBSUBHEAD_FONT   default = italic (TYPESET); roman (TYPEWRITE)
-.SUBSUBHEAD_SIZE   default = +.5 (TYPESET); 0 (TYPEWRITE)
-.SUBSUBHEAD_COLOR  default = black
-.SUBSUBHEAD_QUAD   default = LEFT
-</span>
-</div>
-
-<h4 id="number-subsubheads" class="docs" style="margin-top: -1.25em;">2. Number subsubheads</h4>
-
-<p>
-If you&#8217;d like your subsubheads numbered, simply invoke
-<kbd>.NUMBER_SUBSUBHEADS</kbd> with no argument.  Mom will number
-all subsequent subsubheads automatically (in ascending order,
-naturally).
-</p>
-
-<p>
-If, in addition to numbering subsubheads, you also request that
-<a href="#head-intro">heads</a>
-be numbered, the head number will be included in the subsubhead
-number (separated by a period [dot]).
-</p>
-
-<p>
-Should you wish to stop subsubhead numbering, invoke
-<kbd>.NUMBER_SUBSUBHEADS</kbd> with any argument (<kbd>OFF, QUIT, END,
-X</kbd>...).  Subsubhead numbering will cease, and the subsubhead number
-will not be included in the numbering of paraheads.
-</p>
-
-<p>
-See also
-<a href="#prefix-chapter-number">Prefixing chapter numbers</a>
-if you&#8217;d like chapter numbers prepended to the subsubhead numbers.
-</p>
-
-<h4 id="reset-subsubhead-number" class="docs" style="margin-top: -.25em;">3. Reset subsubhead numbering</h4>
-
-<p>
-Should you wish to reset the subsubhead number to &#8220;1&#8221;,
-invoke
-<span class="pre-in-pp">
-  .RESET_SUBSUBHEAD_NUMBER
-</span>
-with no argument.  If, for some reason, you want mom to use a
-subsubhead number that is not the next in ascending order (i.e. the
-last subsubhead number + 1), invoke <kbd>.RESET_SUBSUBHEAD_NUMBER</kbd>
-with the number you want, e.g.
+<p class="defaults" style="padding-bottom: .5em">
+The argument list is long, so you may want to break it into
+several lines by using the backslash character (<kbd>\</kbd>).
+Here's an example of how you might style a level 1 heading:
 <br/>
-<span class="pre-in-pp">
-  .RESET_SUBSUBHEAD_NUMBER 4
-</span>
-
-Your next subsubhead will be numbered &#8220;4&#8221; and subsequent
-subsubheads will be numbered in ascending order from &#8220;4&#8221;.
-</p>
-
-<h4 id="subsubhead-baseline-adjust" class="docs" style="margin-top: -.25em;">4. Baseline adjustment</h4>
-
-<p>
-For aesthetic reasons and to clarify document structure, mom raises
-subsubheads slightly above the
-<a href="definitions.html#baseline">baseline</a>
-on which they would otherwise fall.  In 
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>,
-the amount is 1/8 of the prevailing
-<a href="definitions.html#leading">leading</a>.  In
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>,
-it&#8217;s 1/5 of the prevailing leading.
-</p>
-
-<p>
-If you would prefer mom not exhibit this behaviour, or if you would
-like to change the amount by which she raises the subsubhead, use the
-macro <kbd>.SUBSUBHEAD_BASELINE_ADJUST</kbd>.  With an argument of 0 (zero),
-subsubhead baseline adjustment will be disabled.  Any other numeric
-argument, with a
-<a href="definitions.html#unitofmeasure">unit of measure</a>
-appended directly onto the argument, will cause mom to raise your
-subsubheads by the amount you specify.
-</p>
-
-<h4 id="subsubhead-inlines" class="docs" style="margin-top: -.25em;">5. Vertical inline escapes inside sububheads</h4>
-
-<p>
-See
-<a href="#head-inlines">Vertical inline escapes inside heads</a>.
-The information there applies equally to subsubheads.
-</p>
-
-<div class="rule-short"><hr/></div>
-
-<!-- ==================================================================== -->
-
-<h2 id="parahead-intro" class="macro-group">Paragraph heads</h2>
-
-<ul style="margin-left: -.5em;">
-  <li><a href="#parahead">Tag: PARAHEAD</a></li>
-  <li><a href="#parahead-control">Parahead control macros</a></li>
-</ul>
-
-<p>
-Paragraph heads (paraheads) should be used any place you want titles
-to introduce paragraphs below heads or subheads.  If you wish, mom
-can number paraheads for you.
-</p>
-
-<p>
-By default, paraheads are joined to the body of a paragraph,
-slightly indented (provided the paragraph is not a
-&#8220;first&#8221; paragraph as defined in
-<a href="#para-indent-first">Indenting initial paragraphs</a>)
-and separated from the body of the paragraph by a small amount of
-horizontal space.  In
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>,
-they are set bold italic, slightly larger than paragraph text.  In
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>,
-they are underlined.
-</p>
-
-<p>
-If these defaults don&#8217;t suit you, you can change them with the
-parahead control macros.
-</p>
-
-<div class="box-tip">
-<p class="tip">
-<span class="tip">Tip:</span>
-If you really need a heading level below subsubheads that
-isn&#8217;t joined to the body of a paragraph, you can trick
-PARAHEAD into giving you one by creating a paragraph that contains
-only a parahead, like this:
-<br/>
-<span class="pre-in-pp">
-  .PP
-  .PARAHEAD "My Sub-Subhead"
-  .PP
-  &lt;text&gt;
-</span>
-</p>
-</div>
-
-<!-- -PARAHEAD- -->
-
-<div class="macro-id-overline">
-<h3 id="parahead" class="macro-id">PARAHEAD</h3>
-</div>
-
-<div class="box-macro-args">
-Macro: <b>PARAHEAD</b> <kbd class="macro-args">&quot;&lt;text of parahead&gt;&quot;</kbd>
-</div>
-
-<p>
-PARAHEAD must come after
-<a href="#pp">PP</a>
-or it will not work.
-</p>
-
-<p>
-The argument is the text of the parahead, surrounded by
-double-quotes.  Because paraheads are joined to the body of a
-paragraph, they accept only one argument (see
-<a href="#head">HEAD</a>
-and
-<a href="#subhead">SUBHEAD</a>).
-</p>
-
-<div class="defaults-container" style="background-color: #ded4bd; border: none;">
-<h3 id="parahead-control" class="docs defaults">PARAHEAD control macros and defaults</h3>
-
-<p class="defaults">
-In addition to the family/font/size/colour/indent control macros,
-there are macros to manage parahead numbering.
-</p>
-
-<ol style="margin-top: .5em; padding-bottom: .5em;">
-  <li><a href="#parahead-general">Family/font/size/color</a></li>
-  <li><a href="#parahead-indent">Indent</a></li>
-  <li><a href="#parahead-space">Horizontal space</a></li>
-  <li><a href="#number-paraheads">Numbering</a></li>
-  <li><a href="#reset-parahead-number">Reset parahead numbering</a></li>
-</ol>
-</div>
-
-<h4 id="parahead-general" class="docs" style="margin-top: -1.5em; margin-bottom: .5em;">1. Family/font/size/colour</h4>
-
-<div class="defaults-container" style="padding-bottom: 8px;">
-<p class="defaults" style="padding-top: 6px;">
-See
-<a href="#control-macro-args">Arguments to the control macros</a>.
-</p>
 <span class="pre defaults">
-.PARAHEAD_FAMILY default = prevailing document family
-.PARAHEAD_FONT   default = bold italic (TYPESET); italic, ie underlined (TYPEWRITE)
-.PARAHEAD_SIZE   default = -.25 (TYPESET); 0 (TYPEWRITE)
-.PARAHEAD_COLOR  default = black*
-
-*If you colourize paragraph text, paraheads will appear in the same
- colour as the text unless you explicitly tell mom to colour them
- otherwise by invoking .PARAHEAD_COLOR.  If you do want paraheads
- that are coloured the same as paragraph text, it&#8217;s generally a good
- idea to invoke .PARAHEAD_COLOR anyway (with the same colour used
- for paragraph text), just to let mom know.
+  .HEADING_STYLE 1 \
+  FONT B \
+  QUAD C \
+  UNDERSCORE .5 2p \
+  BASELINE_ADJUST 3p \
+  NUMBER
 </span>
-</div>
-
-<h4 id="parahead-indent" class="docs" style="margin-top: -1.25em;">2. Indent</h4>
-
-<p>
-Unlike other control macros that end in
-<a href="#control-indents">_INDENT</a>,
-the argument to the macro that controls indenting of paragraph
-heads (PARAHEAD_INDENT) is not relative to the first-line indent of
-normal paragraphs.  In other words, it takes an absolute value, and
-requires a
-<a href="definitions.html#unitofmeasure">unit of measure</a>.
-For example, to set the paragraph head indent to 2-1/2 picas, you
-do:
-<br/>
-<span class="pre-in-pp">
-  .PARAHEAD_INDENT 2.5P
-</span>
-Mom&#8217;s default indent for paragraph heads is 1/2 the first-line
-indent of normal paragraphs (both printstyles).  However, as stated
-above, if you choose to change the indent, you must give an absolute
-value (unless you&#8217;re a groff expert and want to manipulate the
-number register <kbd>\n[#PP_INDENT]u</kbd> arithmetically as the
-argument to PARAHEAD_INDENT for an indent that&#8217;s relative to
-PP_INDENT.)
-</p>
-
-<div class="box-tip">
-<p class="tip">
-<span class="tip">Tip:</span>
-If you want to make the parahead indent equal to the paragraph
-indent, a convenient way to do it is
-<br/>
-<span class="pre-in-pp">
-  .PARAHEAD INDENT \n[#PP_INDENT]
-</span>
+This creates a level-1 heading style that's bold, centered,
+underscored and numbered, raised by 3 points from the baseline.
 </p>
 </div>
-
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-Paragraph heads in &#8220;first paragraphs&#8221;, as defined in
-<a href="#para-indent-first">Indenting initial paragraphs</a>,
-are not indented unless you turn
-<kbd><a href="#indent-first-paras">INDENT_FIRST_PARAS</a></kbd>
-on.
-</p>
 </div>
-
-<h4 id="parahead-space" class="docs" style="margin-top: -.25em;">3. Horizontal space</h4>
-
-<p>
-The default amount of horizontal space between a parahead and the
-text that begins the body of a paragraph is 2/3 of an
-<a href="definitions.html#em">em</a>
-for 
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>)
-and 1
-<a href="definitions.html#figurespace">figure space</a>
-for
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>).
-</p>
-
-<p>
-The default for <kbd>TYPEWRITE</kbd> is fixed, but if the default
-for <kbd>TYPESET</kbd> doesn&#8217;t suit you, you can change it
-with the macro, PARAHEAD_SPACE.
-</p>
-<p>
-PARAHEAD_SPACE takes just one argument: the amount of space you
-want, with a
-<a href="definitions.html#unitofmeasure">unit of measure</a>
-appended.  Thus, if you want the horizontal space between a parahead
-and the start of paragraph text to be 6
-<a href="definitions.html#picaspoints">points</a>,
-you&#8217;d do:
-<br/>
-<span class="pre-in-pp">
-  .PARAHEAD_SPACE 6p
-</span>
-</p>
-
-<h4 id="number-paraheads" class="docs" style="margin-top: -1.25em;">4. Numbering</h4>
-
-<p>
-If you&#8217;d like your paraheads numbered, simply invoke
-<kbd>.NUMBER_PARAHEADS</kbd> with no argument. Mom
-will number all subsequent paraheads automatically (in ascending
-order, naturally).
-</p>
-
-<p>
-If, in addition to numbering paraheads, you also request that
-<a href="#head-intro">heads</a>
-and
-<a href="#subhead-intro">subheads</a>
-be numbered, the head and/or subhead number will be included in the
-parahead number (separated by a period [dot]).
-</p>
-
-<p>
-Should you wish to stop parahead numbering, invoke
-<kbd>.NUMBER_PARAHEADS</kbd> with any argument (<kbd>OFF, QUIT, END,
-X</kbd>...).  Parahead numbering will cease.
-</p>
-
-<p>
-See also
-<a href="#prefix-chapter-number">Prefixing chapter numbers</a>
-if you&#8217;d like chapter numbers prepended to the paragraph head
-numbers.
-</p>
-
-<h4 id="reset-parahead-number" class="docs" style="margin-top: -.25em;">5. Reset paragraph head numbering</h4>
-
-<p>
-Should you wish to reset the parahead number to &#8220;1&#8221;,
-invoke
-<span class="pre-in-pp">
-  .RESET_PARAHEAD_NUMBER
-</span>
-with no argument.  If, for some reason, you want mom to use a
-parahead number that is not the next in ascending order (i.e. the
-last parahead number + 1), invoke <kbd>.RESET_PARAHEAD_NUMBER</kbd>
-with the number you want, e.g.
-<br/>
-<span class="pre-in-pp">
-  .RESET_PARAHEAD_NUMBER 7
-</span>
-Your next parahead will be numbered &#8220;7&#8221; and subsequent
-paraheads will be numbered in ascending order from &#8220;7&#8221;.
-</p>
 
 <!-- -PREFIX_CHAPTER_NUMBER- -->
 
-<div class="examples-container" style="margin-bottom: 1.5em;">
-<div id="prefix-chapter-number" class="macro-id-overline" style="border-top: none;">
-<h3 class="macro-id" style="margin-top: 9px; text-transform: none; font-size: 105%;">Prefixing chapter numbers</h3>
+<div id="prefix-chapter-number" class="macro-id-overline" style="margin-top: -1em;">
+<h3 class="macro-id" style="text-transform: none; font-size: 105%;">Prefixing chapter numbers</h3>
 </div>
 
-<div class="box-macro-args" style="width: 686px;">
+<div class="box-macro-args">
 Macro: <b>PREFIX_CHAPTER_NUMBER</b> <kbd class="macro-args">&lt;none&gt; | &lt;chapter number as digit&gt; | &lt;anything&gt;</kbd>
 </div>
 
 <p>
-If you&#8217;ve requested numbering of heads, subheads, subsubheads
-and/or paragraph heads (with
-<a href="#number-heads">NUMBER_HEADS</a>,
-<a href="#number-subheads">NUMBER_SUBHEADS,</a>
-<a href="#number-subheads">NUMBER_SUBSUBHEADS</a>
-and/or
-<a href="#number-paraheads">NUMBER_PARAHEADS</a>)
-and you&#8217;d like mom, in addition, to prefix
-a chapter number to the numbering scheme, you can do so with
-PREFIX_CHAPTER_NUMBER.
+If you&#8217;ve requested numbering for any level of heading and
+you&#8217;d like mom, in addition, to prefix a chapter number to the
+numbering scheme, you can do so with PREFIX_CHAPTER_NUMBER.
 </p>
 
 <p>
 After you invoke <kbd>.PREFIX_CHAPTER_NUMBER</kbd>, mom will prepend
-the current chapter number to all subsequent head elements (main
-heads, subheads or paragraph heads) for which you have requested
-numbering.  Thus, assuming chapter number twelve (12):
+the current chapter number to all headings you have requested be
+numbered with
+<a href="#heading-style"><kbd>.HEADING_STYLE &lt;n&gt; NUMBER</a>.
+Thus, assuming chapter number twelve (12):
 <br/>
 <span class="pre-in-pp">
-          1. FIRST MAIN HEAD
-          ------------------
-
-  1.1. First Subhead Under Main Head
+  1.   LEVEL 1 HEADING
+  1.1. Level 2 heading
 </span>
-becomes
+would become
 <br/>
 <span class="pre-in-pp">
-          12.1. FIRST MAIN HEAD
-          ---------------------
-
-  12.1.1. First Subhead Under Main Head
+  12.1.   LEVEL 1 HEADING
+  12.1.1. Level 2 heading
 </span>
 </p>
 
 <p>
 When you invoke <kbd>.PREFIX_CHAPTER_NUMBER</kbd> without an
-argument, mom checks to see whether the argument
-you passed to
+argument, mom checks to see whether the argument you passed to
 <a href="docprocessing.html#chapter">CHAPTER</a>
 is a digit.  If it is, she immediately starts pre-pending the
 current chapter number to numbered head elements.  If it isn&#8217;t
-(say you&#8217;ve called your chapter &#8220;One&#8221; instead of
-&#8220;1&#8221;), mom will abort with a request that
-you pass PREFIX_CHAPTER_NUMBER a digit representing
-the current chapter number.
+(say you&#8217;ve called your chapter &#8220;One&#8221; instead
+of &#8220;1&#8221;), mom will abort with a request that you pass
+PREFIX_CHAPTER_NUMBER a digit representing the current chapter
+number.
 </p>
 
 <p>
 In collated documents, mom automatically increments
 the digit used by PREFIX_CHAPTER_NUMBER by one
-(current chapter digit + 1) every time you invoke
-<a href="rectoverso.html#collate"><kbd>.COLLATE</kbd></a>,
-even if you&#8217;ve (temporarily) turned off the prefixing of chapter
+(current chapter digit + 1) every time you invoke <a
+href="rectoverso.html#collate"><kbd>.COLLATE</kbd></a>, even if
+you&#8217;ve (temporarily) turned off the prefixing of chapter
 numbers.  Thus, even if you call your chapters &#8220;One&#8221;,
 &#8220;Two&#8221;, &#8220;Three&#8221; instead of &#8220;1&#8221;,
-&#8220;2&#8221;, &#8220;3&#8221;, mom will Do
-The Right Thing with respect to numbering head elements in
-all collated chapters following the first invocation of
-PREFIX_CHAPTER_NUMBER (assuming, of course,
-that the collated chapters are in incrementing order; if
-not, you <i>must</i> must put
+&#8220;2&#8221;, &#8220;3&#8221;, mom will Do The Right Thing
+with respect to numbering head elements in all collated chapters
+following the first invocation of PREFIX_CHAPTER_NUMBER (assuming,
+of course, that the collated chapters are in incrementing order; if
+not, you must must put
 <br/>
 <span class="pre-in-pp">
   .PREFIX_CHAPTER_NUMBER &lt;chapter number&gt;
 </span>
-somewhere after the invocation of COLLATE and
-before the first numbered head element of each collated document).
+somewhere after the invocation of COLLATE and before the first
+numbered head element of each collated document).
 </p>
 
 <p>
-PREFIX_CHAPTER_NUMBER can be disabled by passing
-it any argument other than a digit (e.g. <b>OFF, QUIT, END,
-X</b>, etc), although, as noted above, mom
-will keep, and&mdash;in the case of collated
+PREFIX_CHAPTER_NUMBER can be disabled by passing it any argument
+other than a digit (eg <b>OFF, QUIT, END, X</b>, etc), although,
+as noted above, mom will keep, and&mdash;in the case of collated
 documents&mdash;increment the chapter number, allowing you to turn
-prefixing of
-chapter numbers to numbered head elements off and on according to
-your needs or whims.
+prefixing of chapter numbers to numbered head elements off and on
+according to your needs or whims.
 </p>
 
 <p>
@@ -2040,12 +1467,287 @@ the chapter number, it&#8217;s use need not be restricted to
 <a href="docprocessing.html#doctype">DOCTYPE <kbd>CHAPTER</kbd></a>.
 You can use it with any document type.  Furthermore, even if
 your doctype isn&#8217;t <kbd>CHAPTER</kbd>, you can identify
-the document as a chapter <i>for the purposes of numbering head
-elements</i> by invoking the macro,
+the document as a chapter for the purposes of numbering head
+elements by invoking the macro,
 <a href="docprocessing.html#chapter"><kbd>.CHAPTER</kbd></a>,
 with a
 <a href="definitions.html#numericargument">numeric argument</a>
 in your document setup. 
+</p>
+
+<div class="rule-short"><hr/></div>
+
+<!-- ==================================================================== -->
+
+<h2 id="oldstyle-headings-intro" class="macro-group">Oldstyle headings</h2>
+
+<ul style="margin-left: -.5em;">
+  <li><a href="#oldstyle-headings">Macro: OLDSTYLE_HEADINGS</a></li>
+  <li><a href="#head">Macro: HEAD</a></li>
+  <li><a href="#subhead">Macro: SUBHEAD</a></li>
+  <li><a href="#subsubhead">Macro: SUBSUBHEAD</a></li>
+</ul>
+
+<p>
+In versions of mom prior to 2.0, headings were entered by their
+commonly used names, <i>viz.</i> HEAD, SUBHEAD, and SUBSUBHEAD. The
+new
+<a href="#heading-intro">HEADING</a>
+scheme allows for greater flexibility, and permits seamless
+integration with PDF output.
+</p>
+
+<p>
+Documents created with pre-2.0 versions may still use the oldstyle
+heading names, as may new documents, however there are some
+differences in their behaviour.
+</p>
+
+<p>
+Whenever mom encounters an oldstyle heading, she loads the default
+style formerly associated with the oldstyle name.  See below for a
+description of the default styles in the sections
+<a href="#head">HEAD</a> (now HEADING 1),
+<a href="#subhead">SUBHEAD</a> (now HEADING 2),
+and
+<a href="#subsubhead">SUBSUBHEAD</a> (now HEADING 3).
+Mom also emits a message to stderr alerting you to what she's doing.
+</p>
+
+<p>
+The control macros formerly associated with oldstyle headings are no
+longer present in mom's macro file, which means that if you
+made changes to mom's default for those headings, you must recreate
+the changes with the
+<a href="#heading-style">HEADING_STYLE</a>
+macro.  The entire style need not be recreated, only those
+parameters that differed from mom's defaults.  Thus, if your HEADs
+were set flush left, instead of the oldstyle default, centered, but
+otherwise kept mom's settings, you need only do
+<br/>
+<span class="pre-in-pp">
+  .HEADING_STYLE 1 QUAD L
+</span>
+</p>
+
+<div id="parahead" class="box-important">
+<p class="tip-top">
+<span class="important">Important:</span>
+The macro, PARAHEAD, is no longer available.  You must create paragraph
+heads using the
+<a href="#heading">HEADING</a>
+macro.  Mom will abort with an informational message whenever she
+encounters PARAHEAD. Assuming a heading level of 3 for your
+paraheads, the former defaults for PARAHEAD can be set up like this:
+<br/>
+<span class="pre-in-pp">
+  .HEADING STYLE 3 FONT BI SIZE -.25 \" For PRINTSTYLE TYPESET
+  .HEADING STYLE 3 FONT I SIZE +0    \" For PRINTSTYLE TYPEWRITE
+</span>
+Equally, the macro NUMBER_PARAHEADS is no longer available.  You
+must enable numbering of the correct level for paraheads with
+HEADING_STYLE.  Again assuming a heading level of 3 for paraheads,
+it's simply done:
+<br/>
+<span class="pre-in-pp">
+  .HEADING_STYLE 3 NUMBER
+</span>
+</p>
+
+<h3 id="parahead-usage" class="docs" style="text-transform: none; margin-top: -1em">Correct usage of paraheads</h3>
+
+<p style="margin-top: .5em">
+It is tempting to choose an arbitrary heading level for paraheads,
+since they are sometimes needed out-of-sequence; for example,
+immediately after a main head (level-1) in a document that
+subsequently requires subheads (level-2).  In such a circumstance,
+choosing level-3 for all your paraheads might seem to make sense,
+but in fact doesn&#8217;t, since it disrupts the hierarchy of
+both the Table of Contents (if your document has one) and the PDF
+outline.
+</p>
+
+<p>
+Correct use of the <kbd>PARAHEAD</kbd> option to HEADING under such
+circumstances requires always assigning <kbd>PARAHEAD</kbd> to
+the next logical level in the heading hierarchy.  For example, if
+there are no headings before the parahead, it should be assigned to
+level-1.  If subsequently there is a main head to be followed by
+more paraheads, the main head should be level-1, and the paraheads
+level-2.  This will almost certainly require assigning new style
+parameters to level-1 (with
+<a href="#heading-style">HEADING_STYLE</a>)
+and to the level now being used for paraheads.  The following
+example demonstrates.
+<br/>
+<span class="pre-in-pp">
+  .HEADING_STYLE 1 FONT BI SIZE +.25 \" parahead style, level-1
+  .PP
+  .HEADING 1 PARAHEAD &lt;parahead&gt;
+  &lt;paragraph text&gt;
+  .PP
+  .HEADING 1 PARAHEAD &lt;parahead&gt;
+  &lt;paragraph text&gt;
+  \# main head style, level-1
+  .HEADING_STYLE 1 FONT B SIZE +3 QUAD CENTER UNDERSCORE .5 2p
+  .HEADING_STYLE 2 FONT BI SIZE +.25 \" parahead style, level-2
+  .HEADING 1 &lt;main head&gt;
+  .PP
+  &lt;paragraph text&gt;
+  .PP
+  .HEADING 2 PARAHEAD &lt;parahead&gt;
+  &lt;paragraph text&gt;
+</span>
+</p>
+</div>
+
+<!-- -OLDSTYLE_HEADINGS - -->
+
+<div class="macro-id-overline">
+<h3 id="oldstyle-headings" class="macro-id">OLDSTYLE HEADINGS</h3>
+</div>
+
+<div class="box-macro-args">
+Macro: <b>OLDSTYLE_HEADINGS</b>
+</div>
+
+<p>
+OLDSTYLE_HEADINGS requires no argument.  It instructs mom to set the
+first three levels of heading to the parameters of her old defaults
+for HEAD, SUBHEAD, and SUBSUBHEAD.  Use of OLDSTYLE_HEADINGS will
+also prevent mom from generating the message she issues the first
+time she encounters HEAD, SUBHEAD, and SUBSUBHEAD.
+</p>
+
+<!-- -HEAD- -->
+
+<div id="head" class="box-macro-args">
+Macro: <b>HEAD</b> <kbd class="macro-args">[ NAMED &lt;id&gt; ] &quot;&lt;text of head&gt;&quot; &quot;&lt;another line&gt;&quot;...</kbd>
+</div>
+
+<p>
+When invoked for the first time, with or without
+<a href="oldstyle-headings">OLDSTYLE_HEADINGS</a>,
+HEAD sets the parameters for level-1 headings to mom&#8217;s old
+HEAD defaults, then prints the head as a level-1 heading.
+The <kbd>NAMED &lt;id&gt;</kbd> optional argument is explained in
+the description of
+<a href="#heading">HEADING</a>.
+</p>
+
+<p>
+If, prior to invoking HEAD, you have given any parameters to level-1
+heads with
+<a href="#heading-style">HEADING STYLE</a>,
+they will be preserved; any you give afterwards will be respected.
+</p>
+
+<p>
+The former style defaults for HEAD were:
+<br/>
+<span class="pre-in-pp">
+  FAMILY     = prevailing document family
+  FONT       = bold (TYPESET); roman (TYPEWRITE)
+  SIZE       = +1 (TYPESET); +0 (TYPEWRITE)
+  QUAD       = C 
+  UNDERSCORE .5 2p
+  CAPS
+</span>
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+The macro, NUMBER_HEADS, from pre-2.0 versions of mom, can still be
+used, though it is now a wrapper for
+<br/>
+<span class="pre-in-pp">
+  .HEADING_STYLE 1 NUMBER
+</span>
+Mom will alert you to this on stderr.
+</p>
+</div>
+
+<!-- -SUBHEAD- -->
+
+<div id="subhead" class="box-macro-args">
+Macro: <b>SUBHEAD</b> <kbd class="macro-args">[ NAMED &lt;id&gt; ] &quot;&lt;text of head&gt;&quot; &quot;&lt;another line&gt;&quot;...</kbd>
+</div>
+
+<p>
+When invoked for the first time, with or without
+<a href="oldstyle-headings">OLDSTYLE_HEADINGS</a>,
+SUBHEAD sets the parameters for level-2 headings to mom&#8217;s old
+SUBHEAD defaults, then prints the subhead as a level-2 heading.
+The <kbd>NAMED &lt;id&gt;</kbd> optional argument is explained in
+the description of
+<a href="#heading">HEADING</a>.
+</p>
+
+<p>
+The former style defaults for SUBHEAD were:
+<br/>
+<span class="pre-in-pp">
+  FAMILY          = prevailing document family
+  FONT            = bold (TYPESET); italic, ie underlined (TYPEWRITE)
+  SIZE            = +.5 (TYPESET); +0 (TYPEWRITE)
+  QUAD            = L 
+  BASELINE_ADJUST = 1/8 the current leading
+</span>
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+The macro, NUMBER_SUBHEADS, from pre-2.0 versions of mom, can still be
+used, though it is now a wrapper for
+<br/>
+<span class="pre-in-pp">
+  .HEADING_STYLE 2 NUMBER
+</span>
+Mom will alert you to this on stderr.
+</p>
+</div>
+
+<!-- -SUBSUBHEAD- -->
+
+<div id="subsubhead" class="box-macro-args">
+Macro: <b>SUBSUBHEAD</b> <kbd class="macro-args">[ NAMED &lt;id&gt; ] &quot;&lt;text of head&gt;&quot; &quot;&lt;another line&gt;&quot;...</kbd>
+
+</div>
+
+<p>
+When invoked for the first time, with or without
+<a href="oldstyle-headings">OLDSTYLE_HEADINGS</a>,
+SUBSUBHEAD sets the parameters for level-3 headings to mom&#8217;s old
+SUBSUBHEAD defaults, then prints the subsubhead as a level-3 heading.
+The <kbd>NAMED &lt;id&gt;</kbd> optional argument is explained in
+the description of
+<a href="#heading">HEADING</a>.
+</p>
+
+<p>
+The former style defaults for SUBSUBHEAD were:
+<br/>
+<span class="pre-in-pp">
+  FAMILY          = prevailing document family
+  FONT            = italic (TYPESET); roman (TYPEWRITE)
+  SIZE            = +.5 (TYPESET); +0 (TYPEWRITE)
+  QUAD            = L 
+  BASELINE_ADJUST = 1/8 the current leading
+</span>
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+The macro, NUMBER_SUBSUBHEADS, from pre-2.0 versions of mom, can still be
+used, though it is now a wrapper for
+<br/>
+<span class="pre-in-pp">
+  .HEADING_STYLE 3 NUMBER
+</span>
+Mom will alert you to this on stderr.
 </p>
 </div>
 
@@ -2063,7 +1765,7 @@ in your document setup.
 <p>
 Linebreaks (&#8220;author linebreaks&#8221;, &#8220;section
 breaks&#8221;) are gaps in the vertical flow of running text that
-indicate a shift in content (e.g. a scene change in story).  They
+indicate a shift in content (eg a scene change in story).  They
 are frequently set off by typographic symbols, sometimes whimsical
 in nature.
 </p>
@@ -2123,8 +1825,8 @@ and a vertical adjustment factor.
 </p>
 
 <p>
-The first argument is any valid groff character (e.g. <kbd>*</kbd>
-[an asterisk], <kbd>\(dg</kbd> [a dagger], <kbd>\f(ZD\N'141\fP</kbd>
+The first argument is any valid groff character (eg <kbd>*</kbd>
+[an asterisk], <kbd>\[dg]</kbd> [a dagger], <kbd>\f[ZD]\N'141\fP</kbd>
 [an arbitrary character from Zapf Dingbats], <kbd>\l'4P'</kbd> [a
 4-pica long rule]). Mom sets the character centred on the current
 line length.  (See <kbd>man groff_char</kbd> for a list of all
@@ -2157,7 +1859,7 @@ Mom&#8217;s default for LINEBREAK_CHAR is
 <span class="pre-in-pp">
   .LINEBREAK_CHAR * 3 -3p
 </span>
-i.e. three asterisks, lowered 3 points from their normal vertical
+ie three asterisks, lowered 3 points from their normal vertical
 position (for
 <a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>;
 the vertical adjustment is -2 points for
@@ -2167,7 +1869,7 @@ the vertical adjustment is -2 points for
 <h4 id="linebreak-color" class="docs" style="margin-top: -.25em; margin-bottom: .5em;">2. Linebreak colour</h4>
 
 <div class="box-macro-args">
-Macro: <b>LINEBREAK_COLOR</b> <kbd class="macro-args">&lt;color name&gt;</kbd>
+Macro: <b>LINEBREAK_COLOR</b> <kbd class="macro-args">&lt;colourname&gt;</kbd>
 </div>
 <p class="alias" style="margin-bottom: 0;">
 <i>Alias:</i> <b>SECTION_COLOR</b>
@@ -2208,7 +1910,7 @@ cited text.)
 
 <p>
 Since mom originally came into being to serve the needs of creative
-writers (i.e. novelists, short story writers, etc.&mdash;not
+writers (ie novelists, short story writers, etc.&mdash;not
 to cast aspersions on the creativity of mathematicians and
 programmers), she sets quotes in italics
 <a href="docprocessing.html#printstyle">(PRINTSTYLE <kbd>TYPESET</kbd>)</a>
@@ -2217,12 +1919,12 @@ or underlined
 indented from the left margin.  Obviously, she&#8217;s thinking
 &#8220;quotes from poetry or song lyrics&#8221;, but with the
 <a href="#quote-control">QUOTE control macros</a>
-you can change her defaults so QUOTE serves other needs, e.g.
+you can change her defaults so QUOTE serves other needs, eg
 entering verbatim snippets of programming code, command line
 instructions, and so on.  (See the
 <a href="#code">CODE</a>
-for a convenience macro to assist in including programming code
-snippets in documents.)
+for a convenience macro to assist in including code snippets in
+documents.)
 </p>
 
 <h3 id="quote-spacing" class="docs">QUOTE spacing</h3>
@@ -2236,7 +1938,7 @@ this is always one full linespace.  In
 <a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>,
 it&#8217;s 1/2 of the prevailing
 <a href="definitions.html#leading">leading</a>
-if the quote fits fully on the page (i.e. with running text above
+if the quote fits fully on the page (ie with running text above
 and below it), otherwise it&#8217;s a full linespace either above
 or below as is necessary to balance the page to the bottom margin.
 This behaviour can be changed with the control macro
@@ -2245,27 +1947,8 @@ This behaviour can be changed with the control macro
 
 <div class="box-tip">
 <h2 id="quote-spacing-notes" class="docs" style="padding-top: 9px; font-size: 100%;">Further notes on quote spacing</h2>
-<p class="cefaults">
-As of version 1.3 of mom, handling of the vertical whitespace around
-quotes changed slightly from its original implementation.
-</p>
 
-<p>
-In versions of mom prior to 1.3, it was not possible to alter the
-<a href="definitions.html#leading">leading</a>
-of quotes and blockquotes (which was the same as the document
-leading), ensuring that the vertical whitespace remained consistent,
-as described above.
-</p>
-
-<p>
-As of version 1.3, it became possible to change the
-leading of quotes and blockquotes with <kbd>.QUOTE_AUTOLEAD</kbd> and
-<kbd>BLOCKQUOTE_AUTOLEAD</kbd>, with the following changes in
-mom&#8217;s behaviour:
-</p>
-
-<p>
+<p clas"defaults">
 If your quote (or blockquote) leading differs from the document
 leading, mom attempts to observe the same rules for vertical
 whitespace outlined above; however, she will also insert a small,
@@ -2281,15 +1964,19 @@ equalized whitespace at marked places is a limitation of groff,
 which, by and large, processes text on a line-per-line basis.)
 </p>
 
+<h3 id="no-shim" class="docs">Disable shimming of quotes and blockquotes</h3>
+
 <p>
-If you don&#8217;t want the behaviour described above (i.e. you
-don&#8217;t want mom shimming [possibly irregularly linespaced]
-quotes or blockquotes), issue the macro
+If you don&#8217;t want the behaviour described above (ie you
+don&#8217;t want mom shimming 
+quotes and blockquotes), issue the macro
 <br/>
 <span class="pre-in-pp">
   .NO_SHIM
 </span>
-prior to invoking <kbd>.QUOTE</kbd> or <kbd>.BLOCKQUOTE</kbd>.
+in the style sheet section of your document (ie after PRINTSTYLE but
+before START), which will disable shimming globally, or on a
+per-instance basis prior to <kbd>.QUOTE</kbd> or <kbd>.BLOCKQUOTE</kbd>.
 </p>
 
 <p>
@@ -2297,6 +1984,13 @@ If you&#8217;ve disabled shimming of quotes and blockquotes with
 <kbd>.NO_SHIM</kbd> and you want mom to return to her default
 behaviour in this matter, invoke <kbd>.NO_SHIM&nbsp;OFF</kbd> (or
 <kbd>QUIT, END, X</kbd>, etc).
+</p>
+
+<p>
+Please note that <kbd>NO_SHIM</kbd> disables shimming before
+headings, and the
+<a href="docprocessing.html#shim">SHIM</a>
+macro itself.
 </p>
 
 <p class="tip-bottom">
@@ -2320,7 +2014,7 @@ Macro: <b>QUOTE</b> <kbd class="macro-args">toggle</kbd>
 QUOTE is a toggle macro.  To begin a section
 of quoted text, invoke it with no argument, then type in your
 quote.  When you&#8217;re finished, invoke <kbd>.QUOTE</kbd> with any
-argument (e.g. <kbd>OFF, END, X, Q</kbd>...) to turn it off.  Example:
+argument (eg <kbd>OFF, END, X, Q</kbd>...) to turn it off.  Example:
 <br/>
 <span class="pre-in-pp">
   .QUOTE
@@ -2340,7 +2034,6 @@ argument (e.g. <kbd>OFF, END, X, Q</kbd>...) to turn it off.  Example:
   <li><a href="#quote-general">Family/font/size/leading/colour/indent</a></li>
   <li><a href="#always-fullspace-quotes">Spacing above and below quotes (typeset only)</a></li>
   <li><a href="#underline-quotes">Underlining quotes (typewrite only)</a></li>
-  <li><a href="#break-quote">Manually break a footnoted quote that crosses pages/columns (deprecated)</a></li>
 </ol>
 </div>
 
@@ -2354,7 +2047,7 @@ See
 <span class="pre defaults">
 .QUOTE_FAMILY   default = prevailing document family; default is Times Roman
 .QUOTE_FONT     default = italic; underlined in TYPEWRITE
-.QUOTE_SIZE     default = +0 (i.e. same size as paragraph text)
+.QUOTE_SIZE     default = +0 (ie same size as paragraph text)
 .QUOTE_AUTOLEAD default = none; leading of quotes is the same as paragraphs
 .QUOTE_COLOR    default = black
 .QUOTE_INDENT  (see below, "Quote indent")
@@ -2364,34 +2057,18 @@ See
 <h4 id="quote-indent" class="docs" style="margin-top: -1.5em;">Quote indent</h4>
 
 <p>
-Prior to version 1.4-b, mom allowed only the passing of an integer
-to the macro, <kbd>.QUOTE_INDENT</kbd>.  The integer represented the
-amount by which to multiply the argument passed to
-<kbd><a href="#para-indent">PARA_INDENT</a></kbd>
-to arrive at an indent for quotes (and blockquotes).
+<kbd>QUOTE_INDENT</kbd> takes one of two kinds of argument: an integer
+representing the amount by which to multiply the argument passed to
+<a href="#para-indent"><kbd>.PARA_INDENT</kbd></a>
+(by default, 2
+<a href="definitions.html#em">ems</a>
+for TYPESET, 3
+<a href="definitions.html#picaspoints">picas</a>
+for TYPEWRITE) to arrive at the quote indent, or a distance with a
+<a href="definitions.html#unitofmesaure">unit of measure</a>
+appended.  Both result in quotes being indented equally from the
+left and right margins.
 </p>
-
-<p>
-As of version 1.4-b, you can now append a
-<a href="definitions.html#unitofmeasure">unit of measure</a>
-to the argument passed to <kbd>.QUOTE_INDENT</kbd>, thus
-setting an absolute indent, relative to nothing.  The old
-behaviour is still respected, though; in other words, if you
-pass <kbd>.QUOTE_INDENT</kbd> an integer with no unit of measure
-appended, the integer represents the amount by which to multiply
-<kbd>.PARA_INDENT</kbd> to arrive at an indent for quotes (and
-blockquotes).
-</p>
-
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-If your PARA_INDENT is 0 (i.e. no indenting of the first line of
-paragraphs), you <i>must</i> set a QUOTE_INDENT yourself, with a
-unit of measure appended to the argument. Mom has no default for
-QUOTE_INDENT if paragraph first lines are not being indented.
-</p>
-</div>
 
 <p>
 The default value for QUOTE_INDENT is 3 (for
@@ -2401,8 +2078,16 @@ and 1 (for
 </p>
 
 <div class="box-tip">
-<p class="tip">
+<p class="tip-top">
 <span class="note">Note:</span>
+If your PARA_INDENT is 0 (ie no indenting of the first line of
+paragraphs), you <i>must</i> set a QUOTE_INDENT yourself, with a
+unit of measure appended to the argument. Mom has no default for
+QUOTE_INDENT if paragraph first lines are not being indented.
+</p>
+
+<p class="tip-bottom">
+<span class="note">Additional note:</span>
 QUOTE_INDENT also sets the indent for
 <a href="#blockquote">blockquotes</a>.
 </p>
@@ -2444,51 +2129,14 @@ quotes.
 </p>
 
 <p>
-If you not only wish that mom not underline
-quotes, but also that she set them in italic, you must follow each
-instance of QUOTE with the typesetting macro
+If you not only wish that mom not underline quotes, but also that
+she set them in italic, you must follow each instance of QUOTE with
+the typesetting macro
 <a href="typesetting.html#font">FT I</a>.
-Furthermore, since mom underlines all instances of
-italics by default in <b>PRINTSTYLE TYPEWRITE</b>, you
-must also make sure that ITALIC_MEANS_ITALIC is
-enabled (see
+Furthermore, since mom underlines all instances of italics by
+default in <b>PRINTSTYLE TYPEWRITE</b>, you must also make sure that
+ITALIC_MEANS_ITALIC is enabled (see
 <a href="docprocessing.html#typewrite-control">PRINTSTYLE TYPEWRITE control macros</a>).
-</p>
-
-<h4 id="break-quote" class="docs">4. Manually break a footnoted quote that crosses pages/columns (deprecated)</h4>
-
-<div class="box-tip">
-<p class="tip">
-<i>As of version 1.1.9, the macro</i> BREAK_QUOTE <i>became obsolete
-(or, at least, should have become obsolete.)  It remains here for
-backward compatibility with documents created prior to 1.1.9, and
-just in case despite my efforts to make it obsolete you still
-encounter the problem it&#8217;s supposed to fix.  Should you find
-yourself having to use</i> BREAK_QUOTE <i>while running</i> mom
-1.1.9 <i>or higher, please notify me immediately.</i>
-</p>
-</div>
-
-<p style="margin-top: -.5em;">
-Exceptionally, a quote or blockquote containing a footnote may
-cross a page or column.  When this happens, the footnote marker may
-not be correct for its position relative to other footnotes on the
-page, and the footnote itself may appear on the wrong page or at the
-bottom of the wrong column.  When this happens, study your output to
-determine the precise point at which the quote breaks (or at which
-you want it to break), and add
-<span class="pre-in-pp">
-  .BREAK_QUOTE
-</span>
-on a line by itself afterwards.  No other intervention is required,
-and the footnote(s) will be marked correctly and appear on the
-correct page.
-</p>
-
-<p>
-<kbd>.BREAK_QUOTE</kbd> may be used with both quotes and
-blockquotes, and hence is aliased as <kbd>.BREAK_BLOCKQUOTE</kbd>,
-<kbd>BREAK_CITATION</kbd> and <kbd>BREAK_CITE</kbd>.
 </p>
 
 <div class="rule-short"><hr/></div>
@@ -2546,7 +2194,7 @@ Macro: <b>BLOCKQUOTE</b> <kbd class="macro-args">toggle</kbd>
 BLOCKQUOTE is a toggle macro.  To begin a cited passage, invoke
 the tag with no argument, then type in your blockquote.  When
 you&#8217;re finished, invoke <kbd>.BLOCKQUOTE</kbd> with any
-argument (e.g. <kbd>OFF, END, X, Q</kbd>...) to turn it off.
+argument (eg <kbd>OFF, END, X, Q</kbd>...) to turn it off.
 Example:
 <br/>
 <span class="pre-in-pp">
@@ -2578,7 +2226,6 @@ tag, as well as in any of the control macros that begin or end with
 <ol style="margin-top: .5em; padding-bottom: .5em;">
   <li><a href="#blockquote-general">Family/font/size/leading/colour/quad/indent</a></li>
   <li><a href="#bq-always-fullspace-quotes">Spacing above and below (typeset only)</a></li>
-  <li><a href="#break-quote">Manually break a footnoted blockquote that crosses pages/columns</a></li>
 </ol>
 </div>
 
@@ -2603,47 +2250,44 @@ See
 <h4 id="blockquote-indent" class="docs" style="margin-top: -1.5em;">Blockquote indent</h4>
 
 <p>
-Prior to version 1.4-b, mom allowed only the passing of an integer
-to the macro, BLOCKQUOTE_INDENT.  The integer represented the amount
-by which to multiply the argument passed to
-<kbd><a href="#para-indent">PARA_INDENT</a></kbd>
-to arrive at an indent for blockquotes (and quotes).
+<kbd>BLOCKQUOTE_INDENT</kbd> takes one of two kinds of argument: an
+integer representing the amount by which to multiply the argument
+passed to
+<a href="#para-indent"><kbd>.PARA_INDENT</kbd></a>
+(by default, 2
+<a href="definitions.html#em">ems</a>
+for TYPESET, 3
+<a href="definitions.html#picaspoints">picas</a>
+for TYPEWRITE) to arrive at the blockquote indent, or a distance with a
+<a href="definitions.html#unitofmesaure">unit of measure</a>
+appended.  Both result in blockquotes being indented equally from
+the left and right margins.
 </p>
 
 <p>
-As of version 1.4-b, you can append a
-<a href="definitions.html#unitofmeasure">unit of measure</a>
-to the argument passed to <kbd>.BLOCKQUOTE_INDENT</kbd>, thus
-setting an absolute indent, relative to nothing.  The old
-behaviour is still respected, though.  In other words, if you pass
-<kbd>.BLOCKQUOTE_INDENT</kbd> an integer with no unit of measure
-appended, the integer represents the amount by which to multiply
-<kbd>.PARA_INDENT</kbd> to arrive at an indent for blockquotes (and
-quotes).
-</p>
-
-<p>
-The default value for <kbd>.BLOCKQUOTE_INDENT</kbd> is 3 (for
+The default value for BLOCKQUOTE_INDENT is 3 (for
 <a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPESET</kbd></a>)
-and 2 (for PRINTSTYLE
+and 1 (for
 <a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>).
 </p>
 
 <div class="box-tip">
 <p class="tip-top">
 <span class="note">Note:</span>
-If your PARA_INDENT is 0 (i.e. no indenting of the first line of
-paragraphs), you must set a BLOCKQUOTE_INDENT yourself, with a
-unit of measure appended to the argument. Mom has no default for
+If your PARA_INDENT is 0 (ie no indenting of the first line of
+paragraphs), you <i>must</i> set a BLOCKQUOTE_INDENT yourself, with
+a unit of measure appended to the argument.  Mom has no default for
 BLOCKQUOTE_INDENT if paragraph first lines are not being indented.
 </p>
 
 <p class="tip-bottom">
-<span class="additional-note">Additional note:</span>
+<span class="note">Additional note:</span>
 BLOCKQUOTE_INDENT also sets the indent for
-<a href="#quote">QUOTES</a>.
+<a href="#quote">quotes</a>.
 </p>
 </div>
+
+
 
 <h4 id="bq-always-fullspace-quotes" class="docs">2. Spacing above and below blockquotes (typeset only)</h4>
 
@@ -2717,7 +2361,7 @@ underlining for the duration of CODE.
 
 <p>
 Passing any argument other than <kbd>BR</kbd>, <kbd>BREAK</kbd>
-or <kbd>SPREAD</kbd> to CODE (e.g. <kbd>OFF, QUIT, END, X,</kbd>
+or <kbd>SPREAD</kbd> to CODE (eg <kbd>OFF, QUIT, END, X,</kbd>
 etc.) turns CODE off and returns the family, font, smartquotes
 and (if applicable) underlining of quotes to their former state.
 If you&#8217;ve used the inline escape, <kbd>\*[CODE]</kbd>, to
@@ -2744,7 +2388,7 @@ the escape character with something else.
 <kbd>.CODE</kbd> does not cause a line break when
 you&#8217;re in a
 <a href="definitions.html#filled">fill mode</a>
-(i.e.
+(ie
 <a href="typesetting.html#justify">JUSTIFY</a>
 or
 <a href="typesetting.html#quad">QUAD</a>
@@ -2759,12 +2403,12 @@ it as well, invoke <kbd>.CODE</kbd> with the argument,
 you want a break afterwards, you must supply it manually with
 <a href="typesetting.html#br">BR</a>
 unless what follows immediately is a macro that automatically causes
-a break (e.g.
+a break (eg
 <a href="#pp">PP</a>).
 </p>
 
 <p>
-In all likelihood, if you want the situation described above (i.e. a
+In all likelihood, if you want the situation described above (ie a
 break before and after CODE), what you probably want is to use
 <a href="quote">QUOTE</a>
 in conjunction with CODE, like this:
@@ -2772,7 +2416,7 @@ in conjunction with CODE, like this:
 <span class="pre-in-pp">
   .QUOTE
   .CODE
-  $ echo "Hello, world" | sed -e 's/Hello,/Goodbye, cruel'
+  $ echo "Hello, world" | sed -e 's/Hello,/Goodbye, cruel/'
   .CODE OFF
   .QUOTE OFF
 </span>
@@ -2795,7 +2439,7 @@ a bit of code into a line, not creating a distinct code block.
 <h3 id="code-control" class="docs defaults">CODE control macros and defaults</h3>
 
 <ol style="margin-top: .5em; padding-bottom: .5em;">
-  <li><a href="#code-general">Family/Font/Color</a></li>
+  <li><a href="#code-general">Family/Font/Colour</a></li>
   <li><a href="#code-size">Size</a></li>
 </ol>
 </div>
@@ -2927,7 +2571,7 @@ Macro: <b>LIST</b> <kbd class="macro-args">[ BULLET | DASH | DIGIT | ALPHA | alp
 </div>
 
 <p>
-Invoked by itself (i.e. with no argument), LIST
+Invoked by itself (ie with no argument), LIST
 initializes a list (with bullets as the default enumerator).
 Afterwards, each block of input text preceded by
 <kbd><a href="#item">.ITEM</a></kbd>,
@@ -2942,7 +2586,7 @@ Every time you invoke <kbd>.LIST</kbd> to start a list (as opposed to
 you must supply an enumerator (and optionally, a separator) for the
 list, unless you want mom&#8217;s default enumerator, which is a
 bullet.  Within nested lists, mom stores the enumerator, separator
-and indent for any list you return <i>backwards</i> to (i.e. with
+and indent for any list you return <i>backwards</i> to (ie with
 <kbd>.LIST OFF</kbd>), but does not store any information for lists
 you move <i>forward</i> to.
 </p>
@@ -2966,7 +2610,7 @@ uppercase letters), <kbd>alpha</kbd> (for lowercase letters),
 <p>
 The arguments, <kbd>ROMAN&lt;n&gt;</kbd> and
 <kbd>roman&lt;n&gt;</kbd>, are special.  You must append to them
-a digit (arabic, e.g. "1" or "9" or "17") saying how many items a
+a digit (arabic, eg "1" or "9" or "17") saying how many items a
 particular roman-numeralled LIST is going to have. Mom requires this
 information in order to align roman numerals sensibly, and will
 abort&mdash;with a message &mdash; if you don&#8217;t provide it.
@@ -3069,7 +2713,7 @@ separator.
 <h3 class="docs">The third argument &ndash; prefix style</h3>
 
 <p>
-Additionally, you may give a prefix (i.e. a character
+Additionally, you may give a prefix (ie a character
 that comes <i>before</i> the enumerator) when your
 enumerator style for a particular list is <kbd>DIGIT</kbd>,
 <kbd>ALPHA</kbd>, <kbd>alpha</kbd>, <kbd>ROMAN&lt;n&gt;</kbd> or
@@ -3113,7 +2757,7 @@ which would produce
 Any single argument to <kbd>LIST</kbd> other than
 <kbd>BULLET</kbd>, <kbd>DASH</kbd>, <kbd>DIGIT</kbd>,
 <kbd>ALPHA</kbd>, <kbd>alpha</kbd>, <kbd>ROMAN&lt;n&gt;</kbd>,
-<kbd>roman&lt;n&gt;</kbd> or <kbd>USER</kbd> (e.g.
+<kbd>roman&lt;n&gt;</kbd> or <kbd>USER</kbd> (eg
 <kbd>LIST&nbsp;OFF</kbd> or <kbd>LIST&nbsp;BACK</kbd>) takes you out
 of the current list.
 </p>
@@ -3126,7 +2770,7 @@ prior to setting the list are fully restored.
 
 <p>
 If you are in a nested list, mom moves you back one list-level
-(i.e. does not take you out of the list structure) and restores the
+(ie does not take you out of the list structure) and restores the
 enumerator, separator and indent appropriate to that level.
 </p>
 
@@ -3382,7 +3026,7 @@ lines up properly.
 
 <p>
 If you&#8217;d like the roman numerals to line
-up flush right (i.e. be padded "left"), simply
+up flush right (ie be padded "left"), simply
 invoke <kbd>.PAD_LIST_DIGITS&nbsp;LEFT</kbd> after
 <kbd>.LIST&nbsp;ROMAN&lt;n&gt;</kbd> or
 <kbd>.LIST&nbsp;roman&lt;n&gt;</kbd> and before <kbd>.ITEM</kbd>.
@@ -3476,7 +3120,7 @@ you must, at a minimum, tell it what line number you want the
 <a href="definitions.html#outputline">output line</a>
 to have.  The optional arguments which <kbd>lines to number</kbd>
 and <kbd>gutter</kbd> allow you to state which lines should
-be numbered (e.g. every five or every ten lines), and the gutter to
+be numbered (eg every five or every ten lines), and the gutter to
 place between line numbers and
 <a href="definitions.html#running">running text</a>.
 </p>
@@ -3867,7 +3511,7 @@ You just type, for example,
   .FOOTNOTE
   &lt;footnote about who the hell is Schelling&gt;
   .FOOTNOTE OFF
-  were generally the points of discussion presenting the most
+   were generally the points of discussion presenting the most
   of beauty to the imaginative Morella.
 </span>
 and be done with it.
@@ -3929,7 +3573,7 @@ always flush with the document&#8217;s bottom margin.
 <p>
 If mom sees that a portion of a footnote cannot be fit on its page,
 she carries that portion over to the next page.  If an entire
-footnote can&#8217;t be fit on its page (i.e.  FOOTNOTE has been
+footnote can&#8217;t be fit on its page (ie  FOOTNOTE has been
 called too close to the bottom), she defers the footnote to the next
 page, but sets it with the appropriate marker from the previous
 page.
@@ -3946,7 +3590,7 @@ page if it allows her to complete the cited text on one page.
 
 <p>
 In the unfortunate happenstance that a deferred footnote is the
-only footnote on its page (i.e. it&#8217;s marked in the document
+only footnote on its page (ie it&#8217;s marked in the document
 body with a star) and the page it&#8217;s deferred to has its own
 footnotes, mom separates the deferred footnote from the page&#8217;s
 proper footnote(s) with a blank line.  This avoids the confusion
@@ -3968,7 +3612,7 @@ they&#8217;ll know the entry belongs to the previous page).
 </p>
 
 <p>
-Very exceptionally, two footnotes may have to be deferred (e.g. one
+Very exceptionally, two footnotes may have to be deferred (eg one
 occurs on the second to last line of a page, and another on the last
 line).  In such a circumstance, mom does not add
 a blank after the second deferred footnote.  If you&#8217;d like a blank
@@ -4003,17 +3647,6 @@ only be resolved by you, the writer or formatter of the document,
 adjusting the type on the offending page so as to circumvent the
 problem.
 </p>
-
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-Exceptionally, you may encounter problems
-with footnotes inside quotes and blockquotes that cross a page or
-column.  See
-<a href="#break-quote">BREAK_QUOTE</a>
-for a solution.
-</p>
-</div>
 
 <h3 id="fn-and-punct" class="docs">Footnote markers and punctuation in the running text</h3>
 
@@ -4213,7 +3846,7 @@ See <span style="font-style: normal"><a href="#footnote-note">HYPER-IMPORTANT NO
 <p>
 FOOTNOTE is a toggle macro, therefore invoking it on a line by
 itself allows you to enter a footnote in the body of a document.
-Invoking it with any argument other than INDENT (i.e. <kbd>OFF,
+Invoking it with any argument other than INDENT (ie <kbd>OFF,
 QUIT, END, X...</kbd>) tells mom you&#8217;re finished.
 </p>
 
@@ -4264,7 +3897,7 @@ modes
 or
 <a href="typesetting.html#quad">QUAD</a>),
 the line <i>after</i> a <kbd>.FOOTNOTE&nbsp;OFF</kbd> should be
-entered as if there were no interruption in the input text, i.e.
+entered as if there were no interruption in the input text, ie
 the line should begin with a literal space or punctuation mark (see
 explanation and examples
 <a href="#fn-and-punct">here</a>).
@@ -4454,12 +4087,12 @@ footnotes either by single line numbers, or line ranges.  If
 what you want is a single line number, you need only invoke
 <kbd>.FOOTNOTE</kbd>, <i>without the terminating</i> <kbd>\c</kbd>,
 at the appropriate place in running text.  Input lines after the
-footnote has been terminated (e.g. with <kbd>.FOOTNOTE OFF</kbd>)
+footnote has been terminated (eg with <kbd>.FOOTNOTE OFF</kbd>)
 must begin at the left margin.
 </p>
 
 <p>
-If you want a range of line numbers (e.g.&nbsp;[5-11]&nbsp;),
+If you want a range of line numbers (eg&nbsp;[5-11]&nbsp;),
 insert, directly into the first line of the range you want,
 the <a href="definitions.html#inlines">inline escape</a>,
 <kbd>\*[FN_MARK]</kbd>.  For the terminating line number of the
@@ -4548,7 +4181,7 @@ separator with a space after it, you&#8217;d do
 <p style="margin-left: .5em;">
 Finally, if your footnote marker style is <kbd>LINE</kbd>, you may
 instruct mom to do &#8220;run-on style&#8221; footnotes.  Run-on
-footnotes do not treat footnotes as discrete entities, i.e. each
+footnotes do not treat footnotes as discrete entities, ie each
 beginning on a new line.  Rather, each footnote is separated from
 the footnote before it by horizontal space in the running line, so
 that the footnotes on any given page form a continuous block, like
@@ -4739,7 +4372,7 @@ except that <kbd>.FOOTNOTE</kbd> has been replaced with
   .ENDNOTE
   &lt;endnote about who the hell is Schelling&gt;
   .ENDNOTE OFF
-  were generally the points of discussion presenting the most
+   were generally the points of discussion presenting the most
   of beauty to the imaginative Morella.
 </span>
 </div>
@@ -4795,7 +4428,7 @@ or
 <a href="#blockquote-control">blockquote control macros</a>.
 However, you must make the changes <i>within</i> each endnote,
 prior to invoking <kbd>.QUOTE</kbd> or <kbd>.BLOCKQUOTE</kbd>,
-and undo them prior to terminating the endnote (i.e. before
+and undo them prior to terminating the endnote (ie before
 <kbd>.ENDNOTE&nbsp;OFF</kbd>), otherwise the changes will affect
 subsequent quotes and blockquotes that appear in the document body
 as well.
@@ -4879,7 +4512,7 @@ See <span style="font-style: normal"><a href="#endnote-note">HYPER-IMPORTANT NOT
 <p>
 ENDNOTE is a toggle macro, therefore invoking it on a line by itself
 allows you to enter an endnote in the body of a document.  Invoking
-it with any other argument (i.e. <kbd>OFF, QUIT, END, X...</kbd>)
+it with any other argument (ie <kbd>OFF, QUIT, END, X...</kbd>)
 tells mom that you&#8217;ve finished the endnote.
 </p>
 
@@ -4919,7 +4552,7 @@ modes
 or
 <a href="typesetting.html#quad">QUAD</a>,
 the line after <kbd>.ENDNOTE&nbsp;OFF</kbd> should be
-entered as if there were no interruption in the input text, i.e.
+entered as if there were no interruption in the input text, ie
 the line should begin with a literal space or punctuation mark (see
 explanation and examples for footnotes, which apply equally to
 endnotes,
@@ -4941,7 +4574,7 @@ for a more complete explanation.  The examples are for
 <p class="tip-bottom">
 If your ENDNOTE_MARKER_STYLE is LINE, do not use the <kbd>\c</kbd>
 escape, and enter the line after <kbd>.ENDNOTE OFF</kbd> normally,
-i.e. at your text editor&#8217;s left margin.
+ie at your text editor&#8217;s left margin.
 </p>
 </div>
 
@@ -4958,13 +4591,13 @@ Macro: <b>ENDNOTES</b>
 <p>
 Unlike footnotes, which mom automatically outputs at the bottom
 of pages, endnotes must be explicitly output by you, the
-user. ENDNOTES, by itself (i.e. without any argument), is the macro
+user. ENDNOTES, by itself (ie without any argument), is the macro
 to do this.
 </p>
 
 <p>
 Typically, you&#8217;ll use ENDNOTES at the end of a document.  If
-it&#8217;s a single (i.e. not collated) document, mom will print
+it&#8217;s a single (ie not collated) document, mom will print
 the endnotes pertaining to it.  If it&#8217;s a collated document,
 mom will print all the endnotes contained within all sections of
 the document (typically chapters), appropriately identified and
@@ -5020,7 +4653,7 @@ appearance of endnotes pages, set them up prior to
     <li><a href="#endnote-spacing">Spacing between endnotes</a></li>
     <li><a href="#singlespace-endnotes">Singlespace endnotes (TYPEWRITE only)</a></li>
     <li><a href="#endnote-para-indent">Paragraph indenting</a></li>
-    <li><a href="#endnote-para-space">Paragraph spacing</a></li>
+    <li><a href="#endnote-para-space">Inter-paragraph spacing</a></li>
     <li><a href="#endnotes-no-columns">Turning off column mode during endnotes output</a></li>
   </ul></li>
   <li><a href="#endnotes-pagination"><b>Pagination of endnotes</b></a>
@@ -5199,7 +4832,7 @@ Macro: <b>ENDNOTE_SPACING</b> <kbd class="macro-args">&lt;space to insert betwee
 
 <p>
 If you'd like some whitespace between endnotes, just invoke
-ENDNOTE_SPACING with the amount of space you want, e.g.
+ENDNOTE_SPACING with the amount of space you want, eg
 <br/>
 <span class="pre-in-pp">
   .ENDNOTE_SPACING 6p
@@ -5285,7 +4918,7 @@ Only subsequent paragraphs are affected by ENDNOTE_PARA_INDENT.
 
 <!-- -ENDNOTE_PARA_SPACE- -->
 
-<h5 id="endnote-para-space" class="docs" style="margin-top: -.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Paragraph spacing</h5>
+<h5 id="endnote-para-space" class="docs" style="margin-top: -.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Inter-paragraph spacing</h5>
 
 <div class="box-macro-args">
 Macro: <b>ENDNOTE_PARA_SPACE</b> <kbd class="macro-args">&lt;toggle&gt;</kbd>
@@ -5363,7 +4996,7 @@ Macro: <b>ENDNOTES_FIRST_PAGENUMBER</b> <kbd class="macro-args">&lt;page # that 
 <p>
 Use this macro with caution.  If all endnotes for several
 <a href="rectoverso.html#collate">collated</a>
-documents are to be output at once, i.e. not at the end of each
+documents are to be output at once, ie not at the end of each
 separate doc, ENDNOTES_FIRST_PAGENUMBER tells mom what page number
 to put on the first page of the endnotes.
 </p>
@@ -5627,7 +5260,7 @@ Invoked without an argument, <kbd>.ENDNOTE_STRING_UNDERSCORE</kbd>
 will place a single rule underneath the endnotes page title.  Invoked
 with the argument, <kbd>DOUBLE</kbd>, ENDNOTE_STRING_UNDERSCORE will
 double-underscore the title.  Invoked with any other non-numeric
-argument, (e.g. <kbd>OFF, NO, X</kbd>, etc.) the macro disables
+argument, (eg <kbd>OFF, NO, X</kbd>, etc.) the macro disables
 underscoring of the title.
 </p>
 
@@ -5724,7 +5357,7 @@ with the identifying title you want, surrounded by double-quotes.
 If you don&#8217;t want any identifying title, invoke
 <kbd>.ENDNOTE_TITLE</kbd> with a blank argument, either two
 double-quotes side by side (<kbd>&quot;&quot;</kbd>) or no argument
-at all.  This is particularly useful if you have a single (i.e.
+at all.  This is particularly useful if you have a single (ie
 non-collated) document and find having the document&#8217;s title
 included in the endnotes redundant.
 </p>
@@ -5774,7 +5407,7 @@ Invoked without an argument, <kbd>.ENDNOTE_TITLE_UNDERSCORE</kbd>
 will place a single rule underneath the document identification
 string.  Invoked with the argument <kbd>DOUBLE</kbd>,
 ENDNOTE_TITLE_UNDERSCORE will double-underscore the string.  Invoked
-with any other non-numeric argument, (e.g. <kbd>OFF, NO, X</kbd>,
+with any other non-numeric argument, (eg <kbd>OFF, NO, X</kbd>,
 etc.) the macro disables underscoring of the string.
 </p>
 
@@ -5846,7 +5479,7 @@ endnotes either by single line numbers or by line ranges.  If
 what you want is a single line number, you need only invoke
 <kbd>.ENDNOTE</kbd> at the appropriate place in running
 text <i>without the terminating</i> <kbd>\c</kbd>.  Input lines
-after the endnote has been terminated (e.g. with <kbd>.ENDNOTE
+after the endnote has been terminated (eg with <kbd>.ENDNOTE
 OFF</kbd>) must begin at the left margin.
 </p>
 
@@ -5860,7 +5493,7 @@ nothing to prevent you from doing so.)
 </p>
 
 <p id="en-mark">
-If you want a range of line numbers (e.g.&nbsp;[5-11]&nbsp;),
+If you want a range of line numbers (eg&nbsp;[5-11]&nbsp;),
 insert, directly into the first line of the range you want, the
 <a href="definitions.html#inlines">inline escape</a>,
 <kbd>\*[EN-MARK]</kbd>.  For the terminating line number of the
@@ -5937,7 +5570,7 @@ If you need less space (the total number of endnotes is less than 10) or
 more (the total number of endnotes is greater than 99), use the
 macro,
 <a href="docelement.html#endnote-numbers-align">ENDNOTE_NUMBERS_ALIGN</a>,
-to set the desired amount of reserved space, e.g.
+to set the desired amount of reserved space, eg
 <br/>
 <span class="pre-in-pp">
   .ENDNOTE_NUMBERS_ALIGN RIGHT 1
@@ -6155,7 +5788,7 @@ for examples.
   <ul style="margin-left: -.5em;">
     <li><a href="#margin-notes-vertical">Adjusting the vertical position of margin notes</a></li>
   </ul></li>
-  <li><a href="#mn-init">Macro: <b>MN_INIT</b></a>&mdash;initialize margin notes</li>
+  <li><a href="#mn-init">Macro: <b>MN_INIT</b></a> &ndash; set margin notes parameters</li>
   <li><a href="#mn">Tag: MN</a></li>
 </ul>
 
@@ -6185,6 +5818,8 @@ things like
 <a href="definitions.html#family">family</a>
 and
 <a href="definitions.html#leading">leading</a>.
+MN_INIT may be called before or after
+<a href="docprocessing.html#start">START</a>.
 </p>
 
 <p>
@@ -6270,14 +5905,14 @@ page.
 
 <p>
 Adjustments to the vertical position of margin notes must be done
-inside the margin note (i.e. after <kbd>.MN</kbd>), at the top,
+inside the margin note (ie after <kbd>.MN</kbd>), at the top,
 before entering text.  The commands to use are
 <kbd>\!<a href="typesetting.html#ald">.ALD</a></kbd>
 (to lower the margin note) and
 <kbd>\!<a href="typesetting.html#rld">.RLD</a></kbd>
 (to raise it).
 
-The <kbd>\!</kbd> <i>must</i> precede the macros, or they
+The <kbd>\!</kbd> must precede the macros, or they
 won&#8217;t have any effect.
 </p>
 
@@ -6288,45 +5923,57 @@ won&#8217;t have any effect.
 </div>
 
 <div class="box-macro-args">
-Macro: <b>MN_INIT</b> <kbd class="macro-args">&lt;arguments (see list)&gt;</kbd>
+Macro: <b>MN_INIT</b> <kbd class="macro-args">&lt;arguments&gt; (see list)</kbd>
 </div>
 
 <h4 style="margin-top: .75em; margin-left: .5em; font-style: normal; font-weight: bold: font-size: 105%; color: #6f614a;">Argument list:</h4>
 
 <span class="pre" style="margin-top: -1.5em; margin-left: .5em;">
-[ RAGGED | SYMMETRIC ]
-&lt;left-width&gt;
-&lt;right-width&gt;
-&lt;gutter&gt;
-&lt;family+font&gt;
-&lt;point-size&gt;
-&lt;lead&gt;
-&lt;colour&gt;
-&lt;hyphenation-flags&gt;
+RAGGED | SYMMETRIC
+&lt;L_WIDTH&gt;   &lt;value&gt;
+&lt;R_WIDTH&gt;   &lt;value&gt;
+&lt;GUTTER&gt;    &lt;value&gt;
+&lt;FONTSTYLE&gt; &lt;value&gt;
+&lt;SIZE&gt;      &lt;value&gt;
+&lt;LEAD&gt;      &lt;value&gt;
+&lt;COLOR&gt;     &lt;value&gt;
+&lt;HY&gt;        &lt;value&gt;
 </span>
 
 <p style="margin-top: 1.25em;">
 Before you enter your first margin note, you must initialize
-<i>all</i> the parameters associated with margin notes with MN_INIT.
+the style parameters associated with margin notes using MN_INIT.
 If you forget to do so, mom will issue a warning and abort.
 </p>
 
 <p>
-The argument list is quite long; an explanation of each argument
-follows.  Any argument whose value you want to be the default must
-be entered as <kbd>&quot;&quot;</kbd> (i.e. two double-quotes with
-no space between them).  Defaults for each argument are given in the
-explanations below.
+The arguments may be entered in any order, and since the list is
+long, use of the backslash character ( <kbd>\</kbd> ) to put each on
+a separate line is recommended, eg.
+<br/>
+<span class="pre-in-pp">
+  .MN_INIT \
+  SYMMETRIC \
+  L_WIDTH 4P \
+  SIZE 8 \
+  LEAD 9 \
+  HY 14
+</span>
+All arguments are optional, but since mom requires you to run
+MN_INIT before entering margin notes, you should, at a minimum, set
+the <kbd>RAGGED</kbd> or <kbd>SYMMETRIC</kbd> parameter.  
+You will almost certainly want to set <kbd>L_WIDTH</kbd>, <kbd>R_WIDTH</kbd>,
+<kbd>SIZE</kbd> and <kbd>LEAD</kbd> as well.
 </p>
 
-<h4 class="docs arg-list">Argument 1:&nbsp;&nbsp;<kbd style="color: #302419;">[ RAGGED | SYMMETRIC ]</kbd></h4>
+<h4 class="docs arg-list"><kbd>RAGGED | SYMMETRIC</kbd></h4>
 
 <p>
-If the first argument is <kbd>RAGGED</kbd>, both left and
-right margin notes will be flush left.  If the first argument
-is <kbd>SYMMETRIC</kbd> left margin notes will be set flush
-<i>right</i>, and right margin notes will be set flush
-<i>left</i>.  The effect is something like this:
+If the argument <kbd>RAGGED</kbd> is given, both left and
+right margin notes will be flush left.  If the argument
+<kbd>SYMMETRIC</kbd> is given, left margin notes will be set flush
+<i>right</i>, and right margin notes flush <i>left</i>.  The effect
+is something like this:
 <br/>
 <span class="pre-in-pp">
          A left    This is a meaningless batch        A right
@@ -6338,13 +5985,13 @@ is <kbd>SYMMETRIC</kbd> left margin notes will be set flush
 </p>
 
 <p>
-If the argument is omitted, or given as <kbd>&quot;&quot;</kbd>,
-both left and right margin notes will be set justified.  (Justified
-is usually not a good idea, since the narrow measure of margin notes
-makes pleasing justification a near impossibility.)
+If the argument is omitted, both left and right margin notes will
+be set justified.  (Justified is usually not a good idea, since the
+narrow measure of margin notes makes pleasing justification a near
+impossibility.)
 </p>
 
-<h4 class="docs arg-list">Argument 2:&nbsp;&nbsp;<kbd style="color: #302419;">&lt;left-width&gt;</kbd></h4>
+<h4 class="docs arg-list"><kbd>L_WIDTH &lt;value&gt;</kbd></h4>
 
 <p>
 The width of left margin notes.  A
@@ -6355,7 +6002,7 @@ certainly not what you want, so you should give a value for this
 argument if using left margin notes.
 </p>
 
-<h4 class="docs arg-list">Argument 3:&nbsp;&nbsp;<kbd style="color: #302419;">&lt;right-width&gt;</kbd></h4>
+<h4 class="docs arg-list"><kbd>R_WIDTH &lt;value&gt;</kbd></h4>
 
 <p>
 The width of right margin notes.  A
@@ -6366,7 +6013,7 @@ almost certainly not what you want, so you should give a value for
 this argument if using right margin notes.
 </p>
 
-<h4 class="docs arg-list">Argument 4:&nbsp;&nbsp;<kbd style="color: #302419;">&lt;gutter&gt;</kbd></h4>
+<h4 class="docs arg-list"><kbd>GUTTER &lt;value&gt;</kbd></h4>
 
 <p>
 The
@@ -6380,17 +6027,17 @@ both left and right margin notes. The default is 1
 <a href="definitions.html#em">em</a>.
 </p>
 
-<h4 class="docs arg-list">Argument 5:&nbsp;&nbsp;<kbd style="color: #302419;">&lt;font&gt;</kbd></h4>
+<h4 class="docs arg-list"><kbd>FONTSTYLE &lt;value&gt;</kbd></h4>
 
 <p>
 The family+font for margin notes.  Yes, that&#8217;s right: the
 family <i>plus</i> font combo.  For example, if you want Times
-Roman Medium, the argument must be TR.  If you want Palatino
-Medium Italic, the argument must be PI.  The default is the same
+Roman Medium, the argument must be <kbd>TR</kbd>.  If you want Palatino
+Medium Italic, the argument must be <kbd>PI</kbd>.  The default is the same
 family+font combo used for a document&#8217;s paragraph text.
 </p>
 
-<h4 class="docs arg-list">Argument 6:&nbsp;&nbsp;<kbd style="color: #302419;">&lt;point size&gt;</kbd></h4>
+<h4 class="docs arg-list"><kbd>SIZE &lt;value&gt;</kbd></h4>
 
 <p>
 The point size of type for margin notes.  There is no need to append a
@@ -6403,24 +6050,19 @@ The default is for margin notes to use the same point size of type
 as is used in document paragraphs.
 </p>
 
-<h4 class="docs arg-list">Argument 7:&nbsp;&nbsp;<kbd style="color: #302419;">&lt;lead&gt;</kbd></h4>
+<h4 class="docs arg-list"><kbd>LEAD &lt;value&gt;</kbd></h4>
 
 <p>
 The
 <a href="definitions.html#leading">leading</a>
-of margin notes.  <kbd>&lt;lead&gt;</kbd> uses
+of margin notes.  <kbd>&lt;LEAD&gt;</kbd> takes
 <a href="definitions.html#picaspoints">points</a>
 as its unit of measure, so don&#8217;t tack a unit of measure onto
-the end of the argument.  The default lead is the same leading
-as is used for paragraph text (i.e. the document&#8217;s base
-leading).  If you want the default, you may, for convenience
-and clarity, give the word, <kbd>DOC</kbd>, to this argument,
-instead of <kbd>&quot;&quot;</kbd> (two double-quotes).  Like the
-double-quotes, it indicates that the leading should be the same as
-the document&#8217;s base leading.
+the end of the argument.  The default lead is the same as paragraph
+text (ie the document&#8217;s base leading).
 </p>
 
-<h4 class="docs arg-list">Argument 8:&nbsp;&nbsp;<kbd style="color: #302419;">&lt;colour&gt;</kbd></h4>
+<h4 class="docs arg-list"><kbd>COLOR &lt;value&gt;</kbd></h4>
 
 <p>
 The colour of margin notes.  The colour must be pre-initialized
@@ -6431,11 +6073,11 @@ or
 The default is black.
 </p>
 
-<h4 class="docs arg-list">Argument 9:&nbsp;&nbsp;<kbd style="color: #302419;">&lt;hyphenation-flags&gt;</kbd></h4>
+<h4 class="docs arg-list"><kbd>HY &lt;value&gt;</kbd></h4>
 
 <p>
-A number telling groff how you want margin notes
-hyphenated.
+<kbd>&lt;value&gt;</kbd> is a digit telling groff how you want margin
+notes hyphenated.
 <br/>
 <span class="pre-in-pp">
   1 = hyphenate without restrictions
@@ -6446,7 +6088,7 @@ hyphenated.
 The values can be added together, so, for example, if you want
 neither the first two nor the last two characters of words
 hyphenated, the hyphenation-flag would be 12.  The default value is
-14 (i.e. 2+4+8).
+14 (ie 2+4+8).
 </p>
 
 <!-- -MN- -->
@@ -6486,16 +6128,17 @@ etc) exits the current margin note.
   <ul style="margin-left: -1.25em;">
     <li><a href="#finis-string">Changing the FINIS string</a></li>
     <li><a href="#finis-string-caps">Automatic capitalization of the FINIS string</a></li>
-    <li><a href="#finis-color">Changing the FINIS color</a></li>
+    <li><a href="#finis-color">Changing the FINIS colour</a></li>
   </ul></li>
 </ul>
 
 <p>
-The use of FINIS is optional.  If you invoke it (at the end of a
-document before
-<kbd><a href="tables-of-contents.html#toc">.TOC</a></kbd>
+The use of FINIS is optional.  If you invoke it at the end of a
+document (before
+<kbd><a href="#endnotes">.ENDNOTES</a></kbd>,
+<kbd><a href="refer.html#bibliography">.BIBLIOGRAPHY</a></kbd>
 or
-<kbd><a href="#endnotes">.ENDNOTES</a></kbd>),
+<kbd><a href="tables-of-contents.html#toc">.TOC</a></kbd>)
 mom deposits the word, <b>END</b>, centred after a blank line,
 beneath the last line of the document. <b>END</b> is enclosed
 between
@@ -6504,8 +6147,11 @@ like this:
 <br/>
 <span class="pre-in-pp">
   ...and they all lived happily ever after.
+
                   &mdash; END &mdash;
 </span>
+If there is insufficient room for FINIS on the last page of a
+document, mom will alert you on stderr.
 </p>
 
 <p>
@@ -6524,10 +6170,11 @@ Macro: <b>FINIS</b>
 
 <p>
 The use of FINIS is optional, but if you use it, it should be the
-last macro you invoke in a document (before
-<kbd><a href="#endnotes">.ENDNOTES</a></kbd>
+last macro you invoke in a document before
+<kbd><a href="#endnotes">.ENDNOTES</a></kbd>,
+<kbd><a href="refer.html#bibliography">.BIBLIOGRAPHY</a></kbd>
 or
-<kbd><a href="tables-of-contents.html#toc">.TOC</a></kbd>).
+<kbd><a href="tables-of-contents.html#toc">.TOC</a></kbd>.
 See
 <a href="#finis-intro">above</a>
 for a description of how FINIS behaves.
@@ -6551,7 +6198,9 @@ two lines of your document file, like this:
 
 <!-- -FINIS STRING- -->
 
-<h3 id="finis-string" class="docs">Changing the FINIS string</h3>
+<h3 id="finis-control" class="docs" style="margin-bottom: -1em">Finis contol macros</h3>
+
+<h4 id="finis-string" class="docs">Changing the FINIS string</h4>
 
 <p>
 By default, FINIS prints the word, END, between
@@ -6573,7 +6222,7 @@ Double-quotes must enclose the macro&#8217;s argument.
 <div class="box-tip">
 <p class="tip">
 <span class="note">Note:</span>
-If you pass FINIS_STRING a blank string, i.e.
+If you pass FINIS_STRING a blank string, ie
 <br/>
 <span class="pre-in-pp">
     .FINIS_STRING ""
@@ -6588,7 +6237,7 @@ it&#8217;s a short, dashed line composed of four hyphens.)
 
 <!-- -FINIS STRING CAPS- -->
 
-<h3 id="finis-string-caps" class="docs">Automatic capitalization of the FINIS string</h3>
+<h4 id="finis-string-caps" class="docs">Automatic capitalization of the FINIS string</h4>
 
 <p>
 By default, mom sets the string you pass to FINIS all-caps.
@@ -6600,21 +6249,21 @@ this:
 <span class="pre-in-pp">
     .FINIS_STRING_CAPS OFF
 </span>
-<kbd>OFF</kbd>, above, could be anything, e.g. <kbd>NO</kbd> or
+<kbd>OFF</kbd>, above, could be anything, eg <kbd>NO</kbd> or
 <kbd>X</kbd>.
 </p>
 
 <!-- -FINIS COLOR- -->
 
-<h3 id="finis-color" class="docs">Changing the FINIS colour</h3>
+<h4 id="finis-color" class="docs">Changing the FINIS colour</h4>
 
 <p>
 Invoking the control macro, <kbd>.FINIS_COLOR</kbd>, with a
-pre-defined (or &#8220;initalized&#8221;) color changes the colour
+pre-defined (or &#8220;initalized&#8221;) colour changes the colour
 of both the FINIS string and the em-dashes that surround it.  If you
 use the
 <a href="definitions.html#inline">inline escape</a>,
-<a href="color.html#color-inline"><kbd>\*[&lt;colorname&gt;]</kbd></a>,
+<a href="color.html#color-inline"><kbd>\*[&lt;colourname&gt;]</kbd></a>,
 in the argument passed to FINIS, only the text will be in the
 new colour; the em-dashes will be in the default document colour
 (usually black).

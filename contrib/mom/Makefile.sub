@@ -20,11 +20,13 @@
 # These may be overridden if cross-compiling.
 GROFFBIN=$(top_builddir)/src/roff/groff/groff
 GROFF_BIN_PATH=`echo $(groff_bin_dirs) | sed -e 's|  *|$(SH_SEP)|g'`
+PDFMOMBIN=$(top_builddir)/src/devices/gropdf/pdfmom
 
 groff_bin_dirs=\
   $(top_builddir)/src/roff/groff \
   $(top_builddir)/src/roff/troff \
-  $(top_builddir)/src/devices/grops
+  $(top_builddir)/src/devices/grops \
+  $(top_builddir)/src/devices/gropdf
 
 FFLAG=-F$(top_builddir)/font -F$(top_srcdir)/font
 TFLAG=-M$(top_builddir)/tmac -M$(top_srcdir)/tmac -M$(srcdir)
@@ -34,6 +36,12 @@ GROFF=GROFF_COMMAND_PREFIX=''; \
       GROFF_BIN_PATH=$(GROFF_BIN_PATH); \
       export GROFF_BIN_PATH; \
       $(GROFFBIN) $(FFLAG) $(TFLAG)
+
+PDFMOM=GROFF_COMMAND_PREFIX=''; \
+      export GROFF_COMMAND_PREFIX; \
+      PDFMOM_BIN_PATH=$(top_builddir)/src/devices/gropdf; \
+      export PDFMOM_BIN_PATH; \
+      $(PDFMOMBIN) $(FFLAG) $(TFLAG)
 
 MAN7=\
   groff_mom.n
@@ -67,44 +75,56 @@ HTMLDOCFILES=\
   momdoc/tables-of-contents.html \
   momdoc/toc.html \
   momdoc/typesetting.html \
-  momdoc/using.html
+  momdoc/using.html \
+  momdoc/version-2.html
 
 EXAMPLEFILES=\
   examples/letter.mom \
+  examples/mom-pdf.mom \
   examples/sample_docs.mom \
   examples/typesetting.mom \
   examples/README.txt \
   examples/elvis_syntax \
   examples/elvis_syntax.new \
-  examples/penguin.ps
+  examples/penguin.ps \
+  examples/penguin.pdf \
+  examples/mom.vim
 
 PROCESSEDEXAMPLEFILES=\
-  examples/letter.ps \
-  examples/sample_docs.ps \
-  examples/typesetting.ps
+  examples/letter.pdf \
+  examples/mom-pdf.pdf \
+  examples/sample_docs.pdf \
+  examples/typesetting.pdf
 
 HTMLDOCFILES_=`echo $(HTMLDOCFILES) | sed 's|momdoc/||g'`
 EXAMPLEFILES_=`echo $(EXAMPLEFILES) | sed 's|examples/||g'`
 PROCESSEDEXAMPLEFILES_=`echo $(PROCESSEDEXAMPLEFILES) | sed 's|examples/||g'`
+PDFDOCFILE=mom-pdf.pdf
 
 MOSTLYCLEANADD=\
   stamp-strip \
   penguin.ps \
+  penguin.pdf \
   $(PROCESSEDEXAMPLEFILES) \
   examples/stamp \
   om.tmac-s
 
-.SUFFIXES: .mom .ps
-.mom.ps:
-	$(GROFF) -Tps -mom $< >$@
+#.SUFFIXES: .mom .ps
+#.mom.ps:
+#	$(GROFF) -Tps -mom $< >$@
 
+.SUFFIXES: .mom .pdf
+.mom.pdf:
+	$(PDFMOM) $< >$@
 
 all: stamp-strip $(PROCESSEDEXAMPLEFILES)
 
-$(PROCESSEDEXAMPLEFILES): penguin.ps examples/stamp
+$(PROCESSEDEXAMPLEFILES): penguin.ps penguin.pdf examples/stamp
 
 penguin.ps:
 	cp $(srcdir)/examples/penguin.ps .
+penguin.pdf:
+	cp $(srcdir)/examples/penguin.pdf .
 
 examples/stamp:
 	test -d examples || $(mkinstalldirs) examples
@@ -139,6 +159,10 @@ install_data: stamp-strip $(NORMALFILES) $(HTMLDOCFILES) \
 	  rm -f $(DESTDIR)$(exampledir)/mom/$$f; \
 	  $(INSTALL_DATA) examples/$$f $(DESTDIR)$(exampledir)/mom/$$f; \
 	done
+	for f in $(PDFDOCFILE); do \
+	  rm -f $(DESTDIR)$(pdfdocdir)/$$f; \
+	  ln -s $(DESTDIR)$(exampledir)/mom/$$f $(DESTDIR)$(pdfdocdir)/$$f; \
+	done
 
 stamp-strip: $(STRIPFILES)
 	for f in $(STRIPFILES); do \
@@ -157,5 +181,8 @@ uninstall_sub:
 	-rmdir $(DESTDIR)$(htmldocdir)/mom
 	-for f in $(EXAMPLEFILES_) $(PROCESSEDEXAMPLEFILES_); do \
 	  rm -f $(DESTDIR)$(exampledir)/mom/$$f; \
+	done
+	-for f in $(PDFDOCFILE); do \
+	  rm -f $(DESTDIR)$(pdfdocdir)/$$f; \
 	done
 	-rmdir $(DESTDIR)$(exampledir)/mom

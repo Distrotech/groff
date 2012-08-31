@@ -2,8 +2,9 @@
 <!--
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004, 2005, 2006, 2009, 2010, 2011 Free Software Foundation, Inc.
-Written by Peter Schaffter.
+Copyright (C) 2004, 2005, 2006, 2009, 2010, 
+2011, 2012 Free Software Foundation, Inc.
+Written by Peter Schaffter (peter@schaffter.ca).
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -14,6 +15,7 @@ Texts, and with no Back-Cover Texts.
 A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
 -->
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -148,7 +150,7 @@ independent of the
 With them, you can typeset on-the-fly.  Book covers, your best
 friend&#8217;s résumé, a poster for a lost dog&mdash;none of these
 requires structured document processing (page headers, paragraphs,
-heads, footnotes, etc).  What they do demand is precise control over
+headings, footnotes, etc).  What they do demand is precise control over
 every element on the page.  The typesetting macros give you that
 control.
 </p>
@@ -162,10 +164,14 @@ control.
 <p>
 The page setup macros establish the physical dimensions of your page
 and the margins you want it to have. Groff has defaults for these,
-but I recommend setting them at the top of your files anyway unless
-you&#8217;re using mom&#8217;s
-<a href="docprocessing.html#docprocessing">document processing macros</a>
-and are content with her defaults.
+but I recommend setting them at the top of your files anyway.
+</p>
+
+<p>
+If you&#8217;re using mom&#8217;s
+<a href="docprocessing.html#docprocessing">document processing macros</a>,
+these macros must come after
+<a href="docprocessing.html#printstyle">PRINTSTYLE</a>.
 </p>
 
 <p>
@@ -182,47 +188,41 @@ some or all of the page margins with a single macro.
 <h3 id="page-setup-note" class="docs notes">Important note on page dimensions and papersize</h3>
 
 <p style="margin-top: .5em;">
-Mom&#8217;s macros for setting up the desired size of printer sheets
-tell mom and groff about the page dimensions, but not the driver
-responsible for generating the final PostScript file.  You must take
-care of this yourself.
+When mom files are processed with
+<a href="using.html#pdfmom" style="font-weight: bold">pdfmom</a>,
+which is recommended (see
+<a href="http://www.schaffter.ca/mom/pdf/mom-pdf.pdf"><span class="book-title">Producing PDFs with groff and mom</span></a>),
+page dimensions are automatically passed to groff, and you don't
+have to worry about them.
 </p>
 
 <p>
-If you routinely print documents on the same size paper (you
-probably do), the easiest way to make sure the PostScript driver
-knows about your papersize is to edit the file
+Mom documents processed directly with <strong>groff</strong>, or with
+<strong>pdfroff</strong>, or with <strong>pdfmom -Tps</strong>, require
+that the papersize be given on the command line as well if the
+papersize is different from the default on your system.  You can
+verify&mdash;or change&mdash;the default papersize by inspecting the
+files
 <br/>
 <span class="pre-in-pp">
   &lt;path to groff&gt;/font/devps/DESC
 </span>
-In it, you will see a line that reads:
-<span class="pre-in-pp">
-  papersize &lt;papersize&gt;
-</span>
-Change <kbd>&lt;papersize&gt;</kbd> to the name of your papersize
-(e.g. a4, letter, legal, etc.; a full list of valid named papersizes
-that can be used in DESC is found in <kbd>man papersize</kbd>).  If
-your routine papersize is non-standard (i.e. doesn&#8217;t have a
-&#8220;name&#8221;) you can give the dimensions for your papersize,
-separated by a comma.  The dimensions must have a
-<a href="definitions.html#unitofmeasure">unit of measure</a>
-appended.  Valid units of measure for papersize are
-inches (<kbd>i</kbd>),
-centimeters (<kbd>c</kbd>),
-picas (<kbd>P</kbd>) and
-points (<kbd>p</kbd>).
-For example, to set up a routine papersize of 8 inches by 10 inches,
-the line would look like this:
+and
 <br/>
 <span class="pre-in-pp">
-  papersize 8i,10i
+  &lt;path to groff&gt;/font/devpdf/DESC
 </span>
-Having set up your routine papersize, if you occasionally need to
-print on sheets that do not conform to its dimensions, you must, in
-addition to setting the page dimensions in your mom file, invoke
-groff on the command line with the <kbd>-P-p&lt;papersize&gt;</kbd>
-option.
+(See <strong>man papersize</strong> for list of valid papersize
+names, as well as for instructions on how to enter a non-standard
+size.)
+</p>
+
+<p>
+If you occasionally need to print on sheets that do not
+conform to your default papersize, you must, in addition
+to setting the page dimensions in your mom file, pass the
+<kbd>-P-p&lt;papersize&gt;</kbd> option to <strong>groff</strong>,
+<strong>pdfroff</strong>, or <strong>pdfmom -Tps</strong>.
 </p>
 
 <p>
@@ -235,18 +235,22 @@ and
 or
 <a href="#paper">PAPER</a>,
 or
-<a href="#page">PAGE</a>)
-in your mom file, when you invoke groff to process the file, the
-command would look like this:
+<a href="#page">PAGE</a>),
+you must include <kbd>-P-p&lt;papersize&gt;</kbd> on whichever
+command line you use, eg
 <br/>
 <span class="pre-in-pp">
-  groff -mom -P-plegal
+  pdfmom -Tps -mom -P-plegal
 </span>
+Remember, though, that
+<a href="using.html#pdfmom" style="font-weight: bold">pdfmom</a>,
+with no <kbd>-Tps</kbd> option, is smart enough to know the
+papersize from the dimensions provided in your mom file.
 </p>
 
-<p class="tip-bottom" style="margin-top: -1em;">
+<p class="tip-bottom">
 Consult <kbd>man groff</kbd>, <kbd>man grops</kbd> and <kbd>man
-groff-font</kbd> for additional information concerning papersizes,
+groff_font</kbd> for additional information concerning papersizes,
 as well as information on printing in &#8220;landscape&#8221;
 orientation.
 </p>
@@ -477,7 +481,7 @@ and right margin, like this:
 That way, you don&#8217;t have to worry about calculating the line
 length.  On the other hand, if you know the line length for a patch
 of type should be 17 picas and 3 points, entering the line length
-with LL is much easier than calculating the right margin, e.g.
+with LL is much easier than calculating the right margin, eg
 <br/>
 <span class="pre-in-pp">
   .LL 17P+3p
@@ -727,18 +731,6 @@ you to the top of a new one (subject to the top margin set with
 <a href="#t-margin">T_MARGIN</a>).
 </p>
 
-<div class="box-tip">
-<p class="tip">
-<span class="experts">Experts:</span>
-Prior to version 1.1.9, NEWPAGE was simply an alias of
-<kbd>.bp</kbd>.  As of 1.1.9, NEWPAGE, is its own mom macro.  While
-the new macro should be backwardly compatible with documents created
-using pre-1.1.9 moms, I suggest that from this version onward, if
-you were in the habit of using <kbd>.bp</kbd> whenever you wanted to
-break to a new page, you now begin to use NEWPAGE instead.
-</p>
-</div>
-
 <div class="rule-short" style="margin-bottom: 24px;"><hr/></div>
 
 <!-- ==================================================================== -->
@@ -789,7 +781,7 @@ Macro: <b>FAMILY</b> <kbd class="macro-args">&lt;family&gt;</kbd>
 <p>
 FAMILY takes one argument: the name of the
 <a href="definitions.html#family">family</a>
-you want.  Groff comes with a number of PostScript families, each
+you want.  Groff comes with a small set of basic families, each
 identified by a 1-, 2-or 3-letter mnemonic.  The standard families
 are:
 <br/>
@@ -825,10 +817,10 @@ only exists in one style: Italic (<kbd>I</kbd>).  Therefore,
 </p>
 
 <p id="fam-add-note" class="tip-bottom">
-<span class="additional-note">Additional note:</span> As of mom,
-version 1.1.9-a, if you are running a version of groff lower than
-1.19.2, you must follow all FAMILY requests with a FT request,
-otherwise mom will set all type up to the next FT request in the
+<span class="additional-note">Additional note:</span> 
+If you are running a version of groff lower than 1.19.2, you must
+follow all FAMILY requests with a FT request, otherwise mom will set
+all type up to the next FT request in the
 <a href="#fallback-font">fallback font</a>.
 </p>
 </div>
@@ -871,7 +863,7 @@ that&#8217;s valid for Helvetica.
 
 <p>
 Please see the Appendices,
-<a href="appendices.html#fonts">Adding PostScript fonts to groff</a>,
+<a href="appendices.html#fonts">Adding fonts to groff</a>,
 for information on adding fonts and families to groff, as well as
 to see a list of the extensions mom provides to groff&#8217;s basic
 <b>R</b>, <b>I</b>, <b>B</b>, <b>BI</b> styles.
@@ -879,10 +871,10 @@ to see a list of the extensions mom provides to groff&#8217;s basic
 
 <div class="box-tip">
 <p class="tip">
-<span class="experts">Experts:</span> If you add other PostScript
-families to groff&#8217;s /font/devps directory, I recommend
-following the groff standard for naming families and fonts.  For
-example, if you add the Garamond family, name the font files
+<span class="tip">Suggestion:</span> When adding 
+families to groff, I recommend following the established standard
+for the naming families and fonts.  For example, if you add the
+Garamond family, name the font files
 <br/>
 <span class="pre-in-pp">
   GARAMONDR
@@ -934,15 +926,20 @@ font.
 </p>
 
 <p>
-(As of mom, version 1.1.9-a, the range of arguments that can be
-passed to FT has been considerably extended, allowing access to a
-greater variety of font
+Mom considerably extends the range of arguments you can pass to FT,
+making it more convenient to add and access fonts of differing
 <a href="definitions.html#weight">weights</a>
 and
-<a href="definitions.html#shape">shapes</a>.
-Please see the
-<kbd><a href="#font-note">NOTE</a></kbd>,
-below.)
+<a href="definitions.html#shape">shapes</a>
+within the same family.  Have a look
+<a href="appendices.html#style-extensions">here</a>
+for a list of the weight/style arguments mom allows.  Be aware,
+though, that you must have the fonts, correctly installed and named,
+in order to use the arguments.  (See
+<a href="appendices.html#fonts">Adding fonts to groff</a>
+for instructions and information.)  Please also read the
+<a href="#fam-add-note">ADDITIONAL NOTE</a>
+found in the description of the FAMILY macro.
 </p>
 
 <p>
@@ -975,29 +972,6 @@ For inline control of fonts, see
 <a href="inlines.html#inline-fonts-mom">Inline Escapes, font control</a>.
 </p>
 
-<div id="font-note" class="box-tip">
-<p class="tip">
-<span class="note">Note:</span> mom, versions 1.1.9-a and higher,
-considerably extends the range of arguments you can pass to FT,
-making it more convenient to add and access fonts of differing
-<a href="definitions.html#weight">weights</a>
-and
-<a href="definitions.html#shape">shapes</a>
-within the same family.  Have a look
-<a href="appendices.html#style-extensions">here</a>
-for a list of the weight/style arguments mom
-allows.
-</p>
-</div>
-
-<p>
-Be aware, though, that you must have the fonts, correctly installed
-and named, in order to use the arguments.  (See
-<a href="appendices.html#howto">How to create a PostScript font for use with groff</a>
-for how to add fonts to groff.)  Please also read the
-<a href="#fam-add-note">ADDITIONAL NOTE</a>
-found in the description of the FAMILY macro.
-</p>
 
 <!-- -FALLBACK_FONT- -->
 
@@ -1012,7 +986,7 @@ Macro: <b>FALLBACK_FONT</b> <kbd class="macro-args">&lt;fallback font&gt; [ ABOR
 <p>
 In the event that you pass an invalid argument to
 <a href="#font">.FAMILY</a>
-(i.e. a non-existent family), mom, by default, uses the fallback
+(ie a non-existent family), mom, by default, uses the fallback
 font, Courier Medium Roman (CR), in order to continue processing
 your file.
 </p>
@@ -1029,10 +1003,7 @@ would do the trick.
 </p>
 
 <p>
-Additionally, if your version of groff accepts accepts &#8221;<kbd>.if
-F</kbd>&#8221; and &#8221;<kbd>.if S</kbd>&#8221; (see
-<a href="#fam-add-note">above</a>),
-mom issues a warning whenever a font style set with
+Mom issues a warning whenever a font style set with
 <a href="#font">FT</a>
 does not exist, either because you haven&#8217;t registered the
 style (see
@@ -1112,7 +1083,7 @@ is measured in points.  Therefore, to change the type size to, say,
 <span class="pre-in-pp">
   .PT_SIZE 11
 </span>
-Point sizes may be fractional (e.g.  10.25 or 12.5).
+Point sizes may be fractional (eg  10.25 or 12.5).
 </p>
 
 <p>
@@ -1165,7 +1136,7 @@ Macro: <b>LS</b> <kbd class="macro-args">&lt;distance between lines&gt;</kbd>
 <p>
 LS (Line Space) takes one argument: the distance you want, typically
 in points, from baseline to baseline of type.  The argument may be
-fractional (e.g. 12.25 or 14.5).  Like PT_SIZE, LS does not require
+fractional (eg 12.25 or 14.5).  Like PT_SIZE, LS does not require
 a unit of measure, since
 <a href="definitions.html#leading">leading</a>
 is most often given in points.  Therefore, to set the linespace to
@@ -1230,7 +1201,7 @@ requests automatically update the linespacing by the autolead amount.
 Used in this way, AUTOLEAD does not require a unit of measure;
 points is assumed.  However, you may use an alternate unit of
 measure by appending it to the argument.  The argument may be a
-decimal fraction (e.g. .5 or 2.75).
+decimal fraction (eg .5 or 2.75).
 </p>
 
 <p>
@@ -1665,23 +1636,17 @@ below.
 <i>for the way around this.</i>
 </p>
 
-<p>
-The mnemonic &#8220;EL&#8221; is borrowed from old Compugraphic
-typesetting systems, where it stood for
-"<span style="text-decoration: underline;">E</span>nd <span style="text-decoration: underline;">L</span>ine."
-Conceptually, EL is equivalent to the notion of a carriage return
-with no linefeed.
-</p>
-
 <p id="el-example">
-EL&#8217;s function is simple: it breaks a line without advancing
-on the page.  As an example of where you might use it, imagine that
-you&#8217;re working from marked-up copy.  The markup indicates 24
-points of space between two given lines, but the prevailing line
-spacing is 12.5 points.  You may find it more convenient to break
-the first line with EL and instruct mom to advance 24 points to the
-next line instead of calculating the lead that needs to be added to
-12.5 to get 24.  To demonstrate:
+EL ("<span style="text-decoration: underline;">E</span>nd <span style="text-decoration: underline;">L</span>ine")
+is conceptually equivalent to the notion of a carriage return with
+no linefeed.  Its function is simple: it breaks a line without
+advancing on the page.  As an example of where you might use it,
+imagine that you&#8217;re working from marked-up copy.  The markup
+indicates 24 points of space between two given lines, but the
+prevailing line spacing is 12.5 points.  You may find it more
+convenient to break the first line with EL and instruct mom to
+advance 24 points to the next line instead of calculating the lead
+that needs to be added to 12.5 to get 24.  To demonstrate:
 <br/>
 <span class="pre-in-pp">
   .LEFT
@@ -1708,70 +1673,10 @@ don&#8217;t have to recalculate the extra space.
 <p>
 ALD in the above examples stands for
 &#8220;<span style="text-decoration: underline;">A</span>dvance
-<span style="text-decoration: underline;">L</span>ea<span style="text-decoration: underline;">D</span>&#8221;
-(another mnemonic borrowed from Compugraphic), which is covered in
-the section
-<a href="#vertical-movements-intro">Vertical movements</a>.
+<span style="text-decoration: underline;">L</span>ea<span style="text-decoration: underline;">D</span>&#8221;,
+which is covered in the section
+<a href="#aldrld-intro">Vertical movements</a>.
 </p>
-
-<div class="box-notes">
-<h3 id="el-notes" class="docs notes">Notes</h3>
-
-<p style="margin-top: .5em;">
-In versions of mom prior to 1.1.9, EL did not always work as
-advertised on the last
-<a href="definitions.html#outputline">output line</a>
-of pages that contained a footer trap (e.g. one set with
-<a href="#b-margin">B_MARGIN</a>
-or in  documents formatted using the
-<a href="docprocessing.html#docprocessing">document processing macros</a>).
-</p>
-
-<p>
-EL has been re-written so that this should no longer be the case.
-However, in order for it to work in the
-<a href="definitions.html#filled">nofill</a>
-modes
-(<a href="#lrc">LEFT</a>,
-<a href="#lrc">RIGHT</a>
-or
-<a href="#lrc">CENTER</a>),
-you must always &#8220;join&#8221; <kbd>.EL</kbd> to
-the line before it using the
-<kbd><a href="#join">\c</a></kbd>
-<a href="definitions.html#inlines">inline escape</a>,
-like this:
-<br/>
-<span class="pre-in-pp">
-  .LEFT
-  A line I don&#8217;t want to advance\c
-  .EL
-</span>
-Conversely, in
-<a href="definitions.html#filled">fill modes</a>
-(<a href="#quad">QUAD LEFT</a>,
-<a href="#quad">QUAD RIGHT</a>,
-<a href="#quad">QUAD CENTER</a>
-or
-<a href="#justify">JUSTIFY</a>),
-the <kbd>\c</kbd> must not be used.
-</p>
-
-<p>
-If EL is used after most macros or groff
-<a href="definitions.html#primitives">primitives</a>
-(see the exception, below), you don&#8217;t have to worry about
-this, regardless of the fill mode.  Just type
-<kbd>.EL</kbd>
-</p>
-
-<p class="tip-bottom">
-<span class="experts">Experts:</span> EL is unrelated to
-groff&#8217;s <kbd>.el</kbd>.  If you find the similarity confusing,
-you may want to alias EL as something else (but don&#8217;t use EOL;
-mom uses it internally.)
-</p>
-</div>
 
 <!-- -SP- -->
 
@@ -2078,7 +1983,7 @@ Like
 <a href="#ws">WS</a>,
 increasing the sentence space by a value of 1 or 2 produces a
 difference that in many cases is scarcely visible; increasing by a
-value of 5 or so produces a subtle but noticeable difference (i.e.
+value of 5 or so produces a subtle but noticeable difference (ie
 the space between double-spaced input sentences will be slightly but
 visibly greater than the space between words); and increasing by a
 value greater than 10 is always apparent.  You should preview your
@@ -2104,7 +2009,7 @@ at the top of your files.
 If you do use SS for something other than ensuring that you
 don&#8217;t get unwanted sentence spaces in output copy, you can set
 or reset the sentence space to the groff default (the same width
-as a word space, i.e. double-spaced input sentences will appear
+as a word space, ie double-spaced input sentences will appear
 double-spaced on output as well) with
 <br/>
 <span class="pre-in-pp">
@@ -2161,7 +2066,7 @@ to HY, I&#8217;ve broken them down into separate sections.
 <h3 class="docs">1.&nbsp;&nbsp;HY</h3>
 
 <p>
-HY by itself (i.e. with no argument) simply turns automatic
+HY by itself (ie with no argument) simply turns automatic
 hyphenation on.  Any argument other than LINES, MARGIN, SPACE or
 DEFAULT, turns automatic hyphenation off.  For example, as explained
 in
@@ -2182,7 +2087,7 @@ or
 HY observes the following default hyphenation rules:
 </p>
 <ul style="margin-top: -.5em; margin-left: 18px;">
-  <li>Last lines (i.e. ones that will spring a trap&mdash;typically
+  <li>Last lines (ie ones that will spring a trap&mdash;typically
       the last line on a page) will not be hyphenated.
   </li>
   <li>The first and last two characters of a word are never
@@ -2209,7 +2114,7 @@ limit to the number of consecutive hyphenated lines.
 <span class="note">Note:</span>
 <a href="definitions.html#discretionaryhyphen">Discretionary hyphens</a>
 count when groff is figuring out how many lines to hyphenate;
-explicit hyphens do not.
+explicit hyphens (ie the actual hyphen character) do not.
 </p>
 </div>
 
@@ -2217,7 +2122,7 @@ explicit hyphens do not.
 
 <p>
 HY MARGIN sets the amount of room allowed at the end of a line
-before hyphenation is tripped (e.g. if there&#8217;s only 6 points
+before hyphenation is tripped (eg if there&#8217;s only 6 points
 left at the end of a line, groff won&#8217;t try to hyphenate the
 next word).  HY MARGIN only applies if you&#8217;re using
 <a href="#quad">QUAD</a>,
@@ -2400,7 +2305,7 @@ recommend previewing your work to assess the effect of RW.
 <a href="#br">break</a>
 when it&#8217;s invoked if you&#8217;re in one of the
 <a href="definitions.html#fill">fill</a>
-modes (i.e.
+modes (ie
 <a href="#quad">QUAD</a>
 L, R, C, J or
 <a href="#justify">JUSTIFY</a>).
@@ -2415,16 +2320,11 @@ that&#8217;s what you want by invoking
 
 <div class="box-important">
 <p class="tip">
-<span class="important">IMPORTANT:</span> In versions prior to
-1.1.9-a, RW affected all
-<a href="definitions.html#font">fonts</a>
-in the
-<a href="definitions.html#family">family</a>
-current at the time it was invoked.  As of 1.1.9-a, this behaviour
-has been changed. RW affects only the font current at the time
-it&#8217;s invoked, and remains in effect for that font every time
-the font is called, hence must be reset to zero to cancel its effect
-(<kbd>.RW&nbsp;0</kbd>) on that font.
+<span class="important">IMPORTANT:</span>
+RW (and its complement, EW; see below) only affects the current
+font, and remains in effect for that font every time it&#8217;s
+called, hence it must be reset to zero to cancel its effect
+(<kbd>.RW&nbsp;0</kbd>).
 </p>
 </div>
 
@@ -2468,7 +2368,7 @@ assess the effect of EW.
 <a href="#br">break</a>
 when it&#8217;s invoked if you&#8217;re in one of the
 <a href="definitions.html#fill">fill</a>
-modes (i.e.
+modes (ie
 <a href="#quad">QUAD</a>
 L, R, C, J or
 <a href="#justify">JUSTIFY</a>).
@@ -2484,16 +2384,11 @@ toggle macro.
 
 <div class="box-important">
 <p class="tip">
-<span class="important">IMPORTANT:</span> In versions prior to
-1.1.9-a, EW affected all
-<a href="definitions.html#font">fonts</a>
-in the
-<a href="definitions.html#family">family</a>
-current at the time it was invoked.  As of 1.1.9-a, this behaviour
-has been changed.  EW affects only the font current at the time
-it&#8217;s invoked, and remains in effect for that font every time
-the font is called, hence must be reset to zero to cancel its effect
-(<kbd>.EW&nbsp;0</kbd>) on that font.
+<span class="important">IMPORTANT:</span>
+EW (and its complement, RW; see above) only affects the current
+font, and remains in effect for that font every time it&#8217;s
+called, hence it must be reset to zero to cancel its effect
+(<kbd>.RW&nbsp;0</kbd>).
 </p>
 </div>
 
@@ -2510,7 +2405,7 @@ Macro: <b>BR_AT_LINE_KERN</b> <kbd class="macro-args">toggle</kbd>
 <p>
 By default, in
 <a href="definitions.html#filled">fill</a>
-modes (i.e.
+modes (ie
 <a href="#quad">QUAD</a>
 L, R, C, J or
 <a href="#justify">JUSTIFY</a>)
@@ -2549,9 +2444,9 @@ Macro: <b>KERN</b> <kbd class="macro-args">toggle</kbd>
 </div>
 
 <p>
-By itself (i.e. with no argument), KERN turns automatic pairwise
+By itself (ie with no argument), KERN turns automatic pairwise
 <a href="definitions.html#kern">kerning</a>
-on.  With any argument (e.g. OFF, Q, X), pairwise kerning is turned
+on.  With any argument (eg OFF, Q, X), pairwise kerning is turned
 off.
 </p>
 
@@ -2605,11 +2500,11 @@ LIGATURES with any argument turns automatic ligature generation off.
 <h2 id="modifications-intro" class="macro-group">Type modifications (pseudo font styles)</h2>
 
 <p>
-It sometimes happens that a PostScript 
+It sometimes happens that a
 <a href="definitions.html#family">family</a>
 doesn&#8217;t contain all the fonts you need.  You might, for
 example, be missing an italic font, or a bold font.  Or you might
-not be able to get your hands on a condensed family.  That&#8217;s
+not be able to get your hands on the condensed version.  That&#8217;s
 where these macros and inline escapes come in.  With them, you
 can fake the fonts you&#8217;re missing.  A word of caution,
 though: &#8220;faked&#8221; fonts are just that&mdash;faked.  You
@@ -3078,7 +2973,7 @@ of lead.
 <div class="box-tip">
 <p class="tip">
 <span class="note">Note:</span> if you want to use ALD at the top
-of a page (i.e. to advance to the starting position of type on a
+of a page (ie to advance to the starting position of type on a
 page), combine the value you want with <kbd>-1v</kbd> (minus one
 line space), like this:
 <br/>
@@ -3155,7 +3050,7 @@ to understand how mom handles tabs.
 <p class="tip">
 <span class="note">Note:</span> see the section
 <a href="docprocessing.html#behaviour">Typesetting macros during document processing</a>
-for re-assuring information on the use of tabs during
+for reassuring information on the use of tabs during
 <a href="docprocessing.html#docprocessing">document processing</a>.
 </p>
 </div>
@@ -3210,7 +3105,7 @@ Team spirit     Needs work     Persistently gives higher priority
 You want the first tab, CRITERION,
 </p>
 <ul style="margin-top: -.5em; margin-bottom: -.5em;">
-<li>to begin at the left margin of the page &ndash; i.e. no indent</li>
+<li>to begin at the left margin of the page &ndash; ie no indent</li>
 <li>to have a line length of 5 picas</li>
 <li>to be set flush left</li>
 </ul>
@@ -3273,7 +3168,10 @@ Once the tabs are set up, you can call them in one of two ways:
     advances one linespace and calls the tab.</li>
 <li>with <kbd><a href="#tn">.TN</a></kbd> (Tab Next), which keeps
     you on the current line and moves over to the next
-    tab in sequence (i.e. from 1 to 2, 2 to 3, etc.).</li>
+    tab in sequence (ie from 1 to 2, 2 to 3, etc.), or, more
+    conveniently, with the
+    <kbd><a href="#tn">\*[TB+]</a></kbd>
+    <a href="definitions.html#inlines">inline escape</a></li>
 </ul>
 
 <p>
@@ -3304,31 +3202,23 @@ Here&#8217;s how the input for our sample employee evaluation looks
 .TAB_SET 2 8P  9P  C
 .TAB_SET 3 19P 17P L QUAD
 .TAB 1
-CRITERION
-.TN
-EVALUATION
-.TN
+CRITERION\*[TB+]
+EVALUATION\*[TB+]
 COMMENTS
 .SP
 .TAB 1
-Service
-.TN
-Good
-.TN
+Service\*[TB+]
+Good\*[TB+]
 Many clients specifically request support from Joe by name.
 .SP
 .TAB 1
-Punctuality
-.TN
-Satisfactory
-.TN
+Punctuality\*[TB+]
+Satisfactory\*[TB+]
 Tends to arrive after 8:00am, but often works through lunch hour.
 .SP
 .TAB 1
-Team spirit
-.TN
-Needs work
-.TN
+Team spirit\*[TB+]
+Needs work\*[TB+]
 Persistently gives higher priority to helping clients
 than respecting organizational hierarchy.
 .TQ
@@ -3339,9 +3229,9 @@ than respecting organizational hierarchy.
 Try setting this up and processing it it with
 <br/>
 <span class="pre-in-pp">
-  groff -mom &lt;filename&gt; &gt; &lt;filename&gt;.ps
+  pdfmom filename.mom | ps2pdf - filename.pdf
 </span>
-then previewing the .ps file.  Notice how <kbd>.TN</kbd>
+then previewing the .pdf file.  Notice how <kbd>.TN</kbd>
 simply moves over to the next tab, while the combination
 <kbd>.SP/.TAB&nbsp;1</kbd> breaks the line, advances by one extra
 linespace, and calls the first tab.
@@ -3466,8 +3356,7 @@ into its component parts:
 </span>
 </li>
 <li>We want a 1 pica (12 points) gutter between tab 1 and 2,
-    so we insert 12 points of space with \*[FWD 12p]
-    (ForWarD 12 points):
+    so we insert 12 points of space with \*[FWD 12p]:
 <br/>
 <span class="pre-in-pp" style="margin-bottom: -.25em;">
   \*[FWD 12p]
@@ -3513,12 +3402,13 @@ line, like this:
        |  |   |
        |  |   +--fill output lines
        |  |
-  tab #--+  +--direction
+tab #--+  +--direction
 </span>
 From here on in, you call the tabs with
-<kbd><a href="#tab">.TAB</a></kbd>
-and
-<kbd><a href="#tn">.TN</a></kbd>
+<kbd><a href="#tab">.TAB</a></kbd>,
+<kbd><a href="#tn">.TN</a></kbd>,
+or
+<kbd><a href="#tn">\*[TB+]</a></kbd>
 just like typesetting tabs (see
 <a href="#typesetting-tabs-tut">typesetting tabs tutorial</a>).
 </p>
@@ -3547,31 +3437,23 @@ evaluation form utilizing string tabs.
 .ST  2  L
 .ST  3  L  QUAD
 .TAB 1
-CRITERION
-.TN
-EVALUATION
-.TN
+CRITERION\*[TB+]
+EVALUATION\*[TB+]
 COMMENTS
 .SP
 .TAB 1
-Service
-.TN
-Good
-.TN
+Service\*[TB+]
+Good\*[TB+]
 Many clients specifically request support from Joe by name.
 .SP
 .TAB 1
-Punctuality
-.TN
-Satisfactory
-.TN
+Punctuality\*[TB+]
+Satisfactory\*[TB+]
 Tends to arrive after 8:00am, but often works through lunch hour.
 .SP
 .TAB 1
-Team spirit
-.TN
-Needs work
-.TN
+Team spirit\*[TB+]
+Needs work\*[TB+]
 Persistently gives higher priority to helping clients
 than respecting organizational hierarchy.
 .TQ
@@ -3582,9 +3464,9 @@ than respecting organizational hierarchy.
 Try setting this up and processing it with
 <br/>
 <span class="pre-in-pp">
-  groff -mom &lt;filename&gt; &gt; &lt;filename&gt;.ps 
+  pdfmom filename | ps2pdf - filename.pdf
 </span>
-and previewing the .ps file.
+and previewing the .pdf file.
 </p>
 
 <p>
@@ -3611,7 +3493,8 @@ how the tab structure remains the same, but the gutters are wider.
   <li><a href="#inline-st">\*[ST]...\*[STX]</a> &ndash; inline escapes for marking String Tabs</li>
   <li><a href="#st">ST</a> &ndash; set String Tabs</li>
   <li><a href="#tab">TAB</a> &ndash; call tabs</li>
-  <li><a href="#tn">TN</a> &ndash; Tab Next; call next tab in a sequence</li>
+  <li><a href="#tn">TN</a> &ndash; Tab Next; call next tab in sequence</li>
+  <li><a href="#tn">\*[TB+]</a> &ndash; inline escape to call next tab in sequence</li>
   <li><a href="#tq">TQ</a> &ndash; Tab Quit</li>
 </ul>
 
@@ -3756,7 +3639,7 @@ string tab markers.
 </span>
 String tab 1 begins at the start of the line and ends after the word
 &#8220;time&#8221;.  String tab 2 starts at &#8220;good&#8221; and
-ends after &#8220;men&#8221;.  Inline escapes (e.g. font or point
+ends after &#8220;men&#8221;.  Inline escapes (eg font or point
 size changes, or horizontal movements, including
 <a href="goodies.html#pad">padding</a>)
 are taken into account when mom determines the position and length
@@ -3779,7 +3662,7 @@ after which they may be called, by number, with
 <div class="box-tip">
 <p class="tip">
 <span class="note">Note:</span> Lines with string tabs marked off
-in them are normal input lines, i.e. they get printed, just like
+in them are normal input lines, ie they get printed, just like
 any input line.  If you want to set up string tabs without the line
 printing, use the
 <a href="goodies.html#silent">SILENT</a>
@@ -3920,7 +3803,6 @@ example,
 <span class="pre-in-pp">
   .TAB 3
 </span>
-<br/>
 moves you to tab 3.
 </p>
 
@@ -3939,16 +3821,17 @@ produces, on output
 <br/>
 <span class="pre-in-pp">
   A line of text in tab 1.
-  A line of text in tab 2.
+                             A line of text in tab 2.
 </span>
 If you want the tabs to line up, use
 <a href="#tn">TN</a>
-(Tab Next), like this:
+(Tab Next)
+or, more conveniently, the inline escape
+<a href="#tn">\*[TB+]</a>:
 <br/>
 <span class="pre-in-pp">
   .TAB 1
-  A line of text in tab 1.
-  .TN
+  A line of text in tab 1.\*[TB+]
   A line of text in tab 2.
 </span>
 which produces
@@ -3979,24 +3862,8 @@ picas, not 6 picas plus the 2 pica indent.
 
 <div class="box-macro-args">
 Macro: <b>TN</b>
+<br/>Inline escape: <b>\*[TB+]</b>
 </div>
-<p class="requires">
-In tabs that aren&#8217;t given the <kbd class="normal">QUAD</kbd>
-argument when they&#8217;re set up with
-<a href="#tab-set" class="normal">TAB_SET</a>
-or
-<a href="#st" class="normal">ST</a>,
-you must terminate the line preceding <kbd class="normal">.TN</kbd>
-with the <kbd class="normal">\c</kbd> inline escape.  See the
-<a href="#tn-note" class="normal">ADDITIONAL NOTE</a>.
-If you find remembering whether to put in the
-<kbd class="normal">\c</kbd> bothersome, you may prefer to use the
-<a href="definitions.html#inlines" class="normal">inline escape</a>
-alternative to
-<kbd class="normal">.TN</kbd>,
-<kbd class="normal"><a href="inlines.html#TB+">\*[TB+]</a></kbd>,
-which works consistently regardless of the fill mode.
-</p>
 
 <p>
 TN moves over to the next tab in numeric sequence (tab n+1) without
@@ -4005,18 +3872,40 @@ advancing on the page.  See the
 in the description of the TAB macro for an example of how TN works.
 </p>
 
+<p>
+In tabs that aren&#8217;t given the <kbd class="normal">QUAD</kbd>
+argument when they&#8217;re set up with
+<a href="#tab-set" class="normal">TAB_SET</a>
+or
+<a href="#st" class="normal">ST</a>,
+you must terminate the line preceding <kbd class="normal">.TN</kbd>
+with the <kbd class="normal">\c</kbd> inline escape.  Conversely,
+if you did give a <kbd>QUAD</kbd> argument to TAB_SET or ST, the
+<kbd>\c</kbd> must not be used.
+</p>
+
+<p>
+If you find remembering whether to put in the
+<kbd class="normal">\c</kbd> bothersome, you may prefer to use the
+<a href="definitions.html#inlines" class="normal">inline escape</a>
+alternative to
+<kbd class="normal">.TN</kbd>,
+<kbd class="normal"><a href="inlines.html#tb-plus-mom">\*[TB+]</a></kbd>,
+which works consistently regardless of the fill mode.
+</p>
+
 <div id="tn-note" class="box-tip">
-<p class="tip-top">
+<p class="tip">
 <span class="note">Note:</span> You must put text in the
 <a href="definitions.html#inputline">input line</a>
-immediately after TN. &#8220;Stacking&#8221; of TN&#8217;s is not
+immediately after TN. Stacking of TN&#8217;s is not
 allowed.  In other words, you cannot do
 <br/>
 <span class="pre-in-pp">
   .TAB 1
-  Some text
+  Some text\c
   .TN
-  Some more text
+  Some more text\c
   .TN
   .TN
   Yet more text
@@ -4025,54 +3914,18 @@ The above example, assuming tabs numbered from 1 to 4, should be entered
 <br/>
 <span class="pre-in-pp">
   .TAB 1
-  Some text
+  Some text\c
   .TN
-  Some more text
-  .TAB 4
+  Some more text\c
+  .TN
+  \&\c
+  .TN
   Yet more text
 </span>
-<span class="additional-note">Additional note:</span>
-In versions of mom prior to 1.1.9, TN did not always work as
-advertised on the last
-<a href="definitions.html#outputline">output line</a>
-of pages that contained a footer trap (e.g. one set with
-<a href="#b-margin">B_MARGIN</a>
-or in  documents formatted using the
-<a href="docprocessing.html#docprocessing">document processing macros</a>).
-</p>
 
-<p>
-TN has been re-written so that this should no longer be the case.
-However, in order for it to work in tabs that have not been given a
-<kbd>QUAD</kbd> argument (see
-<a href="#tab-set">TAB_SET</a>
-and
-<a href="#st">ST</a>)
-you must always &#8220;join&#8221; <kbd>.TN</kbd> to
-the line before it using the
-<kbd><a href="#join">\c</a></kbd>
-<a href="definitions.html#inlines">inline escape</a>,
-as in the following example:
-<br/>
-<span class="pre-in-pp">
-  .TAB_SET 1 0  1P  L
-  .TAB_SET 2 1P 20P L
-  .TAB 1
-  1.\c
-  .TN
-  The first rule of survival is &#8220;make and keep good friends.&#8221;
-</span>
-When output, the example will look like this:
-<br/>
-<span class="pre-in-pp">
-  1.  The first rule of survival is &#8220;make and keep good friends.&#8221;
-</span>
-</p>
-
-<p class="tip-bottom">
-Conversely, if you did give a <kbd>QUAD</kbd> argument
-to TAB_SET or ST, the
-<kbd>\c</kbd> must not be used.
+<kbd>\&</kbd> is a zero-width, non-printing character that groff
+recognizes as valid input, hence meets the requirement for input
+text following <kbd>.TN</kbd>.
 </p>
 </div>
 
@@ -4305,7 +4158,7 @@ of the longest column.
 <p>
 With mom&#8217;s indents, you can indent from the left, the right,
 or both margins.  In addition, mom provides temporary left indents
-(i.e. only one line is indented, as at the start of a paragraph)
+(ie only one line is indented, as at the start of a paragraph)
 and &#8220;hanging&#8221; left indents (the reverse of a temporary
 indent; the first line isn&#8217;t indented, subsequent lines are).
 </p>
@@ -4371,7 +4224,7 @@ argument, like this:
   .IL
 </span>
 As you can see, once you&#8217;ve supplied a measure to an indent
-macro mom stores the value, obviating the need to repeat it on
+macro, mom stores the value, obviating the need to repeat it on
 subsequent invocations.  And mom doesn&#8217;t just store the
 measure&mdash;she hangs on to it tenaciously.  Arguments passed to
 IL, IR and IB are additive.  Consider the following:
@@ -4386,12 +4239,12 @@ IL, IR and IB are additive.  Consider the following:
   A second block of text...
   ...
   ...
-  .IR 2P    \"Indent right by an additional 2 picas (i.e. 4 picas)
+  .IR 2P    \"Indent right by an additional 2 picas (ie 4 picas)
   A third block of text...
   ...
   ...
 </span>
-The first block of text is right indented by 2 picas (i.e. the line
+The first block of text is right indented by 2 picas (ie the line
 length is shortened by 2 picas to 18 picas).  The second block of
 text, after IQ, is, as you&#8217;d expect, set to the full measure.
 The third block of text&mdash;the one to pay attention to&mdash;is
@@ -4456,9 +4309,7 @@ compelling reason not to change the current left margin or line
 length.  In many instances where indents might seem expedient,
 it&#8217;s better to use tabs, or actually change the left margin
 or the line length. Mom&#8217;s indenting macros are flexible and
-powerful, but easy to get tangled up in.  Personally, I don&#8217;t
-use them much, except for cutarounds and multi-level lists à la
-html, at which they excel.
+powerful, but easy to get tangled up in.
 </p>
 
 <div class="box-tip">
@@ -4771,13 +4622,21 @@ mom keeps track of the last measure you gave it.
 
 <p>
 Generally speaking, you should invoke HI immediately prior to the
-line you want hung (i.e. without any intervening
+line you want hung (ie without any intervening
 <a href="definitions.html#controllines">control lines</a>).
 And because hanging indents affect only one line, there&#8217;s no
 need to turn them off.
 </p>
 
-<h4 id="num-lists" class="macro-id">Recipe: Numbered lists using hanging indents</h4>
+<div class="box-important">
+<p class="tip">
+<span class="important">IMPORTANT:</span> Unlike IL, IR and IB,
+measures given to HI are NOT additive.  Each time you pass a measure
+to HI, the measure is treated literally.
+</p>
+</div>
+
+<h4 id="num-lists" class="macro-id">Recipe: A numbered list using hanging indents</h4>
 
 <div class="box-tip" style="margin-top: -.5em; margin-bottom: -.5em;">
 <p class="tip">
@@ -4788,8 +4647,6 @@ This recipe exists to demonstrate the use of hanging indents only.
 </div>
 
 <p style="margin-top: 1.5em;">
-Consider the following example:
-<br/>
 <span class="pre-in-pp">
   .PAGE 8.5i 11i 1i 1i 1i 1i
   .FAMILY  T
@@ -4799,8 +4656,8 @@ Consider the following example:
   .JUSTIFY
   .KERN
   .SS 0
-  .IL \w'\0\0.'  \"Indent left by 2 figure spaces and a period
-  .HI \w'\0\0.'  \"Hang first line back by 2 figure spaces and a period
+  .IL \w'\0\0.'
+  .HI \w'\0\0.'
   1.\0The most important point to be considered is whether the
   answer to the meaning of Life, the Universe, and Everything
   really is 42.  We have no-one&#8217;s word on the subject except
@@ -4833,22 +4690,18 @@ indented lines that follow.
 </p>
 
 <p>
-Notice that subsequent invocations of <kbd>.HI</kbd> without a
-measure produce exactly the same effect.
+Notice that subsequent invocations of <kbd>.HI</kbd> don&#8217;t
+require a measure to be given.
 </p>
 
 <p>
-Paste the example above into a file and preview it with <kbd>groff
--mom -X &lt;filename&gt;</kbd> to see hanging indents in action.
+Paste the example above into a file and preview it with
+<br/>
+<span class="pre-in-pp">
+  pdfmom filename.mom | ps2pdf - filename.pdf
+</span>
+to see hanging indents in action.
 </p>
-
-<div class="box-important">
-<p class="tip">
-<span class="important">IMPORTANT:</span> Unlike IL, IR and IB,
-measures given to HI are NOT additive.  Each time you pass a measure
-to HI, the measure is treated literally.
-</p>
-</div>
 
 <!-- -IX- -->
 
@@ -4871,8 +4724,8 @@ Macro: <b>IBX</b> <kbd class="macro-args">[ CLEAR ]</kbd> (exit Indent Both)
 
 <div class="box-important">
 <p class="tip-top">
-<span class="important">IMPORTANT NOTE:</span> Formerly, the macro
-for quitting all indents was IX.  This usage is now deprecated, in
+<span class="important">IMPORTANT NOTE:</span> The original macro
+for quitting all indents was IX.  This usage has been deprecated in
 favour of IQ.  IX will continue to behave as before, but mom will
 issue a warning to stderr indicating that you should update your
 documents.

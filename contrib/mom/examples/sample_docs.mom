@@ -1,4 +1,4 @@
-\# Copyright 2004, 2005, 2006, 2009
+\# Copyright 2004, 2005, 2006, 2009, 2010, 2011, 2012
 \# Free Software Foundation, Inc.
 \#
 \# Copying and distribution of this file, with or without modification,
@@ -21,46 +21,56 @@
 \#
 \# The PRINTSTYLE is TYPESET.  If you'd like to see what mom does
 \# with the documents when the PRINTSTYLE is TYPEWRITE, change
-\# PRINTSTYLE TYPESET, below, to PRINTSTYLE TYPEWRITE.  Also, in the
-\# third example, comment out PARA_INDENT and QUOTE_INDENT (lines
-\# 332 and 333).
+\# PRINTSTYLE TYPESET, below, to PRINTSTYLE TYPEWRITE and re-run with
+\#
+\#  pdfmom -Tps sample_docs.mom > sample_docs.pdf 
 \#
 \# ===================================================================
 \#
-\# First, a sample "NAMED" document--in this case, an outline.
-\# A novelist wouldn't normally write an outline with numbered heads,
+\# First, a sample NAMED document--in this case, an outline.
+\# A novelist wouldn't normally write an outline with numbered
 \# subheads and paraheads.  I've turned the feature on merely to
 \# demonstrate it.
 \#
-\# Reference macros
+\# Reference macros (metadata)
 \#
 .TITLE     "Lake Attica's Shores"
 .SUBTITLE  "A Romance Novel"
 .AUTHOR    "Rosemary Winspeare"
-.DRAFT      1  \" Ignored because COPYSTYLE is FINAL
-.REVISION   2  \" Ignored because COPYSTYLE is FINAL
-.COPYRIGHT "2004 Alma Podborski
+.COPYRIGHT "2004 Alma Podborski"
+.PDF_TITLE "Sample mom documents"
 \#
-\# Reference macros for the document cover
+\# Additional information, for the cover
 \#
 .DOC_COVERTITLE "Sample mom Documents"
 .MISC "Three types of mom documents" "assembled and collated by mom's author"
 \#
-\# Docstyle macros
+\# Docstyle macros (templates)
 \#
 .DOCTYPE    NAMED "Outline"
-.PRINTSTYLE TYPESET \" Or TYPEWRITE to preview "typewritten, double-spaced"
+.PRINTSTYLE TYPESET   \" Or TYPEWRITE to preview "typewritten, double-spaced"
+.PAPER      LETTER
 \#
-.DOC_COVER COVERTITLE MISC
+\# What to put on the cover and first title page
+\#
+.DOC_COVER DOC_COVERTITLE MISC 
 .COVER     TITLE AUTHOR DOCTYPE COPYRIGHT
 \#
-\# Additional setup macros
+\# Style for nested heading levels
 \#
-.NUMBER_PARAHEADS
+\# The first two instances of level-1 headings will be paragraph heads
+\# so we set the paragraph head style here, then change it when
+\# level-1 headings become main heads.
+\#
+.HEADING_STYLE 1 FONT BI SIZE +.25
+.HEADING_STYLE 2 FONT B SIZE +.5 BASELINE_ADJUST \n[.v]/8 \" ie 1/8 the leading
+\#
+.AUTO_RELOCATE_TOC
+.SPACE_TOC_ITEMS
 \#
 .START
 .PP
-.PARAHEAD "A note on the setting"
+.HEADING 1 PARAHEAD "A note on the setting"
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
 nonumy eirmod tempor invidunt ut labore et do\%lo\%re magna ali\%quyam erat,
 sed diam voluptua. Stet clita kasd gubergren, no sea takimata sanctus est.
@@ -77,7 +87,7 @@ vero, eos et accusam et justo duo do\%lo\%res et ea rebum.  Consetetur
 sadipscing elitr, sed diam nonumy.
 .LINEBREAK
 .PP
-.PARAHEAD "About historical personnages"
+.HEADING 1 PARAHEAD "About historical personnages"
 At vero eos et accusam et justo duo do\%lo\%res et ea rebum.  Stet clita
 kasd gubergren, no sea takimata sanctus est.  Tempor invidunt ut
 labore et do\%lo\%re magna ali\%quyam erat, sed diam voluptua.
@@ -87,10 +97,15 @@ nonumy eirmod tempor invidunt ut labore et do\%lo\%re magna ali\%quyam erat,
 sed diam voluptua.  Consetetur sadipscing elitr, sed diam nonumy
 eirmod tempor invidunt ut labore et do\%lo\%re magna.  Tempor invidunt
 ut labore et do\%lo\%re magna ali\%quyam erat, sed diam voluptua.
-.NUMBER_HEADS
-.NUMBER_SUBHEADS
-.HEAD "Part One"
-.SUBHEAD "Chapter 1"
+\#
+\# Change level-1 style and add numbering to levels 1 and 2
+\#
+.HEADING_STYLE 1 FONT B SIZE +1.5 CAPS UNDERSCORE .5 2p QUAD C \
+  NO_SPACE_AFTER BASELINE_ADJUST +0 NUMBER
+.HEADING_STYLE 2 NUMBER
+\#
+.HEADING 1 "Part One"
+.HEADING 2 "Chapter 1"
 .PP
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
 sed diam nonumy eirmod tempor invidunt ut labore et do\%lo\%re magna
@@ -102,7 +117,7 @@ kasd gubergren, no sea takimata sanctus est.  Lorem ipsum dolor sit
 amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
 invidunt ut labore et do\%lo\%re magna ali\%quyam erat, sed diam voluptua.
 Stet clita kasd gubergren, no sea takimata sanctus est.
-.SUBHEAD "Chapter 2"
+.HEADING 2 "Chapter 2"
 .PP
 Stet clita kasd gubergren, no sea takimata sanctus est.  Lorem ipsum
 dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
@@ -112,7 +127,7 @@ voluptua.  At vero eos et accusam et justo duo do\%lo\%res et ea rebum.
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
 sed diam nonumy eirmod tempor invidunt.  Ut labore et do\%lo\%re magna
 ali\%quyam erat, sed diam voluptua at vero.
-.SUBHEAD "Chapter 3"
+.HEADING 2 "Chapter 3"
 .PP
 Eos et accusam et justo duo do\%lo\%res et ea rebum.  Stet clita kasd
 gubergren, no sea takimata sanctus est lorem ipsum dolor sit amet.
@@ -120,8 +135,8 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
 nonumy eirmod tempor invidunt ut labore et do\%lo\%re magna ali\%quyam erat,
 sed diam voluptua.  At vero eos et accusam et justo duo do\%lo\%res et
 ea rebum.
-.HEAD "Part Two"
-.SUBHEAD "Chapter 4"
+.HEADING 1 "Part Two"
+.HEADING 2 "Chapter 4"
 .PP
 Stet clita kasd gubergren, no sea takimata sanctus est
 lorem ipsum dolor sit amet.  Lorem ipsum dolor sit amet, consetetur
@@ -138,8 +153,8 @@ sed diam nonumy eirmod tempor invidunt ut labore et do\%lo\%re magna
 ali\%quyam erat, sed diam voluptua.  At vero eos et accusam et justo
 duo do\%lo\%res et ea rebum.  Stet clita kasd gubergren, no sea takimata
 sanctus est lorem ipsum dolor sit amet.  Consetetur sadipscing elitr,
-sed diam nonumy eirmod tempor invidunt. 
-.SUBHEAD "Chapter 5"
+sed diam nonumy eirmod tempor invidunt.
+.HEADING 2 "Chapter 5"
 .PP
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
 diam nonumy eirmod tempor invidunt ut labore et do\%lo\%re magna
@@ -168,10 +183,7 @@ sit amet.  Accusam et justo duo do\%lo\%res et ea rebum
 \# has already deposited one there, COLLATE can't undo it.
 \#
 \# Normally, this isn't necessary; here we require it because the
-\# line falls right at the bottom of the page, and would therefore
-\# normally spring the page trap.  Sorry for the fussiness, but at
-\# least now you know what to do if you ever encounter the problem
-\# of a page header printing at the top of a collated document.
+\# line falls right at the bottom of the page.
 \#
 \# Please notice, too, the use of "\&" before "..."  Whenever an
 \# input line begins with either a period, an apostrophe or a space,
@@ -181,14 +193,12 @@ sit amet.  Accusam et justo duo do\%lo\%res et ea rebum
 \#
 \# =====================================================================
 \#
-\# Next, two pages of a chapter, set in DRAFT style, showing
-\# the use of the EPIGRAPH BLOCK macro and the QUOTE macro.
+\# Next, two pages of a chapter, set in DRAFT style, showing the use
+\# of the EPIGRAPH BLOCK macro and the QUOTE macro.
 \#
 \# You'll notice that the starting page number of this "draft" is 1 (in
 \# roman numerals).  COPYSTYLE DRAFT always numbers the first page of a
 \# document 1.
-\#
-\# Reference macros
 \#
 .TITLE         "Lake Attica's Shores"
 .SUBTITLE      "A Romance Novel"
@@ -199,17 +209,14 @@ sit amet.  Accusam et justo duo do\%lo\%res et ea rebum
 .REVISION       2
 .MISC          "Draft 1, 2nd revision"
 \#
-\# Docstyle macros
-\#
 .DOCTYPE    CHAPTER
 .COPYSTYLE  DRAFT
 \#
-\# Additional style macros
-\#
 .EPIGRAPH_FONT I       \" Epigraphs are normally set in roman
 .DRAFT_WITH_PAGENUMBER \" Draft/revision info usually goes in the header
-.COVER_MISC_QUAD RIGHT \" Change default position of the cover "misc" line
 \#
+.COVER_MISC_FAMILY H
+.COVER_MISC_QUAD  RIGHT
 .COVER CHAPTER+TITLE MISC
 \#
 .START
@@ -218,7 +225,12 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
 nonumy eirmod tempor invidunt ut labore et do\%lo\%re magna ali\%quyam erat,
 sed diam voluptua.
 .RIGHT
-\*[ROM]\(emJoseph E. Blough
+\#
+\# If running PRINTSTYLE TYPEWRITE, add space before citation
+\#
+.if \n[#PRINT_STYLE]=1 .sp
+\#
+\*[ROM]\[em]Joseph E. Blough
 .EPIGRAPH OFF
 .PP
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
@@ -289,23 +301,22 @@ accusam et justo duo do\%lo\%res et ea rebum.  Stet clita kasd gubergren,
 no sea takimata sanctus est.  At vero eos et accusam et justo duo
 do\%lo\%res et ea rebum.
 .RIGHT
-\*[BD]\&...end of sample chapter
+\*[BD]\&...end of sample chapter\c
+.EL
 .COLLATE
 \#
 \# =====================================================================
 \#
-\# Finally, a sample academic article, set in two columns with a
+\# Finally, a sample journal article, set in two columns with a
 \# 1.5-pica gutter between them.  This example also uses QUOTES,
 \# BLOCKQUOTES and FOOTNOTES. In addition, it's set RECTO_VERSO,
 \# with differing left and right margins that alternate from page to
 \# page.  (The header also flips from right to left, which you can
 \# see on the 2nd and 3rd pages).
 \#
-\# In order to accomodate the narrow measure of the columns, there's also
-\# a demonstration of things you can change with both the typesetting
-\# macros and the document processing "control" macros.
-\#
-\# Reference macros
+\# The primary purpose of this sample is to demonstrate how to
+\# create a stylesheet, along with some of the control macros that
+\# can be used.
 \#
 .TITLE     "CONTROL EQUALS CHAOS"
 .SUBTITLE  "\*[ALD1]The Psychological and Auditory \
@@ -314,38 +325,53 @@ Impact of Serial vs. Aleatoric Music\*[RLD1]"
 .COPYRIGHT "2004 J. Chang, B.H. Connors
 .MISC      "Submitted June 3, 2004" "\*[IT]Piano Quarterly\*[PREV]"
 \#
-\# Docstyle macros
-\#
 .DOCTYPE    DEFAULT
 .COPYSTYLE  FINAL
 \#
-\# Additional style macros -- general type parameters
+.L_MARGIN   6P
+.R_MARGIN   4P+6p
+.PT_SIZE    10
+.AUTOLEAD   1.5
 \#
-.L_MARGIN     6P
-.R_MARGIN     4P+6p
-.PT_SIZE      10
-.AUTOLEAD     1.5
-\#
-\# Additional style macros -- change mom's default behaviour
+.AUTHOR_SIZE   +.5
+.SUBTITLE_SIZE +1
 \#
 .RECTO_VERSO
-.PAGENUM           1
-.HEADER_LEFT      "Chang, Connors"  \" Because we have two authors
-.COLUMNS           2 1P+6p
-.SUBTITLE_SIZE     +1.5
-.AUTHOR_SIZE       +.5
-.DOCHEADER_LEAD    +2p
-.HEADER_SIZE       +1
-.PARA_INDENT       1P \" Comment this out if previewing PRINTSTYLE TYPEWRITE
-.QUOTE_INDENT      2  \" Comment this out if previewing PRINTSTYLE TYPEWRITE
-.SUBHEAD_SIZE      +0
-.BLOCKQUOTE_FAMILY H
-.BLOCKQUOTE_SIZE   -2
-.NUMBER_HEADS      OFF  \" Because we turned them on in the first example
-.NUMBER_SUBHEADS   OFF  \" Ibid
+.PAGENUM   1
 \#
-.COVER_MISC_QUAD   L    \" Because we set it to R earlier
-.COVER TITLE AUTHOR COPYRIGHT MISC
+.HEADER_LEFT  "Chang, Connors"  \" Because we have two authors
+.HEADER_SIZE  +1
+\#
+.DOCHEADER_ADVANCE 1.75i
+.DOCHEADER_LEAD    +2p
+\#
+\# When PRINTSTYLE is TYPESET, these indents need to be smaller than
+\# the default
+\#
+.if \n[#PRINT_STYLE]=2 \{\
+. PARA_INDENT  1P
+. QUOTE_INDENT 2
+.\}
+\#
+.HEADING_STYLE 1 QUAD L SIZE +0 NO_NUMBER NO_CAPS NO_UNDERSCORE \
+  NO_SPACE_AFTER BASELINE_ADJUST \n[.v]/8 \" ie 1/8 of the leading
+\#
+.BLOCKQUOTE_FAMILY   H
+.BLOCKQUOTE_SIZE     -2
+.BLOCKQUOTE_AUTOLEAD 2
+\#
+.COVERTITLE "\*[UP 3p]\E*[$TITLE]" \" Use $TITLE, but raise 3 points
+\#
+.COVER_LEAD           +2
+.COVER_AUTHOR_SIZE    +1.5
+.COVER_MISC_FAMILY    T
+.COVER_MISC_QUAD      L
+.COVER_MISC_SIZE      +0
+.COVER_COPYRIGHT_SIZE +0
+\#
+.COVER COVERTITLE AUTHOR COPYRIGHT MISC
+\#
+.COLUMNS 2 1P+6p
 \#
 .START
 .PP
@@ -390,7 +416,7 @@ ali\%quyam erat, sed diam voluptua.
 magna ali\%quyam erat, sed diam voluptua.  At vero eos et accusam et
 justo duo do\%lo\%res et ea rebum.  Stet clita kasd gubergren no sea.
 \#
-.SUBHEAD "Schoenberg\(em" "The Origins of Serial Pitch Organization"
+.HEADING 1 "Schoenberg \[em]" "The Origins of Serial Pitch Organization"
 \#
 .PP
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
@@ -409,7 +435,7 @@ Gubergren no sea takimata sanctus est.
 Amet consetetur sadipscing elitr sed diam nonumy eirmod.  Tempor
 invidunt ut labore.  Et dolor\%e magna ali\%quyam erat, sed diam voluptua,
 at vero.  Eos et accusam et justo duo do\%lo\%res et ea rebum.  Stet clita
-kasd gubergren.
+kasd gubergren sed diam voluptua.
 .PP
 No sea takimata\c
 .FOOTNOTE
@@ -422,22 +448,24 @@ et do\%lo\%re magna ali\%quyam erat, sed diam voluptua.  At vero eos et
 accusam et justo duo do\%lo\%res et ea rebum amet.  Consetetur sadipscing
 elitr sed diam nonumy eirmod tempor invidunt ut labore, et do\%lo\%re
 magna ali\%quyam erat.  Sed diam voluptua, at vero, eos et accusam et
-justo duo do\%lo\%res et ea rebum.
+justo duo do\%lo\%res et ea rebum qua certiore.
 \#
-.SUBHEAD "Messiaen to Stockhausen\(em" "The Quest for Absolute Control"
+.HEADING 1 "Messiaen to Stockhausen \[em]" "The Quest for Absolute Control"
 \#
 .PP
 Vero eos et accusam et justo duo do\%lo\%res et ea rebum amet:
+\#
 .QUOTE
 Eirmod tempor invidunt
 Ut labore et do\%lo\%re magna ali\%quyam erat
 Sed diam voluptua
 At vero eos et accusam et justo duo do\%lo\%res.
 .QUOTE OFF
+\#
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr
 sed diam.  Nonumy eirmod tempor invidunt ut labore et do\%lo\%re magna.
 Aliquyam erat, sed diam voluptua at vero eos et accusam.  Et
-justo duo do\%lo\%res et ea rebum stet.
+justo duo do\%lo\%res et rebum.
 .PP
 Elitr sed diam nonumy eirmod tempor.  Invidunt ut labore et do\%lo\%re
 magna ali\%quyam erat sed.  Diam voluptua at vero eos et accusam et
@@ -470,7 +498,7 @@ Ut labore et do\%lo\%re magna ali\%quyam erat, sed diam voluptua.
 At vero eos et accusam et justo duo do\%lo\%res et ea rebum.
 Stet clita kasd gubergren no sea.  Ali\%quyam erat, sed diam voluptua.
 \#
-.SUBHEAD "John Cage\(em" "Leaving It All to Chance"
+.HEADING 1 "John Cage \[em]" "Leaving It All to Chance"
 \#
 .PP
 Sit amet, consetetur sadipscing elitr, sed diam nonumy.  Eirmod tempor
@@ -507,12 +535,6 @@ Aliquyam nonumy eirmod tempor invidunt ut labore.
 voluptua at vero eos et accusam.  Et justo duo do\%lo\%res et ea rebum,
 stet clita kasd gubergren, no sea takimata.
 .PP
-Sanctus est lorem ipsum.  Dolor sit amet consetetur sadipscing
-elitr.  Sed diam nonumy eirmod tempor invidunt ut labore.  Et
-do\%lo\%re magna ali\%quyam erat, sed diam voluptua.  At vero eos et
-accusam et justo duo.  Dolores et ea rebum stet clita kasd gubergren
-no sea.
-.PP
 Takimata lorem ipsum dolor sit amet consetetur sadipscing elitr.
 Sed diam, nonumy eirmod tempor, invidunt ut labore et do\%lo\%re magna.
 Aliquyam erat sed diam voluptua.  At vero eos et accusam et
@@ -535,7 +557,7 @@ et dolore magna ali\%quyam erat, sed diam voluptua.  At vero eos et
 accusam et justo duo dolores et ea rebum.  Stet clita kasd gubergren,
 no sea takimata sanctus est.
 \#
-.SUBHEAD "Beyond Cage\(em" "Catching the Midnight Train"
+.HEADING 1 "Beyond Cage \[em]" "Catching the Midnight Train"
 \#
 .PP
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr.  Sed diam
@@ -580,3 +602,5 @@ takimata sanctus est.
 .RIGHT
 \*[BD]\&...end of sample article\*[PREV]
 .FINIS
+.TOC_RV_SWITCH
+.TOC

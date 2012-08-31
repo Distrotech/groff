@@ -1,4 +1,4 @@
-" Copyright 2004, 2005, 2006, 2009
+" Copyright 2012
 " Free Software Foundation, Inc.
 "
 " Copying and distribution of this file, with or without modification,
@@ -7,7 +7,7 @@
 
 " Vim syntax file
 " Language:    mom
-" Maintainer:  Christian V. J. Brüssow <cvjb@cvjb.de>
+" Maintainer:  Peter Schaffter (peter@schaffter.ca)
 " Last Change: So 06 Mär 2005 17:28:13 CET
 " Filenames:   *.mom
 " URL:         http://www.cvjb.de/comp/vim/mom.vim
@@ -33,71 +33,75 @@ syn sync lines=1000
 
 " Characters allowed in keywords
 if version >= 600
-	setlocal iskeyword=@,#,$,%,48-57,.,@-@,_,192-255
+	setlocal iskeyword=@,#,$,%,48-57,.,@-@,_,\\,{,},192-255
 else
-	set iskeyword=@,#,$,%,48-57,.,@-@,_,192-255
+	set iskeyword=@,#,$,%,48-57,.,@-@,_,\\,{,},192-255
 endif
 
-" Some special keywords
-syn keyword momTodo contained TODO FIXME
-syn keyword momDefine .de .. .ALIAS .ALIASN
+" mom/groff macros and requests (the initial dot or single-quote)
+"
+" Highlighting carries through to EOL; macro names, requests and
+" arguments are contained
+syn match startRequest /^\s*\(\.\|'\)\s*.*$/ contains=momMacro,groffCommentLine,groffRequest,momRegister,groffNoLineBreak,momInteger,groffUnit,momString,momSpecialParam,groffDelimiter,groffRegister,groffPreprocessor,groffBraces
 
-" Preprocessor keywords
-syn keyword momPreprocessor .EQ .EN .GS .GE .GF .PS .PE .R1 .R2 .TS .TE .TH
-syn keyword momPreprocessor .G1 .G2 .IS .IE .cstart .cend
+" mom macros
+syn region momMacro start=/^\s*\(\.\|'\)\s*\zs[A-Z0-9_(){}\[\]]\+/ end=/\s\+\|$/
 
-" Number Registers
-syn match momNumberReg '\.#[A-Za-z][_0-9A-Za-z]*'
+" mom registers and strings
+syn match momRegister /\(\$\|#\)[A-Za-z][_0-9A-Za-z]*/ contains=momRegisterStart
 
-" String Registers
-syn match momStringReg '\.\$[A-Za-z][_0-9A-Za-z]*'
+syn match momRegisterStart /#\|\$/ contained
 
-" Strings
-syn region momString start='"' end='"' contains=momNoLineBreak,momGreek,momInteger,momFloatEN,momFloatDE,momBracketRegion,momBracketError,momSpecialMove
+" mom comment region
+syn region momCommentRegion matchgroup=startRequest start='\<\.\(COMMENT\)\|\(SILENT\)\>' end='\<\.\(COMMENT\s\+OFF\)\|\(SILENT\s\+OFF\)\>' skip='$'
+
+" groff requests
+syn match groffRequest /^\s*\(\.\|'\)\s*\zs[a-z0-9]\+/
+
+" groff comment region
+syn region groffCommentLine start='\(\\!\)\|\(\\"\)\|\(\\#\)' end='$' contains=momTodo
+syn region groffCommentRegion start="^\s*\.\s*ig" matchgroup=startRequest end="^\.\.$" contains=startRequest
+
+" Preprocessor requests
+syn match groffPreprocessor /[^A-Z]\zs\(EQ\s*$\|EN\s*$\|GS\s*$\|GE\s*$\|GF\s*$\|PS\s*$\|PE\s*$\|R1\s*$\|R2\s*$\|TS\s*$\|TE\s*$\|TH\s*$\)/ contained
+syn match groffPreprocessor /[^A-Z]\zs\(G1\s*$\|G2\s*$\|IS\s*$\|IE\s*$\|cstart\s*$\|cend\s*$\)/ contained
+
+" Preprocessor requests for refer
+syn match groffPreprocessor /\(\[\s*$\|\]\s*$\)/ contained
+
+" Quoted strings
+syn region momString matchgroup=startRequest start='"\zs' end='"\|$' contains=groffNoLineBreak,groffGreek,groffSpecialChar,momInteger,momFloatEN,momFloatDE,momBracketRegion,momBracketError,momSpecialMove contained
 
 " Special characters
-syn match momSpecialChar '\\([-+A-Za-z0-9*<>=~!]\+'
+syn match groffSpecialChar '\\\((\|\[\)[-+A-Za-z0-9*<>=~!\/]\+\]*'
 
 " Greek symbols
-syn match momGreek '\\(\*[A-Za-z]\+'
+syn match groffGreek '\\(\*[A-Za-z]\+'
 
 " Hyphenation marks
-syn match momHyphenation '\\%'
+syn match groffHyphenation '\\%'
 
 " Masking of line breaks
-syn match momNoLineBreak '\\\s*$'
+syn match groffNoLineBreak /\\\s*$/ contains=groffBraces
 
-" Numbers (with optional units)
-syn match momInteger '[-+]\=[0-9]\+[iPpv]\='
-syn match momFloatEN '[-+]\=[0-9]*\.[0-9]\+[iPpv]\='
-syn match momFloatDE '[-+]\=[0-9]\+,[0-9]\+'
+" groff number and string register delimiters
+syn region groffDelimiter start=/\\*\\\(n+*\|\*\)\((\|\[\)\</ end=/\(\s\|\]\|$\)/ contains=momRegister,groffRegister,groffOperators
 
-" Mom Macros
-syn match momKeyword '\(^\|\s\+\)\.[A-Za-z][_0-9A-Za-z]*'
-syn match momKeywordParam '\(^\|\s\+\)\.[A-Za-z][_0-9A-Za-z]*\s\+[^-\\"]\+' contains=momInteger,momFloatEN,momString,momSpecialParam
-syn keyword momSpecialParam contained ON OFF T H C R I B L J N QUAD CLEAR NAMED DRAFT FINAL DEFAULT TYPESET TYPEWRITE CHAPTER BLOCK
+" groff registers
+syn match groffRegister /\\\((\|\[\)\zs\.*[a-z]\+/
 
-" Brackets
-syn match momBrackets '[[]]'
-syn match momBracketError '\]'
-syn region momBracketRegion transparent matchgroup=Delimiter start='\[' matchgroup=Delimiter end='\]' contains=ALLBUT,momBracketError
+" groff operators
+syn match groffOperators /\(+\|-\|\/\|\*[^[]\)/ contained
 
-" Special movements, e.g. \*[BU<#>] or \*[BP<#>]
-syn region momSpecialMove matchgroup=Delimiter start='\\\*\[' matchgroup=Delimiter end='\]' contains=ALLBUT,momBracketError
+" Units (of measure)
+syn match groffUnit '[-+]\=\([0-9]\|]\)\+\zs[icPpvusfz]\=' contained
 
-" Quotes
-syn region momQuote matchgroup=momKeyword start='\<\.QUOTE\>' matchgroup=momKeyword end='\<\.QUOTE\s\+OFF\>' skip='$' contains=ALL
-syn region momBlockQuote matchgroup=momKeyword start='\<\.BLOCKQUOTE\>' matchgroup=momKeyword end='\<\.BLOCKQUOTE\s\+OFF\>' skip='$' contains=ALL
-syn keyword momBreakQuote .BREAK_QUOTE'
+" Braces
+syn match groffBraces /\(\\{\|\\}\)/ contained
 
-" Footnotes
-syn region momFootnote matchgroup=momKeyword start='\<\.FOOTNOTE\>' matchgroup=momKeyword end='\<\.FOOTNOTE\s\+OFF\>' skip='$' contains=ALL
+" Error
+syn match groffError '\\\[ \+[[:print:]]\+ \+[[:print:]]\+\]'
 
-" Comments
-syn region momCommentLine start='\(\\!\)\|\(\\"\)\|\(\\#\)' end='$' contains=momTodo
-syn region momCommentRegion matchgroup=momKeyword start='\<\.\(COMMENT\)\|\(SILENT\)\>' matchgroup=momKeyword end='\<\.\(COMMENT\s\+OFF\)\|\(SILENT\s\+OFF\)\>' skip='$'
-
-" Define the default highlighting.
 " For version 5.7 and earlier: only when not done already
 " For version 5.8 and later: only when an item doesn't have highlighting yet
 if version >= 508 || !exists("did_mom_syn_inits")
@@ -108,40 +112,27 @@ if version >= 508 || !exists("did_mom_syn_inits")
 		command -nargs=+ HiLink hi def link <args>
 	endif
 
-	" The default methods for highlighting. Can be overrriden later.
-	HiLink momTodo Todo
-	HiLink momDefine Define
-	HiLink momPreprocessor PreProc
-	HiLink momNumberReg Special
-	HiLink momStringReg Special
-	HiLink momCommentLine Comment
-	HiLink momCommentRegion Comment
-	HiLink momInteger Number
-	HiLink momFloatEN Number
-	HiLink momFloatDE Number
-	HiLink momString String
-	HiLink momHyphenation Tag
-	HiLink momNoLineBreak Special
-	HiLink momKeyword Keyword
-	HiLink momSpecialParam Special
-	HiLink momKeywordParam Keyword
-
-	HiLink momBracketError Error
-	HiLink momBrackets Delimiter
-
-	hi momNormal term=none cterm=none gui=none
-	hi momItalic term=italic cterm=italic gui=italic
-	hi momBoldItalic term=bold,italic cterm=bold,italic gui=bold,italic
-	HiLink momGreek momBoldItalic
-	HiLink momSpecialChar momItalic
-	HiLink momSpecialMove momBoldItalic
-	
-	HiLink momQuote momBoldItalic
-	HiLink momBlockQuote momBoldItalic
-	HiLink momBreakQuote momNormal
-	
-	HiLink momFootnote momItalic
-	
+HiLink groffError               Error
+HiLink groffBraces              darkmagenta
+HiLink groffCommentLine		darkcyan
+HiLink groffCommentRegion	cyan
+HiLink groffDelimiter		cyan
+HiLink groffGreek		cyan
+HiLink groffHyphenation		cyan
+HiLink groffNoLineBreak		cyan
+HiLink groffOperators		white
+HiLink groffPreprocessor	brown
+HiLink groffRegister		darkgreen
+HiLink groffRequest		magenta
+HiLink groffSpecialChar		darkcyan
+HiLink groffUnit		brown
+HiLink momCommentRegion		darkcyan
+HiLink momMacro			red
+HiLink momRegister		green
+HiLink momRegisterStart         magenta
+HiLink momSpecialParam		red
+HiLink momString		white
+HiLink startRequest		yellow
 	delcommand HiLink
 endif
 

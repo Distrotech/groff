@@ -1,4 +1,4 @@
-\# Copyright 2004, 2005, 2006, 2009
+\# Copyright 2004, 2005, 2006, 2009, 2010, 2011, 2012
 \# Free Software Foundation, Inc.
 \#
 \# Copying and distribution of this file, with or without modification,
@@ -8,16 +8,14 @@
 \# Most mom users rely on mom's document processing macros to format
 \# their work.  The doc processing macros take care of all things
 \# typographic and are simple, clear and easy to learn.  The kind of
-\# "by hand" typesetting this file shows off is really geared toward
+\# "by hand" typesetting this file demonstrates is geared towards
 \# professional typographers.  Bear in mind, though, that the full
-\# power of mom's typesetting capabilities can be brought to bear
-\# on document processing as well.
+\# power of mom's typesetting capabilities can be brought to bear on
+\# document processing as well.
 \#
 \# Basic page setup
 \#
-.PAGE 8.5i 11i \" Printer sheet size
-.L_MARGIN 1i   \" Left margin 1 inch
-.R_MARGIN 1i   \" Right margin 1 inch (calculates the line length)
+.PAGE 8.5i 11i 1i 1i 1i \" Page size, margins
 \#
 \# Basic type parameters
 \#
@@ -35,7 +33,7 @@
 .SMARTQUOTES   \" Enable smartquotes
 .SS 0          \" No extra space between sentences
 \#
-.ALD 1i-1v     \" Advance 1 inch from top of paper to first baseline
+.SP |1i-1v     \" Advance 1 inch from top of paper to first baseline
 Example 1\*[BU 2]:
 .ALD .25v      \" Advance an extra 1/4 linespace
 .UNDERSCORE 3.75p "T\*[BU 4]asting notes using padding, string tabs \
@@ -52,12 +50,14 @@ and multi-columns"
 \# the full line length.
 \# 
 .SILENT        \" Don't print the next line
-.PAD "\*[ST1]VIN#\*[ST1X]\*[FWD 1P]\*[ST2]ROBE#\*[ST2X]\*[FWD 1P]\*[ST3]NEZ#\*[ST3X]\*[FWD 1P]\*[ST4]BOUCHE#\*[ST4X]\*[FWD 1P]\*[ST5]COMMENTAIRES\*[ST5X]"
+.PAD "\*[ST1]VIN#\*[ST1X]\*[FWD 1P]\*[ST2]ROBE#\*[ST2X]\
+\*[FWD 1P]\*[ST3]NEZ#\*[ST3X]\*[FWD 1P]\*[ST4]BOUCHE#\*[ST4X]\
+\*[FWD 1P]\*[ST5]COMMENTAIRES\*[ST5X]"
 .SILENT OFF    \" Resume normal printing of text
 \#
 \# Now that the string tabs have been marked off, we "set" them.
 \#
-.ST 1 L        \" First string tab flush left, nofill mode (no need for .BR's between input lines)
+.ST 1 L        \" First string tab flush left, nofill (line-for-line) mode
 .ST 2 L QUAD   \" Remaining tabs are flush left/rag right, fill mode
 .ST 3 L QUAD
 .ST 4 L QUAD
@@ -150,18 +150,18 @@ Superbe\|!  Une aubaine à ne pas manquer.  Prêt à boire maintenant.
 \#
 .IL \w'*'+2p   
 \#
-\# Now, set the hanging indent equal to the left indent, effectively pulling
-\# the first line of the following text back to the new left margin.
-\# Subsequent output lines will be indented by the .IL amount.
-\# Notice that when using the \w inline escape, there's no need to append
-\# a unit of measure to it.
+\# Now, set the hanging indent equal to the left indent, effectively
+\# pulling the first line of the following text back to the new left
+\# margin.  Subsequent output lines will be indented by the .IL
+\# amount.  Notice that when using the \w inline escape, there's no
+\# need to append a unit of measure.
 \#
 .HI \w'*'+2p
 *\*[FWD 1p]The term "Band-Aid" means the slightly sweet, vaguely chemical
 smell associated with medical-grade plastics.  It is often found in
 wines from terroirs in South America.  Provided a wine has a sufficient
 concentration of fruit
-.RW .04   \" Kern the whole next line slightly, so "lipstick" doesn't hyphenate.
+.RW .04   \" Tighten the next line slightly, so "lipstick" doesn't hyphenate.
 aromas and complex tertiary characteristics, Band-Aid is a Good Thing.
 Otherwise, it smells like cheap lipstick.
 .RW 0     \" Reset kerning to 0
@@ -186,14 +186,14 @@ Otherwise, it smells like cheap lipstick.
 Example 2:
 .ALD .25v
 \#
-.COMMENT       \" COMMENT lets you enter comments without using \# or \"
+.COMMENT
 In the next line, because the string to be underscored must be
 enclosed in double-quotes, you can't use the double-quote character
 itself around the word "Massaging".  We circumvent this by using the
-groff inline escapes \(lq and \(rq (leftquote and rightquote).
-.COMMENT OFF   \" Remember to turn COMMENT off!
+groff inline escapes \[lq] and \[rq] (leftquote and rightquote).
+.COMMENT OFF
 \#
-.UNDERSCORE 3.75p "\(lqMassaging\(rq \*[BCK 1p]a passage of rag right text"
+.UNDERSCORE 3.75p "\[lq]Massaging\[rq] \*[BCK 1p]a passage of rag right text"
 .SP            \" Add an extra linespace
 \#
 .PT_SIZE 12.5
@@ -211,7 +211,7 @@ The thousand injuries of Fortunato I had borne as I best could;
 but when he ventured upon insult, I vowed revenge.  You, who so well
 know the nature of my soul, will not suppose, however, that I gave
 utterance to a threat.  \*[IT]At length\*[PREV] I would be
-avenged; this was a point definitively settled\(embut the very
+avenged; this was a point definitively settled\[em]but the very
 definitiveness with which it was resolved, precluded the idea of
 risk.  I must not only punish, but punish with impunity.  A
 wrong is unredressed when retribution overtakes its redresser.
@@ -223,7 +223,7 @@ felt as such to him who has done the wrong.
 \# than the preceding text (using the \*[SIZE <n>] inline escape.
 \#
 .RIGHT
-\*[SIZE -.5]\(emEdgar Allen Poe, \*[IT]The Cask of Amontillado\*[PREV]\*[SIZE +.5]
+\*[SIZE -.5]\[em]Edgar Allen Poe, \*[IT]The Cask of Amontillado\*[PREV]\*[SIZE +.5]
 .SP            \" Extra linespace
 .IBQ           \" Disable "indent both"
 \#
@@ -244,7 +244,7 @@ felt as such to him who has done the wrong.
 .FT       B
 .PT_SIZE -1
 .LEFT
-The same passage, \*[BU 4]"massaged"
+The same passage, \*[BU4]"massaged"
 \#
 .ALD .5v
 \#
@@ -252,39 +252,39 @@ The same passage, \*[BU 4]"massaged"
 .PT_SIZE +1 
 .QUAD     LEFT
 .HY OFF           \" Turn automatic hyphenation off
-.BR_AT_LINE_KERN  \" Automatically insert a line break (.BR) with each invocation of .RW and .EW 
+.BR_AT_LINE_KERN  \" Automatically insert a line break (.BR) at each .RW and .EW 
 .WS +1            \" Increase word space slightly
 .IB               \" Turn "indent both" back on; values are the same as before
 \#
-The thousand injuries of Fortunato I had borne as I best could; but
-when he ventured upon insult, I \*[BU 2]vowed revenge.  \*[BU 4]Y\*[BU 6]ou,
-\*[BU 4]who so \*[BU 2]well know the nature
+The thousand injuries of Fortunato I had borne as I best could;
+but when he ventured upon insult, I \*[BU2]vowed revenge.
+\*[BU4]Y\*[BU6]ou, \*[BU4]who so \*[BU2]well know the nature
 .EW .2
-of my soul, \*[BU 2]will not suppose, however, that I gave utterance to
-a threat.  \*[IT]At
+of my soul, \*[BU2]will not suppose, however, that I gave utterance
+to a threat.  \*[IT]At
 .EW .2
 length\*[PREV] I would be avenged; this was a point definitively
-settled\(embut the
+settled\[em]but the
 .EW .2
-v\*[BU 1]ery definitiveness with which it was resolved, precluded the idea
-of risk.
+v\*[BU1]ery definitiveness with which it was resolved, precluded the
+idea of risk.
 .EW 0
-I must not only punish, but punish with impunity.  A \*[BCK 1p]wrong is
-unredressed
+I must not only punish, but punish with impunity.  A \*[BCK 1p]wrong
+is unredressed
 .EW .1
 when retribution overtakes its redresser.  It is equally unredressed
 when the
 .RW .1
-avenger fails to make himself felt as such to him \*[BU 2]who has done
-the wrong.
+avenger fails to make himself felt as such to him \*[BU 2]who has
+done the wrong.
 .RW  0         \" Restore normal kerning
 .WS  +0        \" Restore normal wordspacing
 .ALD 6p
 .PT_SIZE -.5
 .RIGHT
-\*[UP 1.5p]\(em\*[DOWN 1.5p]\*[BCK 1p]Edgar \*[BCK 1p]Allen Poe, \*[IT]The Cask of Amontillado\*[PREV]
+\*[UP 1.5p]\[em]\*[DOWN 1.5p]\*[BCK 1p]Edgar \*[BCK 1p]Allen Poe, \
+\*[IT]The Cask of Amontillado\*[PREV]
 .IQ CLEAR      \" Cancel and clear stored values of all indents
-\#
 \#
 .NEWPAGE       \" Start a new page
 .T_MARGIN 1i   \" Set top margin to 1i (approx. equivalent to .ALD 1i-1v above)
@@ -297,7 +297,7 @@ the wrong.
 \#
 Example 3:
 .ALD .25v
-.UNDERSCORE 3.75p "A \*[BU 2]recipe for enumerated lists using indents"
+.UNDERSCORE 3.75p "A \*[BU2]recipe for enumerated lists using indents"
 .SP .5v        \" Add an extra half line space
 .FAM      N    \" New Century Schoolbook family
 .FT       R
@@ -309,72 +309,76 @@ This example demonstrates the use of left and hanging indents for
 simple enumerated lists.  Nested lists are possible, as the example
 shows; however, the more complex the nesting, the wiser it becomes
 to use (string) tabs, as seen in Example 4.
-.TI 1.5m
+.RLD .5v                  \" Move upwards 1/2 linespace
+.DBX .5 0 \n[.l]u 2P+9p   \" Draw box; \n[.l]u means "the current line length"
+.IB 6p                    \" Indent from both left and right margins
+.ALD 14p
 \*[BD]Please note: mom\*[PREV] has macros that allow you to set
 enumerated lists automatically.  These examples merely show hanging
 indents and string tabs in use.
 \#
+.ALD 6p
 .JUSTIFY       \" Justify text
-.IL \w'\0.\0'  \" Establish a left indent equal to the width of 2 figure spaces plus a period.
-.HI \w'\0.\0'  \" Establish a hanging indent equal to the size of the left indent.
+.IL \w'\0.\0'  \" Establish a left indent equal to 2 figure spaces plus a period.
+.HI \w'\0.\0'  \" Establish a hanging indent equal to the left indent.
 .ALD 6p
 \#
 \#
-1.\0This is the first item in the list.  N\*[BU 2]otice how the first line
+1.\0This is the first item in the list.  N\*[BU2]otice how the first line
 "hangs" back from the remaining text, which is otherwise
 indented by the width of by two figure-spaces (digit-width
 spaces) and a period.
 .BR
-.HI            \" Notice that HI doesn't require an argument once the value's been set
+.HI            \" Notice that HI doesn't require an argument once the value's set
 .ALD 6p
 2.\0This is the second item in the list.  As with the above item,
-notice the use of the \*[BU 8]\\0 escape sequence in the input text.  It's
-there to ensure that the space after the number/period combination
-always remains the same (i.e. doesn't stretch when the line is
-justified).  That way, the text of each item always lines up perfectly.
+notice the use of the \*[BU8]\\0 escape sequence in the input
+text.  It's there to ensure that the space after the number/period
+combination always remains the same (i.e. doesn't stretch when the
+line is justified).  That way, the text of each item always lines up
+perfectly.
 \#
 .COMMENT
 Now we're going to set a bullet-point list, indented from the text
 above by 1 pica.  IL arguments are always added to whatever value
 is in already effect for IL, hence all we have to do is tell mom to
 indent (from the current left indent) 1 pica plus the width of the
-bullet character ( \(bu ).  \*[FWD 3p] puts three points of space after
+bullet character, \[bu].  \*[FWD 3p] puts three points of space after
 the bullet so that the bullet and the text are visually separated.
 .COMMENT OFF
 \#
 \#
-.IL 1P+\w'\(bu\*[FWD 3p]'
+.IL 1P+\w'\[bu]\*[FWD 3p]'
 \#
 \# Hanging indents are always relative to the current left indent.
 \# The additional 1-pica indent, above, already having been taken
-\# care of, we only want to hang the first lines of bullet list items
-\# back by the width of the bullet character plus its 3 extra
+\# care of, we only want to hang the first lines of bullet list
+\# items back by the width of the bullet character plus its 3 extra
 \# points of space.
 \#
 .ALD 6p
-.HI \w'\(bu\*[FWD 3p]'
-\*[DOWN 1p]\(bu\*[UP 1p]\*[FWD 3p]This is the first line of a sublist with bullets.
-N\*[BU 2]otice how the first line (the one with the bullet) is indented
-exactly one pica from the text of the list item above it, while the
-remaining lines align with the left indent we set above.
+.HI \w'\[bu]\*[FWD 3p]'
+\*[DOWN 1p]\[bu]\*[UP 1p]\*[FWD 3p]This is the first line of a
+sublist with bullets.  N\*[BU2]otice how the first line (the one
+with the bullet) is indented exactly one pica from the text of the
+list item above it, while the remaining lines align with the left
+indent we set above.
 .ALD 6p
 .HI
-\*[DOWN 1p]\(bu\*[UP 1p]\*[FWD 3p]This is the second item of the sublist with bullets.  \*[BU 4]We
-could go on indefinitely, but let's go back to the top level (numbered)
-list...
+\*[DOWN 1p]\[bu]\*[UP 1p]\*[FWD 3p]This is the second item of the
+sublist with bullets.  \*[BU4]We could go on indefinitely, but let's
+go back to the top level (numbered) list...
 \#
-\# The easiest way to return to a previous indent value is by subtraction.
-\# The argument to IL, above, was 1P+\w'\(bu\*[FWD 3p]', so we just reverse
-\# it by putting a minus sign in front.  The parentheses are required
-\# for groff to evaluate the expression properly.
+\# The easiest way to return to a previous indent value is by
+\# subtraction.  The argument to IL, above, was 1P+\w'[bu]\*[FWD
+\# 3p]', so we just reverse it by putting a minus sign in front.
+\# The parentheses are required for groff to evaluate the expression
+\# properly.
 \#
-.IL -(1P+\w'\(bu\*[FWD 3p]')
+.IL -(1P+\w'\[bu]\*[FWD 3p]')
 .HI \w'\0.\0'  \" Reset hanging indent for use with numbered items.
 .ALD 6p
 3.\0...and here we are.
-.HI            \" Again, notice that once HI has been set, you don't have to keep passing it an argument.
-.ALD 6p
-4.\0In order not to make the example too long, we'll stop here.
 .IQ CLEAR      \" Don't forget to cancel and/or clear indents!
 \#
 .FAM T
@@ -394,13 +398,14 @@ Example 4:
 .LS  13
 .JUSTIFY
 Although setting up string tabs is a bit more complex than setting
-up indents, it's \*[BU 3]well worth the effort, especially for nested lists.
+up indents, it's \*[BU 3]well worth the effort, especially for
+nested lists.
 .ALD 6p
 \#
 .COMMENT
-The PAD line, below, sets up two string tabs.  The first (ST1)
-is exactly the length of two figure spaces and a period.  The
-second (ST2) is simply "the remainder of the line."
+The PAD line, below, sets up two string tabs.  The first (ST1) is
+exactly the length of two figure spaces and a period.  The second
+(ST2) is simply "the remainder of the line."
 .COMMENT OFF
 \#
 .SILENT        \" Don't print any of this
@@ -410,19 +415,20 @@ second (ST2) is simply "the remainder of the line."
 .SILENT OFF    \" Restore printing
 \#
 .TB 1
-1.
-.TN    \" Use .TN here so text stays on the same baseline as the number in tab 1
-This is the first item in the list.  N\*[BU 2]otice how, just as in Example 3,
-the first line hangs back from the remaining text, which is otherwise
+1.\c
+.TN    \" Use .TN so text stays on the same baseline
+This is the first item in the list.  N\*[BU 2]otice how, just as in
+Example 3, the first line hangs back from the remaining text, which
+is otherwise
 indented.
 .ALD 6p
 .TB  1
-2.
+2.\c
 .TN
-This is the second item in the list.  N\*[BU 2]otice that when setting "lists"
-with tabs, there's no need to use the \*[BU 8]\\0 escape sequence after
-the number/period combination in the input text.
-.ALD 6p
+This is the second item in the list.  N\*[BU 2]otice that when
+setting "lists" with tabs, there's no need to use the \*[BU 8]\\0
+escape sequence after the number/period combination in the input
+text.
 \#
 .COMMENT
 Now, set up the indented bullet-point sublist.  The PAD line
@@ -433,57 +439,59 @@ length of remainder of the line.
 .COMMENT OFF
 \#
 .SILENT
-.PAD "\*[FWD 12p]\*[ST3]\(bu\*[ST3X]\*[FWD 3p]\*[ST4]#\*[ST4X]"
+.PAD "\*[FWD 12p]\*[ST3]\[bu]\*[ST3X]\*[FWD 3p]\*[ST4]#\*[ST4X]"
 .ST 3 L
 .ST 4 J
 .SILENT OFF
 .ALD 6p
 .TB  3
-\*[DOWN 1p]\(bu\*[UP 1p]
+\*[DOWN 1p]\[bu]\*[UP 1p]\c
 .TN
-This is the first line of a sublist with bullets.  N\*[BU 2]otice how the
-bullets and the text line up exactly the same as in Example 3.
+This is the first line of a sublist with bullets.  N\*[BU2]otice
+how the bullets and the text line up exactly the same as in Example
+3.
 .ALD 6p
 .TB  3
-\*[DOWN 1p]\(bu\*[UP 1p]
+\*[DOWN 1p]\[bu]\*[UP 1p]\c
 .TN
 This is the second item of the sublist with bullets.  For the fun of
 it, lets add in an
 .SPREAD
 en-dashed sub-sublist.
-.BR  \" We're in a fill mode right now, so you *must* terminate the line with BR
+.BR  \" We're in fill mode right now, so you must terminate the line with BR
 \#
 .SILENT
-.PAD "\*[FWD 12p]\*[ST5]\(en\*[ST5X]\*[FWD 4p]\*[ST6]#\*[ST6X]"
+.PAD "\*[FWD 12p]\*[ST5]\[en]\*[ST5X]\*[FWD 4p]\*[ST6]#\*[ST6X]"
 .ST 5 L
 .ST 6 J
 .SILENT OFF
 .ALD 6p
 .TB  5
-\*[UP .75p]\(en\*[DOWN .75p]
+\*[UP .75p]\[en]\*[DOWN .75p]\c
 .TN
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-sed diam voluptua.
+nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
+erat, sed diam voluptua.
 .ALD 6p
 .TB  5
-\*[UP .75p]\(en\*[DOWN .75p]
+\*[UP .75p]\[en]\*[DOWN .75p]\c
 .TN
-At \*[BU 3]vero eos et accusam et justo duo dolores et ea rebum.  Stet clita
-kasd gubergren, no sea takimata sanctus est lorem ipsum dolor sit amet.
+At \*[BU 3]vero eos et accusam et justo duo dolores et ea rebum.
+Stet clita kasd gubergren, no sea takimata sanctus est lorem ipsum
+dolor sit amet.
 .ALD 6p
 .TB  1
-3.
+3.\c
 .TN
 And here we are, back at the top-level numbered list with a minimum
 of muss and fuss,
 .ALD 6p
 .TB  1
-4.
+4.\c
 .TN
 Generally speaking, once you get the hang of string tabs and the
-\*[BD]PAD\*[PREV] macro, you'll find setting up complex nested lists
-(or anything similar to them) easier than with hanging indents.
+\*[BD]PAD\*[PREV] macro, you'll find setting up complex indenting
+structures easier than with the indent macros.
 .TQ
 \#
 .NEWPAGE
@@ -501,32 +509,32 @@ Example 5:
 .PT_SIZE 11
 .LS  14
 \#
-\# The "label" lines for the following are set in Helvetica bold, one
-\# point smaller than the examples themselves.  This demonstrates the
-\# use of the groff inline escape \f[...] to change both family and
-\# font inline.  It also shows using the mom inline \*S[...], which is
-\# an alternate form of the inline, \*[SIZE <n>]
+\# The "label" lines for the following are set in Helvetica
+\# bold, one point smaller than the examples themselves.  This
+\# demonstrates the use of the groff inline escape \f[...] to change
+\# both family and font inline.  It also shows using the mom inline
+\# \*S[...], which is an alternate form of the inline, \*[SIZE <n>]
 \#
 \f[HB]\*S[-1]Normal word spacing\*S[+1]\*[PREV]
 .FT R
-N\*[BU 1]o\*[BU 1]w \*[BU 1]is the time for all good men to come to the aid of the party.
+N\*[BU1]o\*[BU1]w \*[BU1]is the time for all good men to come to the aid of the party.
 .ALD 4p
-\f[HB]\*S[-1]Word spacing adjusted by \*[UP 1p]\*[BU 3]+\*[DOWN 1p]\*[BU 1]2\*S[+1]\*[PREV]
+\f[HB]\*S[-1]Word spacing adjusted by \*[UP 1p]\*[BU3]+\*[DOWN 1p]\*[BU1]2\*S[+1]\*[PREV]
 .FT R
 .WS +2
-N\*[BU 1]o\*[BU 1]w \*[BU 1]is the time for all good men to come to the aid of the party.
+N\*[BU1]o\*[BU1]w \*[BU1]is the time for all good men to come to the aid of the party.
 .WS  +0
 .ALD 4p
-\f[HB]\*S[-1]Word spacing adjusted by \*[UP 1p]\*[BU 3]+\*[DOWN 1p]4\*S[+1]\*[PREV]
+\f[HB]\*S[-1]Word spacing adjusted by \*[UP 1p]\*[BU3]+\*[DOWN 1p]4\*S[+1]\*[PREV]
 .FT R
 .WS +4
-N\*[BU 1]o\*[BU 1]w \*[BU 1]is the time for all good men to come to the aid of the party.
+N\*[BU1]o\*[BU1]w \*[BU1]is the time for all good men to come to the aid of the party.
 .WS  +0
 .ALD 4p
-\f[HB]\*S[-1]Word spacing adjusted by \*[UP 1p]\*[BU 3]+\*[DOWN 1p]6\*S[+1]\*[PREV]
+\f[HB]\*S[-1]Word spacing adjusted by \*[UP 1p]\*[BU3]+\*[DOWN 1p]6\*S[+1]\*[PREV]
 .FT R
 .WS +6
-N\*[BU 1]o\*[BU 1]w \*[BU 1]is the time for all good men to come to the aid of the party.
+N\*[BU1]o\*[BU1]w \*[BU1]is the time for all good men to come to the aid of the party.
 .WS +0
 .SP 1.5v
 \#
@@ -556,7 +564,7 @@ Example 6:
 .FT R
 "But this is \*[IT]important!\/"\*[PREV]she exclaimed.
 .ALD 4p
-\f[HB]\*S[-1]Line "tightened" \(en .RW .1\*S[+1]\*[PREV]
+\f[HB]\*S[-1]Line "tightened" \[en] .RW .1\*S[+1]\*[PREV]
 .RW .1
 "But this is \*[IT]important!\/"\*[PREV]she exclaimed.
 .ALD 4p
@@ -564,11 +572,11 @@ Example 6:
 \# In the next line, notice that because it uses a different family
 \# (Helvetica instead of Palatino), the RW macro doesn't affect it.
 \#
-\f[HB]\*S[-1]Line "tightened" \(en .RW .2\*S[+1]\*[PREV]
+\f[HB]\*S[-1]Line "tightened" \[en] .RW .2\*S[+1]\*[PREV]
 .RW .2
 "But this is \*[IT]important!\/"\*[PREV]she exclaimed.
 .ALD 4p
-\f[HB]\*S[-1]Line "tightened" \(en .RW .3\*S[+1]\*[PREV]
+\f[HB]\*S[-1]Line "tightened" \[en] .RW .3\*S[+1]\*[PREV]
 .RW .3
 "But this is \*[IT]important!\/"\*[PREV]she exclaimed.
 .MCR
@@ -576,15 +584,15 @@ Example 6:
 \f[HB]\*S[-1]Unkerned line\*S[+1]\*[PREV]
 "But this is \*[IT]important!\/"\*[PREV]she exclaimed.
 .ALD 4p
-\f[HB]\*S[-1]Line "loosened" \(en .EW .1\*S[+1]\*[PREV]
+\f[HB]\*S[-1]Line "loosened" \[en] .EW .1\*S[+1]\*[PREV]
 .EW .1
 "But this is \*[IT]important!\/"\*[PREV]she exclaimed.
 .ALD 4p
-\f[HB]\*S[-1]Line "loosened" \(en .EW .2\*S[+1]\*[PREV]
+\f[HB]\*S[-1]Line "loosened" \[en] .EW .2\*S[+1]\*[PREV]
 .EW .2
 "But this is \*[IT]important!\/"\*[PREV]she exclaimed.
 .ALD 4p
-\f[HB]\*S[-1]Line "loosened" \(en .EW .3\*S[+1]\*[PREV]
+\f[HB]\*S[-1]Line "loosened" \[en] .EW .3\*S[+1]\*[PREV]
 .EW .3
 "But this is \*[IT]important!\/"\*[PREV]she exclaimed.
 .MCX 1.5v
@@ -597,8 +605,8 @@ Example 6:
 \#
 Example 7:
 .ALD .25v
-.UNDERSCORE 3.75p "Cutaround using left\*[FU 2]/right indents, multi columns \
-and a dropcap"
+.UNDERSCORE 3.75p "Cutaround using left\*[FU 2]/right indents, \
+multi columns and a dropcap"
 .SP
 \#
 .FT R
@@ -613,7 +621,8 @@ and a dropcap"
 \#
 \# The little picture of tux.
 \#
-.PSPIC penguin.ps
+.if '\*[.T]'pdf' .PDF_IMAGE penguin.pdf 81p 96p 
+.if '\*[.T]'ps' .PSPIC penguin.ps 81p 96p 
 .MCR
 .TAB 1
 .XCOLOR        red   \" Initialize the X11 color, red
@@ -622,21 +631,21 @@ and a dropcap"
 .DROPCAP L 3 COND 80 \" i.e. the letter L dropped 3 lines, condensed to 80% of its normal width
 .EW .2
 orem ipsum dolor sit amet, consetetur sa\%dip\%scing elitr, sed diam
-nonumy eir\%mod tempor invidunt ut labore et dolore magna aliquyam erat,
-sed diam voluptua.
+nonumy eir\%mod tempor invidunt ut labore et dolore magna aliquyam
+erat, sed diam voluptua.
 .EW 0
 .TI 1P
 At vero eos et accusam et justo duo dolores et ea rebum.  Stet clita
 kasd gubergren, no sea taki-
 .SPREAD              \" Force justify preceding line before starting indent
 .IR 3.5P
-kimata sanctus est lorem ipsum dolor sit amet.
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-nonumy eirmod tempor.
+kimata sanctus est lorem ipsum dolor sit amet.  Lorem ipsum dolor
+sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor.
 .EW .2
 .TI
-Invidunt ut labore et dolore magna ali\%qu\%yam erat, sed diam voluptua.
-At
+Invidunt ut labore et dolore magna ali\%qu\%yam erat, sed diam
+voluptua.  At
 .EW 0
 vero eos et accusam et justo duo dolores et ea rebum.
 .TI
@@ -645,8 +654,8 @@ Stet clita kasd gubergren, no sea ta-
 .IRQ
 kimata sanctus est lorem ipsum dolor sit amet.  Lorem ipsum dolor
 sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-in\%vi\%dunt ut labore et dolore magna aliquyam erat.  Sed diam voluptua,
-at vero eos et accusam et justo duo
+in\%vi\%dunt ut labore et dolore magna aliquyam erat.  Sed diam
+voluptua, at vero eos et accusam et justo duo
 .SPREAD
 .EW .3
 dolores et ea rebum.  Stet clita no kasd guber-
@@ -658,20 +667,20 @@ gren, no sea takimata sanctus est lorem ipsum
 dolor sit amet.  Consetetur sadipscing elitr, sed diam nonumy eirmod
 tempor invidunt ut labore et dolore.
 .TI
-Magna aliquyam erat, sed diam voluptua, at vero eos et accusam.
-Et justo duo dolores et ea
+Magna aliquyam erat, sed diam voluptua, at vero eos et accusam.  Et
+justo duo dolores et ea
 .SPREAD
 .IL 3.5P
-rebum, stet clita kasd gubergren.  No sea
-takimata sanctus est, lorem ipsum dolor sit amet.
+rebum, stet clita kasd gubergren.  No sea takimata sanctus est,
+lorem ipsum dolor sit amet.
 .TI
-Sit amet, consetetur sadipscing elitr, sed diam.  Nonumy eirmod tempor
-in\%vi-
+Sit amet, consetetur sadipscing elitr, sed diam.  Nonumy eirmod
+tempor in\%vi-
 .EW .3
 dunt ut labore et dolore magna.  Ali-
 .EW 0
-quyam erat sed diam voluptua.
-At vero eos et accusam et justo duo dolores et ea rebum stet.
+quyam erat sed diam voluptua.  At vero eos et accusam et justo duo
+dolores et ea rebum stet.
 .ILQ
 .TI
 Dolores et ea rebum stet clita kasd gubergren, no sea takimata

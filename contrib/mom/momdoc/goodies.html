@@ -2,8 +2,8 @@
 <!--
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004, 2005, 2006, 2009, 2010, 2011 Free Software Foundation, Inc.
-Written by Peter Schaffter.
+Copyright (C) 2004, 2005, 2006, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
+Written by Peter Schaffter (peter@schaffter.ca).
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -14,6 +14,7 @@ Texts, and with no Back-Cover Texts.
 A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
 -->
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -48,13 +49,13 @@ nearly indispensable) routines to simplify typesetting.
 <div class="mini-toc-col-1">
 <ul class="no-enumerator">
 <li class="list-head-goodies"><a href="#alias">ALIAS</a> <span class="normal-smaller">&ndash; rename macros</span></li>
-<li class="list-head-goodies"><a href="#silent">SILENT</a> <span class="normal-smaller">&ndash; &#8220;hide&#8221; input lines from output</span></li>
-<li class="list-head-goodies"><a href="#trap">TRAP</a> <span class="normal-smaller">&ndash; suspend/re-invoke traps</span></li>
-<li class="list-head-goodies"><a href="#smartquotes">SMARTQUOTES</a> <span class="normal-smaller">&ndash; convert typewriter doublequotes to proper doublequotes</span></li>
 <li class="list-head-goodies"><a href="#caps">CAPS</a> <span class="normal-smaller">&ndash; convert to upper case</span></li>
-<li class="list-head-goodies"><a href="#string">STRING</a> <span class="normal-smaller">&ndash; user-definable strings</span></li>
 <li class="list-head-goodies"><a href="#esc-char">ESC_CHAR</a> <span class="normal-smaller">&ndash; change the escape character to something other than a backslash</span></li>
+<li class="list-head-goodies"><a href="#silent">SILENT</a> <span class="normal-smaller">&ndash; hide input lines from output</span></li>
 <li class="list-head-goodies"><a href="#sizespecs">SIZESPECS</a> <span class="normal-smaller">&ndash; get cap-height, x-height and descender depth of a font</span></li>
+<li class="list-head-goodies"><a href="#smartquotes">SMARTQUOTES</a> <span class="normal-smaller">&ndash; convert typewriter doublequotes to proper doublequotes</span></li>
+<li class="list-head-goodies"><a href="#string">STRING</a> <span class="normal-smaller">&ndash; user-definable strings</span></li>
+<li class="list-head-goodies"><a href="#trap">TRAP</a> <span class="normal-smaller">&ndash; suspend/re-invoke traps</span></li>
 <li class="list-head-goodies no-anchor"><span style="font-size: 90%;">Underscoring/underlining</span>
 <ul class="sublist">
   <li class="list-head-goodies text-color"><a href="#underscore">UNDERSCORE</a> <span class="normal-smaller">&ndash; single underscore</span>
@@ -70,7 +71,7 @@ nearly indispensable) routines to simplify typesetting.
 </ul></li>
 <li class="list-head-goodies no-anchor"><span style="font-size: 90%;">Padding</span>
 <ul class="sublist">
-  <li class="list-head-goodies text-color"><a href="#pad">PAD</a> <span class="normal-smaller">&ndash; insert equalized space into lines</span>
+  <li class="list-head-goodies text-color"><a href="#pad">PAD</a> <span class="normal-smaller">&ndash; insert equalized whitespace into lines</span>
   <ul class="sublist sub">
     <li class="list-head-goodies text-color"><a href="#pad-marker">PAD_MARKER</a> <span class="normal-sub-sub">&ndash; change/set the marker used with PAD</span></li>
   </ul></li>
@@ -167,10 +168,10 @@ precedes the macro when it&#8217;s a
 <span class="tip">Tip:</span>
 A particularly good candidate for ALIAS is the macro,
 <a href="typesetting.html#ps">PT_SIZE</a>.
-A more natural name for it (at least to old-school phototypesetters)
-would simply be PS, but PS conflicts with the <b>eqn</b> equation
-preprocessor and thus mom uses the longer form.  However, if
-you&#8217;re not using <b>eqn</b>, you can happily rename PT_SIZE to
+A more natural name for it would simply be PS, but PS conflicts
+with the <b>eqn</b> equation preprocessor and thus mom uses the
+longer form.  However, if you&#8217;re not using <b>eqn</b>, you can
+happily rename PT_SIZE to
 PS:
 <br/>
 <span class="pre-in-pp">
@@ -294,9 +295,9 @@ Macro: <b>TRAP</b> <kbd class="macro-args">toggle</kbd>
 </div>
 
 <p>
-Traps are vertical positions on the output page at which you or
-mom have instructed groff to start doing something automatically.
-Commonly, this is near the bottom of the page, where automatic
+Traps are vertical positions on the output page at which
+you or mom have instructed groff to start doing something
+automatically.  Commonly, this is near the bottom of the page, where
 behind-the-scenes processing is needed in order for one page to
 finish and another to start.
 </p>
@@ -310,7 +311,7 @@ happens, surround just the offending macros and input lines with
     ...
     .TRAP
 </span>
-TRAP is a toggle, therefore any argument turns it off (i.e. suspends
+TRAP is a toggle, therefore any argument turns it off (ie suspends
 the trap), and no argument turns it (back) on.
 </p>
 
@@ -356,7 +357,7 @@ And you don&#8217;t want to look like an amateur, do you?
 If you invoke SMARTQUOTES with one of the optional arguments
 (<kbd>,,</kbd> or <kbd>&gt;&gt;</kbd>
 or <kbd>&lt;&lt;</kbd>) you can use
-<kbd>&quot;</kbd> (i.e. the inch-mark/doublequotes key)
+<kbd>&quot;</kbd> (ie the inch-mark/doublequotes key)
 as &#8220;cheap&#8221; open-and close-quotes when inputting text in
 a language other than English, and have mom convert them, on output,
 into the chosen open-and close-quote style.
@@ -445,9 +446,8 @@ input with the apostrophe (found at the right-hand end of the
 all instances of the apostrophe as an apostrophe, making the symbol
 useless as an open-single-quote.  For open single quotes, input
 the backtick character typically found under the tilde on most
-keyboards.  (Pour nous autres, &#8220;backtick&#8221; veut dire
-l&#8217;accent grave.)  Here&#8217;s an example of correct input
-copy with single quotes:
+keyboards.  Here&#8217;s an example of correct input copy with
+single quotes:
 <br/>
 <span class="pre-in-pp">
   "But she said, `I don&#8217;t want to!'"    
@@ -693,7 +693,7 @@ The above places upper edge of the underscore 3 points below the
 UNDERSCORE does not work across line breaks in output copy, which is
 to say that you can&#8217;t underscore a multi-line passage simply
 by putting the text of the whole thing in the string you pass to
-UNDERSCORE.  If you need to several lines of type, use
+UNDERSCORE.  If you need to underscore several lines of type, use
 <a href="#underline">UNDERLINE</a>.
 </p>
 </div>
@@ -830,11 +830,16 @@ Furthermore, you cannot colorize underlining, and there&#8217;s a
 special macro,
 <a href="#underline-specs">UNDERLINE_SPECS</a>,
 to control the weight and distance from the baseline of the
-underline.
+underline.  Lastly, files that use UNDERLINE must be processed with
+<br/>
+<span class="pre-in-pp">
+  pdfmom -Tps filename.mom | ps2pdf - filename.pdf
+</span>
+since groff's native pdf driver does not recognize UNDERLINE.
 </p>
 
 <p>
-UNDERLINE is a toggle macro, therefore you invoke it by itself (i.e.
+UNDERLINE is a toggle macro, therefore you invoke it by itself (ie
 with no argument) to initiate underlining, and with any argument
 (<kbd>OFF, QUIT, X,</kbd> etc) to turn it off.
 </p>
@@ -850,13 +855,11 @@ with the escapes
 
 <p class="tip-bottom">
 <span class="additional-note">Additional note:</span>
-Neither <kbd>.UNDERLINE</kbd> nor <kbd>\*[UL]</kbd> persist past the
-current document element tag.  For example, if you turn underlining
-on in a paragraph
+In document processing, neither <kbd>.UNDERLINE</kbd> nor
+<kbd>\*[UL]</kbd> persist past the current document element tag.
+For example, if you turn underlining on in a paragraph
 (<kbd><a href="docelement.html#pp">.PP</a></kbd>),
-your next paragraph will not be underlined (nor your next head,
-subhead, etc), regardless of whether you explicitly turn underlining
-off.
+your next paragraph will not be underlined.
 </p>
 </div>
 
@@ -904,12 +907,15 @@ produces the same result as
 <span class="pre-in-pp">
   Which should I heed? \*[UL]Just do it\*[ULX] or \*[UL]just say no?\*[ULX]
 </span>
+In either case, this is a misuse of UNDERLINE.
+<a href="#underscore">UNDERSCORE</a>
+is preferable.
 </p>
 
 <!-- -PAD- -->
 
 <div class="macro-id-overline">
-<h3 id="pad" class="macro-id">Insert space into lines</h3>
+<h3 id="pad" class="macro-id">Insert equalized whitespace into lines</h3>
 </div>
 
 <div class="box-macro-args">
@@ -981,10 +987,6 @@ rules into the whitespace through the use of string tabs and
 mom&#8217;s
 <a href="definitions.html#inlines">inline escape</a>
 <kbd><a href="inlines.html#inline-rule-mom">\*[RULE]</a></kbd>.
-(Instead of <kbd>\*[RULE]</kbd>, groff&#8217;s line
-drawing function,
-<kbd><a href="inlines.html#inline-linedrawing-groff">\l'&lt;distance&gt;'</a></kbd>
-could be used.)
 <br/>
 <span class="pre-in-pp">
   .LL 30P
@@ -997,14 +999,10 @@ could be used.)
   \*[RULE]
   .TQ
 </span>
-If you&#8217;re not a typesetter, and if you&#8217;re new to groff,
-the example probably looks like gibberish.  My apologies.  However,
-remember that typesetting is a craft, and without having studied the
-craft, it takes a while to grasp its concepts.
 </p>
 
 <p>
-Basically, what the example does is:
+Here&#8217;s what the example does:
 </p>
 <ol style="margin-top: -.5em; margin-bottom: -.5em;">
   <li>Pads the Date/Signature line with a shorter space for Date
@@ -1126,7 +1124,7 @@ are perfect for this.  An example follows.
 <br/>
 <span class="pre">
   .LL 30P
-  .PAD "Date\*[ST1]#\*[ST1X]Signature\*[ST2]###\*[ST2X]"
+  .PAD "Date\*[ST1]#\*[ST1X]  Signature\*[ST2]###\*[ST2X]" NOBREAK
   .EL
   .ST 1 J
   .ST 2 J
@@ -1177,6 +1175,28 @@ default (a period) to the underscore character, enter
   .LEADER_CHARACTER _
 </span>
 </p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="tip">Tip:</span>
+A particularly useful function of LEADER_CHARACTER is that it can be
+used to increase the spacing of mom&#8217;s default leaders.  This is
+done by assigning to LEADER_CHARACTER both the period (dot) and a
+space.  The technique requires a little low-level groffing:
+<br/>
+<span class="pre-in-pp">
+  .char \[leader] . \"
+  .LEADER_CHARACTER \[leader]
+</span>
+The <kbd>.char</kbd>
+<a href="definitions.html#primitives">primitive</a>
+allows you to define a character called <kbd>leader</kbd>, to which
+you assign a period and a space.  The <kbd>\"</kbd>, which, in
+groff, is used to add non-printing comments to a line, is not
+strictly necessary.  Its presence here lets you see that
+there&#8217;s a space after the period.
+</p>
+</div>
 
 <!-- -DROPCAP- -->
 
@@ -1239,7 +1259,7 @@ When using the
 DROPCAP only works
 </p>
 <ul style="margin-top: -1em; margin-bottom: 0;">
-  <li>with initial paragraphs (i.e. at the start of the document,
+  <li>with initial paragraphs (ie at the start of the document,
       or after
       <a href="docelement.html#head">HEAD</a>),</li>
   <li>when <kbd>.DROPCAP</kbd> comes immediately after <kbd>.PP</kbd>,</li>
@@ -1401,18 +1421,14 @@ find them useful for other purposes.
 Mom does a pretty fine job of making superscripts look good in any
 font and at any size.  If you&#8217;re fussy, though (and I am),
 about precise vertical placement, kerning, weight, size, and so on,
-you may want to roll your own solution.  And sorry, there&#8217;s
-no mom equivalent for subscripts.  I'm neither a mathematician
-nor a chemist, so I don&#8217;t need them.  Of course, anyone who
-wishes to contribute a subscript routine to mom will receive
-blessings not only in this lifetime, but in all lifetimes to come.
+you may want to roll your own solution.
 </p>
 </div>
 
 <h3 id="sup-raise" class="docs">SUPERSCRIPT RAISE AMOUNT</h3>
 <p>
 By default, mom raises superscripts 1/3 of an
-<a href="definitions.html#ems">em</a>
+<a href="definitions.html#em">em</a>
 above the baseline.  If you&#8217;re not happy with this default,
 you can change it by invoking SUPERSCRIPT_RAISE_AMOUNT with the
 amount you want them raised.  A

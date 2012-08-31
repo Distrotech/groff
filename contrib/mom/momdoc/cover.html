@@ -2,8 +2,9 @@
 <!--
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004, 2005, 2006, 2009, 2010, 2011 Free Software Foundation, Inc.
-Written by Peter Schaffter.
+Copyright (C) 2004, 2005, 2006, 2009, 2010,
+2011, 2012 Free Software Foundation, Inc.
+Written by Peter Schaffter (peter@schaffter.ca).
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -14,6 +15,7 @@ Texts, and with no Back-Cover Texts.
 A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
 -->
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -70,9 +72,8 @@ FDL in the main directory of the groff source package.
 
 <p>
 Though identical in treatment, mom provides two kinds of cover
-pages: section cover pages (which I shall refer to simply as
-cover pages) and document cover pages (&#8221;doc
-covers&#8221;).
+pages: document cover pages (&#8221;doc covers&#8221;), and section
+cover pages (which I shall refer to simply as cover pages).
 </p>
 
 <p>
@@ -86,7 +87,7 @@ first cover page.
 
 <p>
 A cover is what you&#8217;d use for pages that separate sections
-of a collated document, i.e. title pages.  A cover page (but not a
+of a collated document, ie title pages.  A cover page (but not a
 doc cover) in a collated document could, for example, simply read:
 &#8221;PART 1&#8221;.
 </p>
@@ -137,7 +138,7 @@ arguments you pass to
 and/or
 <a href="#cover">DOC_COVER</a>.
 Provided you have already given mom the appropriate reference macros
-(e.g.
+(eg
 <a href="docprocessing.html#title">TITLE</a>
 or
 <a href="docprocessing.html#author">AUTHOR</a>),
@@ -238,16 +239,17 @@ Macro: <b>DOC_COVER</b> <kbd class="macro-args">(see required and optional argum
 </div>
 
 <div style="margin-top: .5em; padding-bottom: 3px; white-space: nowrap; overflow: auto;">
-<b><a href="#optional-args">Optional arguments:</a></b> <kbd class="macro-args">[ SUBTITLE AUTHOR DOCTYPE COPYRIGHT MISC BLANKPAGE ]</kbd>
+<b><a href="#optional-args">Optional arguments:</a></b> <kbd class="macro-args">[ SUBTITLE AUTHOR DOCTYPE COPYRIGHT MISC BLANKPAGE PDF_OUTLINE_LABEL &lt;label&gt; ]</kbd>
 </div>
 
 <div class="box-tip">
 <p class="tip">
 <span class="note">Note:</span>
-These macros should be placed in the
-&#8220;style-sheet&#8221; section of your document setup (see
+These macros should be placed in the style sheet section of your
+document setup (see
 <a href="docprocessing.html#docprocessing-tut">Tutorial &ndash; Setting up a mom document</a>),
-i.e. after PRINTSTYLE (and/or DOCTYPE and/or COPYSTYLE), but before START.
+ie after PRINTSTYLE (and/or DOCTYPE and/or COPYSTYLE), but before
+START.
 </p>
 </div>
 
@@ -275,7 +277,7 @@ prefer) containing just the name of the section.
 <p>
 Both COVER and DOC_COVER, whenever invoked, require a first
 argument, as listed above.  This first argument will become the
-first bit of information mom prints on the cover or doc cover (i.e.
+first bit of information mom prints on the cover or doc cover (ie
 the title).
 </p>
 
@@ -377,27 +379,8 @@ The remainder of the arguments to COVER and
 DOC_COVER are optional.  They refer specifically to
 the information you gave the
 <a href="docprocessing.html#reference-macros">reference macros</a>
-bearing the same name as the arguments.
-</p>
-
-<p>
-You may enter as many or as few as you would like to see on your
-cover or doc cover.  The only hitch is&mdash;pay attention,
-class&mdash;they must be entered in the order given above.
-For example, if you want <kbd>TITLE</kbd>, <kbd>AUTHOR</kbd>,
-<kbd>COPYRIGHT</kbd> and <kbd>MISC</kbd>
-<br/>
-<span class="pre-in-pp">
-    .COVER TITLE AUTHOR COPYRIGHT MISC
-</span>
-
-is correct, while
-<br/>
-<span class="pre-in-pp">
-    .COVER TITLE AUTHOR MISC COPYRIGHT
-</span>
-
-is not.
+bearing the same name as the arguments.  You may enter as many or as
+few as you like, in any order.
 </p>
 
 <h5 id="doctype" class="docs" style="text-transform: none; margin-top: -.5em;">What the DOCTYPE argument means</h5>
@@ -436,6 +419,16 @@ If you enable DOC_COVERS_COUNT_PAGES and/or COVERS_COUNT_PAGES, the
 blank page will be taken into account in the pagination scheme,
 though no page number appears on it.  Otherwise, blank pages are
 invisible to mom's pagination.
+</p>
+
+<h5 id="pdf-label" class="docs" style="text-transform: none; margin-top: -.5em;">What the PDF_OUTLINE_LABEL argument means</h5>
+
+<p>
+By default, mom identifies doccovers in the outline panel of PDF
+viewers with the prepended string, &#8220;Cover:&#8221;, and covers
+with the string &#8220;Title Page:&#8221;.  If you would like
+to change the strings, pass the <kbd>PDF_OUTLINE_LABEL</kbd>
+argument to COVER or DOCCOVER, along with the new string.
 </p>
 
 <!-- -ENABLING/DISABLING- -->
