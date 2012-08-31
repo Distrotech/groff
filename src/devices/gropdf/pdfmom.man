@@ -1,0 +1,140 @@
+.ig
+Copyright (C) 2012
+  Free Software Foundation, Inc.
+written by Deri James <deri@chuzzlewit.demon.co.uk>
+and Peter Schaffter <peter@schaffter.ca)
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be included in
+translations approved by the Free Software Foundation instead of in
+the original English.
+..
+.
+.TH PDFMOM @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.
+.
+.SH NAME
+.
+pdfmom \- Produce PDF documents using the mom macro set
+.
+.
+.SH SYNOPSIS
+.
+.SY pdfmom
+.OP \-Tps "\fR[pdfroff options]"
+[groff options]
+.I files .\|.\|.
+.YS
+.
+.SY pdfmom
+.OP \-Tpdf
+[groff options]
+.I files .\|.\|.
+.YS
+.
+.
+.SH DESCRIPTION
+.
+.B pdfmom
+is a wrapper around
+.B groff
+that facilitates the production of PDF documents from files
+formatted with the mom macros.
+.
+.P
+.B pdfmom
+prints to stdout, so output must be redirected to a destination
+file.  The size of the final PDF can be reduced by piping the output
+through
+.BR ps2pdf .
+.
+.P
+If called with the
+.B \-Tpdf
+option (which is the default),
+.B pdfmom
+processes files using groff's native PDF driver,
+.BR gropdf .
+If
+.B \-Tps
+is given, processing is passed over to
+.BR pdfroff ,
+which uses
+.BR groff 's
+PostScript driver.
+In either case, multiple runs of the source file are peformed in
+order to satisfy any forward references in the document.
+.
+.P
+.B pdfmom
+accepts all the same options as
+.BR groff .
+If
+.B \-Tps
+is given, the options associated with
+.B pdfroff
+are accepted as well.
+Please note that when
+.B pdfmom
+calls
+.BR pdfroff ,
+the
+.
+.P
+.RS
+.B -mpdfmark -mom --no-toc
+.RE
+.
+.P
+options are implied and should not be given on the
+command line.
+Equally, it is not necessary to supply the
+.B -mom
+or
+.B "-m\~mom"
+options when
+.B \-Tps
+is absent.
+.
+.P
+PDF integration with the
+.B mom
+macros is discussed in full in the PDF manual,
+.IR "Producing PDFs with groff and mom" .
+.
+.
+.SH BUGS
+.
+.B pdfmom
+sometimes issues warnings of the type
+.
+.P
+.RS 2
+\&.\|.\|.:
+.B can't transparently output node at top level
+.RE
+.
+.P
+This is more of an annoyance than a bug, and may safely be ignored.
+.
+.
+.SH "SEE ALSO"
+.
+.BR groff (@MAN1EXT@),
+.BR pdfroff (@MAN1EXT@),
+.BR ps2pdf (@MAN1EXT@)
+.
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" End:

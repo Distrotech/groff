@@ -907,13 +907,13 @@ sub do_x
 		{
 		    IsGraphic();
 		    my $bbox=$incfil{$fil}->[1];
-		    my $xscale=$wid/($bbox->[2]-$bbox->[0]+1);
-		    my $yscale=($hgt<=0)?$xscale:($hgt/($bbox->[3]-$bbox->[1]+1));
+		    my $xscale=$wid/($bbox->[2]-$bbox->[0]);
+		    my $yscale=($hgt<=0)?$xscale:($hgt/($bbox->[3]-$bbox->[1]));
 		    $xscale=($wid<=0)?$yscale:$xscale;
 		    $xscale=$yscale if $yscale < $xscale;
 		    $yscale=$xscale if $xscale < $yscale;
-		    $wid=($bbox->[2]-$bbox->[0]+1)*$xscale;
-		    $hgt=($bbox->[3]-$bbox->[1]+1)*$yscale;
+		    $wid=($bbox->[2]-$bbox->[0])*$xscale;
+		    $hgt=($bbox->[3]-$bbox->[1])*$yscale;
 
 		    if ($flag eq '-C' and $ll > $wid)
 		    {
@@ -2978,7 +2978,7 @@ sub do_V
 
     }
 
-    $nomove=$pendmv=0;
+#    $nomove=$pendmv=0;
     $poschg=1;
 }
 
@@ -2997,6 +2997,7 @@ sub TextWid
 {
     my $txt=shift;
     my $w=0;
+    my $ck=0;
 
     foreach my $c (split('',$txt))
     {
@@ -3005,7 +3006,9 @@ sub TextWid
 	$w+=$widtbl->[$cn];
     }
 
-    return($w/$unitwidth);
+    $ck=length($txt)*$curkern;
+
+    return(($w/$unitwidth)+$ck);
 }
 
 sub do_t
