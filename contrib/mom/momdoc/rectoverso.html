@@ -281,17 +281,30 @@ that require their own titles, looks like this:
 <div class="box-tip">
 <p class="tip">
 <span class="tip">Tip:</span>
-If the last
-<a href="definitions.html#outputline">output line</a>
-of a document before COLLATE falls too close to the bottom margin
-for running text, mom may output a blank page with only a header
-or footer between collated documents.  In order to avoid this, I
-recommend always preceding COLLATE with
-<kbd><a href="typesetting.html#el">.EL</a></kbd>,
-like this
+If the last line of text before <kbd>.COLLATE</kbd>
+falls too close to the bottom margin, or if the line is followed
+by a macro likely to cause a linebreak (eg <kbd>.LIST OFF</kbd> or
+<kbd>.IQ</kbd>), mom may output a superfluous blank page before
+the start of the following document.
+</p>
+
+<p class="tip-bottom">
+In order to avoid this, insert
+<a href="docprocessing.html#EL"><kbd>.EL</kbd></a>
+after the last line of text, before <kbd>.COLLATE</kbd> and/or any
+concluding macros.  For example,
 <br/>
 <span class="pre-in-pp">
+  some concluding text.
   .EL
+  .COLLATE
+</span>
+or
+<br/>
+<span class="pre-in-pp">
+  some concluding text.
+  .EL
+  .LIST OFF
   .COLLATE
 </span>
 </p>

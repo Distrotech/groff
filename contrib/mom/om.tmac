@@ -11764,8 +11764,6 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    FAMILY  \\*[$PAGE_NUM_FAM]
 .    FT      \\*[$PAGE_NUM_FT]
 .    PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$PAGE_NUM_SIZE_CHANGE]
-\#.    if \\n[#TOC] .ab \\n[.ps]
-\#.    if \\n[#TOC] .tm \\n[#TOC_PS]\\*[$TOC_PN_SIZE_CHANGE]
 .    if \\n[#PRINT_STYLE]=1 .TYPEWRITER
 .    if \\n[#PAGE_NUM_V_POS]=1 .vs 0
 .    if o \{\
@@ -17417,7 +17415,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ie '\\*[$REF_STYLE]'NOTE' \{\
 .   ie \\n[ref*type]=1 .ref*field P : "" .
 .   el .ref*field P "" "\|"
-.   nr ref*suppress-period 1
+.   if \\n[ref*type]=1 .nr ref*suppress-period 1
 .\}
 .el \{\
 .   ie \\n[ref*type]=1 .ref*field P \|:
