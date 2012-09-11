@@ -1,6 +1,6 @@
 '\" t
 .ig
-Copyright (C) 1989-1995, 2001-2004, 2006-2011
+Copyright (C) 1989-1995, 2001-2004, 2006-2012
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -401,8 +401,63 @@ Short form of
 .
 .TP
 .BR d , D
-Start an item vertically spanning rows at the bottom of its range rather
+Start an item that vertically spans rows,
+using the `^' column specifier or `\[rs]^' data item,
+at the bottom of its range rather
 than vertically centering it (GNU tbl only).
+Example:
+.RS
+.IP
+.EX
+\&.TS
+\&tab(;) allbox;
+\&l l
+\&l ld
+\&r ^
+\&l rd.
+\&0000;foobar
+\&T{
+\&1111
+\&.br
+\&2222
+\&T};foo
+\&r;
+\&T{
+\&3333
+\&.br
+\&4444
+\&T};bar
+\&\[rs]^;\[rs]^
+\&.TE
+.EE
+.RE
+.
+.IP
+Result:
+.
+.RS
+.IP
+.TS
+tab(;) allbox;
+l l
+l ld
+r ^
+l rd.
+0000;foobar
+T{
+1111
+.br
+2222
+T};foo
+r;
+T{
+3333
+.br
+4444
+T};bar
+\^;\^
+.TE
+.RE
 .
 .TP
 .BR e , E
