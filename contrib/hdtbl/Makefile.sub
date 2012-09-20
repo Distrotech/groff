@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2009, 2010 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2009, 2010, 2012 Free Software Foundation, Inc.
 #      Written by Werner Lemberg (wl@gnu.org)
 # 
 # This file is part of groff.
@@ -32,11 +32,10 @@ FFLAG=-F$(top_builddir)/font -F$(top_srcdir)/font
 TFLAG=-M$(top_builddir)/tmac -M$(top_srcdir)/tmac -M$(srcdir)
 PFLAG=-t -p -e -U
 
-GROFF=GROFF_COMMAND_PREFIX=''; \
-      export GROFF_COMMAND_PREFIX; \
-      GROFF_BIN_PATH=$(GROFF_BIN_PATH); \
-      export GROFF_BIN_PATH; \
-      $(GROFFBIN) $(FFLAG) $(TFLAG) $(PFLAG)
+GROFF=\
+  GROFF_COMMAND_PREFIX= \
+  GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
+  $(GROFFBIN) $(FFLAG) $(TFLAG) $(PFLAG)
 
 MAN7=\
   groff_hdtbl.n
