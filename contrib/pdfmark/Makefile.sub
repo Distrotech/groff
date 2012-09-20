@@ -1,4 +1,4 @@
-# Copyright (C) 2005, 2006, 2009, 2011 Free Software Foundation, Inc.
+# Copyright (C) 2005, 2006, 2009, 2011, 2012 Free Software Foundation, Inc.
 #      Written by Keith Marshall (keith.d.marshall@ntlworld.com)
 # 
 # This file is part of groff.
@@ -53,10 +53,10 @@ MFLAG=-M$(srcdir) -M$(top_builddir)/tmac -M$(top_srcdir)/tmac
 PFLAG=-dpaper=$(PAGE) -P-p$(PAGE)
 
 PDFROFF=\
-  export GROFF_TMPDIR; GROFF_TMPDIR='.'; \
-  export GROFF_COMMAND_PREFIX; GROFF_COMMAND_PREFIX=''; \
-  export GROFF_BIN_DIR; GROFF_BIN_DIR=$(GROFF_BIN_DIR); \
-  export GROFF_BIN_PATH; GROFF_BIN_PATH=$(GROFF_BIN_PATH); \
+  GROFF_TMPDIR=. \
+  GROFF_COMMAND_PREFIX= \
+  GROFF_BIN_DIR="$(GROFF_BIN_DIR)" \
+  GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
   ./pdfroff --keep-temporary-files $(FFLAG) $(MFLAG) $(PFLAG)
 
 .SUFFIXES: .ms .pdf
