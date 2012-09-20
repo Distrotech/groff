@@ -225,11 +225,11 @@ install_html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
 	  $(DESTDIR)$(exampleimagedir)
 
 uninstall_sub:
+	$(INSTALL_INFO) --remove --info-dir=$(DESTDIR)$(infodir) \
+	  $(DESTDIR)$(infodir)/groff.info
 	-for f in groff `ls groff.info*`; do \
 	  rm -f $(DESTDIR)$(infodir)/$$f; \
 	done
-	$(INSTALL_INFO) --remove --info-dir=$(DESTDIR)$(infodir) \
-	  $(DESTDIR)$(infodir)/groff.info
 	-for f in $(DOCFILES) $(PROCESSEDDOCFILES); do \
 	  rm -f $(DESTDIR)$(docdir)/$$f; \
 	done
