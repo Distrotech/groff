@@ -36,7 +36,7 @@ LoadDownload("download");
 LoadFoundry("Foundry");
 WriteDownload("download");
 
-exit $warn;
+exit 0;
 
 
 

@@ -26,6 +26,8 @@ use strict;
 my @cmd;
 my $dev='pdf';
 
+$ENV{PATH}=$ENV{GROFF_BIN_PATH}.':'.$ENV{PATH} if exists($ENV{GROFF_BIN_PATH});
+
 while (my $c=shift)
 {
     if (substr($c,0,2) eq '-T')

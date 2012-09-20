@@ -207,7 +207,7 @@ LoadDesc();
 
 my $unitwidth=$desc{unitwidth};
 my $papersz=$desc{papersize};
-$papersz=$fpsz if $fpsz;
+$papersz=lc($fpsz) if $fpsz;
 
 $env{FontHT}=0;
 $env{FontSlant}=0;
@@ -232,7 +232,7 @@ if (substr($papersz,0,1) eq '/' and -r $papersz)
 
 if ($papersz=~m/([\d.]+)([cipP]),([\d.]+)([cipP])/)
 {
-    @defaultmb=@mediabox=(0,0,ToPoints($1,$2),ToPoints($3,$4));
+    @defaultmb=@mediabox=(0,0,ToPoints($3,$4),ToPoints($1,$2));
 }
 elsif (exists($ppsz{$papersz}))
 {
