@@ -6674,28 +6674,52 @@ Justify to both margins.  This is the default used by @code{gtroff}.
 Finally, @var{mode} can be the numeric argument returned by the
 @code{.j} register.
 
-With no argument, @code{gtroff} adjusts lines in the same way it did
-before adjusting was deactivated (with a call to @code{na}, for
-example).
+Using @code{ad} without argument is the same as saying
+@w{@code{.ad \[.j]}}.  In particular, @code{gtroff} adjusts lines
+in the same way it did before adjusting was deactivated (with a call
+to @code{na}, say).  For example, this input code
 
 @Example
-text
-.ad r
+.de AD
+.  br
+.  ad \\$1
+..
+.
+.de NA
+.  br
+.  na
+..
+.
+textA
+.AD r
 .nr ad \n[.j]
-text
-.ad c
-text
-.na
-text
-.ad         \" back to centering
-text
-.ad \n[ad]  \" back to right justifying
+textB
+.AD c
+textC
+.NA
+textD
+.AD         \" back to centering
+textE
+.AD \n[ad]  \" back to right justifying
+textF
+@endExample
+
+@noindent
+produces the following output:
+
+@Example
+textA
+                                                    textB
+                          textC
+textD
+                          textE
+                                                    textF
 @endExample
 
 @cindex adjustment mode register (@code{.j})
-The current adjustment mode is available in the read-only number
-register @code{.j}; it can be stored and subsequently used to set
-adjustment.
+As just demonstrated, the current adjustment mode is available in the
+read-only number register @code{.j}; it can be stored and
+subsequently used to set adjustment.
 
 The adjustment mode status is associated with the current environment
 (@pxref{Environments}).
