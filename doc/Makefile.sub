@@ -40,10 +40,10 @@ TFLAG=-M$(top_builddir)/tmac -M$(top_srcdir)/tmac
 GROFF=\
   GROFF_COMMAND_PREFIX=''; \
   export GROFF_COMMAND_PREFIX; \
-  GROFF_BIN_PATH=$(GROFF_BIN_PATH); \
+  GROFF_BIN_PATH=/usr/bin:$(GROFF_BIN_PATH); \
   export GROFF_BIN_PATH; \
   sed -e "s;@VERSION@;$(version)$(revision);" $< \
-  | $(GROFFBIN) $(TFLAG) $(FFLAG) -Upet -ww
+  | groff $(TFLAG) $(FFLAG) -Upet -ww
 
 DOCFILES=\
   meref.me \
