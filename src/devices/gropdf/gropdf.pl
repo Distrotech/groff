@@ -2669,6 +2669,7 @@ sub do_D
 	$lwidth=$p[0];
 	$stream.="$p[0] w\n";
 	$poschg=1;
+	$xpos+=$lwidth;
     }
     elsif ($Dcmd eq 'a')
     {
@@ -3014,6 +3015,14 @@ sub TextWid
 sub do_t
 {
     my $par=shift;
+
+    if ($kernadjust != $curkern)
+    {
+	PutLine();
+	$stream.="$kernadjust Tc\n";
+	$curkern=$kernadjust;
+    }
+
     my $wid=TextWid($par);
 
     $par=reverse(split('',$par)) if $xrev;
@@ -3037,13 +3046,6 @@ sub do_t
     # $pendmv = 'h' move since last 't'
     # $nomove = width of char(s) added by 'C', 'N' or 'c'
     # $w-flg  = 'w' seen since last t
-
-    if ($kernadjust != $curkern)
-    {
-	PutLine();
-	$stream.="$kernadjust Tc\n";
-	$curkern=$kernadjust;
-    }
 
     if ($fontchg)
     {
