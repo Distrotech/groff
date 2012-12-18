@@ -6,8 +6,7 @@ groff_diff.man
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
 
-Copyright (C) 1989, 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009,
-              2010
+Copyright (C) 1989, 2001-2004, 2006-2010, 2012
   Free Software Foundation, Inc.
 written by James Clark
 
@@ -67,7 +66,7 @@ by
 .I Ossanna
 and
 .IR Kernighan .
-This inludes the roff language as well as the intermediate output
+This includes the roff language as well as the intermediate output
 format (troff output).
 .
 .P
@@ -371,7 +370,7 @@ This is the same as the
 request.
 .
 .B \[rs]F[]
-switches back to the previous color (note that
+switches back to the previous font family (note that
 .B \[rs]FP
 won't work; it selects font family `P' instead).
 .
@@ -710,12 +709,12 @@ correct if the following glyph is a roman glyph.
 .  nop For example, if an italic\~f is immediately followed by a roman
 .  nop right parenthesis, then in many fonts the top right portion of
 .  nop the\~f overlaps the top left of the right parenthesis
-.  nop producing \f[I]f\f[R])\f[R], which is ugly.
+.  nop producing \f[I]f\f[R]), which is ugly.
 .  nop Inserting
 .  B \[rs]/
 .  nop produces
-.  ie \n(.g \f[I]f\/\f[R])\f[R]
-.  el       \f[I]f\|\f[R])\f[R]
+.  ie \n(.g \f[I]f\/\f[R])
+.  el       \f[I]f\|\f[R])
 .  nop and avoids this problem.
 .\}
 It is a good idea to use this escape sequence whenever an italic
@@ -916,7 +915,7 @@ sets register\~\c
 .B n
 to\~1.
 .
-Note that glyph information (font, font size, etc.) is not preserved;
+Note that glyph information (font, font size, etc.\&) is not preserved;
 use
 .B .unformat
 instead.
@@ -1200,15 +1199,15 @@ or
 (one component).
 .
 Color components can be given either as a hexadecimal string or as
-positive decimal integers in the range 0-65535.
+positive decimal integers in the range 0\[en]65535.
 .
 A hexadecimal string contains all color components concatenated; it
 must start with either
 .B #
 or
 .BR ## .
-The former specifies hex values in the range 0-255 (which are
-internally multiplied by\~257), the latter in the range 0-65535.
+The former specifies hex values in the range 0\[en]255 (which are
+internally multiplied by\~257), the latter in the range 0\[en]65535.
 .
 Examples: #FFC0CB (pink), ##ffff0000ffff (magenta).
 .
@@ -1593,11 +1592,11 @@ No support for `digraphs' like
 .IP \[bu]
 .BI ^^ xx
 .RI ( x
-is 0-9 or a-f) and
+is 0\[en]9 or a\[en]f) and
 .BI ^^ x
 (character code of\~\c
 .I x
-in the range 0-127) are recognized; other use of\~\c
+in the range 0\[en]127) are recognized; other use of\~\c
 .B ^
 causes an error.
 .
@@ -2102,7 +2101,7 @@ The list of sizes can be terminated by an optional\~\c
 Each
 .I si
 can also be a range of sizes
-.IR m - n .
+.IR m \(en n .
 .
 Contrary to the font file command, the list can't extend over more
 than a single line.
@@ -2388,7 +2387,7 @@ are stretchable again.
 .
 Note that the vertical size of lines is not preserved.
 .
-Glyph information (font, font size, space width, etc.) is retained.
+Glyph information (font, font size, space width, etc.\&) is retained.
 .
 Useful in conjunction with the
 .B box
@@ -2923,8 +2922,8 @@ request, minus the amount of vertical motion produced by the
 .B ne
 request.
 .
-In  other  words, at the point  a  trap is  sprung,  it represents the
-difference of  what the vertical position  would have been but for the
+In other words, at the point a trap is sprung, it represents the
+difference of what the vertical position would have been but for the
 trap, and what the vertical position actually is.
 .
 Useful in conjunction with the
@@ -3184,7 +3183,7 @@ In a long escape name
 .B ]
 is not recognized as a closing delimiter except when it occurs at
 the same input level as the opening\~\c
-.BR ] .
+.BR [ .
 .
 In compatibility mode, no attention is paid to the input-level.
 .
