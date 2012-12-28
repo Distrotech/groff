@@ -1,4 +1,4 @@
-    Copyright (C) 1989-2011
+    Copyright (C) 1989-2012
       Free Software Foundation, Inc.
 
     Copying and distribution of this file, with or without modification,
@@ -8,13 +8,19 @@
 This file describes recent user-visible changes in groff.  Bug fixes are not
 described.  There are more details in the man and info pages.
 
-VERSION 1.21.1
-==============
+
+VERSION 1.22
+============
 
 Groff
 -----
 
 o A new option `-j' has been added to call the `chem' preprocessor.
+
+Tbl
+---
+
+o Improved line numbering support.
 
 Macro Packages
 --------------
@@ -22,12 +28,34 @@ Macro Packages
 o Support for the `refer' preprocessor has been added to the -mm macro
   package.
 
-o Bugs in the support for the `n1' and `n2' requests in the -me package were
-  fixed that caused extra line numbers to be added to text in floats and
-  diversion environments, as well as equations and pic-style pictures.
+o In -me, the `TH' macro was changed for compatibility with line number
+  support in tables.
 
-  The `TH' macro was changed for compatibility with line number support in
-  tables.
+  `bl' now works inside of blocks.
+
+  The behaviour of centered blocks has been improved.
+
+  Line numbering support has been improved.
+
+o The -mom macro package has reached version 2.0, focusing on PDF output
+  with gropdf (using the new `pdfmom' wrapper script).  See the file
+  `version-2.html' of the -mom documentation for a list of the many changes.
+
+o Some generic Unicode fallback characters (mainly Roman numerals) have been
+  added.
+
+Gropdf
+------
+
+o A new driver for generating PDF output directly, contributed by Deri James
+  <deri@chuzzlewit.myzen.co.uk>.  Note that this driver is written in Perl,
+  thus you need a working Perl installation to run this output device.
+
+Pdfmom
+------
+
+o A new wrapper around groff that facilitates the production of PDF
+  documents from files formatted with the -mom macros.
 
 
 VERSION 1.21

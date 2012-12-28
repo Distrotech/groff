@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2011
+/* Copyright (C) 1989-2012
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
       vflag = 1;
       printf("GNU groff version %s\n", Version_string);
       printf(
-	"Copyright (C) 2011 Free Software Foundation, Inc.\n"
+	"Copyright (C) 2012 Free Software Foundation, Inc.\n"
 	"GNU groff comes with ABSOLUTELY NO WARRANTY.\n"
 	"You may redistribute copies of groff and its subprograms\n"
 	"under the terms of the GNU General Public License.\n"

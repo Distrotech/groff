@@ -115,10 +115,10 @@ README
 This is the GNU groff document formatting system.
 The version number is given in the file VERSION.
 
-Included in this release are implementations of troff, pic, eqn, tbl,
-grn, refer, \-man, \-mdoc, \-mom, and \-ms macros, and drivers for
-PostScript, TeX dvi format, HP LaserJet\~4 printers, Canon CAPSL printers,
-HTML and XHTML formats (beta status), and typewriter-like devices.
+Included in this release are implementations of troff, pic, eqn, tbl, grn,
+refer, \-man, \-mdoc, \-mom, and \-ms macros, and drivers for PostScript,
+PDF, TeX DVI format, HP LaserJet\~4 printers, Canon CAPSL printers, HTML and
+XHTML formats (beta status), and typewriter-like devices.
 Also included is a modified version of the Berkeley \-me macros, the enhanced
 version gxditview of the X11 xditview previewer, and an implementation of the
 \-mm macros contributed by
@@ -183,7 +183,7 @@ The complete groff source as a single file is available
 .URL http://\:groff.ffii.org/\:groff/\:devel/\:groff-current.tar.gz here .
 
 A diff file relative to groff-\[la]version\[ra], the latest official groff
-release is available at
+release, is available at
 
 .in 2m
 .ft C
@@ -235,6 +235,9 @@ HTML output; the netpbm and psutils packages are required only for HTML
 output.
 If you don't intend to produce output in either of these formats, then
 these packages are unnecessary.
+
+Additionally, producing `PDF' output directly with the `gropdf' device
+needs a working installation of Perl.
 
 In Linux Debian, the installation of texinfo is dangerous, for it creates a
 file install-info that blocks the system installation.
@@ -296,7 +299,7 @@ postings to the corresponding mailing list.
 .
 .
 .SH
-NEWS VERSION 1.21.1
+NEWS VERSION 1.22
 .LP
 .SH 2
 groff
@@ -308,6 +311,15 @@ A new option `\-j' has been added to call the `chem' preprocessor.
 .
 .
 .SH 2
+tbl
+
+.ULS
+.LI
+Improved line numbering support.
+.ULE
+.
+.
+.SH 2
 macro packages
 
 .ULS
@@ -315,14 +327,25 @@ macro packages
 Support for the `refer' preprocessor has been added to the \-mm macro
 package.
 
+.LI
+In \-me, the `TH' macro was changed for compatibility with line number
+support in tables.
+
+`bl' now works inside of blocks.
+
+The behaviour of centered blocks has been improved.
+
+Line numbering support has been improved.
 
 .LI
-Bugs in the support for the `n1' and `n2' requests in the \-me package were
-fixed that caused extra line numbers to be added to text in floats and
-diversion environments, as well as equations and pic-style pictures.
+The \-mom macro package has reached version 2.0, focusing on PDF output
+with gropdf (using the new `pdfmom' wrapper script).
+See the file `version-2.html' of the \-mom documentation for a list of the
+many changes.
 
-The `TH' macro was changed for compatibility with line number support in
-tables.
+.LI
+Some generic Unicode fallback characters (mainly Roman numerals) have been
+added.
 .ULE
 .
 .
@@ -332,6 +355,29 @@ tbl
 .ULS
 .LI
 Added numbered line support in tables.
+.ULE
+.
+.
+.SH 2
+gropdf
+
+.ULS
+.LI
+A new driver for generating PDF output directly, contributed by
+.MTO deri@chuzzlewit.myzen.co.uk "Deri James" .
+
+Note that this driver is written in Perl, thus you need a working Perl
+installation to run this output device.
+.ULE
+.
+.
+.SH 2
+pdfmom
+
+.ULS
+.LI
+A new wrapper around groff that facilitates the production of PDF documents
+from files formatted with the \-mom macros.
 .ULE
 .
 .
