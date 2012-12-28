@@ -98,12 +98,14 @@ imagedir=img
 .ms.ps:
 	$(GROFF) -Tps -ms -mwww >$@
 
+.texinfo.txt:
+	LANG= $(MAKEINFO) --enable-encoding -I$(srcdir) --plaintext -o $@ $<
 .texinfo.dvi:
 	MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e $<
 .texinfo.pdf:
 	MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e --pdf $<
 .texinfo.html:
-	$(MAKEINFO) --enable-encoding -I$(srcdir) --html --no-split $< \
+	LANG= $(MAKEINFO) --enable-encoding -I$(srcdir) --html --no-split $< \
 	&& $(SHELL) $(srcdir)/fixinfo.sh $@
 
 
@@ -132,6 +134,12 @@ webpage.html: webpage.ms gnu.eps groff.css
 webpage.ps: gnu.eps
 
 grnexmpl.ps: grnexmpl.me grnexmpl.g
+
+split-html:
+	LANG= $(MAKEINFO) --enable-encoding -I$(srcdir) --html groff.texinfo \
+	&& for f in groff/*; do \
+             $(SHELL) $(srcdir)/fixinfo.sh $$f; \
+           done
 
 
 clean:
