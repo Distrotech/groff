@@ -1,0 +1,786 @@
+
+Version 1.21 released
+=====================
+
+	* NEWS, REVISION, VERSION, doc/groff.texinfo, doc/webpage.ms:
+	Updated.
+	* aclocal.m4, configure: Regenerated.
+
+2010-12-31  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/webpage.ms: Updated.
+
+2010-12-31  Werner LEMBERG  <wl@gnu.org>
+
+	* configure: Regenerate with autoconf 2.67.
+
+2010-12-31  Werner LEMBERG  <wl@gnu.org>
+
+	Update various scripts.
+
+	* config.guess, config.sub: Update from `config' repository.
+	* install-sh, mkinstalldirs: Update from `gnulib' repository.
+
+2010-12-31  Werner LEMBERG  <wl@gnu.org>
+
+	Update texinfo.tex.
+
+	* doc/texinfo.tex: Update from `texinfo' repository.
+
+2010-12-30  Werner LEMBERG  <wl@gnu.org>
+
+	Call texi2dvi with correct makeinfo binary.
+
+	* doc/Makefile.in (.texinfo.dvi, .texinfo.pdf): Use $(MAKEINFO).
+
+2010-12-30  Werner LEMBERG  <wl@gnu.org>
+
+	Documentation updates.
+
+	* NEWS, PROBLEMS, MANIFEST: Update.
+
+2010-12-26  Werner LEMBERG  <wl@gnu.org>
+
+	Speed up troff.
+
+	* src/include/ptable.h (PTABLE): Make hash tables much more sparse
+	by changing the ratio `FULL_NUM/FULL_DEN' from 2/3 to 1/4.  This
+	increases the allocated memory by about 200kByte (which is nothing
+	today) but assures that there aren't extremely long searches for a
+	free hash slot in case that the hash function doesn't return a free
+	one.  Due to the nature of the entries in uniuni.cpp, the used hash
+	function in ptable.cpp is not optimal, but using a sparse array
+	compensates this.
+
+2010-12-20  Werner LEMBERG  <wl@gnu.org>
+
+	Replace patch from 2010-12-18 with a much faster implementation.
+
+	* src/roff/troff/node.h (node): Add virtual function
+	`get_break_code'.
+
+	* src/roff/troff/node.cpp (inter_char_space_node): Remove class
+	completely.
+	(glyph_node::merge_glyph_node): Restore previous version.
+
+	(break_char_node): Add `prev_break_code' field and update
+	constructors.
+	(node::get_break_code, break_char_node::get_break_code): Implement.
+
+	(node::add_char): Pass remaining cflags values.
+
+	(break_char_node::add_self): Use the logic of the now deleted
+	`inter_char_space_node::add_self' function to insert a space node if
+	necessary.
+
+2010-12-20  Daiki Ueno  <ueno@unixuser.org>
+
+	A new try to not changing srcdir if building in separate builddir.
+
+	Makefile.in ($GNULIBDIRS): Disable calls to autoconf and friends.
+
+2010-12-20  Werner LEMBERG  <wl@gnu.org>
+
+	Speed up access to cflags values.
+
+	We now recompute the cflags values for all charinfo objects if
+	`.class' has been called.
+
+	* src/roff/troff/charinfo.h: Add external references to `class_flag'
+	and `get_flags'.
+	(charinfo): `get_flags' no longer has a return value.
+	(charinfo::overlaps_horizontally, charinfo::overlaps_vertically,
+	charinfo::can_break_before, charinfo::can_break_after,
+	charinfo::can_break_after, charinfo::ends_sentence,
+	charinfo::transparent,, charinfo:ignore_hcodes,
+	charinfo::prohibit_break_before, charinfo::prohibit_break_after,
+	charinfo::inter_char_space): Call global `get_flags' only if
+	necessary.
+	(charinfo::add_to_class): Set `class_flag'.
+
+	* src/roff/troff/input.cpp (class_flag): New global flag.
+	(charinfo::charinfo): Call `get_flags' member function.
+	(get_flags): New global function which iterates over all entries in
+	the charinfo dictionary.
+	(charinfo::get_flags): Set `flags' directly.
+
+2010-12-19  Werner LEMBERG  <wl@gnu.org>
+
+	Protect `.class' against cyclic nesting.
+
+	* src/roff/troff/charinfo.h (charinfo::contains): Add optional
+	boolean argument.
+	* src/roff/troff/input.cpp (define_class, charinfo::contains): Check
+	for cyclic nesting.
+
+2010-12-18  Werner LEMBERG  <wl@gnu.org>
+
+	Improve CJK support with new values for `.cflags'.
+
+	This patch introduces three new values to `.cflags':
+
+	  don't break before character: 128
+	  don't break after character:  256
+	  allow inter-character break:  512
+
+	They are handled differently if compared to other cflags values:
+
+	  (1) hcode values are completely ignored
+	  (2) similar to kern values, and contrary to the other cflags
+	      values, troff looks at pairs of characters to decide whether a
+	      break gets inserted
+
+	A yet-to-be-written patch should add inter-character spacing if
+	those flags are active; currently, only zero-width breakpoints are
+	inserted.
+
+	* src/roff/troff/charinfo.h (charinfo): Change type of `flags' to
+	`int'.  Update callers accordingly.
+	New enum values `DONT_BREAK_BEFORE', `DONT_BREAK_AFTER', and
+	`INTER_CHAR_SPACE'.
+	New member functions `prohibit_break_before',
+	`prohibit_break_after', and `inter_char_space'.
+	* src/roff/troff/input.cpp: Updated.
+
+	* src/roff/troff/node.cpp (inter_char_space_node): New class similar
+	to kern_pair_node, collecting charinfo entities with the
+	abovementioned cflags values.
+	(break_char_type): Add new enum values.
+	(glyph_node::merge_glyph_node): Handle abovementioned cflags values
+	and emit an `inter_char_space_node' if necessary.
+
+	* tmac/ja.tmac: Use new cflags values.
+
+	* doc/groff.texinfo, NEWS, man/groff_diff.man: Document new values.
+
+2010-12-18  Werner LEMBERG  <wl@gnu.org>
+
+	Remove compiler warning.
+
+	* src/libs/libgroff/relocate.cpp (msw2posixpath): Remove redundant
+	dereferencing.
+
+2010-12-16  Daiki Ueno  <ueno@unixuser.org>
+
+	Don't change srcdir if building in a separate builddir.
+
+	* Makefile.in ($GNULIBDIRS): Copy configuring stuff of gnulib if
+	necessary.
+
+2010-12-15  Werner LEMBERG  <wl@gnu.org>
+
+	Fix compilation problem.
+
+	This issue happens with gcc 4.2.4.
+
+	* src/roff/troff/node.cpp (node::~node): Move to...
+	* src/roff/troff/node.h: Here.  This ensures that the inline
+	member function is publicly visible.
+
+2010-12-15  Werner LEMBERG  <wl@gnu.org>
+
+	Remove unused code.
+
+	* src/roff/troff/node.cpp, src/roff/troff/node.h
+	(space_node::space_node): Remove unused constructor.
+
+2010-12-15  Werner LEMBERG  <wl@gnu.org>
+
+	Use enum to increase readability.
+
+	* src/roff/troff/node.cpp (break_char_type): New enum.
+	(break_char_node::add_self, node::add_char): Use it.
+
+2010-12-13  Daiki Ueno  <ueno@unixuser.org>
+	    Werner LEMBERG  <wl@gnu.org>
+
+	Add wide character support to grotty.
+
+	This is a huge patch, mainly by adding the gnulib infrastructure in
+	a separate directory tree (in `src/libs/gnulib/lib') for its
+	`wcwidth' module.  However, the actual changes to native groff
+	source files are just a few lines.
+
+	* Makefile.comm (INCLUDES): Updated.
+	(LIBGNU): Define.
+
+	* Makefile.in (NOMAKEDIRS): Updated.
+	(GNULLIBDIRS): Define.
+	(DISTDIRS): Add GNULLIBDIRS.
+	($LIBDIRS): Depend on GNULLIBDIRS.
+	($GNULLIBDIRS): New target.
+
+	* src/libs/libgroff/font.cpp (font::get_width, font::load)
+	[is_unicode]: Use `wcwidth'.
+
+	* src/roff/troff/Makefile.sub (XLIBS): Add LIBGNU.
+	* src/roff/troff/input.cpp (main): Set LC_CTYPE.
+
+	* src/devices/grotty/Makefile.sub (XLIBS): Add LIBGNU.
+	* src/devices/grotty/tty.cpp (main): Set LC_CTYPE.
+
+	* src/libs/gnulib/*: New files.  The import was done as follows:
+
+	  . Call
+
+	      gnulib-tool --create-testdir \
+	                  --dir=src/libs/gnulib \
+	                  wcwidth
+
+	    to get a testbed.
+
+	  . Manually move directories src/libs/gl{lib,m4} to
+	    src/libs/{lib,m4}, and do s/gllib/lib/ and s/glm4/m4/ everywhere
+	    to `convert' the gnulib testbed to a standard gnulib
+	    configuration as maintained by gnulib-tool.
+
+	  . Call
+
+	      gnulib-tool --add-import \
+	                  --dir=src/libs/gnulib \
+	                  wcwidth
+
+	    to update everything.
+
+2010-12-13  Werner LEMBERG  <wl@gnu.org>
+
+	`.class' must not emit empty lines.
+
+	* src/roff/troff/input.cpp (define_class): Add missing `skip_line'
+	calls.
+
+2010-12-06  UKAI Fumitoshi  <ukai@debian.or.jp>
+	    Colin Watson  <cjwatson@debian.org>
+
+	Add Japanese localization.
+
+	* tmac/ja.tmac: New file.
+	* tmac/Makefile.sub (NORMALFILES): Updated.
+
+2010-12-06  Colin Watson  <cjwatson@debian.org>
+	    Daiki Ueno  <ueno@unixuser.org>
+
+	Implement support for character classes.
+
+	This patch uses standard C++ headers, contrary to the rest of groff.
+	Ideally, everything in groff should be updated to do the same.
+
+	* src/include/font.h (glyph_to_unicode): New function.
+
+	* src/libs/libgroff/font.cpp (glyph_to_unicode): Implement it.
+	(font::contains, font::get_code): Use it.
+
+	* src/roff/troff/charinfo.h: Include <vector> and <utility>.
+	(charinfo): New members `ranges' and `nested_classes'.
+	New member functions `get_unicode_code' and `get_flags'.
+	New member functions `add_to_class', `is_class', and `contains'.
+	(charinfo::overlaps_horizontally, charinfo::overlaps_vertically,
+	charinfo::can_break_before, charinfo::can_break_after,
+	charinfo::can_break_after, charinfo::ends_sentence,
+	charinfo::transparent,, charinfo:ignore_hcodes): Use `get_flags',
+	which handles character classes also.
+
+	* src/roff/troff/input.cpp (char_class_dictionary): New global
+	variable.
+	(define_class): New function.
+	(init_input_requests): Register `class'.
+
+	(charinfo::get_unicode_code, charinfo::get_flags,
+	charinfo::contains): Implement it.
+
+	* NEWS, doc/groff.texinfo (Character Classes), man/groff_diff.man,
+	man/groff.man: Document it.
+
+2010-11-11  Anton Shepelev  <anton.txt@gmail.com>
+
+	[grohtml]: Improve texinfo documentation.
+
+	* doc/groff.texinfo (grohtml): Insert man page description, slightly
+	extended.
+
+2010-11-11  Werner LEMBERG  <wl@gnu.org>
+
+	Fix crash in tbl with option `nospaces'.
+	Reported by Louis Guillaume <louis@zabrico.com>.
+
+	* src/libs/libgroff/string.cpp (string::remove_spaces): If input
+	data consists of spaces only and thus reduces to nothing, set `sz'
+	to 0.
+
+2010-11-02  Ulrich Spörlein  <uqs@spoerlein.net>
+
+	[mdoc]: Complete previous patch and document OpenBSD releases.
+
+	* tmac/doc-common (doc-operating-system-NetBSD): Add versions 5.0,
+	5.0.1, and 5.0.2.
+	(doc-operating-system-OpenBSD-*): New strings.
+	(doc-operating-system-FreeBSD-*): Add version 8.1.
+	(doc-operating-system-DragonFly-*): Add versions 2.2, 2.4, 2.6, and
+	2.8.
+	(Os): Handle DragonFly and OpenBSD.
+
+	* tmac/groff_mdoc.man: Document OpenBSD releases.
+	Add DragonFly release 2.8.
+
+2010-11-02  Ulrich Spörlein  <uqs@spoerlein.net>
+
+	[mdoc]: Improve man page.
+
+	* tmac/groff_tmac.man: Fix prologue macro order.
+	Update NetBSD, FreeBSD, and DragonflyBSD version numbers.
+	Other minor layout improvements.
+
+2010-11-02  Anton Shepelev  <anton.txt@gmail.com>
+
+	[grohtml] Improve man page.
+
+	* src/devices/grohtml/grohtml.man: Document two-pass handling of
+	input data.
+
+2010-09-19  Werner LEMBERG  <wl@gnu.org>
+
+	[groff] Don't use prefix for preconv.
+	Reported by Dorai Sitaram <ds26gte@yahoo.com>
+
+	* src/roff/groff/groff.cpp (main): Fix it.
+
+2010-07-28  Larry Kollar  <kollar@windstream.net>
+
+	* doc/groff.texinfo, man/groff.man: Document `!' operator better.
+
+2010-06-28  Jan Vcelak  <jvcelak@redhat.com>
+
+	* src/roff/troff/node.cpp (make_node): Adding missing `%'.
+	Reported in
+	http://lists.gnu.org/archive/html/bug-groff/2010-06/msg00022.html
+
+2010-06-05  Larry Jones  <lawrence.jones@siemens.com>
+
+	* man/groff_diff.man: Document \n[.P].
+
+2010-06-04  Werner LEMBERG  <wl@gnu.org>
+
+	* NEWS: Updated.
+
+2010-06-04  Denis M. Wilson  <dmw@oxytropis.plus.com>
+
+	afmtodit: Add option `-o' to specify an output file.
+
+	* src/utils/afmtodit.pl: Implement it.
+	* src/utils/afmtodit.man: Document it.
+
+2010-06-04  Larry Jones  <lawrence.jones@siemens.com>
+
+	* man/groff_diff.man: Document \n[.O].
+
+2010-05-30  Werner LEMBERG  <wl@gnu.org>
+
+	Fix metric files for devps families A, BM, and font ZCMI.
+	Problem reported by Denis M. Wilson <dmw@oxytropis.plus.com>.
+
+	* font/devps/{AB, ABI, AI, AR, BMB, BMBI, BMI, BMR, ZCMI}:
+	Regenerated, using correct AFM files (from the Adobe Core 35 fonts
+	with 229 glyphs).
+
+2010-05-28  Werner LEMBERG  <wl@gnu.org>
+
+	Don't use obsolete intermediate output command `F'.
+	Reported by Krzysztof Zelechowski <giecrilj@stegny.2a.pl>
+
+	* src/roff/troff/nodes.cpp (troff_output_file::really_put_filename):
+	Replace `F' command with `x F'.
+
+2010-05-24  Werner LEMBERG  <wl@gnu.org>
+
+	* PROBLEMS: Document that mdoc doesn't work with test-groff.
+	Reported by Krzysztof Zelechowski <giecrilj@stegny.2a.pl>
+
+2010-05-22  Werner LEMBERG  <wl@gnu.org>
+
+	Document preconv in texinfo.
+
+	* doc/groff.texinfo: Mention preconv and its related command line
+	options for groff.
+	Add stubs for direct preconv documentation.
+	Sort groff options and environment variables.
+
+2010-05-22  Werner LEMBERG  <wl@gnu.org>
+
+	Use DESC's `unicode' keyword for grotty.
+
+	Consequently, no longer check directly for the `utf8' device name
+	which prevented the creation of arbitrarily called output device
+	directories like `devunicode'.
+
+	Problem reported by Christopher Yeleighton <giecrilj@stegny.2a.pl>
+	in Savannah bug #29895.
+
+	* src/devices/grotty/tty.cpp (tty_printer): Remove `is_utf8' member.
+	Replace all ocurrences with `font::is_unicode'.
+	(tty_printer::tty_printer): Remove argument.
+
+	* src/devices/grotty/grotty.man: Document `unicode' keyword.
+
+2010-05-19  Werner LEMBERG  <wl@gnu.org>
+
+	Update symbol tables for devps font generation.
+
+	* font/devps/generate/textmap: Sort alphabetically.
+	Replace tabs with spaces.
+
+	* font/devps/generate/symbolchars: Update list to remove duplicates
+	which have already been added to `textmap' on 2007-04-09.
+
+	* font/devps/symbolmap: Regenerated.
+
+	* font/devps/*: Regenerate font definition files.
+
+2010-05-09  Colin Watson  <cjwatson@debian.org>
+
+	Handle ditroff command `Dt' without argument gracefully.
+
+	Without this patch, grotty goes into an infinite loop if it tries to
+	process
+
+	  x T utf8
+	  x res 240 24 40
+	  x init
+	  p1
+	  Dt
+
+	* src/libs/libdriver/input.cpp (get_integer_arg): Emit a fatal error
+	on a non-integer argument, bringing the code into line with the
+	behaviour documented in the header comment.
+	(get_possibly_integer_args): Terminate the loop on a non-integer
+	argument.
+	(next_arg_begin): Return newline or EOF after emitting the
+	corresponding error, rather than continuing on to the next line.
+
+2010-05-01  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/groff.texinfo: Improve documentation of \R escape.
+
+2010-03-10  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/groff.texinfo: Document \n[DD] register.
+	Updated version stuff.
+
+2010-03-10  Larry Kollar  <kollar@windstream.net>
+
+	* tmac/groff_ms.man: Document \n[DD] register.
+	Problem reported by Ted.
+
+2010-02-25  Colin Watson  <cjwatson@debian.org>
+
+	Use named signals for `trap' in shell scripts.
+
+	* contrib/eqn2graph/eqn2graph.sh, contrib/grap2graph/grap2/graph.sh,
+	contrib/pic2graph/pic2graph.sh: Do it.
+
+2010-02-25  Werner LEMBERG  <wl@gnu.org>
+
+	Fix angle brackets in grohtml.
+	Reported by Colin Watson <cjwatson@debian.org>.
+
+	* src/devices/grohtml/post-html.cpp (get_html_entity): Add U+27E8
+	and U+27E9.
+
+2010-02-24  Colin Watson  <cjwatson@debian.org>
+
+	Add new FreeBSD and Posix versions.
+
+	* tmac/doc-common: Add FreeBSD versions 7.2, 7.3, and 8.0
+	* tmac/doc-syms: Add Posix 2008.
+	* tmac/groff_mdoc.man: Document it.
+
+2010-02-16  Larry Kollar  <kollar@windstream.net>
+
+	tbl: Add `nowarn' option.
+
+	* src/preproc/tbl/table.h (table): Add `NOWARN' enumeration value.
+
+	* src/preproc/tbl/main.cpp (process_options),
+	src/preprox/tbl/table.cpp (table::compute_expand_width,
+	table::compute_separation_factor): Handle `NOWARN'.
+
+	* src/preproc/tbl/tbl.man, NEWS: Document it.
+
+2010-02-08  Larry Kollar  <kollar@windstream.net>
+
+	* tmac/www.tmac (www-li-ol): Fix indentation if more than 10 items.
+
+2010-02-04  Larry Kollar  <kollar@windstream.net>
+
+	Improve `tbl' warnings.
+
+	* src/preproc/tbl/table.cpp (table::compute_expand_width,
+	table::compute_separation_factor): Add file name strings to
+	warnings.
+
+2010-01-23  Bjarni Ingi Gislason  <bjarniig@rhi.hi.is>
+
+	Fix `MC' macro of the ms package.
+
+	* tmac/s.tmac (@MC): Define `pg*col-top' after the paragraph has
+	been initialized.  Otherwise, using this example,
+
+	  .nh
+	  .nf
+	  .kern 0
+	  .pl 6c
+	  .ll 70n
+	  .MC 30n
+	  Text for multiple columns.
+	  Text for multiple columns.
+	  Text for multiple columns.
+	  Text for multiple columns.
+	  Text for multiple columns.
+
+	the columns start at different vertical positions.
+
+2010-01-23  Larry Kollar  <kollar@alltel.net>
+
+	* tmac/www.tmac (www-li-{ul,ol,dl}): Handle `PORPHANS' register.
+
+2010-01-23  Larry Kollar  <kollar@alltel.net>
+
+	PROBLEMS: Document some Mac OS issues.
+
+2010-01-02  Deri James  <deri@chuzzlewit.demon.co.uk>
+
+	Don't hardcode `ps' device.
+	This is needed for cooperation with gropdf.
+
+	* src/preproc/pic/troff.cpp (troff_output::text): Use GROPS_REG.
+
+2009-12-31  Werner LEMBERG  <wl@gnu.org>
+
+	Make patterns with uppercase letters work.
+	Problem reported by Bjarni Ingi Gislason <bjarniig@rhi.hi.is>.
+
+	* src/roff/troff/input.cpp (init_hpf_code_table): Use `cmlower'.
+	* doc/groff.texinfo, man/groff_diff.man: Update documentation of
+	`hpfcode' request.
+
+2009-11-24  Maurice van der Pot  <griffon26@kfk4ever.com>
+
+	Fix double frees and memory leaks.
+
+	* src/roff/troff/env.cpp (environment::make_tag): Use local object.
+	* src/roff/troff/input.cpp (input_stack::check_end_diversion): Free
+	`diversion_state' here.
+	(interpolate_arg): Fix memory leaks.
+	* src/roff/troff/mtsm.cpp (mtsm::pop_state): Don't free `sp->state'.
+
+2009-11-20  Paulo Ricardo Zanoni  <pzanoni@mandriva.com>
+
+	* */*.cpp: Replace `printf(string);' with `printf("%s", string);'.
+
+2009-10-28  Werner LEMBERG  <wl@gnu.org>
+
+	Document limitations with `#' characters, tbl, and eqn.
+	Problem reported by Michael Kain <mcain6925@comcast.net>.
+
+	* src/preproc/eqn/eqn.man, src/preproc/tbl/tbl.man: Do it.
+
+2009-10-26  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/doc-common (Dx): Define register.
+
+2009-10-26  Jörg Sonnenberger  <joerg@britannica.bec.de>
+
+	Implement `%U' in mdoc for URL references.
+
+	* tmac/doc-common (%U): New register.
+	(Rd): Handle `doc-url-count' and `doc-url-name'.
+
+	* tmac/doc.tmac (doc-url-count, doc-url-name): New registers.
+	(doc-save-global-vars, doc-restore-global-vars, doc-reset-reference,
+	doc-print-reference): Handle `doc-url-count' and `doc-url-name'.
+	(%U): New macro.
+
+	* NEWS, tmac/groff_mdoc.man: Document `%U' macro.
+
+2009-09-09  Jari Aalto  <jari.aalto@cante.net>
+
+	* src/roff/groff/groff.man: Point to troff(1) for `-w' and `-W'.
+
+2009-09-08  Werner LEMBERG  <wl@gnu.org>
+
+	[troff]: Fix hyphenation problem with kerned letters.
+	Problem reported by Steve Izma <sizma@golden.net>.
+
+	* src/roff/troff/node.cpp
+	(kern_pair_node::add_discretionary_hyphen): Compute `tf' using the
+	first node, `n1'.  `n2' might be another kerning node, and the
+	`get_tfont' member function isn't defined then.
+
+2009-09-01  Michael Cain  <mcain6925@comcast.net>
+
+	[pic] Fix a border case for arc computation.
+
+	* src/preproc/pic/object.cpp (object_spec::make_arc): It can happen
+	that test `radius < d' in the loop is satisfied, but the difference
+	in the two values is on the order of 1e-10.  If `radius' is small,
+	doubling the value can lead to a fairly gross error.
+
+	The original code appears to have been intended to deal with the
+	situation when radius is orders of magnitude less than `d'.  The
+	replacement code simply assigns `radius' the smallest value that
+	avoids problems with the floating point code further on in the
+	routine.
+
+2009-08-14  Roger Leigh  <rleigh@debian.org>
+
+	* man/groff_char.man: Fix white heart and diamond unicode values.
+
+2009-07-29  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/hyphen.fr: Fix typo which prevents hyphenation.
+	Reported by Seb <sbb@tuxfamily.org>.
+
+2009-06-25  Werner LEMBERG  <wl@gnu.org>
+
+	Make groff compile on Interix.
+	Reported by Jay Krell <jay.krell@cornell.edu>.
+
+	* configure.ac: Call AC_USE_SYTEM_EXTENSIONS.
+
+	* src/include/lib.h [__INTERIX]: Define _ALL_SOURCE.
+
+	* configure: Regenerated.
+
+2009-05-29  Werner LEMBERG  <wl@gnu.org>
+
+	pic: Fix handling of nested positions.
+	Reported by Doug McIlroy <doug@cs.dartmouth.edu>.
+
+	* src/preproc/pic/pic.y: Split `expr' into `expr_lower_than' and
+	`expr_not_lower_than' so that we can handle
+
+	  (1/3)<(1/2)<foo,bar>,baz>
+
+	correctly.  Without the patch, `(1/3)<(1/2)' is handled prematurely
+	as a comparison.
+
+2009-05-07  Werner LEMBERG  <wl@gnu.org>
+
+	Accept \0 and friends within \o.
+	Reported by Doug McIlroy <doug@cs.dartmouth.edu>.
+
+	* src/roff/troff/token.h (token): Add TOKEN_HORIZONTAL_SPACE
+	enumeration value together with `horizontal_space' member function.
+	Add `do_overstrike' as a friend.
+
+	* src/roff/troff/input.cpp: Use TOKEN_HORIZONTAL_SPACE for \0, \|,
+	\^, and \h.
+	Update all affected places.
+	(do_overstrike): Remove `static' attribute.
+	Accept all escapes which produce a fixed horizontal space.
+
+2009-04-24  Werner LEMBERG  <wl@gnu.org>
+
+	Use straight quotes where appropriate.
+	Reported by Reuben Thomas <rrt@sc3d.org>.
+
+	* man/groff.man: Do it.
+
+2009-04-14  Werner LEMBERG  <wl@gnu.org>
+
+	Fix documentation of `em' request.
+	Reported by Joachim Walsdorff
+	<Joachim.Walsdorff@urz.uni-heidelberg.de>.
+
+	* doc/groff.texinfo (End-of-input Traps): Rewrite.
+
+2009-04-10  Werner LEMBERG  <wl@gnu.org>
+
+	Fix a memory leak in troff for -Thtml.
+	Reported by Urs Eggli <Urs.Eggli@zuerich.ch>.
+
+	* src/roff/troff/node.h (node::~node): Move to...
+	* src/roff/troff/node.cpp: Here.  Free `state' and `push_state'.
+
+2009-04-01  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/doc.tmac: Call `ec' before mapping characters.
+
+2009-03-07  Werner LEMBERG  <wl@gnu.org>
+	    Gunnar Florus  <http://florus.no>
+
+	Improve configuration.
+
+	* configure.ac: Read `VERSION' and `REVISION' files to provide
+	proper values for AC_INIT.
+	* Makefile.in: Use `@datarootdir@' and `@docdir@' so that
+	configure's `--datarootdir' and `--docdir' options are honoured.
+	Documentation is now by default installed into something like
+	`/usr/local/share/doc/groff-1.20.1'.
+
+	* configure: Regenerated.
+
+2009-02-21  Colin Watson  <cjwatson@debian.org>
+	    Werner LEMBERG  <wl@gnu.org>
+
+	Add a new `file' warning category.
+
+	* src/roff/troff/troff.h (warning_type): Add WARN_FILE.
+	* src/roff/troff/input.cpp (DEFAULT_WARNING_MASK): Include
+	WARN_FILE.
+	(warning_table): Add `file' category.
+	(macro_source): Convert error on missing macro file to a
+	warning.
+	* NEWS, doc/groff.texinfo (I/O, Warnings), man/groff_diff.man,
+	src/roff/troff/troff.man: Document new warning category.
+
+2009-02-18  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/groff.texinfo: Improve documentation of `lsm' request.
+
+2009-02-14  Werner LEMBERG  <wl@gnu.org>
+
+	Implement a leading spaces macro request, `lsm', in analogy to
+	`blm'.
+	Implement two new number registers, \n[lsn] and \n[lss], which hold
+	the number of spaces and the horizontal space, respectively, which
+	would be inserted if the macro registered by `lsm' wasn't called.
+
+	* src/roff/troff/input.cpp (leading_spaces_macro_name,
+	leading_spaces_number, leading_spaces_space): New global
+	variables.
+	(leading_spaces_macro): New function.
+	(process_input_stack) <token::TOKEN_SPACE>: Handle `lsm'.
+	(init_input_requests): Register `lsm', \n[lsn], and \n[lss].
+
+	* NEWS, man/groff_diff.man, man/groff.man, doc/groff.texinfo
+	(Leading Spaces Traps): Document new requests and registers.
+
+2009-02-10  Denis M. Wilson  <dmw@oxytropis.plus.com>
+
+	* man/groff.man: Document missing number registers (`$$', `.b',
+	`.F', `.j', `.k', `.L', `.O', `.P', `.R', `opmaxx', `opmaxy',
+	`opminx', `opminy').
+
+	* doc/groff.texinfo: Document missing `.R' register.
+	Add `.U' to register index.
+
+2009-01-19  Werner LEMBERG  <wl@gnu.org>
+
+	Fix incorrect grops color state before \X'...'.
+	Problem reported by Miklos Somogyi <msom@netspace.net.au>.
+
+	* src/devices/grops/ps.cpp (ps_printer::special): Check color state
+	before doing a PS special and flush buffer.
+	Update called functions.
+
+Copyright 2009-2010
+  Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Local Variables:
+version-control: never
+coding: utf-8
+End:
