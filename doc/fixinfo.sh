@@ -1,6 +1,7 @@
 #! /bin/sh
 #
-# Fix a problem with HTML output produced by makeinfo 4.8.
+# Fix a problem with HTML output produced by makeinfo
+#   (tested with versions 4.8 and 4.13).
 #
 # groff.texinfo uses (after macro expansion) something like
 #
@@ -31,8 +32,8 @@ cat $1 | sed '
 :b
 $b
 N
-/^<blockquote>\n<p>.*\n\n   \&mdash;/ {
-  s/^<blockquote>\n<p>\(.*\n\)\n   \&mdash;/\1\&mdash;/
+/^<blockquote>\n *<p>.*\n\n   \&mdash;/ {
+  s/^<blockquote>\n *<p>\(.*\n\)\n   \&mdash;/\1\&mdash;/
   n
   N
   N
