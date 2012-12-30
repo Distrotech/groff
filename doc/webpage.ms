@@ -299,7 +299,9 @@ postings to the corresponding mailing list.
 .
 .
 .SH
-NEWS VERSION 1.22
+NEWS VERSION 1.22.1
+.LP
+(Version 1.22 has not been released.)
 .LP
 .SH 2
 groff
