@@ -27,10 +27,10 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=src/libs/gnulib --lib=libgnu --source-base=lib --m4-base=m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --no-conditional-dependencies --no-libtool --macro-prefix=gl wcwidth
+#   gnulib-tool --import --dir=src/libs/gnulib/ --local-dir=~/git/gnulib --lib=libgnu --source-base=lib --m4-base=m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --no-conditional-dependencies --no-libtool --macro-prefix=gl wcwidth
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
-gl_LOCAL_DIR([])
+gl_LOCAL_DIR([../../../~/git/gnulib])
 gl_MODULES([
   wcwidth
 ])
@@ -44,4 +44,4 @@ gl_LIB([libgnu])
 gl_MAKEFILE_NAME([])
 gl_MACRO_PREFIX([gl])
 gl_PO_DOMAIN([])
-gl_WITNESS_C_DOMAIN([])
+gl_WITNESS_C_MACRO([])

@@ -1,3 +1,41 @@
+2012-12-30  Werner LEMBERG  <wl@gnu.org>
+
+	* src/libs/gnulib/*: Update `gnulib' files.
+
+	Because we currently don't support `gnulib-tool' directly but add
+	everything to the CVS repository, and many internal details of the
+	gnulib setup has changed, it is necessary to do redo the import.
+
+	. Temporarily rename `src/libs/gnulib' to `src/libs/gnulib.old'.
+
+	. Call
+
+	    gnulib-tool --create-testdir \
+	                --dir=src/libs/gnulib \
+	                wcwidth
+
+	. Manually move directories `src/libs/gnulib/gl{lib,m4}' to
+	  `src/libs/gnulib/{lib,m4}', and do `s/gllib/lib/' and `s/glm4/m4/'
+	  in all files to `convert' the gnulib testbed to a standard gnulib
+	  configuration as maintained by gnulib-tool.  Additionally, remove
+	  the directory `src/libs/gnulib/gltests' and the references to
+	  `gltests' in all files.
+
+	  (All of this could be done with a script, but I hope that this is
+	  eventually replaced with migrating groff as a whole to gnulib and
+	  its setup).
+
+	. Call
+
+	    gnulib-tool --add-import \
+	                --dir=src/libs/gnulib \
+	                wcwidth
+
+	  to update everything.
+
+	. Merge the changed, new, and deleted files into `gnulib.old',
+	  delete `gnulib', rename `gnulib.old' to `gnulib', then commit.
+
 2012-12-28  Werner LEMBERG  <wl@gnu.org>
 
 	[doc] More documentation generation rules.

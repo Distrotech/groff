@@ -36,23 +36,27 @@ gl_m4_base='m4'
   m4_pushdef([gl_LIBSOURCES_DIR], [])
   gl_COMMON
 gl_source_base='lib'
-gl_CONFIGMAKE_PREP
-gl_LOCALCHARSET
-LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(abs_top_builddir)/$gl_source_base\""
-AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])
-gl_MULTIARCH
-gl_STDDEF_H
-gl_STDINT_H
-gl_LIBUNISTRING_LIBHEADER([0.9], [unitypes.h])
-gl_LIBUNISTRING_LIBHEADER([0.9], [uniwidth.h])
-gl_LIBUNISTRING_MODULE([0.9.4], [uniwidth/width])
-gl_WCHAR_H
-gl_WCTYPE_H
-gl_FUNC_WCWIDTH
-if test $HAVE_WCWIDTH = 0 || test $REPLACE_WCWIDTH = 1; then
-  AC_LIBOBJ([wcwidth])
-fi
-gl_WCHAR_MODULE_INDICATOR([wcwidth])
+  gl_CONFIGMAKE_PREP
+  AC_REQUIRE([gl_EXTERN_INLINE])
+  gl_INTTYPES_H
+  gl_INTTYPES_INCOMPLETE
+  gl_LOCALCHARSET
+  LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(abs_top_builddir)/$gl_source_base\""
+  AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])
+  gl_MULTIARCH
+  AM_STDBOOL_H
+  gl_STDDEF_H
+  gl_STDINT_H
+  gl_LIBUNISTRING_LIBHEADER([0.9], [unitypes.h])
+  gl_LIBUNISTRING_LIBHEADER([0.9], [uniwidth.h])
+  gl_LIBUNISTRING_MODULE([0.9.4], [uniwidth/width])
+  gl_WCHAR_H
+  gl_WCTYPE_H
+  gl_FUNC_WCWIDTH
+  if test $HAVE_WCWIDTH = 0 || test $REPLACE_WCWIDTH = 1; then
+    AC_LIBOBJ([wcwidth])
+  fi
+  gl_WCHAR_MODULE_INDICATOR([wcwidth])
   m4_ifval(gl_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gl_LIBSOURCES_DIR])[ ||
       for gl_file in ]gl_LIBSOURCES_LIST[ ; do
