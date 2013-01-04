@@ -892,8 +892,8 @@ sub do_x
 	    elsif (lc($xprm[1]) eq 'pdfpic')
 	    {
 		my $fil=$xprm[2];
-		my $flag=uc($xprm[3]);
-		my $wid=GetPoints($xprm[4]);
+		my $flag=uc($xprm[3])||'-L';
+		my $wid=GetPoints($xprm[4])||-1;
 		my $hgt=GetPoints($xprm[5]||-1);
 		my $ll=GetPoints($xprm[6]||0);
 		my $mat=[1,0,0,1,0,0];
@@ -907,6 +907,7 @@ sub do_x
 		{
 		    IsGraphic();
 		    my $bbox=$incfil{$fil}->[1];
+		    $wid=($bbox->[2]-$bbox->[0]) if $wid <= 0;
 		    my $xscale=$wid/($bbox->[2]-$bbox->[0]);
 		    my $yscale=($hgt<=0)?$xscale:($hgt/($bbox->[3]-$bbox->[1]));
 		    $xscale=($wid<=0)?$yscale:$xscale;
@@ -917,11 +918,11 @@ sub do_x
 
 		    if ($flag eq '-C' and $ll > $wid)
 		    {
-			$xpos+=int(($ll-$wid)/2);
+			$xpos=int(($ll-$wid)/2);
 		    }
 		    elsif ($flag eq '-R' and $ll > $wid)
 		    {
-			$xpos+=$ll-$wid;
+			$xpos=$ll-$wid;
 		    }
 
 		    $ypos+=$hgt;
@@ -1270,10 +1271,10 @@ sub LoadSWF
 sub LoadPDF
 {
     my $pdfnm=shift;
+    my $mat=shift;
     my $wid=shift;
     my $hgt=shift;
     my $type=shift;
-    my $mat=[1,0,0,1,0,0];
     my $pdf;
     my $pdftxt='';
     my $strmlen=0;
@@ -1411,8 +1412,9 @@ sub LoadPDF
 
     $BBox=[0,0,595,842] if !defined($BBox);
 
-    my $xscale=$wid/($BBox->[2]-$BBox->[0]+1);
-    my $yscale=($hgt<=0)?$xscale:($hgt/($BBox->[3]-$BBox->[1]+1));
+    $wid=($BBox->[2]-$BBox->[0]+1) if $wid==0;
+    my $xscale=abs($wid)/($BBox->[2]-$BBox->[0]+1);
+    my $yscale=($hgt<=0)?$xscale:(abs($hgt)/($BBox->[3]-$BBox->[1]+1));
     $hgt=($BBox->[3]-$BBox->[1]+1)*$yscale;
 
     if ($type eq "import")
@@ -2421,6 +2423,10 @@ sub do_s
 #		$stream.="/F$cft $cftsz Tf\n";
 	$fontchg=1;
 	$widtbl=CacheWid($cft);
+    }
+    else
+    {
+	$cftsz=$par;
     }
 }
 
