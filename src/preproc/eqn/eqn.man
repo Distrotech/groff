@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 1989-2000, 2001, 2004, 2005, 2007, 2009
+Copyright (C) 1989-2001, 2004, 2005, 2007, 2009, 2013
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -131,6 +131,9 @@ Recognize
 and
 .B .EN
 even when followed by a character other than space or newline.
+Also, the statement
+.RB ` "delim on" '
+is not handled specially.
 .TP
 .B \-N
 Don't allow newlines within delimiters.
@@ -242,6 +245,23 @@ There are some references to the differences between \*(tx and GNU
 .B eqn
 below;
 these may safely be ignored if you do not know \*(tx.
+.
+.SS Controlling delimiters
+.
+If not in compatibility mode,
+.B eqn
+recognizes
+.
+.RS
+.LP
+.B delim on
+.RE
+.
+.LP
+to restore the delimiters which have been previously disabled
+with a call to
+.RB ` "delim off" '.
+If delimiters haven't been specified, the call has no effect.
 .
 .SS Automatic spacing
 .B eqn

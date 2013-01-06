@@ -1,6 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2005, 2007,
-                 2008, 2009
+/* Copyright (C) 1989-1992, 2000-2003, 2005, 2007-2009, 2013
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -1058,6 +1057,9 @@ void do_ifdef()
   }
 }
 
+char start_delim_saved = '\0';
+char end_delim_saved = '\0';
+
 void do_delim()
 {
   int c = get_char();
@@ -1069,7 +1071,13 @@ void do_delim()
   else {
     if (c == 'o' && d == 'f' && peek_char() == 'f') {
       (void)get_char();
+      start_delim_saved = start_delim;
+      end_delim_saved = end_delim;
       start_delim = end_delim = '\0';
+    }
+    else if (c == 'o' && d == 'n' && !compatible_flag) {
+      start_delim = start_delim_saved;
+      end_delim = end_delim_saved;
     }
     else {
       start_delim = c;
