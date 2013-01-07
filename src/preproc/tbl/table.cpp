@@ -1819,6 +1819,12 @@ void table::init_output()
 	   ".in 0\n"
 	   ".\\}\n"
 	   "..\n"
+	   // protect # in macro name against eqn
+	   ".ig\n"
+	   ".EQ\n"
+	   "delim off\n"
+	   ".EN\n"
+	   "..\n"
 	   ".de " RELEASE_MACRO_NAME "\n"
 	   ".if \\n[" SECTION_DIVERSION_FLAG_REG "] \\{"
 	   ".di\n"
@@ -1849,6 +1855,11 @@ void table::init_output()
 	   ".if \\n[ln] .nm\n"
 	   ".rm " SECTION_DIVERSION_NAME "\n"
 	   ".\\}\n"
+	   "..\n"
+	   ".ig\n"
+	   ".EQ\n"
+	   "delim on\n"
+	   ".EN\n"
 	   "..\n"
 	   ".nr " TABLE_DIVERSION_FLAG_REG " 0\n"
 	   ".de " TABLE_KEEP_MACRO_NAME "\n"
@@ -2113,12 +2124,24 @@ void table::compute_expand_width()
   if (total_separation)
     printfs("-%1n", as_string(total_separation));
   prints("\n");
-  prints(".if \\n[" EXPAND_REG "]<0 \\{");
+  prints(".if \\n[" EXPAND_REG "]<0 \\{\\\n");
   entry_list->set_location();
-  if (!(flags & NOWARN))
+  if (!(flags & NOWARN)) {
+    // protect ` and ' in warning message against eqn
+    prints(".ig\n"
+	   ".EQ\n"
+	   "delim off\n"
+	   ".EN\n"
+	   "..\n");
     prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
-	   ".tm1 \"  table wider than line width\n"
-	   ".nr " EXPAND_REG " 0\n");
+	   ".tm1 \"  table wider than line width\n");
+    prints(".ig\n"
+	   ".EQ\n"
+	   "delim on\n"
+	   ".EN\n"
+	   "..\n");
+    prints(".nr " EXPAND_REG " 0\n");
+  }
   prints(".\\}\n");
   if (colcount > 1)
     printfs(".nr " EXPAND_REG " \\n[" EXPAND_REG "]/%1\n",
@@ -2153,18 +2176,31 @@ void table::compute_separation_factor()
   for (int i = 0; i < ncolumns; i++)
     printfs("-\\n[%1]", span_width_reg(i, i));
   printfs("/%1\n", as_string(total_separation));
-  prints(".ie \\n[" SEPARATION_FACTOR_REG "]<=0 \\{");
+  prints(".ie \\n[" SEPARATION_FACTOR_REG "]<=0 \\{\\\n");
   entry_list->set_location();
-  if (!(flags & NOWARN))
+  if (!(flags & NOWARN)) {
+    // protect ` and ' in warning message against eqn
+    prints(".ig\n"
+	   ".EQ\n"
+	   "delim off\n"
+	   ".EN\n"
+	   "..\n");
     prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
 	   ".tm1 \"  column separation set to zero\n"
 	   ".nr " SEPARATION_FACTOR_REG " 0\n");
+  }
   prints(".\\}\n"
-	 ".el .if \\n[" SEPARATION_FACTOR_REG "]<1n \\{");
+	 ".el .if \\n[" SEPARATION_FACTOR_REG "]<1n \\{\\\n");
   entry_list->set_location();
-  if (!(flags & NOWARN))
+  if (!(flags & NOWARN)) {
     prints(".tm1 \"warning: file `\\n[.F]', around line \\n[.c]:\n"
 	   ".tm1 \"  table squeezed horizontally to fit line length\n");
+    prints(".ig\n"
+	   ".EQ\n"
+	   "delim on\n"
+	   ".EN\n"
+	   "..\n");
+  }
   prints(".\\}\n");
 }
 
@@ -2602,6 +2638,12 @@ void table::build_vrule_list()
 void table::define_bottom_macro()
 {
   prints(".eo\n"
+	 // protect # in macro name against eqn
+	 ".ig\n"
+	 ".EQ\n"
+	 "delim off\n"
+	 ".EN\n"
+	 "..\n"
 	 ".de T#\n"
 	 ".if !\\n[" SUPPRESS_BOTTOM_REG "] \\{"
 	 "." REPEATED_VPT_MACRO " 0\n"
@@ -2635,6 +2677,11 @@ void table::define_bottom_macro()
 	 ".sp |\\n[" SAVED_VERTICAL_POS_REG "]u\n"
 	 "." REPEATED_VPT_MACRO " 1\n"
 	 ".\\}\n"
+	 "..\n"
+	 ".ig\n"
+	 ".EQ\n"
+	 "delim on\n"
+	 ".EN\n"
 	 "..\n"
 	 ".ec\n");
 }
@@ -2882,7 +2929,18 @@ void table::do_bottom()
   printfs(".mk %1\n", row_top_reg(nrows));
   prints(".nr " NEED_BOTTOM_RULE_REG " 1\n"
 	 ".nr T. 1\n"
-	 ".T#\n");
+	 // protect # in macro name against eqn
+	 ".ig\n"
+	 ".EQ\n"
+	 "delim off\n"
+	 ".EN\n"
+	 "..\n"
+	 ".T#\n"
+	 ".ig\n"
+	 ".EQ\n"
+	 "delim on\n"
+	 ".EN\n"
+	 "..\n");
   if (!(flags & NOKEEP) && (flags & (BOX | DOUBLEBOX | ALLBOX)))
     prints("." TABLE_RELEASE_MACRO_NAME "\n");
   else

@@ -1,3 +1,21 @@
+2013-01-07  Werner LEMBERG  <wl@gnu.org>
+
+	[tbl] Allow characters #, `, and ' as eqn delimiters.
+
+	While problems ` and ' have been unintentionally introduced rather
+	recently, the limitation regarding # was there from the beginning. 
+
+	At the same time, fix a small bug causing `.lf' requests not
+	starting a line.
+
+	* src/preproc/tbl/table.cpp (table::init_output,
+	table::compute_expand_width, table::compute_separation_factor,
+	table::define_bottom_macro, table::do_bottom): Temporarily switch
+	off eqn delimiters, wrapping the code into a `.ig' block.  This uses
+	the new functionality just added to eqn.
+
+	* src/preproc/eqn/eqn.man, src/preproc/tbl/tbl.man: Updated.
+
 2013-01-06  Werner LEMBERG  <wl@gnu.org>
 
 	[eqn] Add `delim on'.
