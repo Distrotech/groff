@@ -1071,17 +1071,13 @@ void do_delim()
   else {
     if (c == 'o' && d == 'f' && peek_char() == 'f') {
       (void)get_char();
-      if (start_delim)
-	start_delim_saved = start_delim;
-      if (end_delim)
-	end_delim_saved = end_delim;
+      start_delim_saved = start_delim;
+      end_delim_saved = end_delim;
       start_delim = end_delim = '\0';
     }
     else if (c == 'o' && d == 'n' && !compatible_flag) {
-      if (start_delim_saved)
-	start_delim = start_delim_saved;
-      if (end_delim_saved)
-	end_delim = end_delim_saved;
+      start_delim = start_delim_saved;
+      end_delim = end_delim_saved;
     }
     else {
       start_delim = c;
