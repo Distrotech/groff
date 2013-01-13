@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2004, 2007, 2009
+/* Copyright (C) 1989-1992, 2004, 2007, 2009, 2013
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -40,7 +40,7 @@ int pile_box::compute_metrics(int style)
     printf(">?(\\n[" DEPTH_FORMAT "]+\\n[" HEIGHT_FORMAT "]+%dM)",
 	   col.p[i-1]->uid, col.p[i]->uid, default_rule_thickness*5);
   // round it so that it's a multiple of the vertical resolution
-  printf("/\\n(.V+(\\n(.V/2)*\\n(.V\n");
+  printf("+(\\n(.V/2)/\\n(.V*\\n(.V\n");
 
   printf(".nr " SUP_RAISE_FORMAT " \\n[" BASELINE_SEP_FORMAT "]*%d/2"
 	 "+%dM\n",
