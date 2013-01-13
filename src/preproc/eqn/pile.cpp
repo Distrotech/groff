@@ -167,7 +167,7 @@ int matrix_box::compute_metrics(int style)
       printf(">?(\\n[" DEPTH_FORMAT "]+\\n[" HEIGHT_FORMAT "]+%dM)",
 	   p[i]->p[j-1]->uid, p[i]->p[j]->uid, default_rule_thickness*5);
   // round it so that it's a multiple of the vertical resolution
-  printf("/\\n(.V+(\\n(.V/2)*\\n(.V\n");
+  printf("+(\\n(.V/2)/\\n(.V*\\n(.V\n");
   printf(".nr " SUP_RAISE_FORMAT " \\n[" BASELINE_SEP_FORMAT "]*%d/2"
 	 "+%dM\n",
 	 uid, uid, max_len-1, axis_height - shift_down);
