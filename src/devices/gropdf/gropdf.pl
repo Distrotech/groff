@@ -4,7 +4,7 @@
 #	Deri James	: 4th May 2009
 #
 
-# Copyright (C) 2011, 2012 Free Software Foundation, Inc.
+# Copyright (C) 2011-2013 Free Software Foundation, Inc.
 #      Written by Deri James <deri@chuzzlewit.demon.co.uk>
 #
 # This file is part of groff.
@@ -56,6 +56,8 @@ my $stream='';	# Current Text/Graphics stream
 my $cftsz=10;	# Current font sz
 my $cft;	# Current Font
 my $lwidth=1;	# current linewidth
+my $linecap=1;
+my $linejoin=1;
 my $textcol='';	# Current groff text
 my $fillcol='';	# Current groff fill
 my $curfill='';	# Current PDF fill
@@ -692,6 +694,18 @@ sub do_x
 		IsGraphic();
 		$stream.="Q\n";
 		$InPicRotate=0;
+	    }
+	    elsif ($par=~m/exec (\d) setlinejoin/)
+	    {
+		IsGraphic();
+		$linejoin=$1;
+		$stream.="$linejoin j\n";
+	    }
+	    elsif ($par=~m/exec (\d) setlinecap/)
+	    {
+		IsGraphic();
+		$linecap=$1;
+		$stream.="$linecap J\n";
 	    }
 	    elsif ($par=~m/\[(.+) pdfmark/)
 	    {
@@ -2311,7 +2325,7 @@ sub do_p
     $objct+=1;
     $cpage=$obj[$cpageno]->{DATA};
     $pages->{'Count'}++;
-    $stream="q 1 0 0 1 0 0 cm\n";
+    $stream="q 1 0 0 1 0 0 cm\n$linejoin J\n$linecap j\n";
     $mode='g';
     $curfill='';
 #    @mediabox=@defaultmb;
@@ -2420,6 +2434,7 @@ sub do_s
     {
 	PutLine();
 	$cftsz=$par;
+	Set_LWidth() if $lwidth < 1;
 #		$stream.="/F$cft $cftsz Tf\n";
 	$fontchg=1;
 	$widtbl=CacheWid($cft);
@@ -2427,7 +2442,15 @@ sub do_s
     else
     {
 	$cftsz=$par;
+	Set_LWidth() if $lwidth < 1;
     }
+}
+
+sub Set_LWidth
+{
+    IsGraphic();
+    $stream.=((($desc{res}/(72*$desc{sizescale}))*$linewidth*$cftsz)/1000)." w\n";
+    return;
 }
 
 sub do_m
@@ -2583,7 +2606,7 @@ sub do_D
     }
     elsif ($Dcmd eq 'p' or $Dcmd eq 'P')
     {
-	# B-Spline
+	# Polygon
 	my (@p)=split(' ',$par);
 	my ($nxpos,$nypos);
 

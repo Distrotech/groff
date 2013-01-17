@@ -1,3 +1,36 @@
+2013-01-14  Deri James  <deri@chuzzlewit.myzen.co.uk>
+
+	* src/devices/gropdf/gropdf.pl (do_x, do_p, do_s, Set_LWidth): The
+	grops driver defaults to round linecaps and linejoins, gropdf
+	incorrectly used butt caps and miter joins.
+
+	(Since the MOM package expects to use butt caps and miter joins
+	(emitting the necessary postscript code to change the caps and
+	joins), gropdf now parses the same postscript commands.)
+
+	* src/devices/gropdf/gropdf.man: Document the handling of linecaps
+	and linejoins.
+	  
+	* tmac/pdf.tmac (pdfbookmark): Fix bug where the current
+	PDFOUTLINE.FOLDLEVEL may not be honoured if warnings of the type
+
+	  macro warning: adjusted level n bookmark; should be <= n
+
+	Added copyright and mention debt owed to Keith Marshall for original
+	`pdfmark.tmac', upon which `pdf.tmac' is largely based.
+
+	* font/devpdf/Foundry.in, font/devpdf/util/BuildFoundries.pl
+	(LocateFile): The font for EURO had the wrong entry in the
+	`download' file (it pointed to The font in the build directory,
+	which is wrong).  It has always been permissable to include a path
+	along with the font name in the Foundry file, but until now the font
+	had to exist to be valid.  It is now permitted to start the path
+	with an asterisk which tells BuildFoundry to use the path/filename
+	in the download file without checking if the font exists.  This
+	allows the font to be found in `../devps' even though it is not
+	there during the build (if source and build are different), but will
+	be there after the install.
+
 2013-01-13  Werner LEMBERG  <wl@gnu.org>
 
 	[eqn] Fix display of matrices in nroff output.
@@ -939,7 +972,7 @@ Version 1.22 released
 
 	* doc/webpage.ms: Fix rendering of title image.
 
-Copyright 2011-2012
+Copyright 2011-2013
   Free Software Foundation, Inc.
 
 Copying and distribution of this file, with or without modification,

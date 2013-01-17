@@ -219,6 +219,7 @@ sub LocateFile
     my $path=shift;
     my $files=shift;
     my $tryafm=shift;
+    return(substr($files,1)) if substr($files,0,1) eq '*';
 
     foreach my $file (split('!',$files))
     {

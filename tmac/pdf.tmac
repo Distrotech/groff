@@ -1,5 +1,32 @@
-.\" pdf.tmac
-.\"
+.ig
+
+pdf.tmac
+
+ Copyright (C) 2011-2013 Free Software Foundation, Inc.
+      Written by Deri James <deri@chuzzlewit.myzen.co.uk>
+
+This file is part of groff.
+
+groff is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+groff is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+Author's Note
+=============
+
+Much of the code in this macro has come from the excellent original work by
+Keith Marshall (see attribution in the pdfmark.tmac file). I, however,
+am solely responsible for any bugs I may have introduced into this file.
+..
 .mso ps.tmac
 .
 .de pdf:SS
@@ -196,6 +223,7 @@
 .      ie \\n[pdf:bm.abslev]>\\n[pdf:bm.nl] \{\
 .        pdf:warn adjusted level \\n[pdf:bm.abslev] bookmark; should be <= \\n[pdf:bm.nl]
 .        nr pdf:bm.abslev 0+\\n[pdf:bm.nl]
+.        if \\n[pdf:bm.abslev]-1==\\n[PDFOUTLINE.FOLDLEVEL] .nr pdf:bm.lev \\n[pdf:bm.abslev]*-1
 .      \}
 .      el .nr pdf:bm.nl \\n[pdf:bm.abslev]
 .      if \\n[pdf:bm.lev]<0 .nr pdf:bm.abslev \\n[pdf:bm.abslev]*-1
