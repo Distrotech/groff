@@ -6,7 +6,7 @@
 # Installed position: <prefix>/bin/groffer
 
 # Copyright (C) 2006, 2009, 2011 Free Software Foundation, Inc.
-# Written by Bernd Warken.
+# Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
 # Last update: 22 Mar 2011
 

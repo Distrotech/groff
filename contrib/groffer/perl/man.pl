@@ -6,7 +6,7 @@
 # Installed position: <prefix>/lib/groff/groffer/man.pl
 
 # Copyright (C) 2006, 2009, 2011 Free Software Foundation, Inc.
-# Written by Bernd Warken.
+# Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
 # Last update: 27 Jan 2011
 

@@ -7,7 +7,7 @@
 
 # Copyright (C) 2001-2006, 2009, 2011
 #   Free Software Foundation, Inc.
-# Written by Bernd Warken
+# Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
 # This file is part of `groffer', which is part of `groff'.
 

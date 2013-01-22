@@ -10,7 +10,7 @@
 
 # Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2009
 # Free Software Foundation, Inc.
-# Written by Bernd Warken
+# Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
 # Last update: 5 Jan 2009
 

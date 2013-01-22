@@ -7,7 +7,7 @@
 
 # Copyright (C) 1993, 2006, 2009, 2011-2012 Free Software Foundation, Inc.
 # Written by James Clark, maintained by Werner Lemberg.
-# Rewritten by and put under GPL Bernd Warken.
+# Rewritten by and put under GPL Bernd Warken <groff-bernd.warken-72@web.de>.
 
 # This file is part of `grog', which is part of `groff'.
 

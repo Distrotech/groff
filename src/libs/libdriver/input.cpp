@@ -6,7 +6,7 @@
    Free Software Foundation, Inc.
 
    Written by James Clark (jjc@jclark.com)
-   Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
+   Major rewrite 2001 by Bernd Warken <groff-bernd.warken-72@web.de>
 
    Last update: 9 May 2010
 

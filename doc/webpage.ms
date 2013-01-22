@@ -2223,7 +2223,7 @@ Groffer
 .ULS
 .LI
 A new script contributed by
-.MTO bwarken@mayn.de "Bernd Warken" .
+.MTO groff-bernd.warken-72@web.de "Bernd Warken" .
 It displays groff files and man pages on X and tty, taking care of most
 parameters automatically.
 .ULE

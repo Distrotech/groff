@@ -27,7 +27,7 @@ are written in the `chem' language.  The file names end with .chem.
 Last update: 5 Jan 2009
 
 Copyright (C) 2006, 2009 Free Software Foundation, Inc.
-Written by Bernd Warken.
+Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
 This file is part of `chem', which is part of `groff'.
 
