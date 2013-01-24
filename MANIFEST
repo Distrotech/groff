@@ -145,6 +145,23 @@ The groff documentation is scattered upon several places.
 - Documentation in other formats are located in the `doc' directory,
   including the groff info file, tutorials, and manuals.
 
+Man-pages have source files ending in `.man'.  When running `make'
+they are transformed into an ending `.n'.  So it is very hard to
+decide into which section the man-page shall go.  Here is a shell
+command that finds all man-pages and writes the section number after
+each file name:
+
+find -type f |
+grep '[.]man$' |
+sort |
+xargs grep -e '^[.]TH ' |
+sed -e '
+s/^\(.\+\): *\.TH.*@MAN\(.*\)EXT@.*$/\1 \2/
+'
+
+This shell command shall only be run when your in the top directory of
+the groff source tree (this file should be there named MANIFEST).
+
 
 4) The roff parser
 
