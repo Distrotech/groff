@@ -110,7 +110,7 @@ inspiration has come from discussion on the groff mailing list
 .   \"
 .   \" This PDFMARK is suitable for single chunk output ...
 .   \"
-.      nop \X'ps:exec [\\$* pdfmark'\c
+.      nop \!x X ps:exec [\\$* pdfmark
 .      \}
 .   el \{\
 .   \" ... but, when the limit would be violated, then we must
@@ -129,13 +129,11 @@ inspiration has come from discussion on the groff mailing list
 .   \"
 .      pdf*compose pdfmark
 .      pdf*pdfmark.dispatch
-.      chop pdf:composed
-.      nop \Y[pdf:composed]\c
 .   \"
 .   \" And clean up when done.
 .   \"
 .      rm pdf*compose pdf*pdfmark.post
-.      rm pdf:compose.test pdf:composed pdf:composed.literal
+.      rm pdf:compose.test pdf:composed.literal
 .      \}
 .   rr pdf:length
 .   \}
@@ -428,9 +426,7 @@ inspiration has come from discussion on the groff mailing list
 .\" of the "pdf:composed" macro, for assembly of a new PDFMARK.
 .\"
 .de pdf*pdfmark.post.first
-.de pdf:composed pdf*end
-ps:exec \\*[pdf:composed.line]
-.pdf*end
+. nop \!x X ps:exec \\*[pdf:composed.line]
 .\"
 .\" Subsequent calls to "pdf*pdfmark.post" are redirected to the
 .\" alternative "pdf*pdfmark.post.next" macro, which simply appends
@@ -439,9 +435,7 @@ ps:exec \\*[pdf:composed.line]
 .als pdf*pdfmark.post pdf*pdfmark.post.next
 ..
 .de pdf*pdfmark.post.next
-.am pdf:composed pdf*end
-\\*[pdf:composed.line]
-.pdf*end
+. nop \!+\\*[pdf:composed.line]
 ..
 .\" "pdf*end" is a dummy macro.  It is required to mark the end
 .\" of each individual fragment which is added to "pdf:composed";

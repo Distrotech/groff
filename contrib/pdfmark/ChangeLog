@@ -1,3 +1,28 @@
+2013-01-28  Deri James  <deri@chuzzlewit.myzen.co.uk>
+
+	* pdfmark.tmac (pdfmark, pdf:composed): Use `\!' instead of `\X'.
+
+	With the old pdfmark there are gaps between two of the lines, but
+	with the new version they disappear.  The use of `.br' and `.in 0'
+	is arbitrary any request which causes an implicit break could be
+	used.  Two breaks together only produce one line break, but if there
+	is an intervening `\X' then the second break finds the line buffer
+	not empty and generates another line break.
+
+	Using `\!' does alter the position of the pdfmark lines in the
+	intermediate file sent to grops (the pdfmark lines are output
+	immediately rather than being serialised through the output line
+	processing), but this has no effect since the contents of the
+	pdfmark line stay the same.  It is the contents which determine
+	where bookmarks jump to not the position of the record in the input
+	stream to grops.
+
+	I initially used `.output', but hit a snag if a pdfbookmark occurs
+	before the document starts to output (message saying to insert an
+	explicit `.br'), this is quite likely for things like `.pdfinfo
+	/Author' which occur at the top of the document.  So I'm using the
+	`\!' escape.
+
 2012-09-20  Werner LEMBERG  <wl@gnu.org>
 
 	Simplify enviroment handling.
@@ -344,7 +369,7 @@
 
 	First import of pdfmark files.
 
-Copyright 2004-2012
+Copyright 2004-2013
   Free Software Foundation, Inc.
 
 Copying and distribution of this file, with or without modification,
