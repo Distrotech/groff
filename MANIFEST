@@ -1,4 +1,4 @@
-    Copyright 2001-2006, 2009-2011
+    Copyright 2001-2006, 2009-2013
       Free Software Foundation, Inc.
 
     Copying and distribution of this file, with or without modification,
@@ -145,22 +145,18 @@ The groff documentation is scattered upon several places.
 - Documentation in other formats are located in the `doc' directory,
   including the groff info file, tutorials, and manuals.
 
-Man-pages have source files ending in `.man'.  When running `make'
-they are transformed into an ending `.n'.  So it is very hard to
-decide into which section the man-page shall go.  Here is a shell
-command that finds all man-pages and writes the section number after
-each file name:
+Man-pages have source files ending in `.man'.  Running `make' processes
+the files and uses `.n' as the new file extension.  In both cases it is
+difficult to quickly decide into which section the man-page shall go. 
+Here is a shell command (to be called from the top directory of the
+groff source tree) that finds all man-pages and writes the section
+number after each file name:
 
-find -type f |
-grep '[.]man$' |
-sort |
-xargs grep -e '^[.]TH ' |
-sed -e '
-s/^\(.\+\): *\.TH.*@MAN\(.*\)EXT@.*$/\1 \2/
-'
-
-This shell command shall only be run when your in the top directory of
-the groff source tree (this file should be there named MANIFEST).
+  find -type f \
+  | grep '[.]man$' \
+  | sort \
+  | xargs grep -e '^[.]TH ' \
+  | sed -e 's/^\(.\+\): *\.TH.*@MAN\(.*\)EXT@.*$/\1 \2/'
 
 
 4) The roff parser
