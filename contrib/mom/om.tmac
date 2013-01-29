@@ -23,8 +23,8 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-Version 2.0
------------
+Version 2.0-a
+-------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
 nothing left to take away.
@@ -3285,14 +3285,16 @@ end
 \#   \n[.sss] holds the current sentence space value.
 \#
 .MAC WS END
-.    ds $WS_CONSTANT 12
-.    ds $WS_VAR \\$1
-.    ie '\\$1'DEFAULT' .ds $WS_VAR +0
-.    el .ds $WS (\\*[$WS_CONSTANT]\\*[$WS_VAR])
-.    ie \\n[.sss]=12 .ss \\*[$WS] 12
+.    ds $WS_CURR \\n[.ss]
+.    ds $WS_VAR  \\$1
+.    ie '\\$1'DEFAULT' .ss 12 \\n[.sss]
 .    el \{\
-.       ss \\*[$WS] (\\*[$WS]\\*[$SS_VAR])
-.       SS \\*[$SS_VAR]
+.       ds $WS (\\*[$WS_CURR]\\*[$WS_VAR])
+.       ie \\n[.sss]=12 .ss \\*[$WS] 12
+.       el \{\
+.          ss \\*[$WS] (\\*[$WS]\\*[$SS_VAR])
+.          SS \\*[$SS_VAR]
+.      \}
 .    \}
 .END
 \#
@@ -5471,7 +5473,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#PAGE_NUM_HYPHENS]=1  .PAGENUM_HYPHENS
 .    \}
 .    el .PAGENUM_HYPHENS
-.    if !\\n[#HDRFTR_RIGHT_CAPS] .HDRFTR_RIGHT_CAPS
+.    if !r #HDRFTR_RIGHT_CAPS .HDRFTR_RIGHT_CAPS
 .    if \\n[#HDRFTR_RIGHT_CAPS]=0 \{\
 .       if !d $HDRFTR_RIGHT_SIZE_CHANGE .HDRFTR_RIGHT_SIZE +0
 .    \}
@@ -8260,13 +8262,13 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   Deposits --END-- at the end of a document.
 \#
 .MAC FINIS END
-.    br
 .    if !\\n[@TOP] \{\
-.       if \\n[.t]<=1v \{\
+.       if \\n[.t]<=2v \{\
 .          tm1 "[mom]: Insufficient room to print \\$0 on last page.
 .          return
 .       \}
 .    \}
+.    br
 .    ev FINIS
 .    evc 0
 .    if \\n[#TAB_ACTIVE] .TQ
@@ -8284,11 +8286,12 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       ie \\n[#FINIS_COLOR] \
 .          PRINT \
 \m[\\*[$FINIS_COLOR]]\v'-\\n[#EM_ADJUST]u'\[em]\v'+\\n[#EM_ADJUST]u'\
-\\*[$FINIS_STRING]\v'-\\n[#EM_ADJUST]u'\*[FU1]\[em]\m[]
+\\*[$FINIS_STRING]\v'-\\n[#EM_ADJUST]u'\*[FU1]\[em]\m[]\c
 .       el .PRINT \
 \v'-\\n[#EM_ADJUST]u'\[em]\v'+\\n[#EM_ADJUST]u'\
-\\*[$FINIS_STRING]\v'-\\n[#EM_ADJUST]u'\*[FU1]\[em]\m[]
+\\*[$FINIS_STRING]\v'-\\n[#EM_ADJUST]u'\*[FU1]\[em]\m[]\c
 .    \}
+.    EL
 .    if \\n[#FINIS_STRING_CAPS]=1 .CAPS OFF
 .    ev
 .    pdfsync
@@ -9143,7 +9146,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    if \\n[#RECTO_VERSO] \{\
 .          nr #DOC_LR_MARGIN_TMP \\n[#DOC_L_MARGIN]
 .          DOC_LEFT_MARGIN  \\n[#DOC_R_MARGIN]u
+.          if \\n[#CROPS] .DOC_LEFT_MARGIN  \\n[#DOC_R_MARGIN]u+\\n[cropmarks]u
 .          DOC_RIGHT_MARGIN \\n[#DOC_LR_MARGIN_TMP]u
+.          if \\n[#CROPS] .DOC_RIGHT_MARGIN \\n[#DOC_LR_MARGIN_TMP]u-\\n[cropmarks]u
 .          SWITCH_HDRFTR_CENTER_PAD
 .       \}
 .    \}
@@ -9219,7 +9224,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          el .nr #Q_OFFSET \\n[#L_MARGIN]+\\*[$Q_OFFSET_VALUE]
 .          po \\n[#Q_OFFSET]u
 .       \}
-\#.       if \\n[#PRINT_STYLE]=2 .ALD \\n[#Q_LEAD_DIFF]u
+.       if \\n[#PRINT_STYLE]=2 .sp \\n[#Q_LEAD_DIFF]u
 .    \}
 .    if \\n[#EPIGRAPH] \{\
 .       ie \\n[#TAB_ACTIVE] .TAB \\n[#CURRENT_TAB]
@@ -9239,7 +9244,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       \}
 .       el \{\
 .          ie \\n[#EPI_FITS] .ns
-.          el .ALD \\n[#DOC_LEAD]u-\\n[#EPI_LEAD]u
+.          el .sp \\n[#DOC_LEAD]u-\\n[#EPI_LEAD]u
 .       \}
 .    \}
 .    el .ns
@@ -10211,8 +10216,16 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       if '\\$1'UNDERSCORE' \{\
 .          nr #HEAD_\\n[#LEVEL]_UNDERSCORE 1
 .          shift
+.          if '\\$1'' \{\
+.             tm1 "[mom]: The UNDERSCORE argument to \\$0 requires a rule weight.
+.             ab Aborting \\n[.F] at \\$0, line \\n[.c].
+.          \}
 .          ds $HEAD_\\n[#LEVEL]_UL_WEIGHT \\$1
 .          shift
+.          if '\\$1'' \{\
+.             tm1 "[mom]: The UNDERSCORE argument to \\$0 requires a rule gap.
+.             ab Aborting \\n[.F] at \\$0, line \\n[.c].
+.          \}
 .          ds $HEAD_\\n[#LEVEL]_UL_GAP    \\$1
 .          shift
 .       \}
@@ -10223,10 +10236,22 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       if '\\$1'UNDERSCORE2' \{\
 .          nr #HEAD_\\n[#LEVEL]_UNDERSCORE2 1
 .          shift
+.          if '\\$1'' \{\
+.             tm1 "[mom]: The UNDERSCORE2 argument to \\$0 requires a rule weight.
+.             ab Aborting \\n[.F] at \\$0, line \\n[.c].
+.          \}
 .          ds $HEAD_\\n[#LEVEL]_UL2_WEIGHT \\$1
 .          shift
+.          if '\\$1'' \{\
+.             tm1 "[mom]: The UNDERSCORE2 argument to \\$0 requires a rule gap.
+.             ab Aborting \\n[.F] at \\$0, line \\n[.c].
+.          \}
 .          ds $HEAD_\\n[#LEVEL]_UL2_GAP_1  \\$1
 .          shift
+.          if '\\$1'' \{\
+.             tm1 "[mom]: The UNDERSCORE2 argument to \\$0 requires an inter-rule gap.
+.             ab Aborting \\n[.F] at \\$0, line \\n[.c].
+.          \}
 .          ds $HEAD_\\n[#LEVEL]_UL2_GAP_2  \\$1
 .          shift
 .       \}
@@ -10565,24 +10590,17 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .MAC LINEBREAK END
 .    if r #Q_AT_TOP .rr #Q_AT_TOP
 .    po \\n[#DOC_L_MARGIN]u
-.    ie  '\\*[$LINEBREAK_CHAR]'' .ALD \\n[#DOC_LEAD]u*2
+.    ie  '\\*[$LINEBREAK_CHAR]'' .sp 2
 .    el \{\
-.       if \\n[#PRINT_STYLE]=1 \{\
-.          ie \\n[#END_QUOTE] .
-.          el .ALD \\n[#DOC_LEAD]u
-.       \}
-.       if \\n[#PRINT_STYLE]=2 \{\
-.          ie \\n[#END_QUOTE] .
-.          el .ALD \\n[#DOC_LEAD]u
-.       \}
+.       ie \\n[#END_QUOTE] .
+.       el .sp
 .       ev LINEBREAK
 .       evc 0
 .       CENTER
 .       PRINT \
-\m[\\*[$LINEBREAK_COLOR]]\\v'\\*[$LINEBREAK_CHAR_V_ADJ]'\
-\\*[$LINEBREAK_CHAR]\\v'\\*[$LINEBREAK_CHAR_V_ADJ]'\m[]
-.       if \\n[#PRINT_STYLE]=1 .ALD \\n[#DOC_LEAD]u
-.       if \\n[#PRINT_STYLE]=2 .ALD \\n[#DOC_LEAD]u
+\m[\\*[$LINEBREAK_COLOR]]\v'\\*[$LINEBREAK_CHAR_V_ADJ]'\
+\\*[$LINEBREAK_CHAR]\m[]
+.       sp
 .       ev
 .       QUAD \\*[$DOC_QUAD]
 .    \}
@@ -15769,8 +15787,9 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# Compensation is applied in FLOAT.
 .MAC TS END
 .    if '\\n[.z]'FLOAT*DIV' \{\
-.    if '\\$1'BOXED' \{\
-.       if !\\n[.d] .nr boxed-table 1
+.       if '\\$1'BOXED' \{\
+.          if !\\n[.d] .nr boxed-table 1
+.       \}
 .    \}
 .END
 .
@@ -15791,7 +15810,12 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   the diversion within the space allotted.
 \#
 .MAC FLOAT END
+.\"  Case where upcoming .br breaks to a new page, causing a defered float
+.\"  to be output by HEADER and the defer register to be cleared.
+.    nr pagenum \\n%+\\n[#PAGE_NUM_ADJ]
+.\"  Possibly breaks to a new page.
 .    br
+.    if !(\\n%+\\n[#PAGE_NUM_ADJ])=\\n[pagenum] .nr broken*at*float 1
 .\" Clear .ns when a single line of running text precededs float
 .\" at the top of the page.
 .    if \\n[nl]=\\n[#T_MARGIN] \{\
@@ -15803,6 +15827,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    rr #ARG_NUM
 .    nr #ARG_NUM 0 1
 .    nr #OPTS \\n[#NUM_ARGS]
+.    if '\\$1'FORCE' \{\
+.       nr #FORCE 1
+.       shift
+.    \}
 .    if '\\$1'ADJUST' \{\
 .       shift
 .       ds float-adj:top \\$1
@@ -15823,17 +15851,23 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       br
 .       di
 .       ev
-.       if (\\n[dn]>\\n[.t]):(\\n[D-float]>\\n[.t]) \{\
+.       if ((\\n[dn]-\\n[.v])>\\n[.t]):(\\n[D-float]>\\n[.t]) \{\
 .          ie \\n[@TOP] \{\
 .             rs
 .             sp
 .          \}
 .          el \{\
-.             if !\\n[defer] .nr defer 0 1
-.             rn FLOAT*DIV FLOAT*DIV:\\n+[defer]
-.             if \\n[D-float] .nr D-float:\\n[defer] \\n[D-float]
-.             nr float-depth:\\n[defer] \\n[dn]
-.             return \" output div after header
+.             ie \\n[#FORCE] \{\
+.                NEWPAGE
+.                rr #FORCE
+.             \}
+.             el \{\
+.                if !\\n[defer] .nr defer 0 1
+.                rn FLOAT*DIV FLOAT*DIV:\\n+[defer]
+.                if \\n[D-float] .nr D-float:\\n[defer] \\n[D-float]
+.                nr float-depth:\\n[defer] \\n[dn]
+.                return \" output div after header
+.             \}
 .          \}
 .       \}
 .       sp 0\\*[float-adj:top]\\*[float-adj]
@@ -15852,6 +15886,12 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       if \\n[#RESTORE_FILL] \{\
 .          fi
 .          rr #RESTORE_FILL
+.       \}
+.       if \\n[broken*at*float] \{\
+.          if !\\n[defer] \{\
+.             sp -\\n[.v]u
+.             rr broken*at*float
+.          \}
 .       \}
 .       rm FLOAT*DIV
 .       sp 0\\*[float-adj:bottom]\\*[float-adj]
@@ -18361,7 +18401,7 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .    ds pdf-img@file \\$1
 .    substring pdf-img@file -1 -3
 .    if !'\\*[pdf-img@file]'pdf' \{\
-.       tm1 "[mom]: Image file at line \\n[.c] not found, or not a PDF image.
+.       tm1 "[mom]: Image file '\\*[pdf-img:file]' at line \\n[.c] not found, or not a PDF image.
 .       ab Aborting.
 .    \}
 .    nr pdf-img:width \\$2
@@ -18411,7 +18451,7 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .       ie \\n[@TOP] .rs
 .       el \{\
 .          nr pgnum \\n%+\\n[#PAGE_NUM_ADJ] 1
-.          tm1 "[mom]: Image \\*[pdf-img:file] at line \\n[.c] does not fit on output page \\n[pgnum].
+.          tm1 "[mom]: Image '\\*[pdf-img:file]' at line \\n[.c] does not fit on output page \\n[pgnum].
 .          tm1 "       Shifting to top of page \\n+[pgnum].
 .          ev
 .          return
@@ -18427,6 +18467,7 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 \#
 .MAC PDF_IMAGE_CLEAN END
 .    if !'\\n[.z]'FLOAT*DIV' .SHIM  \" Get ourselves back on the baseline grid
+.    rm PDF*IMAGE
 .    rm pdf-img:adj
 .    rm pdf-img:bottom
 .    rm pdf-img:file
