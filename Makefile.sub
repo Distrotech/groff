@@ -1,4 +1,4 @@
-# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2006, 2009
+# Copyright (C) 1989-2000, 2001-2004, 2006, 2009, 2013
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
@@ -20,24 +20,32 @@
 # Makefile.sub
 #
 DISTCLEANFILES=\
-  config.status \
-  config.log \
-  config.cache \
-  stamp-h \
   Makefile \
-  test-groff \
-  src/include/config.h \
-  site.exp \
-  site.bak \
+  config.cache \
+  config.log \
+  config.status \
+  groff.log \
   groff.sum \
-  groff.log
-MOSTLYCLEANADD=Makefile.cfg conftest*
+  src/include/config.h \
+  site.bak \
+  site.exp \
+  stamp-h \
+  test-groff
 
-M4MACROS = \
+MOSTLYCLEANADD=\
+  Makefile.cfg \
+  conftest*
+
+M4MACROS=\
+  $(srcdir)/m4/codeset.m4 \
+  $(srcdir)/m4/fcntl-o.m4 \
+  $(srcdir)/m4/glibc21.m4 \
   $(srcdir)/m4/groff.m4 \
-  $(srcdir)/m4/codeset.m4 $(srcdir)/m4/glibc21.m4 \
   $(srcdir)/m4/iconv.m4 \
-  $(srcdir)/m4/lib-link.m4 $(srcdir)/m4/lib-ld.m4 $(srcdir)/m4/lib-prefix.m4
+  $(srcdir)/m4/lib-ld.m4 \
+  $(srcdir)/m4/lib-link.m4 \
+  $(srcdir)/m4/lib-prefix.m4 \
+  $(srcdir)/m4/localcharset.m4
 
 distfiles: configure
 

@@ -1,4 +1,4 @@
-# Copyright (C) 1989-2006, 2009-2012
+# Copyright (C) 1989-2006, 2009-2013
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
@@ -442,7 +442,7 @@ PURIFYCCFLAGS=
 # Passing down MAKEOVERRIDES prevents $(MAKE) from containing a second
 # copy of $(MDEFINES) when making individual directories; this could
 # cause the argument list to become too long on some systems.
-MDEFINES= \
+MDEFINES=\
   "ALT_AWK_PROGS=$(ALT_AWK_PROGS)" \
   "ALT_GHOSTSCRIPT_PROGS=$(ALT_GHOSTSCRIPT_PROGS)" \
   "AR=$(AR)" \
@@ -722,7 +722,7 @@ $(LIBDIRS): FORCE $(INCDIRS) $(PROGDEPDIRS) $(GNULIBDIRS)
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
 	else \
-	  srcdir=`cd $(srcdir); pwd`/$@; \
+	  srcdir=$(top_srcdir)/$@; \
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
@@ -738,7 +738,7 @@ $(CPROGDIRS) $(XPROGDIRS): FORCE $(LIBDIRS)
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
 	else \
-	  srcdir=`cd $(srcdir); pwd`/$@; \
+	  srcdir=$(top_srcdir)/$@; \
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
@@ -754,7 +754,7 @@ $(CCPROGDIRS): FORCE $(LIBDIRS)
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
 	else \
-	  srcdir=`cd $(srcdir); pwd`/$@; \
+	  srcdir=$(top_srcdir)/$@; \
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
@@ -770,7 +770,7 @@ $(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE $(PROGDEPDIRS) $(CCP
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
 	else \
-	  srcdir=`cd $(srcdir); pwd`/$@; \
+	  srcdir=$(top_srcdir)/$@; \
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
@@ -784,15 +784,16 @@ $(GNULIBDIRS): FORCE
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
 	else \
-	  srcdir=`cd $(srcdir); pwd`/$@; \
+	  srcdir=$(top_srcdir)/$@; \
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	case $(do) in \
 	all) \
-	cd $@; \
-	args=`$(top_builddir)/config.status --config`; \
-	test -f Makefile || eval $$srcdir/configure "$$args" --srcdir=$$srcdir; \
-	$(MAKE) ACLOCAL=: AUTOCONF=: AUTOHEADER=: AUTOMAKE=: $(do) ;; \
+	  cd $@; \
+	  args=`$(top_builddir)/config.status --config`; \
+	  test -f Makefile \
+	  || eval $$srcdir/configure "$$args" --srcdir=$$srcdir; \
+	  $(MAKE) ACLOCAL=: AUTOCONF=: AUTOHEADER=: AUTOMAKE=: $(do) ;; \
 	esac
 
 $(OTHERDIRS): $(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
@@ -802,7 +803,7 @@ $(INCDIRS) $(PROGDEPDIRS) $(OTHERDIRS): FORCE
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
 	else \
-	  srcdir=`cd $(srcdir); pwd`/$@; \
+	  srcdir=$(top_srcdir)/$@; \
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
@@ -819,14 +820,13 @@ dist:
 	for d in $(DISTDIRS); do \
 	  $(mkinstalldirs) tmp/$$d; \
 	done
-	srcdir=`cd $(srcdir); pwd`; \
 	cd tmp; \
 	cp ../Makefile .; \
-	cp $$srcdir/* . 2>/dev/null || true; \
+	cp $(top_srcdir)/* . 2>/dev/null || true; \
 	rm -rf CVS; \
 	for d in $(DISTDIRS); do \
 	  (cd $$d; \
-	   cp $$srcdir/$$d/* . 2>/dev/null; \
+	   cp $(top_srcdir)/$$d/* . 2>/dev/null; \
 	   rm -rf CVS || true); \
 	done; \
 	$(MAKE) srcdir=. VPATH=. distfiles; \
@@ -840,7 +840,7 @@ dist:
 	   fi); \
 	done; \
 	rm -f Makefile; \
-	cp $$srcdir/Makefile.init Makefile
+	cp $(top_srcdir)/Makefile.init Makefile
 	mv tmp groff-$(version)$(revision)
 	tar cfh - groff-$(version)$(revision) | \
 	  gzip -c >groff-$(version)$(revision).tar.gz
