@@ -545,7 +545,7 @@
   test "$PDF_OUTPUT" = "$NULLDEV" && exit 0
 #
 # We are now ready to start preparing the intermediate PostScript files,
-# from which the PDF output will be compiled -- but before proceding further ...
+# from which the PDF output will be compiled -- but before proceeding further ...
 # let's make sure we have a GhostScript interpreter to convert them!
 #
   if test -n "$GROFF_GHOSTSCRIPT_INTERPRETER"

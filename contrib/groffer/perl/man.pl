@@ -142,7 +142,7 @@ sub apropos_setup {
 #              $main::Man{EXT}, $tmpdir
 #         out: $main::Manspec
 #
-# Arguments: 1, a hash refernce with keys 'name', 'sec', 'ext', where
+# Arguments: 1, a hash reference with keys 'name', 'sec', 'ext', where
 #               'sec' is a string of one or several section characters
 #
 sub is_man {
@@ -201,7 +201,7 @@ sub is_man {
 # Globals in: $main::Manspec, $main::Man{MANSPEC}, $main::Man{SEC_CHARS},
 #             $main::Man{EXT}, $main::Man{ALL}
 #
-# Arguments: 1, a hash refernce with keys 'name', 'sec', 'ext', where
+# Arguments: 1, a hash reference with keys 'name', 'sec', 'ext', where
 #               'sec' is a string of one or several section characters
 #
 sub man_get {
