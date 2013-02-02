@@ -71,6 +71,9 @@ pushBackBuffer::pushBackBuffer (char *filename)
   lineNo   = 1;
   if (strcmp(filename, "") != 0) {
     stdIn = dup(0);
+    if (stdIn<0) {
+      sys_fatal("dup stdin");
+    }
     close(0);
     if (open(filename, O_RDONLY) != 0) {
       sys_fatal("when trying to open file");
@@ -87,7 +90,9 @@ pushBackBuffer::~pushBackBuffer ()
   }
   close(0);
   /* restore stdin in file descriptor 0 */
-  dup(stdIn);
+  if (dup(stdIn)<0) {
+    sys_fatal("restore stdin");
+  }
   close(stdIn);
 }
 
