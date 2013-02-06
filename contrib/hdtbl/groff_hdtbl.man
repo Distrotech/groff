@@ -206,15 +206,14 @@ In this and the next section, we present examples to help users
 understand the basic workflow of
 .BR hdtbl .
 .
-First of all, you must load
+First of all, you must load the 
 .I hdtbl.tmac
-file to the document.
+file.
 .
-That means that you must add the following line to your
-.I roff
-file before using any macros of the
-.B hdtbl
-package:
+As with nearly all other groff macro packages, there are two possibilities
+to do so:
+.
+Either add the line
 .
 .PP
 .nf
@@ -226,6 +225,26 @@ package:
 .RE
 .
 .PP
+to your
+.I roff
+file before using any macros of the
+.B hdtbl
+package, or add the option
+.
+.PP
+.nf
+.nh
+.RS
+.CR -m hdtbl
+.fi
+.hy
+.RE
+.
+.PP
+to the command line of groff (before the document file which contains
+.B hdtbl
+macros).
+.
 Then you can include on or more tables in your document, where each one
 must be started and ended with the
 .CR .TBL
@@ -398,7 +417,7 @@ and this table
 .
 .PP
 are similar but not identical (the use of
-.B .nop
+.CR .nop
 is purely cosmetic to get proper indentation).
 .
 .PP
