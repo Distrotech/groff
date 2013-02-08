@@ -299,9 +299,41 @@ postings to the corresponding mailing list.
 .
 .
 .SH
+NEWS VERSION 1.22.2
+.LP
+.SH 2
+tbl
+
+.ULS
+.LI
+The character `#' can now be used as an eqn delimiter within tables.
+.ULE
+.
+.
+.SH 2
+eqn
+
+.ULS
+.LI
+A GNU extension
+
+.in 2m
+.nf
+.ft C
+delim on
+.ft P
+.fi
+.in
+
+has been added to reactivate delimiters which have been disabled with
+`delim off'.
+.ULE
+.
+.
+.SH
 NEWS VERSION 1.22.1
 .LP
-(Version 1.22 has not been released.)
+(There was no release 1.22.)
 .LP
 .SH 2
 groff
