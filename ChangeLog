@@ -1,3 +1,41 @@
+2013-02-10  Werner LEMBERG  <wl@gnu.org>
+
+	[grops] Make binary `%%BeginData' work; support `fontset' resource.
+
+	*src/devices/grops/psrm.cpp (resource_table): Add `fontset'.
+
+	(resource_manager::read_resource_arg): Do a case insensitive
+	comparison.  The PostScript Reference Manual gives the following
+	example for a CFF resource (example 5.7):
+
+	  %!PS-Adobe-3.0 Resource-FontSet
+	  %%DocumentNeedResources: ProcSet (FontSetInit)
+	  %%Title: (FontSet/CFFRoman27)
+	  %%Version: 1.000
+	  %%EndComments
+	  %%IncludeResource: ProcSet (FontSetInit)
+	  %%BeginResource: FontSet (CFFRoman27)
+	  /FontSetInit /ProcSet findresource begin
+	  %%BeginData: 622532 Binary Bytes
+	  /CFFRoman27 622503 StartData
+	  ... 622,503 bytes of binary data ...
+	  %%EndData
+	  %%EndResource
+	  %%EOF
+
+	Note the `ProcSet' and `FontSet' keywords.  While the old DSC
+	(Document Structure Convention) documentation doesn't cover
+	`FontSet' at all (the DSC documentation predates the invention of
+	CFF), it describes only `procset' (all letters downcase), and it
+	also says that the DSC parser works in a case sensitive manner.
+
+	In other words, `ProcSet' is not valid according to the DSC
+	documentation, only `procset' is.  So much about today's validity of
+	DSC...  This patch adapts grops's code to the PostScript reality.
+
+	(resource_manager::do_begin_data): Fix typo (present since the
+	beginning) which prevented correct handling of binary data.
+
 2013-02-10  Bernd Warken  <groff-bernd.warken-72@web.de>
 
 	* contrib/lilypond: New files for adding lilypond parts into groff

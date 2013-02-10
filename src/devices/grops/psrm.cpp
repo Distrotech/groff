@@ -1,6 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004,
-                 2009
+/* Copyright (C) 1989-1992, 2000-2004, 2009, 2013
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -89,6 +88,7 @@ const int NEXTENSIONS = sizeof(extension_table)/sizeof(extension_table[0]);
 
 const char *resource_table[] = {
   "font",
+  "fontset",
   "procset",
   "file",
   "encoding",
@@ -566,7 +566,7 @@ resource *resource_manager::read_resource_arg(const char **ptr)
   int ri;
   for (ri = 0; ri < NRESOURCES; ri++)
     if (strlen(resource_table[ri]) == size_t(*ptr - name)
-	&& memcmp(resource_table[ri], name, *ptr - name) == 0)
+	&& strncasecmp(resource_table[ri], name, *ptr - name) == 0)
       break;
   if (ri >= NRESOURCES) {
     error("unknown resource type");
@@ -840,7 +840,7 @@ int resource_manager::do_begin_data(const char *ptr, int, FILE *fp,
 	  current_lineno++;
 	}
 	if (cc != EOF)
-	  ungetc(c, fp);
+	  ungetc(cc, fp);
       }
       else if (c == '\n') {
 	linecount++;
