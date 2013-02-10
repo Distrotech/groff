@@ -1,0 +1,313 @@
+.TH groff_lilypond @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+groff\-lilypond \[em] integrate \f[CI]lilypond\f[] parts into \f[CI]groff\f[]
+.
+.\" The .SH was moved to this place in order to appease `apropos'.
+.
+.\" --------------------------------------------------------------------
+.\" Legalese
+.\" --------------------------------------------------------------------
+.
+.de authors
+This file was written by Bernd Warken
+.MT groff\-bernd.warken\-72@web.de
+.ME .
+..
+.
+.
+.de copying
+Copyright \(co 2013
+.RS
+.ft CI
+Free Software Foundation, Inc.
+.ft R
+.RE
+.
+.P
+This file is part of
+.ft CI
+groff\\f[R], a free software project.
+.
+.P
+You can redistribute it and/or modify it under the terms of the
+.nh
+.ft CI
+GNU General Public License
+.ft R
+.hy
+as published by the
+.nh
+.ft CI
+Free Software Foundation (FSF)\\f[R],
+.hy
+either version 3 of the License, or (at your option) any later version.
+.
+.P
+You should have received a copy of the
+.nh
+.ft CI
+GNU General Public License
+.ft R
+.hy
+along with
+.ft CI
+groff\\f[R],
+see the files
+.nh
+.ft CB
+COPYING
+.ft R
+and
+.ft CB
+LICENSE
+.ft R
+.hy
+in the top directory of the
+.ft CI
+groff
+.ft R
+source package.
+.
+.P
+You can also visit
+.UR http://\\:www.gnu.org/\\:licenses
+.UE .
+..
+.
+.
+.\" --------------------------------------------------------------------
+.\" Setup
+.\" --------------------------------------------------------------------
+.
+.ds1 Ellipsis "\&.\|.\|.\&\"
+.
+.
+.\" --------------------------------------------------------------------
+.\" Macro definitions
+.\" --------------------------------------------------------------------
+.
+.\" --------------------------------------------------------------------
+.\" .FONT (<font name> <text> [<font name> <text> ...])
+.\"
+.\" Print in different fonts: R, I, B, CR, CI, CB
+.\"
+.de1 FONT
+.  if (\\n[.$] = 0) \{\
+.	nop \&\f[P]\&
+.	return
+.  \}
+.  ds result \&
+.  while (\\n[.$] >= 2) \{\
+.	as result \,\f[\\$1]\\$2
+.	if !"\\$1"P" .as result \f[P]
+.	shift 2
+.  \}
+.  if (\\n[.$] = 1) .as result \,\f[\\$1]
+.  nh
+.  nop \\*[result]\&
+.  hy
+..
+.
+.
+.\" --------------------------------------------------------------------
+.\" SH "SYNOPSIS"
+.\" --------------------------------------------------------------------
+.
+.SY groff_lilypond
+.OP --
+.OP \%filespec
+.YS
+.
+.SY groff_lilypond
+.BR -h | --help
+.YS
+.
+.SY groff_lilypond
+.BR -v | --version
+.YS
+.
+.
+.\" --------------------------------------------------------------------
+.SH DESCRIPTION
+.\" --------------------------------------------------------------------
+.
+.FONT CB groff_lilypond
+transforms sheet music in the
+.FONT CI lilypond
+language in a
+.FONT CI groff
+file such that
+.FONT CB groff
+can display them.
+.
+.
+.P
+Without arguments,
+.FONT CB groff_lilypond
+reads from standard input.
+.
+A single file can be given as an argument.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "HOW THE TRANSFORMATION WORKS"
+.\" --------------------------------------------------------------------
+.
+A
+.FONT CI lilypond
+part within a structure written in the
+.FONT CI groff
+language is the whole part between the marks
+.FONT CB ".lilypond start"
+and
+.FONT CB ".lilypond end" R .
+.
+A
+.FONT CI groff
+file can have several of these
+.FONT CI lilypond
+parts.
+.
+.
+.P
+These
+.FONT CI lilypond
+parts are sent into temporary files with the file name extension
+.FONT CB .ly R .
+.
+.
+.P
+These files are transformed by the
+.FONT CB lilypond
+program into
+.FONT CI pdf
+files, using
+.EX
+.FONT CB "lilypond \-\-pdf \-\-output=" I file-name
+.EE
+for each
+.FONT .ly
+file.
+.
+The
+.I file-name
+must be provided without the extension
+.FONT CB .pdf R .
+.
+By this process, a file
+.FONT CI file-name CB .pdf
+is generated.
+.
+.
+.P
+The next step is to transform these
+.FONT CI pdf
+files into a
+.FONT CI ps
+file.
+.
+This is done by the
+.FONT CB pdf2ps
+program using
+.EX
+.FONT CB "pdf2ps " CI file-name CB ".pdf " CI file-name CB ".ps"
+.EE
+.
+.
+The next step creates an
+.FONT CI EPS
+file from the
+.FONT CI ps
+file.
+.
+This is done by the
+.FONT CB ps2eps
+program using
+.EX
+.FONT CB "ps2eps " CI file-name CB ".ps"
+.EE
+.
+.
+.P
+By that, a file
+.FONT CI file-name CB .eps
+is created for each
+.FONT CI lilypond
+part in the
+.FONT CI groff
+file or standard input.
+.
+.
+.P
+The last step to be done is replacing all
+.FONT CI lilypond
+parts by the
+.FONT CI groff
+command
+.EX
+.FONT CB ".PSPIC " CI file-name CB .eps 
+.EE
+.
+.
+.P
+That new
+.FONT CI groff
+structure is sent to standard output.
+.
+It can either be saved in a file or piped to groff for a display.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "TEMPORARY FILES"
+.\" --------------------------------------------------------------------
+.
+By the transformation process, there are many temporary files
+generated.
+.
+All of them except the
+.FONT CI EPS
+files are deleted when the
+.FONT CB groff_lilypond
+process is finished.
+.
+.
+.P
+These
+.FONT CI EPS
+files are stored in a temporary directory.
+.
+But they cannot be deleted by the transformation process because they
+are needed for the display which can take a long time.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "DISPLAY"
+.\" --------------------------------------------------------------------
+.
+The display maps each
+.FONT CI lilypond
+part on a complete page, preceded and followed by a page break.
+.
+I do not know how to change this or what very long music sheets will
+do.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "AUTHOR"
+.\" --------------------------------------------------------------------
+.author
+.
+.
+.\" --------------------------------------------------------------------
+.SH "COPYING"
+.\" --------------------------------------------------------------------
+.copyleft
+.
+.
+.\" --------------------------------------------------------------------
+.\" Emacs settings
+.\" --------------------------------------------------------------------
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" End:
