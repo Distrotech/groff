@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2003, 2009
+/* Copyright (C) 1989-1992, 2002, 2003, 2009, 2013
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -53,14 +53,16 @@ inline FILE *ps_output::get_file()
   return fp;
 }
 
+// this must stay in sync with `resource_table' in `psrm.cpp'
 enum resource_type {
   RESOURCE_FONT,
+  RESOURCE_FONTSET,
   RESOURCE_PROCSET,
   RESOURCE_FILE,
   RESOURCE_ENCODING,
   RESOURCE_FORM,
   RESOURCE_PATTERN
-  };
+};
 
 struct resource;
 

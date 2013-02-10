@@ -86,6 +86,7 @@ const char *extension_table[] = {
 
 const int NEXTENSIONS = sizeof(extension_table)/sizeof(extension_table[0]);
 
+// this must stay in sync with `resource_type' in `ps.h'
 const char *resource_table[] = {
   "font",
   "fontset",
