@@ -205,7 +205,7 @@ foreach (<>) {
     }
 }
 
-# unlink glob $file_prefix . "*.[a-df-z]*";
+unlink glob $file_prefix . "*.[a-df-z]*";
 
 sub create_eps() {
     if ($eps_mode =~ /^pdf2eps$/) { # `--pdf2eps'
