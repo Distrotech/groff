@@ -8,7 +8,7 @@
 # Copyright (C) 2013 Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 11 Feb 2013
+# Last update: 12 Feb 2013
 
 # This file is part of `groff'.
 
@@ -30,25 +30,42 @@
 use strict;
 use warnings;
 
-my $version = 'v0.2';
+my $version = 'v0.3';
 
 # for temporary directories see @tempdirs
 
 my $eps_mode = 'ly2eps';
-foreach (@ARGV) {
-    if (/^(-v|--version).*$/) {
-	&version;
-	goto QUIT;
-    } elsif (/^(-h|--help).*$/) {
-	&usage;
-	goto QUIT;
-    } elsif (/^--pdf2eps.*$/) {
-	$eps_mode = 'pdf2eps';
-	shift;
-    } elsif (/^--ly2eps.*$/) {
-	$eps_mode = 'ly2eps';
-	shift;
+{
+    my $minus_minus = 0;
+    my @FILES = ();
+    foreach (@ARGV) {
+	if ($minus_minus) {
+	    push @FILES, $_;
+	    next;
+	}
+	if (/^--$/) { # argument `--'
+	    $minus_minus = 1;
+	    next;
+	} elsif (/^(-|[^-].*)$/) { # argument `-' or file name
+	    push @FILES, $_;
+	    next;
+	} elsif (/^(-v|--version).*$/) {
+	    &version;
+	    goto QUIT;
+	} elsif (/^(-h|--help).*$/) {
+	    &usage;
+	    goto QUIT;
+	} elsif (/^--pdf2eps.*$/) {
+	    $eps_mode = 'pdf2eps';
+	    shift;
+	} elsif (/^--ly2eps.*$/) {
+	    $eps_mode = 'ly2eps';
+	    shift;
+	} else {
+	    die "wrong argument for groff_lilypond: $_";
+	}
     }
+    @ARGV = @FILES;
 }
 
 my $dir_time;
@@ -112,7 +129,61 @@ my $lilypond_mode = 0;
 
 foreach (<>) {
     chomp;
-    if (/^\.\s*lilypond\s+start/) {
+    if (/^(\.\s*lilypond\s+include)(.*$)/) { # `.lilypond include file...'
+	my $args = $2;
+	$args =~ s/\s*$//;
+	my @files = ();
+	while ($args) {
+	    if ($args =~ /^\s+"([^"]+)"(.*)$/) { # ` "file name"...'
+		push @files, $1;
+		$args = $2;
+	    } elsif ($args =~ /^\s+'([^']+)'(.*)$/) { # ` 'file name'...'
+		push @files, $1;
+		$args = $2;
+	    } elsif ($args =~ /^\s+(\S+)(.*)$/) { # ` filename...'
+		push @files, $1;
+		$args = $2;
+	    }
+	}
+	unless ($lilypond_mode) { # then FILE_LY must be opened
+	    $ly_number++;
+	    $file_numbered = $file_prefix . $ly_number;
+	    $file_ly =  $file_numbered . '.ly';
+
+	    open FILE_LY, ">", $file_ly or
+		die "cannot open .ly file: $!";
+	}
+
+	foreach (@files) { # included .ly files
+	    my $file = $_;
+	    unless ($file) {
+		print STDERR "Empty file name at `.lilypond include'\n";
+		next;
+	    }
+	    unless (-e $file) {
+		print STDERR
+		    "File `$file' at `.lilypond include' does not exist.\n";
+		next;
+	    }
+	    unless (-r $file) {
+		print STDERR
+		    "File `$file' at `.lilypond include' is not readable.\n";
+		next;
+	    }
+
+	    open FILE, "<", "$file" # for reading
+		or die "file `$file' could not be read: $!";
+	    foreach (<FILE>) {
+		chomp;
+		print FILE_LY $_ . "\n";
+	    }
+	    close FILE;
+	}
+	unless ($lilypond_mode) {
+	    close FILE_LY;
+	    &create_eps;
+	}
+    } elsif (/^\.\s*lilypond\s+start/) { # `.lilypond start'
 	die "Line `.lilypond stop' expected." if ($lilypond_mode);
 	$lilypond_mode = 1;
 	$ly_number++;
@@ -121,32 +192,11 @@ foreach (<>) {
 	open FILE_LY, ">", $file_ly or
 	    die "cannot open .ly file: $!";
 	next;
-    } elsif (/^\.\s*lilypond\s+stop/) {
+    } elsif (/^\.\s*lilypond\s+stop/) { # `.lilypond stop'
 	die "Line `.lilypond start' expected." unless ($lilypond_mode);
 	$lilypond_mode = 0;
 	close FILE_LY;
-
-	if ($eps_mode =~ /^pdf2eps$/) {
-	    system "lilypond", "--pdf", "--output=$file_numbered", $file_ly
-		and die 'Program lilypond does not work.';
-	    # .pdf is added automatically
-	    system 'pdf2ps', $file_numbered . '.pdf', $file_numbered . '.ps'
-		and die 'Program pdf2ps does not work.';
-	    system 'ps2eps', $file_numbered . '.ps'
-		and die 'Program ps2eps does not work.';
-	    print '.PSPIC ' . $file_numbered  . '.eps' . "\n";
-	} elsif ($eps_mode =~ /^ly2eps$/) {
-	    system 'lilypond', '--ps', '-dbackend=eps',
-	    '-dgs-load-fonts', "--output=$file_numbered", $file_ly
-		and die 'Program lilypond does not work.';
-	    # extensions are added automatically
-	    foreach (glob $file_numbered . '-*' . '.eps') {
-		print '.PSPIC ' . $_ . "\n";
-	    }
-
-	} else {
-	    die "Wrong eps mode: $eps_mode";
-	}
+	&create_eps;
 	next;
     } elsif ($lilypond_mode) {
 	print FILE_LY $_ . "\n";
@@ -155,7 +205,39 @@ foreach (<>) {
     }
 }
 
-unlink glob $file_prefix . "*.[a-df-z]*";
+# unlink glob $file_prefix . "*.[a-df-z]*";
+
+sub create_eps() {
+    if ($eps_mode =~ /^pdf2eps$/) { # `--pdf2eps'
+	# `$ lilypond --pdf --output=file_with_no_extension file.ly'
+	# .pdf is added automatically
+	system "lilypond", "--pdf", "--output=$file_numbered", $file_ly
+	    and die 'Program lilypond does not work.';
+	# `$ pdf2ps file.pdf file.ps'
+	system 'pdf2ps', $file_numbered . '.pdf', $file_numbered . '.ps'
+	    and die 'Program pdf2ps does not work.';
+	# `$ ps2eps file.ps'
+	system 'ps2eps', $file_numbered . '.ps'
+	    and die 'Program ps2eps does not work.';
+
+	# print into groff output
+	print '.PSPIC ' . $file_numbered  . '.eps' . "\n";
+    } elsif ($eps_mode =~ /^ly2eps$/) { # `--ly2eps'
+	# `$ lilypond --ps -dbackend=eps -dgs-load-fonts
+	#      output=file_without_extension file.ly'
+	# extensions are added automatically
+	system 'lilypond', '--ps', '-dbackend=eps',
+	'-dgs-load-fonts', "--output=$file_numbered", $file_ly
+	    and die 'Program lilypond does not work.';
+
+	foreach (glob $file_numbered . '-*' . '.eps') {
+	    print '.PSPIC ' . $_ . "\n";
+	}
+
+    } else {
+	die "Wrong eps mode: $eps_mode";
+    }
+}
 
 sub version {
     print "groff_lilypond version $version is part of groff\n";

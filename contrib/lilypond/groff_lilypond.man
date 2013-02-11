@@ -114,9 +114,10 @@ You can also visit
 .\" --------------------------------------------------------------------
 .
 .SY groff_lilypond
-.OP option
+.OP options
+.OP -
 .OP --
-.OP \%filespec
+.OP \%filespec \[Ellipsis]
 .YS
 .
 .SY groff_lilypond
@@ -147,8 +148,9 @@ Without arguments,
 .FONT CB groff_lilypond
 reads from standard input.
 .
-A single file can be given as an argument.
-.
+Several files can be used, including
+.FONT CB \[em]
+for standard input.
 .
 .\" --------------------------------------------------------------------
 .SH "OPTION OVERVIEW"
@@ -185,10 +187,16 @@ A
 part within a structure written in the
 .FONT CI groff
 language is the whole part between the marks
+.EX
 .FONT CB ".lilypond start"
+.EE
 and
-.FONT CB ".lilypond end" R .
+.EX
+.FONT CB ".lilypond end"
+.EE
 .
+.
+.P
 A
 .FONT CI groff
 file can have several of these
@@ -203,6 +211,41 @@ parts are sent into temporary files with the file name extension
 .FONT CB .ly R .
 .
 There a 2 modes to transform these files.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "LY\-FILE INCLUSION"
+.\" --------------------------------------------------------------------
+.
+An additional command line for file inclusion of
+.FONT CI lilypond
+files is given by
+.EX
+FONT CB ".lilypond include \[Ellipsis]"
+.EE
+in
+.FONT CI groff
+files.
+.
+One or more file names can be included.
+.
+.
+.P
+If this command is written outside a
+.FONT CI lilypond
+part, one new
+.FONT CB .ly  R \file
+is created for all files in the argument, which will be transformed
+afterwards when writing is done.
+.
+.
+.P
+Within a
+.FONT CI lilypond
+part, the content of all these files will be added to the actually
+generated
+.FONT CB .ly
+file.
 .
 .
 .\" --------------------------------------------------------------------
