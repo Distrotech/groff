@@ -10811,18 +10811,21 @@ requests.
 @Defreq {substring, str n1 [@Var{n2}]}
 @cindex substring (@code{substring})
 Replace the string named @var{str} with the substring defined by the
-indices @var{n1} and@tie{}@var{n2}.  The first character in the string
-has index@tie{}0.  If @var{n2} is omitted, it is taken to be equal to
-the string's length.  If the index value @var{n1} or @var{n2} is
-negative, it is counted from the end of the string, going backwards: The
-last character has index@tie{}@minus{}1, the character before the last
-character has index@tie{}@minus{}2, etc.
+indices @var{n1} and @var{n2}.  The first character in the string has
+index@tie{}0.  If @var{n2} is omitted, it is implicitly set to the
+largest valid value (the string length minus one).  If the index value
+@var{n1} or @var{n2} is negative, it is counted from the end of the
+string, going backwards: The last character has index@tie{}@minus{}1,
+the character before the last character has index@tie{}@minus{}2, etc.
 
 @Example
 .ds xxx abcdefgh
 .substring xxx 1 -4
 \*[xxx]
     @result{} bcde
+.substring xxx 2
+\*[xxx]
+    @result{} de
 @endExample
 @endDefreq
 
