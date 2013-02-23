@@ -2,7 +2,7 @@
 .SH NAME
 groff\-lilypond \[em] integrate \f[CI]lilypond\f[] parts into \f[CI]groff\f[]
 .
-.\" The .SH was moved to this place in order to appease `apropos'.
+.\" This .SH was moved to this place in order to appease `apropos'.
 .
 .\" --------------------------------------------------------------------
 .\" Legalese
@@ -12,10 +12,21 @@ groff\-lilypond \[em] integrate \f[CI]lilypond\f[] parts into \f[CI]groff\f[]
 This file was written by Bernd Warken
 .MT groff\-bernd.warken\-72@web.de
 .ME .
+.
+Last update: 22 Feb 2013
 ..
 .
 .
 .de copying
+groff_lilypond \[em] integrate lilypond into groff files
+.
+.P
+.EX
+Source file position: <groff-source>/contrib/lilypond/groff_lilypond.man
+Installed position: <prefix>/share/man/man1/groff_lilypond.1
+.EE
+.
+.P
 Copyright \(co 2013
 .RS
 .ft CI
@@ -26,22 +37,48 @@ Free Software Foundation, Inc.
 .P
 This file is part of
 .ft CI
-groff\\f[R], a free software project.
+GNU groff\\f[R].
 .
 .P
-You can redistribute it and/or modify it under the terms of the
-.nh
+.ft CI
+GNU groff
+.ft R
+is free software is free software: you can redistribute it and/or modify it
+under the terms of the
 .ft CI
 GNU General Public License
 .ft R
-.hy
 as published by the
-.nh
 .ft CI
-Free Software Foundation (FSF)\\f[R],
-.hy
-either version 3 of the License, or (at your option) any later version.
+Free Software Foundation\fR, either
+.ft CI
+version 3
+.ft R
+of the
+.IR License ,
+or
+.RI ( "at your option" )
+any later version.
 .
+.P
+.ft CI
+GNU groff
+.ft R
+is distributed in the hope that it will be useful, but
+.ft CI
+WITHOUT ANY WARRANTY\fR; without even the implied warranty of
+.ft CI
+MERCHANTABILITY
+.ft R
+or
+.ft CI FITNESS FOR A PARTICULAR PURPOSE\fR.
+See the
+.ft CI
+GNU General Public License
+.ft R
+for more details.
+.
+.P
 .P
 You should have received a copy of the
 .nh
@@ -51,8 +88,7 @@ GNU General Public License
 .hy
 along with
 .ft CI
-groff\\f[R],
-see the files
+groff\\f[R], see the files
 .nh
 .ft CB
 COPYING
@@ -68,10 +104,14 @@ groff
 .ft R
 source package.
 .
-.P
-You can also visit
-.UR http://\\:www.gnu.org/\\:licenses
+If not, see
+.UR http://\\:www.gnu.org/\\:licenses/
+ the
+.ft CI
+GNU licenses
+.ft R
 .UE .
+.
 ..
 .
 .
@@ -120,14 +160,6 @@ You can also visit
 .OP \%filespec \*[Ellipsis]
 .YS
 .
-.SY groff_lilypond
-.BR -h | --help
-.YS
-.
-.SY groff_lilypond
-.BR -v | --version
-.YS
-.
 .
 .\" --------------------------------------------------------------------
 .SH DESCRIPTION
@@ -144,18 +176,24 @@ can display them.
 .
 .
 .P
-Without arguments,
+Without arguments or without
+.I filespec
+arguments,
 .FONT CB groff_lilypond
 reads from standard input.
 .
-Several files can be used, including
+Several files can be used; the minus character
 .FONT CB \[em]
-for standard input.
+stands for standard input.
+.
 .
 .\" --------------------------------------------------------------------
 .SH "OPTION OVERVIEW"
 .\" --------------------------------------------------------------------
 .
+.\" --------------------------------------------------------------------
+.SS "Breaking Options"
+.\" --------------------------------------------------------------------
 .TP
 .I breaking options
 .RS
@@ -163,6 +201,7 @@ for standard input.
 .SY
 .OP -h\~\fR|\fB\~--help
 .OP -v\~\fR|\fB\~--version
+.OP \fB\~--license
 .YS
 .RE
 .
@@ -190,12 +229,49 @@ and
 .
 .TP
 .OP --ly2eps
-.
 Here the
 .FONT CB lilypond
 program creates
 .FONT CI eps
 files directly.
+.
+.
+.RE
+.
+.
+.TP
+.I \%directories and files
+.RS
+.
+.TP
+.OP --file_prefix name
+Normally all temporary files get names that start with the
+.FONT CB ly CI \*[Ellipsis]
+prefix.
+.
+With this option, you can freely change this prefix.
+.
+.
+.TP
+.OP --keep_files
+Normally all temporary files without the
+.FONT CI eps
+files are deleted.
+.
+With this opton, all generated files either by the
+.FONT CB lilypond
+program or other format transposers are kept.
+.
+.
+.TP
+.OP --temp_dir dir
+With this option, you can change the directory in which the temporary
+files are stored.
+.
+No extensions are used for this directory.
+.
+If the directory does not exist it will be created.
+.
 .
 .RE
 .
@@ -243,13 +319,15 @@ An additional command line for file inclusion of
 .FONT CI lilypond
 files is given by
 .EX
-FONT CB ".lilypond include \*[Ellipsis]"
+.FONT CB ".lilypond include" I " file_name"
 .EE
 in
 .FONT CI groff
 files.
 .
-One or more file names can be included.
+One file can be included per
+.FONT CI include
+command.
 .
 .
 .P
@@ -289,7 +367,7 @@ program into many files of different formats, including
 .FONT CI eps
 files, using
 .EX
-.FONT CB "lilypond \-\-ps \-dbackend=eps \-dgs\-load\-fonts \-\-output=" I file\-name
+.FONT CB "$ lilypond \-\-ps \-dbackend=eps \-dgs\-load\-fonts \-\-output=" I file\-name
 .EE
 for each
 .FONT CB .ly
@@ -377,7 +455,7 @@ This is done by the
 .FONT CB pdf2ps
 program using
 .EX
-.FONT CB "pdf2ps " CI file-name CB ".pdf " CI file-name CB ".ps"
+.FONT R "$ " CB "pdf2ps " CI file-name CB ".pdf " CI file-name CB ".ps"
 .EE
 .
 .
@@ -391,7 +469,7 @@ This is done by the
 .FONT CB ps2eps
 program using
 .EX
-.FONT CB "ps2eps " CI file-name CB ".ps"
+.FONT R "$ " CB "ps2eps " CI file-name CB ".ps"
 .EE
 .
 .
@@ -469,15 +547,15 @@ do.
 .
 .
 .\" --------------------------------------------------------------------
-.SH "AUTHOR"
+.SH "AUTHORS"
 .\" --------------------------------------------------------------------
-.author
+.authors
 .
 .
 .\" --------------------------------------------------------------------
 .SH "COPYING"
 .\" --------------------------------------------------------------------
-.copyleft
+.copying
 .
 .
 .\" --------------------------------------------------------------------
