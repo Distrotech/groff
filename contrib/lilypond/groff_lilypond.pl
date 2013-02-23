@@ -9,7 +9,7 @@ use strict;
 ########################################################################
 
 my $Version = 'v0.4'; # version of groff_lilypond
-my $LastUpdate = '22 Feb 2013';
+my $LastUpdate = '23 Feb 2013';
 
 
 my $License =    ### `$License' is the license for this file, `GPL' >= 3
@@ -331,7 +331,6 @@ print STDERR "Temporary directory: $TempDir\n";
 
 
 		       'end' => sub {
-print STDERR "start: \n";
 
 			 die "Line `.lilypond start' expected."
 			   unless ( $lilypond_mode );
@@ -344,19 +343,20 @@ print STDERR "start: \n";
 
 		       'include' => sub { # `.lilypond include file...'
 
+			 # this may not be used within lilypond mode
+			 next LILYPOND if ( $lilypond_mode );
+
 			 my $file = &check_file( $arg2 );
 			 next LILYPOND unless ( $file );
 			 # file can be read now
 
-			 unless ( $lilypond_mode ) {
-			   # then FILELY must be opened
-			   $ly_number++;
-			   $FileNumbered = $FilePrefix . $ly_number;
-			   $FileLy =  $FileNumbered . '.ly';
+			 # FILELY must be opened
+			 $ly_number++;
+			 $FileNumbered = $FilePrefix . $ly_number;
+			 $FileLy =  $FileNumbered . '.ly';
 
-			   open FILELY, ">", $FileLy or
-			     die "cannot open .ly file: $!";
-			 }
+			 open FILELY, ">", $FileLy or
+			   die "cannot open `$FileLy' file: $!";
 
 			 open FILE, "<", $file                # for reading
 			   or die "File `$file' could not be read: $!";
@@ -366,10 +366,8 @@ print STDERR "start: \n";
 			 }
 			 close FILE;
 
-			 unless ($lilypond_mode) {
-			   close FILELY;
-			   &create_eps;
-			 } # end non-lilypond-mode
+			 close FILELY;
+			 &create_eps;
 
 			 next LILYPOND;
 		       }, # end `.lilypond include'
@@ -379,7 +377,7 @@ print STDERR "start: \n";
 
   sub check_file { # for argument of `.lilypond include'
     my $file = shift;
-print STDERR "##### $file\n";
+
     unless ( $file ) {
       print STDERR
 	'Line ".lilypond include" without argument';
@@ -408,13 +406,17 @@ print STDERR "##### $file\n";
     if ( /^[.']\s*lilypond\s*(.*)\s*(.*)\s*$/ ) { # .lilypond ...
       my $arg1 = $1;
       my $arg2 = $2;
+
       if ( exists $lilypond_args{ $arg1 } ) {
 	& { $lilypond_args{ $arg1 } }
+
       } else {
 	# not a suitable argument of `.lilypond'
 	print $_ . "\n";
       }
+
       next LILYPOND;
+
     }
 
     if ( $lilypond_mode ) { # do lilypond-mode
