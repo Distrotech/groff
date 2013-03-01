@@ -2015,7 +2015,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .if \\n[D]>2 .tm set format=\\n[ds*format]
 .\" fill or not to fill, that is the...
 .nr ds*fill 0
-.ie \\n[.$]>1 \{\
+.if \\n[.$]>1 \{\
 .	ie r ds*fill!\\$2 .nr ds*fill \\n[ds*fill!\\$2]
 .	el .@error "\\*[ds*type]:wrong fill:\\$2"
 .\}
@@ -2197,7 +2197,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .if \\n[li*type]=5 .ds li*c-mark <\\n[li*cnt!\\n[li*lvl]]>
 .if \\n[li*type]=6 .ds li*c-mark {\\n[li*cnt!\\n[li*lvl]]}
 .if \\n[.$]=1 .ds li*c-mark \\$1
-.ie \\n[.$]=2 \{\
+.if \\n[.$]=2 \{\
 .	ie (\\$2=2):(\\n[Limsp]=0) .ds li*c-mark \\$1\\*[li*c-mark]
 .	el .ds li*c-mark \\$1\ \\*[li*c-mark]
 .\}
