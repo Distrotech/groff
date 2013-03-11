@@ -13,7 +13,7 @@ This file was written by Bernd Warken
 .MT groff\-bernd.warken\-72@web.de
 .ME .
 .
-Last update: 03 Mar 2013
+Last update: 11 Mar 2013
 ..
 .
 .
@@ -199,9 +199,13 @@ stands for standard input.
 .RS
 .P
 .SY
-.OP -h\~\fR|\fB\~--help
-.OP -v\~\fR|\fB\~--version\fR|\fB\~--usage
-.OP \fB\~--license
+.OP -h\~\fR|\fB\~--help\fR|\fB\~--usage
+.YS
+.SY
+.OP -v\~\fR|\fB\~--version
+.YS
+.SY
+.OP -l\~\fR|\fB\~--license
 .YS
 .RE
 .
@@ -244,7 +248,20 @@ files directly.
 .RS
 .
 .TP
-.OP --file_prefix name
+.OP -e\fR|\fB\~--eps_dir directory_name
+Normally all
+.FONT CI EPS
+files are sent to the temporary directory.
+.
+With this option, you can generate your own directory, in which all useful
+.FONT CI EPS
+files are send.
+.
+So at last, the temporary directory can be removed.
+.
+.
+.TP
+.OP -p\fR|\fB\~--prefix begin_of_name
 Normally all temporary files get names that start with the
 .FONT CB ly CI \*[Ellipsis]
 prefix.
@@ -253,7 +270,7 @@ With this option, you can freely change this prefix.
 .
 .
 .TP
-.OP --keep_files
+.OP -k\fR|\fB\~--keep_files
 Normally all temporary files without the
 .FONT CI eps
 files are deleted.
@@ -264,7 +281,7 @@ program or other format transposers are kept.
 .
 .
 .TP
-.OP --temp_dir dir
+.OP -t\fR|\fB\~--temp_dir dir
 With this option, you can change the directory in which the temporary
 files are stored.
 .
@@ -285,7 +302,7 @@ If the directory does not exist it will be created.
 Normally all
 .FONT CI groff
 output is sent to
-FONT CB STDOUT R .
+.FONT CB STDOUT R .
 .
 With this option that can be stored in a
 .IR file .
@@ -297,6 +314,16 @@ A lot more of output is sent to STDERR.
 .
 .
 .RE
+.
+.
+.P
+In an old version of this program, there was an additional option called
+.FONT CB --file_prefix R .
+.
+This is now replaced by
+.FONT CB --prefix
+and
+.FONT CB -p R .
 .
 .
 .\" --------------------------------------------------------------------
@@ -372,7 +399,7 @@ So
 may not be used between
 .FONT CB ".lilypond start"
 and
-.FONT CB ".lilypond end" .R .
+.FONT CB ".lilypond end" R .
 .
 .
 .\" --------------------------------------------------------------------
@@ -571,6 +598,46 @@ part on a complete page, preceded and followed by a page break.
 .
 I do not know how to change this or what very long music sheets will
 do.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "SEE ALSO"
+.\" --------------------------------------------------------------------
+.
+.TP
+.BR groff (@MAN1EXT@)
+the usage of the groff program and pointers to the documentation and
+availability of the
+.FONT CI groff
+system.
+.
+The main source of information for the
+.FONT CI groff
+language is the
+.FONT CB groff
+.BR info (1)
+file.
+.
+.
+.TP
+.BR groff_tmac (@MAN5EXT@)
+contains documentation of the
+.FONT CB .PSPIC
+request.
+.
+.
+.TP
+.BR lilypond (1)
+The documentation of the
+.FONT CB lilypond
+program.
+.
+The main source of information for the
+.FONT CI lilypond
+language is the
+.FONT CB lilypond
+.BR info (1)
+file.
 .
 .
 .\" --------------------------------------------------------------------
