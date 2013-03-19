@@ -18,7 +18,7 @@
 
 DEV=pdf
 GROFF_FONT_FILES=`cd $(top_builddir)/font/devpdf \
-                  && find * -maxdepth 0 -type f ! -name Makefile.sub \
+                  && find * -maxdepth 0 -type f ! -name 'Makefile.sub*' \
                             -exec grep -l internalname {} \;`
 ENC_FILES=`cd $(top_builddir)/font/devpdf; ls enc/*`
 MAP_FILES=`cd $(top_builddir)/font/devpdf; ls map/*`
@@ -105,6 +105,8 @@ install_data:
 	  || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/enc
 	-test -d $(DESTDIR)$(fontsubdir)/map \
 	  || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/map
+	-test -d $(DESTDIR)$(fontsubdir)/util \
+	  || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/util
 	for f in $(MOSTLYCLEANADD); do \
 	  $(RM) $(DESTDIR)$(fontsubdir)/$$f; \
 	  if test -f $$f; then \
