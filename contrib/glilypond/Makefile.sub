@@ -1,0 +1,93 @@
+# Makefile.sub for `glilypond' (integration into the `groff' source tree)
+
+# File position: <groff-source>/contrib/lilypond/Makefile.sub
+
+# Copyright (C) 2013
+#   Free Software Foundation, Inc.
+# Written by Werner Lemberg <wl@gnu.org> and
+# Bernd Warken <groff-bernd.warken-72@web.de>.
+
+# Last update: 28 Mar 2013
+
+# This file is part of `glilypond' which is part of `groff'.
+
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+########################################################################
+
+MAN1=glilypond.n
+
+MOSTLYCLEANADD=glilypond HAVE_PERL $(MAN1)
+
+# not all make programs have $(RM) predefined.
+RM=rm -f
+
+all: glilypond
+
+GLILYPOND=$(srcdir)/glilypond.pl \
+          $(srcdir)/subs.pl \
+          $(srcdir)/oop_fh.pl \
+          $(srcdir)/args.pl \
+          $(srcdir)/perl_test.pl
+
+GLILYPOND_=`echo $(GLILYPOND) | sed 's|$(srcdir)/||g'`
+
+# TODO: Add perl check to configure script.
+glilypond: $(GLILYPOND)
+	if perl $(srcdir)/perl_test.pl 2>&1 >/dev/null; then \
+	  : >HAVE_PERL; \
+	  echo "Perl version works for "$@"'."; \
+	  sed \
+            -e "s|@g@|$(g)|g" \
+	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
+	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
+	    -e "s|@glilypond_dir@|$(DESTDIR)$(glilypond_dir)|g" \
+	    -e "s|@VERSION@|$(version)$(revision)|g" \
+	    $(srcdir)/glilypond.pl >$@; \
+	  chmod +x $@; \
+	else \
+	  echo "This program "$@" needs a newer version of Perl."; \
+	fi
+
+
+install_data: glilypond
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	$(RM) $(DESTDIR)$(bindir)/glilypond
+	$(INSTALL_SCRIPT) glilypond $(DESTDIR)$(bindir)/glilypond
+	-test -d $(DESTDIR)$(glilypond_dir) \
+          || $(mkinstalldirs) $(DESTDIR)$(glilypond_dir)
+	for f in $(GLILYPOND_); do \
+          $(RM) $(DESTDIR)$(glilypond_dir)/$$f; \
+        done
+	if test -f HAVE_PERL; then \
+          for f in $(GLILYPOND_); do \
+            $(INSTALL_SCRIPT) $(srcdir)/$$f \
+              $(DESTDIR)$(glilypond_dir)/$$f; \
+          done; \
+        fi;
+
+uninstall_sub:
+	$(RM) $(DESTDIR)$(bindir)/glilypond
+	for f in $(GLILYPOND_); do \
+          $(RM) $(DESTDIR)$(glilypond_dir)/$$f; \
+        done
+	-rmdir $(DESTDIR)$(libdir)/groff/glilypond
+
+########################################################################
+# Emacs settings
+########################################################################
+#
+# Local Variables:
+# mode: makefile
+# End:

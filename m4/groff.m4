@@ -1,6 +1,8 @@
 # Autoconf macros for groff.
-# Copyright (C) 1989-1995, 2001-2007, 2009, 2011
-# Free Software Foundation, Inc.
+# Copyright (C) 1989-1995, 2001-2007, 2009, 2011, 2013
+#   Free Software Foundation, Inc.
+#
+# Last update: 28 Mar 2013
 #
 # This file is part of groff.
 #
@@ -1209,3 +1211,7 @@ AC_DEFUN([GROFF_GROFFERDIR_DEFAULT],
     groffer_dir=$with_grofferdir
   fi
   AC_SUBST([groffer_dir])])
+
+AC_DEFUN([GROFF_GLILYPONDDIR_DEFAULT],
+  glilypond_dir=$libdir/groff/glilypond
+  AC_SUBST([glilypond_dir]))

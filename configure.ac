@@ -1,6 +1,8 @@
 # Autoconf configuration file for groff.
-# Copyright (C) 1989-1995, 2001-2007, 2009, 2011-2012
-# Free Software Foundation, Inc.
+# Copyright (C) 1989-1995, 2001-2007, 2009, 2011-2013
+#   Free Software Foundation, Inc.
+#
+# Last update: 28 Mar 2013
 #
 # This file is part of groff.
 #
@@ -60,6 +62,7 @@ GROFF_APPRESDIR_OPTION
 GROFF_APPRESDIR_DEFAULT
 GROFF_GROFFERDIR_OPTION
 GROFF_GROFFERDIR_DEFAULT
+GROFF_GLILYPONDDIR_DEFAULT
 GROFF_PRINT
 AC_PROG_EGREP
 AC_PATH_PROG([PERLPATH], [perl], [/usr/bin/perl])
