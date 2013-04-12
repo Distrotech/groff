@@ -15,7 +15,7 @@ our $Legalese;
 
 {
   use constant VERSION => 'v1.0'; # version of glilypond
-  use constant LASTUPDATE => '28 Mar 2013'; # date of last update
+  use constant LASTUPDATE => '12 Apr 2013'; # date of last update
 
 ### This constant `LICENSE' is the license for this file `GPL' >= 3
   use constant LICENSE => q*
@@ -652,6 +652,8 @@ our $Read =
 ########################################################################
 
 END {
+
+  exit unless ( defined($Temp -> { 'temp_dir' }));
 
   if ( $Args -> { 'keep_all' } ) {
     # With --keep_all, no temporary files are removed.
