@@ -101,9 +101,9 @@ BEGIN {
   }
 
 
-  $\ = "\n";			# adds newline at each print
-  $/ = "\n";			# newline separates input
-  $| = 1;                       # flush after each print or write command
+  $\ = "\n";	# adds newline at each print
+  $/ = "\n";	# newline separates input
+  $| = 1;       # flush after each print or write command
 
 
   {
@@ -616,7 +616,7 @@ our $Read =
 
       if ( exists $lilypond_args{ $arg1 } ) {
 	$lilypond_args{ $arg1 } -> ( $arg2 );
-        next;
+	next;
       } else {
 	# not a suitable argument of `.lilypond'
 	$stderr -> print( "Unknown command: `$arg1' `$arg2':  `$line'" );

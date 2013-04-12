@@ -12,7 +12,7 @@ Installed position: `<prefix>/lib7groff/lilypond/subs.pl'
 Copyright (C) 2013 Free Software Foundation, Inc.
   Written by Bernd Warken <groff-bernd.warken-72@web.de>
 
-Last update: 26 Mar 2013
+Last update: 12 Apr 2013
 
 This file is part of `glilypond', which is part of `GNU groff'.
 
@@ -248,11 +248,11 @@ sub make_dir {			# make directory or check if it exists
 } # end sub make_dir()
 
 
+my $number = 0;
 sub next_temp_file {
   our ( $Temp, $v, $Args );
-  state $n = 0;
-  ++$n;
-  my $temp_basename = $Args -> { 'prefix' } . '_temp_' . $n;
+  ++$number;
+  my $temp_basename = $Args -> { 'prefix' } . '_temp_' . $number;
   my $temp_file = File::Spec -> catfile( $Temp -> { 'temp_dir' } ,
 					 $temp_basename );
   $v -> print( "next temporary file: `$temp_file'" );

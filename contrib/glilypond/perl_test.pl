@@ -9,7 +9,7 @@
 #   Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 18 Mar 2013
+# Last update: 12 Apr 2013
 
 # This file is part of `glilypond', which is part of `groff'.
 
@@ -31,8 +31,8 @@
 # This file tests whether perl has a suitable version.  It is used by
 # glilypond.pl and Makefile.sub.
 
-require v5.9.4; # for `state' in `subs.pl'
-
+# former: require v5.9.4; # for `state' in `subs.pl'
+require v5.6; # analogously to `groffer'
 
 ########################################################################
 ### Emacs settings
