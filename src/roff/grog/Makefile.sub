@@ -2,9 +2,9 @@
 
 # File position: <groff-source>/src/roff/grog/Makefile.sub
 
-# Copyright (C) 1993, 2006, 2009 Free Software Foundation, Inc.
+# Copyright (C) 1993, 2006, 2009, 2013 Free Software Foundation, Inc.
 
-# Last update: 5 Jan 2009
+# Last update: 12 Apr 2013
 
 # This file is part of `grog' which is part of `groff'.
 
@@ -24,34 +24,59 @@
 ########################################################################
 
 MAN1=grog.n
-MOSTLYCLEANADD=grog
+MOSTLYCLEANADD=grog $(MAN1) HAVE_PERL
+
+# not all make programs have $(RM) predefined.
+RM=rm -f
 
 all: grog $(MAN1)
 
-grog: grog.pl grog.sh $(SH_DEPS_SED_SCRIPT)
-	-@rm -f $@;
-	if test -n "$(PERLPATH)" && test -f "$(PERLPATH)" && \
-	  "$(PERLPATH)" -e 'require v5.6'; then \
-	  echo 'Using the Perl version for grog.'; \
-	  sed -f "$(SH_DEPS_SED_SCRIPT)" \
-	      -e "s|@VERSION@|$(version)$(revision)|" \
-	      -e "$(SH_SCRIPT_SED_CMD)" \
-              $(srcdir)/grog.pl >$@; \
-	else \
-	  echo 'Using the shell version for grog.'; \
+GROG=$(srcdir)/perl_test.pl
+
+GROG_=`echo $(GROG) | sed 's|$(srcdir)/||g'`
+
+grog: grog.pl $(SH_DEPS_SED_SCRIPT)
+	-@$(RM) -f $@;
+        if perl $(srcdir)/perl_test.pl 2>&1 >/dev/null; then \
+          : >HAVE_PERL; \
+          echo "Perl version works for "$@"'."; \
 	  sed -f "$(SH_DEPS_SED_SCRIPT)" \
 	      -e "s|@g@|$(g)|g" \
+	      -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
+              -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
 	      -e "s|@EGREP@|$(EGREP)|g" \
 	      -e "s|@VERSION@|$(version)$(revision)|" \
 	      -e "$(SH_SCRIPT_SED_CMD)" \
-              $(srcdir)/grog.sh >$@; \
+              $(srcdir)/grog.pl >$@; \
+          chmod +x $@; \
+	else \
+	  echo "This program "$@" needs a newer version of Perl."; \
+	  exit 1
 	fi
 	chmod +x $@
 
 install_data: grog
-	-@test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	-@rm -f $(DESTDIR)$(bindir)/grog
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	$(RM) $(DESTDIR)$(bindir)/grog
 	$(INSTALL_SCRIPT) grog $(DESTDIR)$(bindir)/grog
+        -test -d $(DESTDIR)$(grog_dir) \
+          || $(mkinstalldirs) $(DESTDIR)$(grog_dir)
+        for f in $(GROG_); do \
+          $(RM) $(DESTDIR)$(grog_dir)/$$f; \
+        done
+        if test -f HAVE_PERL; then \
+          for f in $(GROG_); do \
+            $(INSTALL_SCRIPT) $(srcdir)/$$f \
+              $(DESTDIR)$(grog_dir)/$$f; \
+          done; \
+        fi;
+
+
 
 uninstall_sub:
-	-rm -f $(DESTDIR)$(bindir)/grog
+	$(RM) $(DESTDIR)$(bindir)/grog
+        for f in $(GROG_); do \
+          $(RM) $(DESTDIR)$(grog_dir)/$$f; \
+        done
+        -test -d $(DESTDIR)$(libdir)/groff/grog || \
+          rmdir $(DESTDIR)$(libdir)/groff/grog
