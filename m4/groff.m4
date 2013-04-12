@@ -1215,3 +1215,7 @@ AC_DEFUN([GROFF_GROFFERDIR_DEFAULT],
 AC_DEFUN([GROFF_GLILYPONDDIR_DEFAULT],
   glilypond_dir=$libdir/groff/glilypond
   AC_SUBST([glilypond_dir]))
+
+AC_DEFUN([GROFF_GROGDIR_DEFAULT],
+  grog_dir=$libdir/groff/grog
+  AC_SUBST([grog_dir]))
