@@ -2,7 +2,7 @@
 # Copyright (C) 1989-1995, 2001-2007, 2009, 2011, 2013
 #   Free Software Foundation, Inc.
 #
-# Last update: 28 Mar 2013
+# Last update: 14 Apr 2013
 #
 # This file is part of groff.
 #
@@ -57,6 +57,19 @@ AC_DEFUN([GROFF_PRINT],
 
 AC_DEFUN([GROFF_PROG_YACC],
   [AC_CHECK_PROGS([YACC], [byacc 'bison -y'], [yacc])])
+
+
+# We need Perl 5.6.1 or newer.
+
+AC_DEFUN([GROFF_PERL],
+	[PERLVERSION=v5.6.1
+	AC_PATH_PROG([PERL], [perl], [no])
+	if test "$PERL" = "no"; then
+	  AC_MSG_ERROR([perl binary not found], 1)
+	fi
+        AX_PROG_PERL_VERSION([$PERLVERSION], PERLPATH=$PERL, \
+          AC_MSG_ERROR([perl version is too old], 1))])
+
 
 # We need makeinfo 4.8 or newer.
 
