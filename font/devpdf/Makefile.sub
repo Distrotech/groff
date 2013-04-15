@@ -1,5 +1,8 @@
 # Copyright (C) 2011, 2013 Free Software Foundation, Inc.
+#      Free Software Foundation, Inc.
 #      Written by Deri James <deri@chuzzlewit.demon.co.uk>
+#
+# Last update: 15 Apr 2013
 #
 # This file is part of groff.
 #
@@ -76,9 +79,9 @@ DESC: DESC.in
 	  $(top_builddir)/font/devpdf/map
 	-test -d util || $(mkinstalldirs) util
 	$(RM) util/BuildFoundries
-	if test -n "$(PERLPATH)"; then \
+	if test -n "$(PERL)"; then \
 	  sed -f $(SH_DEPS_SED_SCRIPT) \
-	    -e "s|/usr/bin/perl|$(PERLPATH)|" \
+	    -e "s|/usr/bin/perl|$(PERL)|" \
 	    -e "s|@GROFF_GHOSTSCRIPT_INTERPRETERS@|$(GHOSTSCRIPT)|" \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
 	    -e "s|@GROFF_FONT_DIR@|$(fontdir)|" \

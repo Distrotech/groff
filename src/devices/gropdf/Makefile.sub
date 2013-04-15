@@ -1,4 +1,5 @@
-# Copyright (C) 2011-2013 Free Software Foundation, Inc.
+# Copyright (C) 2011-2013
+#      Free Software Foundation, Inc.
 #      Written by Deri James <deri@chuzzlewit.demon.co.uk>
 #
 # This file is part of groff.
@@ -40,7 +41,7 @@ gropdf: gropdf.pl $(SH_DEPS_SED_SCRIPT)
 	$(RM) $@
 	sed -f $(SH_DEPS_SED_SCRIPT) \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
-	    -e "s|@PERLPATH@|$(PERLPATH)|" \
+	    -e "s|@PERL@|$(PERL)|" \
 	    -e "s|@GROFF_FONT_DIR@|$(fontpath)|" \
 	    -e "s|@RT_SEP@|$(RT_SEP)|" $(srcdir)/gropdf.pl >$@
 	chmod +x $@
@@ -49,7 +50,7 @@ pdfmom: pdfmom.pl $(SH_DEPS_SED_SCRIPT)
 	$(RM) $@
 	sed -f $(SH_DEPS_SED_SCRIPT) \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
-	    -e "s|@PERLPATH@|$(PERLPATH)|" $(srcdir)/pdfmom.pl >$@
+	    -e "s|@PERL@|$(PERL)|" $(srcdir)/pdfmom.pl >$@
 	chmod +x $@
 
 install_data:

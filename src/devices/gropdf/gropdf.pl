@@ -1,10 +1,10 @@
-#!@PERLPATH@ -w
+#!@PERL@ -w
 #
 #	gropdf		: PDF post processor for groff
-#	Deri James	: 4th May 2009
+#	Last update	: 15 Apr 2013
 #
-
-# Copyright (C) 2011-2013 Free Software Foundation, Inc.
+# Copyright (C) 2011-2013
+#      Free Software Foundation, Inc.
 #      Written by Deri James <deri@chuzzlewit.demon.co.uk>
 #
 # This file is part of groff.
