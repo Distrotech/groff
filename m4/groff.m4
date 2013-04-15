@@ -62,13 +62,13 @@ AC_DEFUN([GROFF_PROG_YACC],
 # We need Perl 5.6.1 or newer.
 
 AC_DEFUN([GROFF_PERL],
-	[PERLVERSION=v5.6.1
-	AC_PATH_PROG([PERL], [perl], [no])
-	if test "x$PERL" = "xno"; then
-	  AC_MSG_ERROR([perl binary not found], 1)
-	fi
-        AX_PROG_PERL_VERSION([$PERLVERSION], true, \
-          AC_MSG_ERROR([perl version is too old], 1))])
+  [PERLVERSION=v5.6.1
+   AC_PATH_PROG([PERL], [perl], [no])
+   if test "x$PERL" = "xno"; then
+     AC_MSG_ERROR([perl binary not found], 1)
+   fi
+   AX_PROG_PERL_VERSION([$PERLVERSION], true, \
+     AC_MSG_ERROR([perl version is too old], 1))])
 
 
 # We need makeinfo 4.8 or newer.
@@ -109,6 +109,7 @@ AC_DEFUN([GROFF_MAKEINFO],
    fi
    AC_SUBST([MAKEINFO])])
 
+
 # The following programs are needed for grohtml.
 
 AC_DEFUN([GROFF_HTML_PROGRAMS],
@@ -147,6 +148,7 @@ AC_DEFUN([GROFF_HTML_PROGRAMS],
      AC_MSG_WARN([missing program$plural:
 
   The program$plural
+
      $missing
   cannot be found in the PATH.
   Consequently, groff's HTML backend (grohtml) will not work properly;
@@ -157,6 +159,7 @@ AC_DEFUN([GROFF_HTML_PROGRAMS],
 
    AC_SUBST([make_html])
    AC_SUBST([make_install_html])])
+
 
 # To produce PDF docs, we need both awk and ghostscript.
 
@@ -191,6 +194,7 @@ AC_DEFUN([GROFF_PDFDOC_PROGRAMS],
    AC_SUBST([make_pdfdoc])
    AC_SUBST([make_install_pdfdoc])])
 
+
 # Check whether pnmtops can handle the -nosetpage option.
 
 AC_DEFUN([GROFF_PNMTOPS_NOSETPAGE],
@@ -203,6 +207,7 @@ AC_DEFUN([GROFF_PNMTOPS_NOSETPAGE],
      pnmtops_nosetpage="pnmtops"
    fi
    AC_SUBST([pnmtops_nosetpage])])
+
 
 # Check location of `gs'; allow `--with-gs=PROG' option to override.
 
@@ -226,6 +231,7 @@ AC_DEFUN([GROFF_GHOSTSCRIPT_PREFS],
     [ALT_GHOSTSCRIPT_PROGS="gs gswin32c gsos2"])
    AC_SUBST([ALT_GHOSTSCRIPT_PROGS])])
 
+
 # Check location of `awk'; allow `--with-awk=PROG' option to override.
 
 AC_DEFUN([GROFF_AWK_PATH],
@@ -237,6 +243,7 @@ AC_DEFUN([GROFF_AWK_PATH],
      [AC_CHECK_TOOLS(AWK, [$ALT_AWK_PROGS], [missing])])
    test "$AWK" = "no" && AWK=missing])
 
+
 # Preferences for choice of `awk' program; allow --with-alt-awk="LIST"
 # to override.
 
@@ -247,6 +254,7 @@ AC_DEFUN([GROFF_AWK_PREFS],
     [ALT_AWK_PROGS="$withval"],
     [ALT_AWK_PROGS="gawk mawk nawk awk"])
    AC_SUBST([ALT_AWK_PROGS])])
+
 
 # GROFF_CSH_HACK(if hack present, if not present)
 
@@ -269,6 +277,7 @@ EOF
      $2
    fi
    rm -f conftest.sh])
+
 
 # From udodo!hans@relay.NL.net (Hans Zuidam)
 
@@ -299,6 +308,7 @@ extern "C" { void fileno(int); }
      [AC_MSG_RESULT([no])])
    AC_LANG_POP([C++])])
 
+
 # srand() of SunOS 4.1.3 has return type int instead of void
 
 AC_DEFUN([GROFF_SRAND],
@@ -317,6 +327,7 @@ extern "C" { void srand(unsigned int); }
 	[Define if srand() returns void not int.])],
      [AC_MSG_RESULT([int])])
    AC_LANG_POP([C++])])
+
 
 # In April 2005, autoconf's AC_TYPE_SIGNAL is still broken.
 
@@ -359,6 +370,7 @@ int i;
        [Define as the return type of signal handlers
 	(`int' or `void').])
    fi])
+
 
 AC_DEFUN([GROFF_SYS_NERR],
   [AC_LANG_PUSH([C++])
@@ -427,6 +439,7 @@ open(0, 0);
 	[Define if you have a C++ <osfcn.h>.])],
      [AC_MSG_RESULT([no])])
    AC_LANG_POP([C++])])
+
 
 AC_DEFUN([GROFF_LIMITS_H],
   [AC_LANG_PUSH([C++])
@@ -562,11 +575,13 @@ main()
      [AC_MSG_RESULT([no])],
      [AC_MSG_RESULT([no])])])
 
+
 AC_DEFUN([GROFF_BROKEN_SPOOLER_FLAGS],
   [AC_MSG_CHECKING([default value for grops -b option])
    test -n "${BROKEN_SPOOLER_FLAGS}" || BROKEN_SPOOLER_FLAGS=0
    AC_MSG_RESULT([$BROKEN_SPOOLER_FLAGS])
    AC_SUBST([BROKEN_SPOOLER_FLAGS])])
+
 
 AC_DEFUN([GROFF_PAGE],
   [AC_MSG_CHECKING([default paper size])
@@ -623,6 +638,7 @@ AC_DEFUN([GROFF_PAGE],
    fi
    AC_MSG_RESULT([$PAGE])
    AC_SUBST([PAGE])])
+
 
 AC_DEFUN([GROFF_CXX_CHECK],
   [AC_REQUIRE([AC_PROG_CXX])
@@ -695,6 +711,7 @@ fopen(0, 0);
 		   you should install libg++)])])
    AC_LANG_POP([C++])])
 
+
 AC_DEFUN([GROFF_TMAC],
   [AC_MSG_CHECKING([for prefix of system macro packages])
    sys_tmac_prefix=
@@ -760,6 +777,7 @@ AC_DEFUN([GROFF_TMAC],
    AC_MSG_RESULT([$tmac_wrap])
    AC_SUBST([tmac_wrap])])
 
+
 AC_DEFUN([GROFF_G],
   [AC_MSG_CHECKING([for existing troff installation])
    if test "x`(echo .tm '|n(.g' | tr '|' '\\\\' | troff -z -i 2>&1) 2>/dev/null`" = x0; then
@@ -771,6 +789,7 @@ AC_DEFUN([GROFF_G],
    fi
    AC_SUBST([g])])
 
+
 # We need the path to install-sh to be absolute.
 
 AC_DEFUN([GROFF_INSTALL_SH],
@@ -778,10 +797,12 @@ AC_DEFUN([GROFF_INSTALL_SH],
    ac_dir=`cd $ac_aux_dir; pwd`
    ac_install_sh="$ac_dir/install-sh -c"])
 
+
 # Test whether install-info is available.
 
 AC_DEFUN([GROFF_INSTALL_INFO],
   [AC_CHECK_PROGS([INSTALL_INFO], [install-info], [:])])
+
 
 # At least one UNIX system, Apple Macintosh Rhapsody 5.5,
 # does not have -lm ...
@@ -790,12 +811,14 @@ AC_DEFUN([GROFF_LIBM],
   [AC_CHECK_LIB([m], [sin], [LIBM=-lm])
    AC_SUBST([LIBM])])
 
+
 # ... while the MinGW implementation of GCC for Microsoft Win32
 # does not seem to have -lc.
 
 AC_DEFUN([GROFF_LIBC],
   [AC_CHECK_LIB([c], [main], [LIBC=-lc])
    AC_SUBST([LIBC])])
+
 
 # Check for EBCDIC -- stolen from the OS390 Unix LYNX port
 
@@ -825,6 +848,7 @@ make an error "Character set is not EBCDIC"
    AC_SUBST([TTYDEVDIRS])
    AC_SUBST([OTHERDEVDIRS])])
 
+
 # Check for OS/390 Unix.  We test for EBCDIC also -- the Linux port (with
 # gcc) to OS/390 uses ASCII internally.
 
@@ -839,6 +863,7 @@ AC_DEFUN([GROFF_OS390],
        AC_MSG_RESULT([no]) ;;
      esac
    fi])
+
 
 # Check whether we need a declaration for a function.
 #
@@ -889,6 +914,7 @@ AC_DEFUN([GROFF_NEED_DECLARATION],
    fi
    AC_LANG_POP([C++])])
 
+
 # If mkstemp() isn't available, use our own mkstemp.cpp file.
 
 AC_DEFUN([GROFF_MKSTEMP],
@@ -914,6 +940,7 @@ f = mkstemp;
      [AC_MSG_RESULT([no])
       _AC_LIBOBJ([mkstemp])])
    AC_LANG_POP([C++])])
+
 
 # Test whether <inttypes.h> exists, doesn't clash with <sys/types.h>,
 # and declares uintmax_t.  Taken from the fileutils package.
@@ -941,6 +968,7 @@ uintmax_t i = (uintmax_t)-1;
    AC_MSG_RESULT([$groff_cv_header_inttypes_h])
    AC_LANG_POP([C++])])
 
+
 # Test for working `unsigned long long'.  Taken from the fileutils package.
 
 AC_DEFUN([GROFF_UNSIGNED_LONG_LONG],
@@ -965,6 +993,7 @@ return ull << i | ull >> i | ullmax / ull | ullmax % ull;
    AC_MSG_RESULT([$groff_cv_type_unsigned_long_long])
    AC_LANG_POP([C++])])
 
+
 # Define uintmax_t to `unsigned long' or `unsigned long long'
 # if <inttypes.h> does not exist.  Taken from the fileutils package.
 
@@ -979,6 +1008,7 @@ AC_DEFUN([GROFF_UINTMAX_T],
        [Define uintmax_t to `unsigned long' or `unsigned long long' if
 	<inttypes.h> does not exist.])
    fi])
+
 
 # Identify PATH_SEPARATOR character to use in GROFF_FONT_PATH and
 # GROFF_TMAC_PATH which is appropriate for the target system (POSIX=':',
@@ -1009,6 +1039,7 @@ make an error "Path separator is ';'"
      [GROFF_PATH_SEPARATOR=";"])
    AC_MSG_RESULT([$GROFF_PATH_SEPARATOR])
    AC_SUBST(GROFF_PATH_SEPARATOR)])
+
 
 # Check for X11.
 
@@ -1070,6 +1101,7 @@ AC_DEFUN([GROFF_X11],
    AC_SUBST([XPROGDIRS])
    AC_SUBST([XLIBDIRS])])
 
+
 # Set up the `--with-appresdir' command line option.
 
 # Don't quote AS_HELP_STRING!
@@ -1077,6 +1109,7 @@ AC_DEFUN([GROFF_APPRESDIR_OPTION],
   [AC_ARG_WITH([appresdir],
      AS_HELP_STRING([--with-appresdir=DIR],
 		    [X11 application resource files]))])
+
 
 # Get a default value for the application resource directory.
 #
@@ -1217,6 +1250,7 @@ AC_DEFUN([GROFF_GROFFERDIR_OPTION],
      AS_HELP_STRING([--with-grofferdir=DIR],
 		    [groffer files location]))])
 
+
 AC_DEFUN([GROFF_GROFFERDIR_DEFAULT],
   [if test "x$with_grofferdir" = "x"; then
     groffer_dir=$libdir/groff/groffer
@@ -1225,9 +1259,11 @@ AC_DEFUN([GROFF_GROFFERDIR_DEFAULT],
   fi
   AC_SUBST([groffer_dir])])
 
+
 AC_DEFUN([GROFF_GLILYPONDDIR_DEFAULT],
   glilypond_dir=$libdir/groff/glilypond
   AC_SUBST([glilypond_dir]))
+
 
 AC_DEFUN([GROFF_GROGDIR_DEFAULT],
   grog_dir=$libdir/groff/grog
