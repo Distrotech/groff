@@ -148,7 +148,6 @@ AC_DEFUN([GROFF_HTML_PROGRAMS],
      AC_MSG_WARN([missing program$plural:
 
   The program$plural
-
      $missing
   cannot be found in the PATH.
   Consequently, groff's HTML backend (grohtml) will not work properly;

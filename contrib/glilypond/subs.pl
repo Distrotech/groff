@@ -427,7 +427,7 @@ sub usage {			# for `--help'
 
   my $p = $Globals->{'prog'};
   my $usage = EMPTYSTRING;
-  $usage = '###### usage:' . "\n" if ( $Args -> { 'verbose' } );
+  $usage = '###### usage:' . "\n" if ( $Args->{'verbose'} );
   $usage .= qq*Options for $p:
 Read a `roff' file or standard input and transform `lilypond' parts
 (everything between `.lilypond start' and `.lilypond end') into
@@ -470,7 +470,7 @@ The directories set are created when they do not exist.
   my $pv = &perl_version();
   $usage .=  "\n" . 'Perl version ' . $pv . ' needed.' if ( $pv );
 
-  $main::stdout -> print( $usage );
+  $main::stdout->print( $usage );
 } # end sub usage()
 
 
@@ -486,8 +486,8 @@ sub version { # for `--version'
   my $output = EMPTYSTRING;
   $output = "###### version:\n" if ( $Args -> { 'verbose' } );
   $output .= "`" . $Globals -> { 'prog' } . "' version `" .
-    $Legalese -> { 'version' } . "' of `" .
-      $Legalese -> { 'last_update' } . "' is part of `GNU groff'" . $end;
+    $Legalese->{'version'} . "' of `" .
+      $Legalese->{'last_update'} . "' is part of `GNU groff'" . $end;
 
   $stdout -> print( $output );
 } # end sub version()
