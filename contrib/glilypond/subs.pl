@@ -1,4 +1,3 @@
-#! /usr/bin/env perl
 my $License = q*
 ########################################################################
 # Legalese
@@ -12,7 +11,7 @@ Installed position: `<prefix>/lib7groff/lilypond/subs.pl'
 Copyright (C) 2013 Free Software Foundation, Inc.
   Written by Bernd Warken <groff-bernd.warken-72@web.de>
 
-Last update: 12 Apr 2013
+  Last update: 24 Apr 2013
 
 This file is part of `glilypond', which is part of `GNU groff'.
 
@@ -325,36 +324,6 @@ sub path2abs {
 } # end sub path2abs()
 
 
-sub perl_version {
-  our ( $Globals, $Args );
-
-  my $pv = $Globals->{'perl_version'};
-  return $pv if ( $pv );
-
-  my $fh = new FH_READ_FILE( $Globals->{'perl_test_file'} );
-  $fh->open();
-
-  while ( defined( $_ = $fh->read_line() ) ) {
-    next unless ( /
-		    ^
-		    \s*
-		    require
-		    \s+
-		    (
-		      [v0-9.]+
-		    )
-		  /x );
-    $pv = $1; # Perl version
-    $fh->close();
-    $Globals->{'perl_version'} = $pv;
-    return $pv;
-  }
-
-  $fh->close();
-  return 'unknown version for Perl';
-} # end sub perl_version()
-
-
 sub run_lilypond {
   # arg is the options collection for `lilypond' to run
   # either from ly or pdf
@@ -466,9 +435,6 @@ The directories set are created when they do not exist.
   # old options:
   # --keep_files       -k: do not delete any temporary files
   # --file_prefix=...  -p: start for the names of temporary files
-
-  my $pv = &perl_version();
-  $usage .=  "\n" . 'Perl version ' . $pv . ' needed.' if ( $pv );
 
   $main::stdout->print( $usage );
 } # end sub usage()

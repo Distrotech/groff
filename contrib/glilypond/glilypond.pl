@@ -88,8 +88,6 @@ BEGIN {
     {
      'before_make' => FALSE,
      'groff_version' => EMPTYSTRING,
-     'perl_test_file' => EMPTYSTRING,
-     'perl_version' => EMPTYSTRING,
      'prog' => EMPTYSTRING,
     };
 
@@ -134,14 +132,6 @@ BEGIN {
     }
 
     unshift(@INC, $glilypond_libdir);
-
-    # test perl on suitable version
-    $file_test_pl = File::Spec->catfile($glilypond_libdir,
-					'perl_test.pl');
-    die "$file_test_pl does not exist;" unless -f "$file_test_pl";
-    do "$file_test_pl" or die "Perl test: $@";
-
-    $Globals->{'perl_test_file'} = $file_test_pl;
 
     umask 0077; # octal output: `printf "%03o", umask;'
   }

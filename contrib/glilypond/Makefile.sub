@@ -28,7 +28,7 @@
 
 MAN1=glilypond.n
 
-MOSTLYCLEANADD=glilypond HAVE_PERL $(MAN1)
+MOSTLYCLEANADD=glilypond $(MAN1)
 
 # not all make programs have $(RM) predefined.
 RM=rm -f
@@ -38,8 +38,7 @@ all: glilypond
 GLILYPOND=$(srcdir)/glilypond.pl \
 	$(srcdir)/subs.pl \
 	$(srcdir)/oop_fh.pl \
-	$(srcdir)/args.pl \
-	$(srcdir)/perl_test.pl
+	$(srcdir)/args.pl
 
 GLILYPOND_=`echo $(GLILYPOND) | sed 's|$(srcdir)/||g'`
 
@@ -51,28 +50,28 @@ glilypond: $(GLILYPOND)
 		-e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
 		-e "s|@glilypond_dir@|$(DESTDIR)$(glilypond_dir)|g" \
 		-e "s|@VERSION@|$(version)$(revision)|g" \
-		$(srcdir)/glilypond.pl >$@; \
+		$(srcdir)/glilypond.pl >$@
 	chmod +x $@
 
 install_data: glilypond
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir); \
-	$(RM) $(DESTDIR)$(bindir)/glilypond; \
-	$(INSTALL_SCRIPT) glilypond $(DESTDIR)$(bindir)/glilypond; \
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	$(RM) $(DESTDIR)$(bindir)/$<
+	$(INSTALL_SCRIPT) glilypond $(DESTDIR)$(bindir)/$<
 	-test -d $(DESTDIR)$(glilypond_dir) \
-		|| $(mkinstalldirs) $(DESTDIR)$(glilypond_dir); \
+		|| $(mkinstalldirs) $(DESTDIR)$(glilypond_dir)
 	for f in $(GLILYPOND_); do \
 		$(RM) $(DESTDIR)$(glilypond_dir)/$$f; \
-	done; \
+	done
 	for f in $(GLILYPOND_); do \
 		$(INSTALL_SCRIPT) $(srcdir)/$$f \
 		$(DESTDIR)$(glilypond_dir)/$$f; \
 	done
 
 uninstall_sub:
-	$(RM) $(DESTDIR)$(bindir)/glilypond; \
+	$(RM) $(DESTDIR)$(bindir)/glilypond;
 	for f in $(GLILYPOND_); do \
 		$(RM) $(DESTDIR)$(glilypond_dir)/$$f; \
-	done; \
+	done
 	test -d $(DESTDIR)$(libdir)/groff/glilypond \
 		&& rmdir $(DESTDIR)$(libdir)/groff/glilypond
 
