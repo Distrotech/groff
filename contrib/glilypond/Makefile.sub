@@ -7,7 +7,7 @@
 # Written by Werner Lemberg <wl@gnu.org> and
 # Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 12 Apr 2013
+# Last update: 24 Apr 2013
 
 # This file is part of `glilypond' which is part of `groff'.
 
@@ -45,45 +45,36 @@ GLILYPOND_=`echo $(GLILYPOND) | sed 's|$(srcdir)/||g'`
 
 # TODO: Add perl check to configure script.
 glilypond: $(GLILYPOND)
-	if perl $(srcdir)/perl_test.pl 2>&1 >/dev/null; then \
-		: >HAVE_PERL; \
-		echo "Perl version works for "$@"'."; \
-		sed -f "$(SH_DEPS_SED_SCRIPT)" \
-			-e "s|@g@|$(g)|g" \
-			-e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
-			-e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
-			-e "s|@glilypond_dir@|$(DESTDIR)$(glilypond_dir)|g" \
-			-e "s|@VERSION@|$(version)$(revision)|g" \
-			$(srcdir)/glilypond.pl >$@; \
-		chmod +x $@; \
-	else \
-		echo "This program "$@" needs a newer version of Perl."; \
-	fi
-
+	sed -f "$(SH_DEPS_SED_SCRIPT)" \
+		-e "s|@g@|$(g)|g" \
+		-e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
+		-e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
+		-e "s|@glilypond_dir@|$(DESTDIR)$(glilypond_dir)|g" \
+		-e "s|@VERSION@|$(version)$(revision)|g" \
+		$(srcdir)/glilypond.pl >$@; \
+	chmod +x $@
 
 install_data: glilypond
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(RM) $(DESTDIR)$(bindir)/glilypond
-	$(INSTALL_SCRIPT) glilypond $(DESTDIR)$(bindir)/glilypond
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir); \
+	$(RM) $(DESTDIR)$(bindir)/glilypond; \
+	$(INSTALL_SCRIPT) glilypond $(DESTDIR)$(bindir)/glilypond; \
 	-test -d $(DESTDIR)$(glilypond_dir) \
-		|| $(mkinstalldirs) $(DESTDIR)$(glilypond_dir)
+		|| $(mkinstalldirs) $(DESTDIR)$(glilypond_dir); \
 	for f in $(GLILYPOND_); do \
 		$(RM) $(DESTDIR)$(glilypond_dir)/$$f; \
-	done;
-	if test -f HAVE_PERL; then \
-		for f in $(GLILYPOND_); do \
-			$(INSTALL_SCRIPT) $(srcdir)/$$f \
-			$(DESTDIR)$(glilypond_dir)/$$f; \
-		done; \
-	fi;
+	done; \
+	for f in $(GLILYPOND_); do \
+		$(INSTALL_SCRIPT) $(srcdir)/$$f \
+		$(DESTDIR)$(glilypond_dir)/$$f; \
+	done
 
 uninstall_sub:
-	$(RM) $(DESTDIR)$(bindir)/glilypond
+	$(RM) $(DESTDIR)$(bindir)/glilypond; \
 	for f in $(GLILYPOND_); do \
 		$(RM) $(DESTDIR)$(glilypond_dir)/$$f; \
-	done;
-	test -d $(DESTDIR)$(libdir)/groff/glilypond && \
-		rmdir $(DESTDIR)$(libdir)/groff/glilypond
+	done; \
+	test -d $(DESTDIR)$(libdir)/groff/glilypond \
+		&& rmdir $(DESTDIR)$(libdir)/groff/glilypond
 
 ########################################################################
 # Emacs settings
