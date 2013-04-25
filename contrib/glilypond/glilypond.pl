@@ -14,8 +14,8 @@ use diagnostics;
 our $Legalese;
 
 {
-  use constant VERSION => 'v1.0'; # version of glilypond
-  use constant LASTUPDATE => '12 Apr 2013'; # date of last update
+  use constant VERSION => 'v1.1'; # version of glilypond
+  use constant LASTUPDATE => '25 Apr 2013'; # date of last update
 
 ### This constant `LICENSE' is the license for this file `GPL' >= 3
   use constant LICENSE => q*
@@ -227,16 +227,16 @@ our $Temp =
 
 { # `Temp'
 
-  if ( $Args -> { 'temp_dir' } ) {
+  if ( $Args->{'temp_dir'} ) {
 
     #----------
     # temporary directory was set by `--temp_dir'
     #----------
 
-    my $dir = $Args -> { 'temp_dir' };
+    my $dir = $Args->{'temp_dir'};
 
-    $dir = &path2abs( $dir );
-    $dir = &make_dir ( $dir ) or
+    $dir = &path2abs($dir);
+    $dir = &make_dir($dir) or
       die "The directory `$dir' cannot be used temporarily: $!";
 
 
@@ -246,14 +246,14 @@ our $Temp =
       die "Could not open temporary directory `$dir': $!";
     my $file_name;
     my $found = FALSE;
-    my $prefix = $Args -> { 'prefix' };
+    my $prefix = $Args->{'prefix'};
     my $re = qr<
 		 ^
 		 $prefix
 		 _
 	       >x;
 
-  READDIR: while ( defined( $file_name = readdir ( $dh ) ) ) {
+  READDIR: while ( defined($file_name = readdir($dh)) ) {
       chomp $file_name;
       if ( $file_name =~ /$re/ ) { # file name starts with $prefix_
 	$found = TRUE;
@@ -262,22 +262,22 @@ our $Temp =
       next;
     }
 
-    $Temp -> { 'temp_dir' } = $dir;
+    $Temp->{'temp_dir'} = $dir;
     my $n = 0;
     while ( $found ) {
-      $dir = File::Spec -> catdir( $Temp -> { 'temp_dir' }, ++$n );
+      $dir = File::Spec->catdir( $Temp->{'temp_dir'}, ++$n );
       next if ( -e $dir );
 
-      $dir = &make_dir ( $dir ) or next;
+      $dir = &make_dir($dir) or next;
 
       $found = FALSE;
       last;
     }
 
-    $Temp -> { 'temp_dir' } = $dir;
+    $Temp->{'temp_dir'} = $dir;
 
 
-  } else { # $Args -> { 'temp_dir' } not given by `--temp_dir'
+  } else { # $Args->{'temp_dir'} not given by `--temp_dir'
 
     #----------
     # temporary directory was not set
@@ -287,21 +287,21 @@ our $Temp =
 
       my @tempdirs = EMPTYARRAY;
       {
-	my $tmpdir = File::Spec -> tmpdir();
+	my $tmpdir = File::Spec->tmpdir();
 	push @tempdirs, $tmpdir if ( $tmpdir && -d $tmpdir && -w $tmpdir );
 
-	my $root_dir = File::Spec -> rootdir(); # `/' in Unix
-	my $root_tmp = File::Spec -> catdir( $root_dir, 'tmp' );
+	my $root_dir = File::Spec->rootdir(); # `/' in Unix
+	my $root_tmp = File::Spec->catdir($root_dir, 'tmp');
 	push @tempdirs, $root_tmp
 	  if ( $root_tmp ne $tmpdir && -d $root_tmp && -w $root_tmp );
 
 	# home directory of the actual user
-	my $home = File::HomeDir -> my_home;
-	my $home_tmp = File::Spec -> catdir ( $home, 'tmp' );
+	my $home = File::HomeDir->my_home;
+	my $home_tmp = File::Spec->catdir($home, 'tmp');
 	push @tempdirs, $home_tmp if ( -d $home_tmp && -w $home_tmp );
 
 	# `/var/tmp' in Unix
-	my $var_tmp = File::Spec -> catdir( '', 'var', 'tmp' );
+	my $var_tmp = File::Spec->catdir('', 'var', 'tmp');
 	push @tempdirs, $var_tmp if ( -d $var_tmp && -w $var_tmp );
       }
 
@@ -310,7 +310,7 @@ our $Temp =
       {
 	# `$<' is UID of actual user,
 	# `getpwuid' gets user name in scalar context
-	my $user = getpwuid( $< );
+	my $user = getpwuid($<);
 	push @path_extension, $user if ( $user );
 
 	push @path_extension, qw( lilypond );
@@ -320,19 +320,19 @@ our $Temp =
     TEMPS: foreach ( @tempdirs ) {
 
 	my $dir; # final directory name in `while' loop
-	$dir = &path2abs ( $_ );
+	$dir = &path2abs($_);
 	next TEMPS unless ( $dir );
 
 	# beginning of directory name
 	my @dir_begin =
-	  ( File::Spec -> splitdir( $dir ), @path_extension );
+	  ( File::Spec->splitdir($dir), @path_extension );
 
 
 	my $n = 0;
 	my $dir_blocked = TRUE;
       BLOCK: while ( $dir_blocked ) {
 	  # should become the final dir name
-	  $dir = File::Spec -> catdir ( @dir_begin, ++$n );
+	  $dir = File::Spec->catdir(@dir_begin, ++$n);
 	  next BLOCK if ( -d $dir );
 
 	  # dir name is now free, create it, and end the blocking
@@ -346,19 +346,19 @@ our $Temp =
 	next TEMPS unless ( -d $dir && -w $dir  );
 
 	# $dir is now a writable directory
-	$Temp -> { 'temp_dir' } = $dir; # tmp/groff/USER/lilypond/TIME
+	$Temp->{'temp_dir'} = $dir; # tmp/groff/USER/lilypond/TIME
 	last TEMPS;
       } # end foreach tmp directories
     } # end to create a temporary directory
 
     die "Could not find a temporary directory" unless
-      ( $Temp -> { 'temp_dir' } && -d $Temp -> { 'temp_dir' } &&
-	-w $Temp -> { 'temp_dir' } );
+      ( $Temp->{'temp_dir'} && -d $Temp->{'temp_dir'} &&
+	-w $Temp->{'temp_dir'} );
 
   } # end temporary directory
 
-  $v -> print( "Temporary directory: `" . $Temp -> { 'temp_dir' } . "'\n" );
-  $v -> print( "file_prefix: `" . $Args -> { 'prefix' } . "'" );
+  $v->print( "Temporary directory: `" . $Temp->{'temp_dir'} . "'\n" );
+  $v->print( "file_prefix: `" . $Args->{'prefix'} . "'" );
 
 
   #----------
@@ -366,10 +366,10 @@ our $Temp =
   #----------
 
   my $make_dir = FALSE;
-  if ( $Args -> { 'eps_dir' } ) { # set by `--eps_dir'
-    my $dir = $Args -> { 'eps_dir' };
+  if ( $Args->{'eps_dir'} ) { # set by `--eps_dir'
+    my $dir = $Args->{'eps_dir'};
 
-    $dir = &path2abs( $dir );
+    $dir = &path2abs($dir);
 
     if ( -e $dir ) {
       goto EMPTY unless ( -w $dir );
@@ -380,14 +380,14 @@ our $Temp =
 
 	my $found = FALSE;
 	opendir( my $dh, $upper_dir ) or $found = TRUE;
-	my $prefix = $Args -> { 'prefix' };
+	my $prefix = $Args->{'prefix'};
 	my $re = qr<
 		     ^
 		     $prefix
 		     _
 		   >x;
 	while ( not $found ) {
-	  my $file_name = readdir ( $dh );
+	  my $file_name = readdir($dh);
 	  if ( $file_name =~ /$re/ ) { # file name starts with $prefix_
 	    $found = TRUE;
 	    last;
@@ -397,19 +397,19 @@ our $Temp =
 
 	my $n = 0;
 	while ( $found ) {
-	  $dir = File::Spec -> catdir( $upper_dir, ++$n );
+	  $dir = File::Spec->catdir($upper_dir, ++$n);
 	  next if ( -d $dir );
 	  $found = FALSE;
 	}
 	$make_dir = TRUE;
-	$Temp -> { 'eps_dir' } = $dir;
+	$Temp->{'eps_dir'} = $dir;
       } else { # `$dir' is not a dir, so unlink it to create it as dir
 	if ( unlink $dir ) { # could remove `$dir'
-	  $Temp -> { 'eps_dir' } = $dir;
+	  $Temp->{'eps_dir'} = $dir;
 	  $make_dir = TRUE;
 	} else { # could not remove
-	  stderr -> print( "Could not use EPS dir `" . $dir .
-			   "', use temp dir." );
+	  stderr->print(  "Could not use EPS dir `" . $dir .
+			  "', use temp dir." );
 	} # end of unlink
       } # end test of -d $dir
     } else {
@@ -419,24 +419,24 @@ our $Temp =
 
     if ( $make_dir ) { # make directory `$dir'
       my $made = FALSE;
-      $dir = &make_dir ( $dir ) and $made = TRUE;
+      $dir = &make_dir($dir) and $made = TRUE;
 
       if ( $made ) {
-	$Temp -> { 'eps_dir' } = $dir;
-	$v -> print( "Directory for useful EPS files is `" . $dir . "'." );
+	$Temp->{'eps_dir'} = $dir;
+	$v->print( "Directory for useful EPS files is `" . $dir . "'." );
       } else {
-	$v -> print( "The EPS directory `" . $dir . "' cannot be used: $!" );
+	$v->print( "The EPS directory `" . $dir . "' cannot be used: $!" );
       }
     } else { # `--eps_dir' was not set, so take the temporary directory
-      $Temp -> { 'eps_dir' } = $Args -> { 'temp_dir' };
+      $Temp->{'eps_dir'} = $Args->{'temp_dir'};
     } # end of make dir
   }
 
- EMPTY: unless ( $Temp -> { 'eps_dir' } ) {
+ EMPTY: unless ( $Temp->{'eps_dir'} ) {
     # EPS-dir not set or available, use temp dir,
-    # but leave $Temp -> { '}eps_dir' } empty
-    $v -> print( "Directory for useful EPS files is the " .
-      "temporary directory `" . $Temp -> { 'temp_dir' } . "'." );
+    # but leave $Temp->{'}eps_dir'} empty
+    $v->print( "Directory for useful EPS files is the " .
+      "temporary directory `" . $Temp->{'temp_dir'} . "'." );
   }
 
 } # end `Temp'
@@ -456,7 +456,7 @@ our $Read =
 
   my $ly_number = 0; # number of lilypond file
 
-  # `$Args -> { 'prefix' }_[0-9]'
+  # `$Args->{'prefix'}_[0-9]'
 
   my $lilypond_mode = FALSE;
 
@@ -468,7 +468,7 @@ our $Read =
 
   my $check_file = sub { # for argument of `.lilypond include'
     my $file = shift; # argument is a file name
-    $file = &path2abs( $file );
+    $file = &path2abs($file);
     unless ( $file ) {
       die "Line `.lilypond include' without argument";
       return '';
@@ -483,10 +483,9 @@ our $Read =
 
   my $increase_ly_number = sub {
     ++$ly_number;
-    $Read -> { 'file_numbered' } = $Args -> { 'prefix' } . '_' . $ly_number;
-    $Read -> { 'file_ly' } =  $Read -> { 'file_numbered' } . '.ly';
-    $path_ly = File::Spec -> catdir ( $Temp -> { 'temp_dir' },
-				      $Read -> { 'file_ly' } );
+    $Read->{'file_numbered'} = $Args->{'prefix'} . '_' . $ly_number;
+    $Read->{'file_ly'} =  $Read->{'file_numbered'} . '.ly';
+    $path_ly = File::Spec->catdir($Temp->{'temp_dir'}, $Read->{'file_ly'} );
   };
 
 
@@ -504,29 +503,29 @@ our $Read =
     (
 
      'start' => sub {
-       $v -> print( "\nline: `.lilypond start'" );
+       $v->print( "\nline: `.lilypond start'" );
        die "Line `.lilypond stop' expected." if ( $lilypond_mode );
 
        $lilypond_mode = TRUE;
        &$increase_ly_number;
 
-       $v -> print( "ly-file: `" . $path_ly . "'" );
+       $v->print( "ly-file: `" . $path_ly . "'" );
 
-       $ly = new FH_FILE( $path_ly );
+       $ly = new FH_FILE($path_ly);
      },
 
 
      'end' => sub {
-       $v -> print( "line: `.lilypond end'\n" );
+       $v->print( "line: `.lilypond end'\n" );
        die "Expected line `.lilypond start'." unless ( $lilypond_mode );
 
        $lilypond_mode = FALSE;
-       $ly -> close();
+       $ly->close();
 
-       if ( exists $eps_subs{ $Args -> { 'eps_func' } } ) {
-	 $eps_subs{ $Args -> { 'eps_func' } } -> ();
+       if ( exists $eps_subs{ $Args->{'eps_func'} } ) {
+	 $eps_subs{ $Args->{'eps_func'} }->();
        } else {
-	 die "Wrong argument for \%eps_subs: " . $Args -> { 'eps_func' } . "'";
+	 die "Wrong argument for \%eps_subs: " . $Args->{'eps_func'} . "'";
        }
      },
 
@@ -538,7 +537,7 @@ our $Read =
 
        my $file_arg = shift;
 
-       my $file = &$check_file( $file_arg );
+       my $file = &$check_file($file_arg);
        next LILYPOND unless ( $file );
        # file can be read now
 
@@ -546,21 +545,20 @@ our $Read =
        # `$fh_write_ly' must be opened
        &$increase_ly_number;
 
-       $ly = new FH_FILE( $path_ly );
+       $ly = new FH_FILE($path_ly);
 
-       my $include = new FH_READ_FILE( $file );
-       my $res = $include -> read-all(); # is a refernce to an array
+       my $include = new FH_READ_FILE($file);
+       my $res = $include->read-all(); # is a refernce to an array
        foreach ( @$res ) {
 	 chomp;
-	 $ly -> print( $_ );
+	 $ly->print($_);
        }
-       $ly -> close();
+       $ly->close();
 
-       if ( exists $eps_subs{ $Args -> { 'eps_func' } } ) {
-	 $eps_subs{ $Args -> { 'eps_func' } } -> ();
+       if ( exists $eps_subs{ $Args->{'eps_func'} } ) {
+	 $eps_subs{ $Args->{'eps_func'} }->();
        } else {
-	 die "Wrong argument for \$eps_subs: `" .
-	   $Args -> { 'eps_func' } . "'";
+	 die "Wrong argument for \$eps_subs: `" . $Args->{'eps_func'} . "'";
        }
      }, # end `.lilypond include'
 
@@ -604,12 +602,12 @@ our $Read =
       $args =~ s/["'`]//g;
       my $arg2 = $args; # file argument for `.lilypond include'
 
-      if ( exists $lilypond_args{ $arg1 } ) {
-	$lilypond_args{ $arg1 } -> ( $arg2 );
+      if ( exists $lilypond_args{$arg1} ) {
+	$lilypond_args{$arg1}->($arg2);
 	next;
       } else {
 	# not a suitable argument of `.lilypond'
-	$stderr -> print( "Unknown command: `$arg1' `$arg2':  `$line'" );
+	$stderr->print( "Unknown command: `$arg1' `$arg2':  `$line'" );
       }
 
       next LILYPOND;
@@ -618,7 +616,7 @@ our $Read =
 
     if ( $lilypond_mode ) { # do lilypond-mode
       # see `.lilypond start'
-      $ly -> print( $line );
+      $ly->print( $line );
       next LILYPOND;
     } # do lilypond-mode
 
@@ -629,7 +627,7 @@ our $Read =
 	       \s*
 	       lilypond
 	     /x ) { # not a `.lilypond' line
-      $out -> print( $line );
+      $out->print($line);
       next LILYPOND;
     }
 
@@ -643,15 +641,15 @@ our $Read =
 
 END {
 
-  exit unless ( defined($Temp -> { 'temp_dir' }));
+  exit unless ( defined($Temp->{'temp_dir'}) );
 
-  if ( $Args -> { 'keep_all' } ) {
+  if ( $Args->{'keep_all'} ) {
     # With --keep_all, no temporary files are removed.
-    $v -> print( "keep_all: `TRUE'" );
-    $v -> print( "No temporary files will be deleted:" );
+    $v->print( "keep_all: `TRUE'" );
+    $v->print( "No temporary files will be deleted:" );
 
-    opendir my $dh_temp, $Temp -> { 'temp_dir' } or
-      die "Cannot open " . $Temp -> { 'temp_dir' } . ": $!";
+    opendir my $dh_temp, $Temp->{'temp_dir'} or
+      die "Cannot open " . $Temp->{'temp_dir'} . ": $!";
     for ( sort readdir $dh_temp ) {
       next if ( /         # omit files starting with a dot
 		  ^
@@ -659,11 +657,11 @@ END {
 		/x );
       if ( /
 	     ^
-	     $Args -> { 'prefix' }
+	     $Args->{'prefix'}
 	     _
 	   /x ) {
-	my $file = File::Spec -> catfile( $Temp -> { 'temp_dir' }, $_ );
-	$v -> print( "- " . $file );
+	my $file = File::Spec->catfile( $Temp->{'temp_dir'}, $_ );
+	$v->print( "- " . $file );
 	next;
       }
       next;
@@ -673,30 +671,30 @@ END {
   } else { # keep_all is not set
     # Remove all temporary files except the eps files.
 
-    $v -> print( "keep_all: `FALSE'" );
-    $v -> print( "All temporary files except *.eps will be deleted" );
+    $v->print( "keep_all: `FALSE'" );
+    $v->print( "All temporary files except *.eps will be deleted" );
 
 
-    if ( $Temp -> { 'eps_dir' } ) {
+    if ( $Temp->{'eps_dir'} ) {
       # EPS files are in another dir, remove temp dir
 
-      if ( &is_subdir( $Temp -> { 'eps_dir' }, $Temp -> { 'temp_dir' } ) ) {
-	$v -> print( "EPS dir is subdir of temp dir, so keep both." );
+      if ( &is_subdir( $Temp->{'eps_dir'}, $Temp->{'temp_dir'} ) ) {
+	$v->print( "EPS dir is subdir of temp dir, so keep both." );
       } else { # remove temp dir
-	$v -> print( "Try to remove temporary directory `" .
-	  $Temp -> { 'temp_dir' } ."':" );
-	if ( File::Path::remove_tree( $Temp -> { 'temp_dir' } ) ) {
+	$v->print( "Try to remove temporary directory `" .
+	  $Temp->{'temp_dir'} ."':" );
+	if ( File::Path::remove_tree($Temp->{'temp_dir'}) ) {
 	  # remove succeeds
-	  $v -> print( "...done." );
+	  $v->print( "...done." );
 	} else { # did not remove
-	  $v -> print( "Failure to remove temporary directory." );
+	  $v->print( "Failure to remove temporary directory." );
 	} # end test on remove
       } # end is subdir
 
     } else { # no EPS dir, so keep EPS files
 
-      opendir my $dh_temp, $Temp -> { 'temp_dir' } or
-	die "Cannot open " . $Temp -> { 'temp_dir' } . ": $!";
+      opendir my $dh_temp, $Temp->{'temp_dir'} or
+	die "Cannot open " . $Temp->{'temp_dir'} . ": $!";
       for ( sort readdir $dh_temp ) {
 	next if ( /          # omit files starting with a dot
 		    ^
@@ -708,12 +706,12 @@ END {
 		  /x );
 	if ( /
 	       ^
-	       $Args -> { 'prefix' }
+	       $Args->{'prefix'}
 	       _
 	     /x ) { # this includes `PREFIX_temp*'
-	  my $file = File::Spec -> catfile( $Temp -> { 'temp_dir' },  $_ );
-	  $v -> print( "Remove `" . $file . "'" );
-	  unlink $file or $stderr -> print( "Could not remove `$file': $!" );
+	  my $file = File::Spec->catfile( $Temp->{'temp_dir'},  $_ );
+	  $v->print( "Remove `" . $file . "'" );
+	  unlink $file or $stderr->print( "Could not remove `$file': $!" );
 	  next;
 	} # end if prefix
 	next;
@@ -723,13 +721,13 @@ END {
   } # end if-else keep files
 
 
-  if ( $Temp -> { 'eps_dir' } ) {
-    # EPS files in $Temp -> { 'eps_dir' } are always kept
-    $v -> print( "As EPS directrory is set as `" .
-      $Temp -> { 'eps_dir' } . "', no EPS files there will be deleted." );
+  if ( $Temp->{'eps_dir'} ) {
+    # EPS files in $Temp->{'eps_dir'} are always kept
+    $v->print( "As EPS directrory is set as `" .
+      $Temp->{'eps_dir'} . "', no EPS files there will be deleted." );
 
-    opendir my $dh_temp, $Temp -> { 'eps_dir' } or
-      die "Cannot open `" . $Temp -> { 'eps_dir' } . ": $!";
+    opendir my $dh_temp, $Temp->{'eps_dir'} or
+      die "Cannot open `" . $Temp->{'eps_dir'} . ": $!";
     for ( sort readdir $dh_temp ) {
       next if ( /         # omit files starting with a dot
 		  ^
@@ -737,14 +735,14 @@ END {
 		/x );
       if ( /
 	     ^
-	     $Args -> { 'prefix' }
+	     $Args->{'prefix'}
 	     _
 	     .*
 	     \.eps
 	     $
 	   /x ) {
-	my $file = File::Spec -> catfile( $Temp -> { 'eps_dir' }, $_ );
-	$v -> print( "- " . $file );
+	my $file = File::Spec->catfile( $Temp->{'eps_dir'}, $_ );
+	$v->print( "- " . $file );
 	next;
       } # end if *.eps
       next;

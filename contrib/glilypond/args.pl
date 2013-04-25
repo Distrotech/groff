@@ -1,8 +1,8 @@
-my $License = q*
 ########################################################################
 # Legalese
 ########################################################################
 
+my $License = q*
 groff_lilypond - integrate `lilypond' into `groff' files
 
 Source file position: `<groff-source>/contrib/lilypond/groff_lilypond.pl'
@@ -11,7 +11,7 @@ Installed position: `<prefix>/bin/groff_lilypond'
 Copyright (C) 2013 Free Software Foundation, Inc.
   Written by Bernd Warken <groff-bernd.warken-72@web.de>
 
-Last update: 26 Mar 2013
+Last update: 25 Apr 2013
 
 This file is part of `GNU groff'.
 
@@ -51,19 +51,19 @@ my %opts_with_arg =
   (
 
    '--eps_dir' => sub {
-     $Args -> { 'eps_dir' } = shift;
+     $Args->{'eps_dir'} = shift;
    },
 
    '--output' => sub {
-     $Args -> { 'output' } = shift;
+     $Args->{'output'} = shift;
    },
 
    '--prefix' => sub {
-     $Args -> { 'prefix' } = shift;
+     $Args->{'prefix'} = shift;
    },
 
    '--temp_dir' => sub {
-     $Args -> { 'temp_dir' } = shift;
+     $Args->{'temp_dir'} = shift;
    },
 
   );				# end of %opts_with_arg
@@ -78,7 +78,7 @@ my %opts_noarg =
    },
 
    '--keep_all' => sub {
-     $Args -> { 'keep_all' } = TRUE;
+     $Args->{'keep_all'} = TRUE;
    },
 
    '--license' => sub {
@@ -87,15 +87,15 @@ my %opts_noarg =
    },
 
    '--ly2eps' => sub {
-     $Args -> { 'eps_func' } = 'ly';
+     $Args->{'eps_func'} = 'ly';
    },
 
    '--pdf2eps' => sub {
-     $Args -> { 'eps_func' } = 'pdf';
+     $Args->{'eps_func'} = 'pdf';
    },
 
    '--verbose' => sub {
-     $Args -> { 'verbose' } = TRUE;
+     $Args->{'verbose'} = TRUE;
    },
 
    '--version' => sub {
@@ -123,8 +123,9 @@ my $arg = EMPTYSTRING;
 my $has_arg = FALSE;
 
 
-# split short option collections and transfer these to suitable
-# long options from above
+# Split short option collections and transfer these to suitable long
+# options from above.  Note that `-v' now means `--verbose' in version
+# `v1.1', earlier versions had `--version' for `-v'.
 
 my %short_opts =
   (
@@ -136,7 +137,7 @@ my %short_opts =
    'o' => '--output',
    'p' => '--prefix',
    't' => '--temp_dir',
-   'v' => '--version',
+   'v' => '--verbose',
    'V' => '--verbose',
   );
 
@@ -183,23 +184,23 @@ my $split_short = sub {
    CHARS: while ( @chars ) {
        my $c = shift @chars;
 
-       unless ( exists $short_opts{ $c } ) {
-	 $stderr -> print( "Unknown short option `-$c'." );
+       unless ( exists $short_opts{$c} ) {
+	 $stderr->print( "Unknown short option `-$c'." );
 	 next CHARS;
        }
 
        # short option exists
 
        # map or transfer to special long option from above
-       my $transopt = $short_opts{ $c };
+       my $transopt = $short_opts{$c};
 
-       if ( exists $opts_noarg{ $transopt } ) {
+       if ( exists $opts_noarg{$transopt} ) {
 	 push @splitted_args, $transopt;
-	 $Args -> { 'verbose' }  = TRUE if ( $transopt eq '--verbose' );
+	 $Args->{'verbose'}  = TRUE if ( $transopt eq '--verbose' );
 	 next CHARS;
        }
 
-       if ( exists $opts_with_arg{ $transopt } ) {
+       if ( exists $opts_with_arg{$transopt} ) {
 	 push @splitted_args, $transopt;
 
 	 if ( @chars ) {
@@ -240,25 +241,25 @@ my $split_long = sub {
     # no match, so luck for fewer number of chars
     next N unless ( $argn );
 
-    next N unless ( exists $long_opts[ $n ] -> { $argn } );
+    next N unless ( exists $long_opts[$n]->{$argn} );
     # not in $n hash, so go on to next loop for $n
 
     # now $n-hash has arg
 
     # map or transfer to special long opt from above
-    my $transopt = $long_opts[ $n ] -> { $argn };
+    my $transopt = $long_opts[$n]->{$argn};
 
     # test on option without arg
-    if ( exists $opts_noarg{ $transopt } ) { # opt has no arg
+    if ( exists $opts_noarg{$transopt} ) { # opt has no arg
       $stderr->print( 'Option ' . $transopt . 'has no argument: ' .
-		      $from_arg . '.') if ( defined($optarg) );
+		      $from_arg . '.' ) if ( defined($optarg) );
       push @splitted_args, $transopt;
-      $Args -> { 'verbose' } = TRUE if ( $transopt eq '--verbose' );
+      $Args->{'verbose'} = TRUE if ( $transopt eq '--verbose' );
       return TRUE;		# use `next SPLIT' afterwards
     }				# end of if %opts_noarg
 
     # test on option with arg
-    if ( exists $opts_with_arg{ $transopt } ) { # opt has arg
+    if ( exists $opts_with_arg{$transopt} ) { # opt has arg
       push @splitted_args, $transopt;
 
       # test on optarg in arg
@@ -273,8 +274,8 @@ my $split_long = sub {
     } # end of if %opts_with_arg
 
     # not with and without option, so is not permitted
-    $stderr -> print( "`" . $transopt .
-		      "' is unknown long option from `" . $from_arg . "'" );
+    $stderr->print( "`" . $transopt .
+		    "' is unknown long option from `" . $from_arg . "'" );
     return TRUE; # use `next SPLIT' afterwards
   } # end of for N
   return FALSE; # do nothing
@@ -323,12 +324,12 @@ sub run_first {
 	   )
 	   $
 	 /x ) {
-      $split_short -> ( $1 );
+      $split_short->($1);
       next SPLIT;
     }				# end of short option
 
     if ( /^--/ ) {		# starts with 2 dashes, a long option
-      $split_long -> ( $_ );
+      $split_long->($_);
       next SPLIT;
     }				# end of long option
 
@@ -338,7 +339,7 @@ sub run_first {
   }				# end of foreach SPLIT
 
 				# all args are considered
-  $stderr -> print( "Option `$has_arg' needs an argument." )
+  $stderr->print( "Option `$has_arg' needs an argument." )
     if ( $has_arg );
 
 
@@ -352,45 +353,48 @@ sub run_first {
 # open or ignore verbose output
 #----------
 sub install_verbose {
-  if ( $Args -> { 'verbose' } ) { # `--verbose' was used
+  if ( $Args->{'verbose'} ) { # `--verbose' was used
     # make verbose output into $v
-    my $s = $v -> get(); # get content of string so far as array ref, close
+    my $s = $v->get(); # get content of string so far as array ref, close
 
     $v = new FH_STDERR(); # make verbose output into STDERR
     if ( $s ) {
       for ( @$s ) {
 	# print the file content into new verbose output
-	$v -> print( $_ );
+	$v->print($_);
       }
     }
     # verbose output is now active (into STDERR)
+    $v->print( "Option `-v' means `--verbose'." );
+    $v->print( "Version information is printed by option `--version'." );
+    $v->print( "#" x 72 );
 
   } else { # `--verbose' was not used
     # do not be verbose, make verbose invisible
 
-    $v -> close(); # close and ignore the string content
+    $v->close(); # close and ignore the string content
 
     $v = new FH_NULL();
     # this is either into /dev/null or in an ignored string
 
   } # end if-else about verbose
-  # `$v -> print' works now in any case
+  # `$v->print' works now in any case
 
-  $v -> print( "Verbose output was chosen." );
+  $v->print( "Verbose output was chosen." );
 
-  my $s = $Globals -> { 'prog_is_installed' } ? '' : ' not';
-  $v -> print( $Globals -> { 'prog' } . " is" . $s .
-	       " installed." );
+  my $s = $Globals->{'prog_is_installed'} ? '' : ' not';
+  $v->print( $Globals->{'prog'} . " is" . $s .
+	     " installed." );
 
-  $v -> print( 'The command line options are:' );
+  $v->print( 'The command line options are:' );
 
   $s = "  options:";
   $s .= " `" . $_ . "'" for ( @ARGV );
-  $v -> print( $s );
+  $v->print( $s );
 
   $s = "  file names:";
   $s .= " `" . $_ . "'\n" for ( @files );
-  $v -> print( $s );
+  $v->print( $s );
 } # end install_verbose()
 
 
@@ -410,29 +414,29 @@ sub run_second {
       last ARGS if ( $arg eq '--' );
 
       if ( $has_arg ) {
-	unless ( exists $opts_with_arg{ $has_arg } ) {
-	  $stderr -> print( "`\%opts_with_args' does not have key `" .
+	unless ( exists $opts_with_arg{$has_arg} ) {
+	  $stderr->print( "`\%opts_with_args' does not have key `" .
 			    $has_arg . "'." );
 	  next ARGS;
 	}
 
-	$opts_with_arg{ $has_arg } -> ( $arg );
+	$opts_with_arg{$has_arg}->($arg);
 	$has_arg = FALSE;
 	next ARGS;
       } # end of $has_arg
 
-      if ( exists $opts_with_arg{ $arg } ) {
+      if ( exists $opts_with_arg{$arg} ) {
 	$has_arg = $arg;
 	next ARGS;
       }
 
-      if ( exists $opts_noarg{ $arg } ) {
-	$opts_noarg { $arg } -> ();
+      if ( exists $opts_noarg{$arg} ) {
+	$opts_noarg{$arg}->();
 	next ARGS;
       }
 
       # not a suitable option
-      $stderr -> print( "Wrong option `" . $arg . "'." );
+      $stderr->print( "Wrong option `" . $arg . "'." );
       next ARGS;
 
     } # end of for ARGS:
@@ -448,26 +452,26 @@ sub run_second {
 sub handle_args {
   # handling the output of args
 
-  if ( $Args -> { 'output' } ) { # `--output' was set in the arguments
-    my $out_path = &path2abs( $Args -> { 'output' } );
-    die "Output file name `$Args -> { 'output' } cannot be used."
+  if ( $Args->{'output'} ) { # `--output' was set in the arguments
+    my $out_path = &path2abs($Args->{'output'});
+    die "Output file name $Args->{'output'} cannot be used."
       unless ( $out_path );
 
     my ( $file, $dir );
-    ( $file, $dir ) = File::Basename::fileparse( $out_path )
+    ( $file, $dir ) = File::Basename::fileparse($out_path)
       or die "Could not handle output file path `" . $out_path . "': " .
 	"directory name `" . $dir . "' and file name `" . $file . "'.";
 
-    die "Could not find output directory for `" . $Args -> { 'output' } . "'"
+    die "Could not find output directory for `" . $Args->{'output'} . "'"
       unless ( $dir );
-    die "Could not find output file: `" . $Args -> { 'output' } .
+    die "Could not find output file: `" . $Args->{'output'} .
       "'" unless ( $file );
 
     if ( -d $dir ) {
       die "Could not write to output directory `" . $dir . "'."
 	unless ( -w $dir );
     } else {
-      $dir = &make_dir( $dir );
+      $dir = &make_dir($dir);
       die "Could not create output directory in: `" . $out_path . "'."
 	unless ( $dir );
     }
@@ -480,13 +484,13 @@ sub handle_args {
     }
 
     $out = new FH_FILE( $out_path );
-    $v -> print( "Output goes to file `" . $out_path . "'." );
+    $v->print( "Output goes to file `" . $out_path . "'." );
   } else { # `--output' was not set
     $out = new FH_STDOUT();
   }
   # no $out is the right behavior for standard output
 
-#  $Args -> { 'prefix' } .= '_' . $Args -> { 'eps_func' } . '2eps';
+#  $Args->{'prefix'} .= '_' . $Args->{'eps_func'} . '2eps';
 
   @ARGV = @files;
 }

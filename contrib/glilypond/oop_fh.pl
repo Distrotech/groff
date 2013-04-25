@@ -9,7 +9,7 @@ Installed position: `<prefix>/lib/groff/lilypond/oop_fh.pl'
 Copyright (C) 2013 Free Software Foundation, Inc.
   Written by Bernd Warken <groff-bernd.warken-72@web.de>
 
-Last update: 17 Mar 2013
+Last update: 25 Apr 2013
 
 This file is part of `glilypond', which is part of `GNU groff'.
 
@@ -67,7 +67,7 @@ use integer;
   sub print {
     my $self = shift;
     for ( @_ ) {
-      print { $self -> { 'fh' } } $_;
+      print { $self->{'fh'} } $_;
     }
   }
 
@@ -126,32 +126,32 @@ use integer;
 
   sub DESTROY {
     my $self = shift;
-    $self -> close();
+    $self->close();
   }
 
   sub open {
     my $self = shift;
-    my $file = $self -> { 'file' };
+    my $file = $self->{'file'};
     if ( $file && -e $file ) {
       die "file $file is not writable" unless ( -w $file );
       die "$file is a directory" if ( -d $file );
     }
-    open $self -> { 'fh' }, ">", $self -> { 'file' }
+    open $self->{'fh'}, ">", $self->{'file'}
       or die "could not open file `$file' for writing: $!";
-    $self -> { 'opened' } = main::TRUE;
+    $self->{'opened'} = main::TRUE;
   }
 
   sub close {
     my $self = shift;
-    close $self -> { 'fh' } if ( $self -> { 'opened' } );
-    $self -> { 'opened' } = main::FALSE;
+    close $self->{'fh'} if ( $self->{'opened'} );
+    $self->{'opened'} = main::FALSE;
   }
 
   sub print {
     my $self = shift;
-    $self -> open() unless ( $self -> { 'opened' } );
+    $self->open() unless ( $self->{'opened'} );
     for ( @_ ) {
-      print { $self -> { 'fh' } } $_;
+      print { $self->{'fh'} } $_;
     }
   }
 
@@ -178,16 +178,16 @@ use integer;
 
   sub open {
     my $self = shift;
-    open $self->{'fh'}, ">", \ $self -> { 'string' }
+    open $self->{'fh'}, ">", \ $self->{'string'}
       or die "could not open string for writing: $!";
-    $self -> { 'opened' } = main::TRUE;
+    $self->{'opened'} = main::TRUE;
   }
 
   sub get { # get string, move to array ref, close, and return array ref
     my $self = shift;
-    return '' unless ( $self -> { 'opened' } );
-    my $a = &string2array( $self -> { 'string' } );
-    $self -> close();
+    return '' unless ( $self->{'opened'} );
+    my $a = &string2array( $self->{'string'} );
+    $self->close();
     return $a;
   }
 
@@ -204,7 +204,7 @@ use integer;
 
   use File::Spec;
 
-  my $devnull = File::Spec -> devnull();
+  my $devnull = File::Spec->devnull();
   $devnull = '' unless ( -e $devnull && -w $devnull );
 
   sub new {
@@ -260,7 +260,7 @@ use integer;
   sub close {
     my $self = shift;
     close $self->{'fh'} if ( $self->{'opened'} );
-    $self -> { 'opened' } = main::FALSE;
+    $self->{'opened'} = main::FALSE;
   }
 
   sub read_line {
@@ -270,7 +270,7 @@ use integer;
     $self->open() unless ( $self->{'opened'} );
 
     my $res;
-    if ( defined ( $res = CORE::readline( $self->{'fh'} ) ) ) {
+    if ( defined($res = CORE::readline($self->{'fh'}) ) ) {
       chomp $res;
       return $res;
     } else {
@@ -284,7 +284,7 @@ use integer;
     # Close the read handle at the end.
     # Return array reference.
     my $self = shift;
-    $self -> open() unless ( $self->{'opened'} );
+    $self->open() unless ( $self->{'opened'} );
 
     my $res = [];
     my $line;

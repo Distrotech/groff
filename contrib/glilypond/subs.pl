@@ -11,7 +11,7 @@ Installed position: `<prefix>/lib7groff/lilypond/subs.pl'
 Copyright (C) 2013 Free Software Foundation, Inc.
   Written by Bernd Warken <groff-bernd.warken-72@web.de>
 
-  Last update: 24 Apr 2013
+  Last update: 25 Apr 2013
 
 This file is part of `glilypond', which is part of `GNU groff'.
 
@@ -50,7 +50,7 @@ use feature 'state';
 sub create_ly2eps {		       # `--ly2eps' default
   our ( $out, $Read, $Temp );
 
-  my $prefix = $Read -> { 'file_numbered' };   # with dir change to temp dir
+  my $prefix = $Read->{'file_numbered'};   # with dir change to temp dir
 
   # `$ lilypond --ps -dbackend=eps -dgs-load-fonts \
   #      output=file_without_extension file.ly'
@@ -59,12 +59,12 @@ sub create_ly2eps {		       # `--ly2eps' default
     "--output=$prefix $prefix";
   &run_lilypond("$opts");
 
-  Cwd::chdir $Temp -> { 'cwd' } or
+  Cwd::chdir $Temp->{'cwd'} or
       die "Could not change to former directory `" .
-	$Temp -> { 'cwd' } . "': $!";
+	$Temp->{'cwd'} . "': $!";
 
-  my $eps_dir = $Temp -> { 'eps_dir' };
-  my $dir = $Temp -> { 'temp_dir' };
+  my $eps_dir = $Temp->{'eps_dir'};
+  my $dir = $Temp->{'temp_dir'};
   opendir( my $dh, $dir ) or
     die "could not open temporary directory `$dir': $!";
 
@@ -81,17 +81,17 @@ sub create_ly2eps {		       # `--ly2eps' default
     chomp;
     $file = $_;
     if ( /$re/ ) {
-      my $file_path = File::Spec -> catfile( $dir, $file );
+      my $file_path = File::Spec->catfile($dir, $file);
       if ( $eps_dir ) {
 	my $could_copy = FALSE;
-	File::Copy::copy ( $file_path, $eps_dir )
+	File::Copy::copy($file_path, $eps_dir)
 	    and $could_copy = TRUE;
 	if ( $could_copy ) {
 	  unlink $file_path;
-	  $file_path = File::Spec -> catfile( $eps_dir, $_ );
+	  $file_path = File::Spec->catfile($eps_dir, $_);
 	}
       }
-      $out -> print( '.PSPIC ' . $file_path );
+      $out->print( '.PSPIC ' . $file_path );
     }
   }				# end while readdir
   closedir( $dh );
@@ -101,7 +101,7 @@ sub create_ly2eps {		       # `--ly2eps' default
 sub create_pdf2eps {		       # `--pdf2eps'
   our ( $v, $stdout, $stderr, $out, $Read, $Temp );
 
-  my $prefix = $Read -> { 'file_numbered' };   # with dir change to temp dir
+  my $prefix = $Read->{'file_numbered'};   # with dir change to temp dir
 
   &run_lilypond("--pdf --output=$prefix $prefix");
 
@@ -110,43 +110,43 @@ sub create_pdf2eps {		       # `--pdf2eps'
 
   # pdf2ps in temp dir
   my $temp_file = &next_temp_file;
-  $v -> print( "\n##### run of `pdf2ps'" );
+  $v->print( "\n##### run of `pdf2ps'" );
   # `$ pdf2ps file.pdf file.ps'
   my $output = `pdf2ps $file_pdf $file_ps 2> $temp_file`;
   die 'Program pdf2ps does not work.' if ( $? );
-  &shell_handling ( $output, $temp_file );
-  $v -> print( "##### end run of `pdf2ps'\n" );
+  &shell_handling($output, $temp_file);
+  $v->print( "##### end run of `pdf2ps'\n" );
 
   # ps2eps in temp dir
   $temp_file = &next_temp_file;
-  $v -> print( "\n##### run of `ps2eps'" );
+  $v->print( "\n##### run of `ps2eps'" );
   # `$ ps2eps file.ps'
   $output = `ps2eps $file_ps 2> $temp_file`;
   die 'Program ps2eps does not work.' if ( $? );
-  &shell_handling ( $output, $temp_file );
-  $v -> print( "##### end run of `ps2eps'\n" );
+  &shell_handling($output, $temp_file);
+  $v->print( "##### end run of `ps2eps'\n" );
 
   # change back to former dir
-  Cwd::chdir $Temp -> { 'cwd' } or
+  Cwd::chdir $Temp->{'cwd'} or
       die "Could not change to former directory `" .
-	$Temp -> { 'cwd' } . "': $!";
+	$Temp->{'cwd'} . "': $!";
 
   # handling of .eps file
   my $file_eps = $prefix . '.eps';
-  my $eps_path = File::Spec -> catfile( $Temp -> { 'temp_dir' }, $file_eps );
-  if ( $Temp -> { 'eps_dir' } ) {
+  my $eps_path = File::Spec->catfile($Temp->{'temp_dir'}, $file_eps);
+  if ( $Temp->{'eps_dir'} ) {
     my $has_copied = FALSE;
-    File::Copy::copy( $eps_path, $Temp -> { 'eps_dir' } )
+    File::Copy::copy( $eps_path, $Temp->{'eps_dir'} )
 	and $has_copied = TRUE;
     if ( $has_copied ) {
       unlink $eps_path;
-      $eps_path = File::Spec -> catfile( $Temp -> { 'eps_dir' }, $file_eps );
+      $eps_path = File::Spec->catfile( $Temp->{'eps_dir'}, $file_eps );
     } else {
-      $stderr -> print( "Could not use EPS-directory." );
-    } # end Temp -> { 'eps_dir' }
+      $stderr->print( "Could not use EPS-directory." );
+    } # end Temp->{'eps_dir'}
   }
   # print into groff output
-  $out -> print( '.PSPIC ' . $eps_path );
+  $out->print( '.PSPIC ' . $eps_path );
 }				# end sub create_pdf2eps()
 
 
@@ -154,8 +154,8 @@ sub is_subdir {			# arg1 is subdir of arg2 (is longer)
   my ( $dir1, $dir2 ) = @_;
   $dir1 = &path2abs( $dir1 );;
   $dir2 = &path2abs( $dir2 );;
-  my @split1 = File::Spec -> splitdir( $dir1 );
-  my @split2 = File::Spec -> splitdir( $dir2 );
+  my @split1 = File::Spec->splitdir($dir1);
+  my @split2 = File::Spec->splitdir($dir2);
   for ( @split2 ) {
     next if ( $_ eq shift @split1 );
     return FALSE;
@@ -167,7 +167,7 @@ sub is_subdir {			# arg1 is subdir of arg2 (is longer)
 sub license {
   our ( $Legalese, $stdout );
   &version;
-  $stdout -> print( $Legalese -> { 'license' } );
+  $stdout->print( $Legalese->{'license'} );
 } # end sub license()
 
 
@@ -179,13 +179,13 @@ sub make_dir {			# make directory or check if it exists
   $dir_arg =~ s/^\s*(.*)\s*$/$1/;
 
   unless ( $dir_arg ) {
-    $v -> print( "make_dir(): empty argument" );
+    $v->print( "make_dir(): empty argument" );
     return FALSE;
   }
 
-  unless ( File::Spec->file_name_is_absolute( $dir_arg ) ) {
-    my $res = Cwd::realpath( $dir_arg );
-    $res = File::Spec -> canonpath ( $dir_arg ) unless ( $res );
+  unless ( File::Spec->file_name_is_absolute($dir_arg) ) {
+    my $res = Cwd::realpath($dir_arg);
+    $res = File::Spec->canonpath($dir_arg) unless ( $res );
     $dir_arg = $res if ( $res );
   }
 
@@ -193,7 +193,7 @@ sub make_dir {			# make directory or check if it exists
 
 
   # search thru the dir parts
-  my @dir_parts = File::Spec -> splitdir( $dir_arg );
+  my @dir_parts = File::Spec->splitdir($dir_arg);
   my @dir_grow;
   my $dir_grow;
   my $can_create = FALSE;	# dir could be created if TRUE
@@ -203,7 +203,7 @@ sub make_dir {			# make directory or check if it exists
     next DIRPARTS unless ( $_ ); # empty string for root directory
 
     # from array to path dir string
-    $dir_grow = File::Spec -> catdir ( @dir_grow );
+    $dir_grow = File::Spec->catdir(@dir_grow);
 
     next DIRPARTS if ( -d $dir_grow );
 
@@ -220,9 +220,9 @@ sub make_dir {			# make directory or check if it exists
     # $dir_grow does no longer exist, so the former dir must be writable
     # in order to create the directory
     pop @dir_grow;
-    $dir_grow = File::Spec -> catdir ( @dir_grow );
+    $dir_grow = File::Spec->catdir(@dir_grow);
 
-    die "`$dir_grow' is not writable, " . 
+    die "`$dir_grow' is not writable, " .
       "so directory `$dir_arg' can't be createdd."
 	unless ( -w $dir_grow );
 
@@ -230,8 +230,8 @@ sub make_dir {			# make directory or check if it exists
 
     File::Path::make_path( $dir_arg,
 			   {
-			    mask => oct( '0700' ),
-			    verbose => $Args -> { 'verbose' },
+			    mask => oct('0700'),
+			    verbose => $Args->{'verbose'},
 			   }
 			 )	#  `mkdir -P'
 	or die "Could not create directory `$dir_arg': $!";
@@ -251,10 +251,10 @@ my $number = 0;
 sub next_temp_file {
   our ( $Temp, $v, $Args );
   ++$number;
-  my $temp_basename = $Args -> { 'prefix' } . '_temp_' . $number;
-  my $temp_file = File::Spec -> catfile( $Temp -> { 'temp_dir' } ,
-					 $temp_basename );
-  $v -> print( "next temporary file: `$temp_file'" );
+  my $temp_basename = $Args->{'prefix'} . '_temp_' . $number;
+  my $temp_file = File::Spec->catfile( $Temp->{'temp_dir'} ,
+				       $temp_basename );
+  $v->print( "next temporary file: `$temp_file'" );
   return $temp_file;
 }				# end sub next_temp_file()
 
@@ -281,7 +281,7 @@ sub path2abs {
 		  ~
 		/x ) {
     if ( $path eq '~' ) {	# only own home
-      $path = File::HomeDir -> my_home;
+      $path = File::HomeDir->my_home;
     } elsif ( $path =~ m<
 			  ^
 			  ~ /
@@ -290,7 +290,7 @@ sub path2abs {
 			  )
 			  $
 			>x ) {	# subdir of own home
-      $path = File::Spec -> catdir( $Temp -> { 'cwd' }, $1 );
+      $path = File::Spec->catdir( $Temp->{'cwd'}, $1 );
     } elsif ( $path =~ m<
 			  ^
 			  ~
@@ -299,7 +299,7 @@ sub path2abs {
 			  )
 			  $
 			>x ) {	# home of other user
-      $path = File::HomeDir -> users_home( $1 );
+      $path = File::HomeDir->users_home($1);
     } elsif ( $path =~ m<
 			  ^
 			  ~
@@ -312,12 +312,12 @@ sub path2abs {
 			  )
 			  $
 			>x ) {	# subdir of other home
-      $path = File::Spec ->
-	catdir( File::HomeDir -> users_home( $1 ), $2 );
+      $path = File::Spec->
+	catdir( File::HomeDir->users_home($1), $2 );
     }
   }
 
-  $path = File::Spec -> rel2abs ( $path );
+  $path = File::Spec->rel2abs($path);
 
   # now $path is absolute
   return $path;
@@ -337,17 +337,17 @@ sub run_lilypond {
   my $output = EMPTYSTRING;
 
   # change to temp dir
-  Cwd::chdir $Temp -> { 'temp_dir' } or
+  Cwd::chdir $Temp->{'temp_dir'} or
       die "Could not change to temporary directory `" .
-	$Temp -> { 'temp_dir' } . "': $!";
+	$Temp->{'temp_dir'} . "': $!";
 
-  $v -> print( "\n##### run of `lilypond " . $opts . "'" );
+  $v->print( "\n##### run of `lilypond " . $opts . "'" );
   $output = `lilypond $opts 2>$temp_file`;
   die "Program lilypond does not work, see `$temp_file': $?"
     if ( $? );
   chomp $output;
-  &shell_handling( $output, $temp_file );
-  $v -> print( "##### end run of `lilypond'\n" );
+  &shell_handling($output, $temp_file);
+  $v->print( "##### end run of `lilypond'\n" );
 
   # stay in temp dir
 } # end sub run_lilypond()
@@ -362,21 +362,21 @@ sub shell_handling {
   my $out_string = shift;
   my $temp_file = shift;
 
-  my $a = &string2array( $out_string ); # array ref
+  my $a = &string2array($out_string); # array ref
   for ( @$a ) {
-    $out -> print( $_ );
+    $out->print( $_ );
   }
 
   $temp_file && -f $temp_file && -r $temp_file ||
     die "shell_handling(): $temp_file is not a readable file.";
-  my $temp = new FH_READ_FILE( $temp_file );
-  my $res = $temp -> read_all();
+  my $temp = new FH_READ_FILE($temp_file);
+  my $res = $temp->read_all();
   for ( @$res ) {
     chomp;
-    $v -> print( $_ );
+    $v->print($_);
   }
 
-  unlink $temp_file unless ( $Args -> { 'keep_all' } );
+  unlink $temp_file unless ( $Args->{'keep_all'} );
 } # end sub shell_handling()
 
 
@@ -408,7 +408,7 @@ include a complete `lilypond' file into the `groff' document.
 
 # Breaking options:
 $p -?|-h|--help|--usage    # usage
-$p -v|--version            # version information
+$p --version               # version information
 $p --license               # the license is GPL >= 3
 
 
@@ -421,7 +421,7 @@ There are 2 options for influencing the way how the `EPS' files for the
 --pdf2eps          `lilypond' generates a `PDF' file that is transformed
 
 -k|--keep_all      do not delete any temporary files
--V|--verbose       print much information to STDERR
+-v|--verbose       print much information to STDERR
 
 Options with an argument:
 -e|--eps_dir=...   use a directory for the EPS files
@@ -443,19 +443,19 @@ The directories set are created when they do not exist.
 sub version { # for `--version'
   our ( $Globals, $Legalese, $stdout, $Args );
   my $end;
-  if ( $Globals -> { 'groff_version' } ) {
-    $end = " version $Globals -> { 'groff_version' }";
+  if ( $Globals->{'groff_version'} ) {
+    $end = " version $Globals->{'groff_version'}";
   } else {
     $end = '.';
   }
 
   my $output = EMPTYSTRING;
-  $output = "###### version:\n" if ( $Args -> { 'verbose' } );
-  $output .= "`" . $Globals -> { 'prog' } . "' version `" .
+  $output = "###### version:\n" if ( $Args->{'verbose'} );
+  $output .= "`" . $Globals->{'prog'} . "' version `" .
     $Legalese->{'version'} . "' of `" .
       $Legalese->{'last_update'} . "' is part of `GNU groff'" . $end;
 
-  $stdout -> print( $output );
+  $stdout->print($output);
 } # end sub version()
 
 
