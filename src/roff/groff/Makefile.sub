@@ -1,3 +1,31 @@
+# Makefile.sub for `glilypond' (integration into the `groff' source tree)
+
+# File position: <groff-source>/contrib/lilypond/Makefile.sub
+
+# Copyright (C) 1993, 2013
+#   Free Software Foundation, Inc.
+#   Rewritten by Werner Lemberg <wl@gnu.org> and
+#     Bernd Warken <groff-bernd.warken-72@web.de>.
+
+# Last update: 25 Apr 2013
+
+# This file is part of `glilypond' which is part of `groff'.
+
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+########################################################################
+
 PROG=groff$(EXEEXT)
 MAN1=groff.n
 XLIBS=$(LIBGROFF) $(LIBGNU)
@@ -6,3 +34,32 @@ OBJS=groff.$(OBJEXT) pipeline.$(OBJEXT)
 CCSRCS=$(srcdir)/groff.cpp
 CSRCS=$(srcdir)/pipeline.c
 HDRS=$(srcdir)/pipeline.h
+
+MOSTLYCLEANADD=groff_options.info
+
+RM=rm -f
+
+all: groff_options.info
+
+groff_options.info: read_groff_options.pl
+		    ./$< > $@
+
+install_data: groff_options.info
+	-test -d $(DESTDIR)$(libdir)/groff \
+		|| $(mkinstalldirs) $(DESTDIR)$(libdir)/groff
+	$(RM) $(DESTDIR)$(libdir)/groff/$<
+	$(INSTALL_SCRIPT) $< $(DESTDIR)$(libdir)/groff
+
+uninstall_sub:
+	$(RM) $(DESTDIR)$(libdir)/groff/groff_options.info
+	-test -d $(DESTDIR)$(libdir)/groff \
+                && -rmdir $(DESTDIR)$(libdir)/groff
+
+
+########################################################################
+# Emacs settings
+########################################################################
+#
+# Local Variables:
+# mode: makefile
+# End:
