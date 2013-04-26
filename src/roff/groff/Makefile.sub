@@ -31,25 +31,28 @@ CCSRCS=$(srcdir)/groff.cpp
 CSRCS=$(srcdir)/pipeline.c
 HDRS=$(srcdir)/pipeline.h
 
-MOSTLYCLEANADD=groff_options.info
+MOSTLYCLEANADD=groff_options.txt
 
 RM=rm -f
 
-all: groff_options.info
+all: groff_options.txt
 
-groff_options.info: read_groff_options.pl
-		    ./$< > $@
+groff_options.txt: groff.cpp
+	$(EGREP) -A2 -e 'getopt' $< \
+	| sed -n -e '/"/p' \
+	| sed -e 's/^[^"\]*"//' \
+	| sed -e 's/"[^"]*$$//' > $@
 
-install_data: groff_options.info
-	-test -d $(DESTDIR)$(libdir)/groff \
-		|| $(mkinstalldirs) $(DESTDIR)$(libdir)/groff
-	$(RM) $(DESTDIR)$(libdir)/groff/$<
-	$(INSTALL_SCRIPT) $< $(DESTDIR)$(libdir)/groff
+install_data: groff_options.txt
+	-test -d $(DESTDIR)$(libprogramdir) \
+		|| $(mkinstalldirs) $(DESTDIR)$(libprogramdir)
+	$(RM) $(DESTDIR)$(libprogramdir)/$<
+	$(INSTALL_SCRIPT) $< $(DESTDIR)$(libprogramdir)
 
 uninstall_sub:
-	$(RM) $(DESTDIR)$(libdir)/groff/groff_options.info
-	-test -d $(DESTDIR)$(libdir)/groff \
-                && -rmdir $(DESTDIR)$(libdir)/groff
+	$(RM) $(DESTDIR)$(libprogramdir)/groff_options.txt
+	-test -d $(DESTDIR)$(libprogramdir) \
+                && -rmdir $(DESTDIR)$(libprogramdir)
 
 
 ########################################################################
