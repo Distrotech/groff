@@ -5,6 +5,9 @@
 # Copyright (C) 1993-2013
 #   Free Software Foundation, Inc.
 
+#   Rewritten by Bernd Warken <groff-bernd.warken-72@web.de> and
+#   Werner LEMBERG  <wl@gnu.org>
+
 # Last update: 28 Apr 2013
 
 # `groff' is free software; you can redistribute it and/or modify it
@@ -31,37 +34,35 @@ CCSRCS=$(srcdir)/groff.cpp
 CSRCS=$(srcdir)/pipeline.c
 HDRS=$(srcdir)/pipeline.h
 
-GROFF_OPTS_OUTPUT := groff_opts_no_arg.txt \
+GROFF_OPTS_OUTPUT=groff_opts_no_arg.txt \
 	groff_opts_with_arg.txt
 
-MOSTLYCLEANADD := $(GROFF_OPTS_OUTPUT)
+MOSTLYCLEANADD=$(GROFF_OPTS_OUTPUT)
 
 RM=rm -f
 
-OPTS := $(shell $(EGREP) -e ':.*:.*:' groff.cpp \
-	| sed -e 's/[ \t",]//g')
+opts=`$(EGREP) -e ':.*:.*:' groff.cpp \
+	| sed -e 's/[ \t",]//g')`
 
-OPTS_NO_ARG := $(shell echo $(OPTS) \
-	| sed -e 's/[a-zA-Z]://g')
-
-OPTS_WITH_ARG := $(shell echo $(OPTS) \
-	| sed "s/[$(OPTS_NO_ARG):]//g")
-
-show:
-	@echo opts: $(OPTS)
-	@echo no: $(OPTS_NO_ARG)
-	@echo optarg: $(OPTS_WITH_ARG)
+opts_no_arg=`cat groff_opts_no_arg.txt`
 
 .PHONY: all
 all: groff.cpp $(GROFF_OPTS_OUTPUT)
 
-groff_opts_no_arg.txt:
-	$(RM) $@
-	echo $(OPTS_NO_ARG) > $@
+groff_opts_no_arg.txt: groff.cpp
+	@$(RM) $@
+	@echo groff options: $(opts)
+	@echo $(opts) \
+	| sed -e 's/[a-zA-Z]://g' > $@
+	@echo -n 'no arg: '
+	@cat $@
 
-groff_opts_with_arg.txt:
-	$(RM) $@
-	echo $(OPTS_WITH_ARG) > $@
+groff_opts_with_arg.txt: groff_opts_no_arg.txt
+	@$(RM) $@
+	@echo $(opts) \
+	| sed "s/[$(opts_no_arg):]//g" > $@
+	@echo -n 'with arg: '
+	@cat $@
 
 .PHONY: install_data
 install_data: $(GROFF_OPTS_OUTPUT)
