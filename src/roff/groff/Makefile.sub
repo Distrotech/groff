@@ -5,7 +5,7 @@
 # Copyright (C) 1993-2013
 #   Free Software Foundation, Inc.
 
-# Last update: 26 Apr 2013
+# Last update: 28 Apr 2013
 
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -31,26 +31,52 @@ CCSRCS=$(srcdir)/groff.cpp
 CSRCS=$(srcdir)/pipeline.c
 HDRS=$(srcdir)/pipeline.h
 
-MOSTLYCLEANADD=groff_options.txt
+GROFF_OPTS_OUTPUT := groff_opts_no_arg.txt \
+	groff_opts_with_arg.txt
+
+MOSTLYCLEANADD := $(GROFF_OPTS_OUTPUT)
 
 RM=rm -f
 
-all: groff_options.txt
+OPTS := $(shell $(EGREP) -e ':.*:.*:' groff.cpp \
+	| sed -e 's/[ \t",]//g')
 
-groff_options.txt: groff.cpp
-	$(EGREP) -A2 -e 'getopt' $< \
-	| sed -n -e '/"/p' \
-	| sed -e 's/^[^"\]*"//' \
-	| sed -e 's/"[^"]*$$//' > $@
+OPTS_NO_ARG := $(shell echo $(OPTS) \
+	| sed -e 's/[a-zA-Z]://g')
 
-install_data: groff_options.txt
+OPTS_WITH_ARG := $(shell echo $(OPTS) \
+	| sed "s/[$(OPTS_NO_ARG):]//g")
+
+show:
+	@echo opts: $(OPTS)
+	@echo no: $(OPTS_NO_ARG)
+	@echo optarg: $(OPTS_WITH_ARG)
+
+.PHONY: all
+all: groff.cpp $(GROFF_OPTS_OUTPUT)
+
+groff_opts_no_arg.txt:
+	$(RM) $@
+	echo $(OPTS_NO_ARG) > $@
+
+groff_opts_with_arg.txt:
+	$(RM) $@
+	echo $(OPTS_WITH_ARG) > $@
+
+.PHONY: install_data
+install_data: $(GROFF_OPTS_OUTPUT)
 	-test -d $(DESTDIR)$(libprogramdir) \
 		|| $(mkinstalldirs) $(DESTDIR)$(libprogramdir)
-	$(RM) $(DESTDIR)$(libprogramdir)/$<
-	$(INSTALL_SCRIPT) $< $(DESTDIR)$(libprogramdir)
+	for f in  $(GROFF_OPTS_OUTPUT); do \
+		$(RM) $(DESTDIR)$(libprogramdir)/$$f; \
+		$(INSTALL_SCRIPT) $$f $(DESTDIR)$(libprogramdir); \
+	done
 
+.PHONY: uninstall_data
 uninstall_sub:
-	$(RM) $(DESTDIR)$(libprogramdir)/groff_options.txt
+	for f in $(GROFF_OPTS_OUTPUT); do \
+		$(RM) $(DESTDIR)$(libprogramdir)/$$f; \
+	done
 	-test -d $(DESTDIR)$(libprogramdir) \
                 && -rmdir $(DESTDIR)$(libprogramdir)
 
