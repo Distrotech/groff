@@ -37,30 +37,31 @@ HDRS=$(srcdir)/pipeline.h
 GROFF_OPTS_OUTPUT=groff_opts_no_arg.txt \
 	groff_opts_with_arg.txt
 
-MOSTLYCLEANADD=$(GROFF_OPTS_OUTPUT)
+MOSTLYCLEANADD=groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
 RM=rm -f
-
-opts=`$(EGREP) -e ':.*:.*:' groff.cpp \
-	| sed -e 's/[ \t",]//g')`
-
-opts_no_arg=`cat groff_opts_no_arg.txt`
+EGREP=egrep
 
 .PHONY: all
-all: groff.cpp $(GROFF_OPTS_OUTPUT)
+all: groff.cpp groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
-groff_opts_no_arg.txt: groff.cpp
+groff_opts.tmp: groff.cpp
+	@$(EGREP) -e ':.*:.*:' $< \
+	| sed -e 's/[ \t",]//g' > $@
+	@echo -n 'groff options: '
+	@cat $@
+
+groff_opts_no_arg.txt: groff_opts.tmp
 	@$(RM) $@
-	@echo groff options: $(opts)
-	@echo $(opts) \
+	@cat $< \
 	| sed -e 's/[a-zA-Z]://g' > $@
 	@echo -n 'no arg: '
 	@cat $@
 
 groff_opts_with_arg.txt: groff_opts_no_arg.txt
 	@$(RM) $@
-	@echo $(opts) \
-	| sed "s/[$(opts_no_arg):]//g" > $@
+	@cat groff_opts.tmp \
+	| sed "s/[`cat $<`:]//g" > $@
 	@echo -n 'with arg: '
 	@cat $@
 
