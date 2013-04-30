@@ -42,25 +42,25 @@ MOSTLYCLEANADD=groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 RM=rm -f
 
 .PHONY: all
-all: $(CCSRCS) groff_opts.tmp $(GROFF_OPTS_OUTPUT)
+all: $(srcdir)/groff.cpp groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
-groff_opts.tmp: $(CCSRCS)
-	@$(EGREP) -e ':.*:.*:' $< \
-	| sed -e 's/[ \t",]//g' > $@
+groff_opts.tmp: $(srcdir)/cpp
+	@$(GREP) -e ':.*:.*:' $< \
+		| sed -e 's/[ \t",]//g' > $@
 	@echo -n 'groff options: '
 	@cat $@
 
 groff_opts_no_arg.txt: groff_opts.tmp
 	@$(RM) $@
 	@cat $< \
-	| sed -e 's/[a-zA-Z]://g' > $@
+		| sed -e 's/[a-zA-Z]://g' > $@
 	@echo -n 'no arg: '
 	@cat $@
 
 groff_opts_with_arg.txt: groff_opts_no_arg.txt
 	@$(RM) $@
 	@cat groff_opts.tmp \
-	| sed "s/[`cat $<`:]//g" > $@
+		| sed "s/[`cat $<`:]//g" > $@
 	@echo -n 'with arg: '
 	@cat $@
 
