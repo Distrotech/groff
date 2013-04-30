@@ -40,12 +40,11 @@ GROFF_OPTS_OUTPUT=groff_opts_no_arg.txt \
 MOSTLYCLEANADD=groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
 RM=rm -f
-EGREP=egrep
 
 .PHONY: all
-all: groff.cpp groff_opts.tmp $(GROFF_OPTS_OUTPUT)
+all: $(CCSRCS) groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
-groff_opts.tmp: groff.cpp
+groff_opts.tmp: $(CCSRCS)
 	@$(EGREP) -e ':.*:.*:' $< \
 	| sed -e 's/[ \t",]//g' > $@
 	@echo -n 'groff options: '

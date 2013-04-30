@@ -111,23 +111,16 @@ BEGIN {
       $Globals->{'before_make'} = TRUE if '@VERSION@' eq "${at}VERSION${at}";
     }
 
-    my %at_at;
     my $file_test_pl;
     my $glilypond_libdir;
 
     if ( $Globals->{'before_make'} ) { # in source, not yet installed
       my $glilypond_dir = $FindBin::Bin;
       $glilypond_dir = Cwd::realpath($glilypond_dir);
-      $at_at{'BINDIR'} = $glilypond_dir;
-      $at_at{'G'} = '';
-      $at_at{'LIBDIR'} = '';
       $glilypond_libdir = $glilypond_dir;
 
     } else {			# already installed
       $Globals->{'groff_version'} = '@VERSION@';
-      $at_at{'BINDIR'} = '@BINDIR@';
-      $at_at{'G'} = '@g@';
-      $at_at{'LIBDIR'} = '@libdir@';
       $glilypond_libdir = '@glilypond_dir@';
     }
 

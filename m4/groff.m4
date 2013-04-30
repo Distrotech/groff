@@ -1252,18 +1252,23 @@ AC_DEFUN([GROFF_GROFFERDIR_OPTION],
 
 AC_DEFUN([GROFF_GROFFERDIR_DEFAULT],
   [if test "x$with_grofferdir" = "x"; then
-    groffer_dir=$libdir/groff/groffer
+    groffer_dir=$libprogramdir/groffer
   else
     groffer_dir=$with_grofferdir
   fi
   AC_SUBST([groffer_dir])])
 
 
+AC_DEFUN([GROFF_LIBPROGRAMDIR_DEFAULT],
+  libprogramdir=$libdir/groff
+  AC_SUBST([libprogramdir]))
+
+
 AC_DEFUN([GROFF_GLILYPONDDIR_DEFAULT],
-  glilypond_dir=$libdir/groff/glilypond
+  glilypond_dir=$libprogramdir/glilypond
   AC_SUBST([glilypond_dir]))
 
 
 AC_DEFUN([GROFF_GROGDIR_DEFAULT],
-  grog_dir=$libdir/groff/grog
+  grog_dir=$libprogramdir/grog
   AC_SUBST([grog_dir]))
