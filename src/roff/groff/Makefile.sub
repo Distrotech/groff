@@ -8,7 +8,7 @@
 #   Rewritten by Bernd Warken <groff-bernd.warken-72@web.de> and
 #   Werner LEMBERG  <wl@gnu.org>
 
-# Last update: 28 Apr 2013
+# Last update: 01 May 2013
 
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@ MOSTLYCLEANADD=groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
 RM=rm -f
 
-.PHONY: all
 all: $(srcdir)/groff.cpp groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
 groff_opts.tmp: $(srcdir)/cpp
@@ -64,7 +63,6 @@ groff_opts_with_arg.txt: groff_opts_no_arg.txt
 	@echo -n 'with arg: '
 	@cat $@
 
-.PHONY: install_data
 install_data: $(GROFF_OPTS_OUTPUT)
 	-test -d $(DESTDIR)$(libprogramdir) \
 		|| $(mkinstalldirs) $(DESTDIR)$(libprogramdir)
@@ -73,7 +71,6 @@ install_data: $(GROFF_OPTS_OUTPUT)
 		$(INSTALL_SCRIPT) $$f $(DESTDIR)$(libprogramdir); \
 	done
 
-.PHONY: uninstall_data
 uninstall_sub:
 	for f in $(GROFF_OPTS_OUTPUT); do \
 		$(RM) $(DESTDIR)$(libprogramdir)/$$f; \
