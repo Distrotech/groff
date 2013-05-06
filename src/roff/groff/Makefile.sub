@@ -8,7 +8,7 @@
 #   Rewritten by Bernd Warken <groff-bernd.warken-72@web.de> and
 #   Werner LEMBERG  <wl@gnu.org>
 
-# Last update: 01 May 2013
+# Last update: 06 May 2013
 
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ RM=rm -f
 
 all: $(srcdir)/groff.cpp groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
-groff_opts.tmp: $(srcdir)/cpp
+groff_opts.tmp: $(srcdir)/groff.cpp
 	@$(GREP) -e ':.*:.*:' $< \
 		| sed -e 's/[ \t",]//g' > $@
 	@echo -n 'groff options: '
