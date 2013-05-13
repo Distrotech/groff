@@ -5,13 +5,13 @@
 my $License = q*
 groff_lilypond - integrate `lilypond' into `groff' files
 
-Source file position: `<groff-source>/contrib/lilypond/groff_lilypond.pl'
-Installed position: `<prefix>/bin/groff_lilypond'
+Source file position: `<groff-source>/contrib/glilypond/args.pl'
+Installed position: `<prefix>/lib/groff/glilypond'
 
 Copyright (C) 2013 Free Software Foundation, Inc.
   Written by Bernd Warken <groff-bernd.warken-72@web.de>
 
-Last update: 25 Apr 2013
+Last update: 10 May 2013
 
 This file is part of `GNU groff'.
 
@@ -34,9 +34,9 @@ directory of the `groff' source package.  If not, see
 ##### end legalese
 
 
-use strict;
-use warnings;
-use diagnostics;
+# use strict;
+# use warnings;
+# use diagnostics;
 
 use integer;
 

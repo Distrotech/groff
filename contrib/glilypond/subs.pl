@@ -5,13 +5,13 @@ my $License = q*
 
 Subroutines for `glilypond'.
 
-Source file position: `<groff-source>/contrib/lilypond/subs.pl'
-Installed position: `<prefix>/lib7groff/lilypond/subs.pl'
+Source file position: `<groff-source>/contrib/glilypond/subs.pl'
+Installed position: `<prefix>/lib/groff/glilypond/subs.pl'
 
 Copyright (C) 2013 Free Software Foundation, Inc.
   Written by Bernd Warken <groff-bernd.warken-72@web.de>
 
-  Last update: 25 Apr 2013
+  Last update: 10 May 2013
 
 This file is part of `glilypond', which is part of `GNU groff'.
 
@@ -34,9 +34,9 @@ directory of the `groff' source package.  If not, see
 ##### end legalese
 
 
-use strict;
-use warnings;
-use diagnostics;
+# use strict;
+# use warnings;
+# use diagnostics;
 
 use integer;
 use utf8;

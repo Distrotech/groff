@@ -3,13 +3,13 @@ my $License = q*
 # Legalese
 ########################################################################
 
-Source file position: `<groff-source>/contrib/lilypond/oop_fh.pl'
-Installed position: `<prefix>/lib/groff/lilypond/oop_fh.pl'
+Source file position: `<groff-source>/contrib/glilypond/oop_fh.pl'
+Installed position: `<prefix>/lib/groff/glilypond/oop_fh.pl'
 
 Copyright (C) 2013 Free Software Foundation, Inc.
   Written by Bernd Warken <groff-bernd.warken-72@web.de>
 
-Last update: 25 Apr 2013
+Last update: 10 May 2013
 
 This file is part of `glilypond', which is part of `GNU groff'.
 
@@ -34,9 +34,9 @@ directory of the `groff' source package.  If not, see
 ##### end legalese
 
 
-use strict;
-use warnings;
-use diagnostics;
+# use strict;
+# use warnings;
+# use diagnostics;
 
 use integer;
 
@@ -83,7 +83,7 @@ use integer;
   @FH_STDOUT::ISA = qw( _FH_WRITE_OPENED );
 
   sub new {
-    &_FH_WRITE_OPENED::new( '_FH_WRITE__OPENED', *STDOUT );
+    &_FH_WRITE_OPENED::new( '_FH_WRITE_OPENED', *STDOUT );
   }
 
 }				# end FH_STDOUT

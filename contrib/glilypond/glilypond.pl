@@ -2,10 +2,20 @@
 
 package main;
 
-use strict;
-use warnings;
-use diagnostics;
+########################################################################
+# debugging
+########################################################################
 
+# See `Mastering Perl', chapter 4.
+
+# use strict;
+# use warnings;
+# use diagnostics;
+
+use Carp;
+$SIG[__DIE__] = sub { &Carp::croak; };
+
+use Data::Dumper;
 
 ########################################################################
 # Legalese
@@ -15,13 +25,13 @@ our $Legalese;
 
 {
   use constant VERSION => 'v1.1'; # version of glilypond
-  use constant LASTUPDATE => '25 Apr 2013'; # date of last update
+  use constant LASTUPDATE => '10 May 2013'; # date of last update
 
 ### This constant `LICENSE' is the license for this file `GPL' >= 3
   use constant LICENSE => q*
 glilypond - integrate `lilypond' into `groff' files
 
-Source file position: `<groff-source>/contrib/lilypond/glilypond.pl'
+Source file position: `<groff-source>/contrib/glilypond/glilypond.pl'
 Installed position: `<prefix>/bin/glilypond'
 
 Copyright (C) 2013 Free Software Foundation, Inc.
@@ -132,13 +142,10 @@ BEGIN {
   require 'subs.pl';
 }
 
-
+die "test: ";
 ########################################################################
 # OOP declarations for some file handles
 ########################################################################
-
-package main;
-use strict;
 
 require 'oop_fh.pl';
 
