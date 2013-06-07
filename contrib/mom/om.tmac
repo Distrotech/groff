@@ -8801,7 +8801,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                nr #HEADERS_ON 1
 .                ie \\n[#HEADER_RULE]=1 .HEADER_RULE
 .                el .HEADER_RULE OFF
-.                HEADER_RECTO \\*[$HDR_RECTO_QUAD] "\\*[$HDR_RECTO_STRING]"
+.                ie \\n[#HDRFTR_BOTH] .HEADER_VERSO \\*[$HDR_VERSO_QUAD] "\\*[$HDR_VERSO_STRING]"
+.                el .HEADER_RECTO \\*[$HDR_RECTO_QUAD] "\\*[$HDR_RECTO_STRING]"
 .                return
 .             \}
 .          \}
@@ -9006,7 +9007,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=2 .CENTER
 .          if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=3 .RIGHT
 .          if \\n[#HDRFTR_RECTO_CAPS]=1 .CAPS
+.          if '\\n[.ev]'FOOTER' .vs 0
 .          PRINT \\*[$USERDEF_HDRFTR_RECTO]
+.          if '\\n[.ev]'FOOTER' .vs
 .          if \\n[#HDRFTR_RECTO_CAPS]=1 .CAPS OFF
 .          EOL
 .          if \\n[#FOOTERS_ON] \{\
@@ -9022,7 +9025,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             if \\n[#USERDEF_HDRFTR_VERSO_QUAD]=2 .CENTER
 .             if \\n[#USERDEF_HDRFTR_VERSO_QUAD]=3 .RIGHT
 .             if \\n[#HDRFTR_VERSO_CAPS]=1 .CAPS
+.             if '\\n[.ev]'FOOTER' .vs 0
 .             PRINT \\*[$USERDEF_HDRFTR_VERSO]
+.             if '\\n[.ev]'FOOTER' .vs
 .             if \\n[#HDRFTR_VERSO_CAPS]=1 .CAPS OFF
 .             EOL
 .             if \\n[#FOOTERS_ON] \{\
@@ -9037,7 +9042,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=2 .CENTER
 .             if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=3 .RIGHT
 .             if \\n[#HDRFTR_RECTO_CAPS]=1 .CAPS
+.             if '\\n[.ev]'FOOTER' .vs 0
 .             PRINT \\*[$USERDEF_HDRFTR_RECTO]
+.             if '\\n[.ev]'FOOTER' .vs
 .             if \\n[#HDRFTR_RECTO_CAPS]=1 .CAPS OFF
 .             EOL
 .             if \\n[#FOOTERS_ON] \{\
@@ -9054,7 +9061,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=2 .CENTER
 .       if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=3 .RIGHT
 .       if \\n[#HDRFTR_RECTO_CAPS]=1 .CAPS
+.       if '\\n[.ev]'FOOTER' .vs 0
 .       PRINT \\*[$USERDEF_HDRFTR_RECTO]
+.       if '\\n[.ev]'FOOTER' .vs
 .       if \\n[#HDRFTR_RECTO_CAPS]=1 .CAPS OFF
 .       EOL
 .       if \\n[#FOOTERS_ON] \{\
