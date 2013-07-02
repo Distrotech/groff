@@ -719,6 +719,7 @@ int main(int argc, char **argv)
     do_file("-");
   while (optind < argc)
     do_file(argv[optind++]);
-  lbpputs("\033c\033<");
+  if (lbpoutput)
+    lbpputs("\033c\033<");
   return 0;
 }
