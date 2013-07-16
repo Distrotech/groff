@@ -62,8 +62,6 @@ install_data: grog
 	$(INSTALL_SCRIPT) grog "$(DESTDIR)$(bindir)/grog";
 	-test -d $(DESTDIR)$(grog_dir) || \
 		$(mkinstalldirs) "$(DESTDIR)$(grog_dir)";
-	-$(RM) "$(DESTDIR)$(grog_dir)/grog";
-	$(INSTALL_SCRIPT) "$(srcdir)/grog" "$(DESTDIR)$(grog_dir)/grog";
 	for f in $(GROG_); do \
 		-$(RM) "$(DESTDIR)$(grog_dir)/$$f"; \
 		$(INSTALL_SCRIPT) "$(srcdir)/$$f" "$(DESTDIR)$(grog_dir)/$$f"; \
@@ -75,8 +73,8 @@ uninstall_sub:
 	for f in $(GROG_); do \
 		-$(RM) "$(DESTDIR)$(grog_dir)/$$f"; \
 	done;
-	-test -d "$(DESTDIR)$(libdir)/groff/grog" || \
-		-rmdir "$(DESTDIR)$(libdir)/groff/grog";
+	-test -d "$(DESTDIR)$(grog_dir)" || \
+		-rmdir "$(DESTDIR)$(grog_dir)";
 
 
 ########################################################################
