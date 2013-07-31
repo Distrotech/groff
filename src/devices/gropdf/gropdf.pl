@@ -3068,7 +3068,7 @@ sub do_t
     $xpos+=($pendmv-$nomove)/$unitwidth;
 
     $stream.="% == '$par'=$wid 'xpos=$xpos\n" if $debug;
-    $par=~s/\\/\\\\/g;
+    $par=~s/\\(?!\d\d\d)/\\\\/g;
     $par=~s/\)/\\)/g;
     $par=~s/\(/\\(/g;
 
@@ -3198,7 +3198,7 @@ sub FindChar
 	my $ch=$fnt->{GNM}->{$chnm};
 	$ch=RemapChr($ch,$fnt,$chnm) if ($ch > 255);
 
-	return(chr($ch),$fnt->{WID}->[$ch]*$cftsz);
+	return(($ch<32)?sprintf("\\%03o",$ch):chr($ch),$fnt->{WID}->[$ch]*$cftsz);
     }
     else
     {

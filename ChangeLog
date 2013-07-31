@@ -1,3 +1,14 @@
+2013-07-31  Deri James  <deri@chuzzlewit.myzen.co.uk>
+
+	Fix overprinting issue with Acrobat reader.
+
+	Problem reported by Heinz-Jürgen Oertel <hj.oertel@t-online.de>.
+
+	* src/devices/gropdf/gropdf.pl (do_t, FindChar): Use ascii octal
+	notation (i.e., \015) when outputting characters with value < 32. 
+	This fixes a bug which affected acroread when control-M (cr) was
+	embedded in a text string.
+
 2013-07-16  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/fallbacks.tmac: Make it work in compatibility mode.
