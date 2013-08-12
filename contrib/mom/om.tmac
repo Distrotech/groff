@@ -3,7 +3,7 @@
 Mom -- a typesetting/document-processing macro set for groff.
 
 Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
-2011, 2012
+2011, 2012, 2013
 Free Software Foundation, Inc.
  Written by Peter Schaffter <peter@schaffter.ca>
  PDF integration contributed by Deri James <deri.james@chuzzlewit.co.uk>
@@ -23,8 +23,8 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-Version 2.0-a
--------------
+Version 2.0-a_1
+---------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
 nothing left to take away.
@@ -14125,7 +14125,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    ie '\\$1'' \{\
 .       rr #FN_REF
 .       rr #EN_REF
-.       REF_STYLE BIBLIO
 .       nr #BIBLIOGRAPHY 1
 .       nr #BIB_FIRST_PAGE 1
 .       nr #HEADER_STATE \\n[#HEADERS_ON]
@@ -16818,27 +16817,19 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# Embedded references in text (with brackets)
 \# -------------------------------------------
 \#
+.MAC REF_BRACKETS_NOTICE END
+.    tm1 "[mom]: \\$1 has been removed from mom.  See the mom documentation 'refer.html'
+.    tm1 "       for instructions on parenthetical insertions of references into text.
+.    ie '\\$1'REF_STYLE' .tm1 "       Continuing to process '\\n[.F]' from line \\n[.c].
+.    el .ab Aborting '\\n[.F]' at \\$1, line \\n[.c].
+.END
+\#
 .MAC REF_BRACKETS_START END
-.    if \\n[#FN_REF]=1 .nr #FN_REF 2
-.    if \\n[#EN_REF]=1 .nr #EN_REF 2
-.    ds $CURRENT_EV \\n[.ev]
-.    ev REFERENCE
-.    evc \\*[$CURRENT_EV]
-.    di REFERENCE
+.    REF_BRACKETS_NOTICE \\$0
 .END
 \#
 .MAC REF_BRACKETS_END END
-.    br
-.    di
-.    ev
-.    chop REFERENCE
-.    unformat REFERENCE
-.    if '\\$0'REF)' .nop (\\*[REFERENCE])
-.    if '\\$0'REF]' .nop [\\*[REFERENCE]]
-.    if '\\$0'REF}' .nop {\\*[REFERENCE]}
-.    if '\\$0'REF>' .nop <\\*[REFERENCE]>
-.    if \\n[#FN_REF]=2 .nr #FN_REF 1
-.    if \\n[#EN_REF]=2 .nr #EN_REF 1
+.    REF_BRACKETS_NOTICE \\$0
 .END
 \#
 \# These four pairs of aliases allow users to embed references in
@@ -16857,8 +16848,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS REF> REF_BRACKETS_END
 \#
 .MAC REF_STYLE END
-.    if '\\$1'NOTE'   .ds $REF_STYLE NOTE
-.    if '\\$1'BIBLIO' .ds $REF_STYLE BIBLIO
+.    REF_BRACKETS_NOTICE \\$0
 .END
 \#
 \# Refer indenting
@@ -17396,7 +17386,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .   if \\n([T .nr ref*suppress-period \\n([T
 .\}
 .el \{\
-.   ie \\n([T .ref*field C "" " " " "
+.   ie \\n([T .ref*field C "" " "
 .   el \{\
 .      ie r [e .ref*field C "" " "
 .      el .ref*field C . " "
