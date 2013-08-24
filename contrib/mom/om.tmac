@@ -5840,6 +5840,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .\" This diversion is to get a value for #FN_AUTOLEAD
 .    di NULL
+.       if \\n[#AUTO_LEAD] \{\
+.          nr #RESTORE_AUTO_LEAD 1
+.          nr #SAVED_AUTOLEAD_VALUE \\n[#AUTOLEAD_VALUE]
+.       \}
 .       ev NULL
 .       if \\n[#PRINT_STYLE]=1 \{\
 .          ps \\*[$TYPEWRITER_PS]
@@ -5854,6 +5858,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#PRINT_STYLE]=2 .LS \\n[#DOC_LEAD]u
 .       ev
 .    di
+.    if \\n[#RESTORE_AUTO_LEAD] \{\
+.       nr #AUTO_LEAD 1
+.       nr #AUTOLEAD_VALUE  \\n[#SAVED_AUTOLEAD_VALUE]
+.    \}
 .    ie !\\n[#COLLATE] \{\
 .\" DOC_LEAD adjusted (or not) here
 .       TRAPS
@@ -7279,7 +7287,12 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       nr #PP 0
 .    \}
 .    el \{\
+.       if \\n[#AUTO_LEAD] .nr #RESTORE_AUTO_LEAD 1
 .       if \\n[#PRINT_STYLE]=2 .LS \\n[#DOC_LEAD]u\\*[$DOCHEADER_LEAD_ADJ]
+.       if \\n[#RESTORE_AUTO_LEAD] \{\
+.          nr #AUTO_LEAD 1
+.          nr #AUTOLEAD_VALUE  \\n[#SAVED_AUTOLEAD_VALUE]
+.       \}
 .       nr #DOCHEADER_LEAD \\n[#LEAD]
 .\" Default doctype
 .       if \\n[#DOC_TYPE]=1 \{\
@@ -7464,7 +7477,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          \}
 .       \}
 .    \}
+.    if \\n[#AUTO_LEAD] .nr #RESTORE_AUTO_LEAD 1
 .    LS \\n[#DOC_LEAD]u
+.    if \\n[#RESTORE_AUTO_LEAD] .nr #AUTO_LEAD 1
 .    if \\n[#ADJ_DOC_LEAD]=1 \{\
 .       ie !r#ADVANCE_FROM_TOP \{\
 .          if \\n[#DOC_HEADER]=1 .SHIM
@@ -9371,6 +9386,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       rm float-adj
 .       rm float-adj:top
 .       rm float-adj:bottom
+.    \}
+.    if \\n[#TABLE] \{\
+.       rs
+.       sp
 .    \}
 .END
 \#
@@ -15795,6 +15814,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# Boxed tables don't play nice with vertical spacing.
 \# Compensation is applied in FLOAT.
 .MAC TS END
+.    nr #TABLE 1
 .    if '\\n[.z]'FLOAT*DIV' \{\
 .       if '\\$1'BOXED' \{\
 .          if !\\n[.d] .nr boxed-table 1
@@ -15804,6 +15824,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .
 .MAC TE END
 .    if '\\n[.z]'FLOAT*DIV' .nr bx-tbl-depth \\n[.d]
+.    rr #TABLE
 .END
 \#
 \# FLOAT
@@ -18386,16 +18407,12 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .    substring pos:tmp 0 0
 .    ie !'\\*[pos:tmp]'-' .ds pdf-img:pos -C
 .    el \{\
-.       ie '\\$1'-I' \{\
-.          shift
-.          ds pdf-img:ind \\$1
-.          ds pdf-img:pos -L
-.          shift
-.       \}
-.       el \{\
-.          ds pdf-img:pos \\$1
-.          shift
-.       \}
+.       ds pdf-img:pos \\$1
+.       shift
+.    \}
+.    if '\\*[pdf-img:pos]'-I' \{\
+.       nr pdf-img:ind \\$1
+.       shift
 .    \}
 .    ds pdf-img:file \\$1
 .    ds pdf-img@file \\$1
@@ -18440,10 +18457,20 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .       ds pdf-img:adj    0
 .       ds pdf-img:bottom +
 .    \}
+.    if '\\*[pdf-img:pos]'-C' \{\
+.       nr pdf-img:ind (\\n[.ll]-\\n[pdf-img:width])/2
+.       if \\n[.in] .nr pdf-img:ind -(\\n[.in]/2)
+.    \}
+.    if '\\*[pdf-img:pos]'-R' \{\
+.       nr pdf-img:ind \\n[.ll]-\\n[pdf-img:width]
+.       if \\n[.in] .nr pdf-img:ind -\\n[.in]
+.    \}
 .    di PDF*IMAGE
 .    nf
-.    if d pdf-img:ind .ti \\*[pdf-img:ind]
-.    nop \X'pdf: pdfpic \\*[pdf-img:file] \\*[pdf-img:pos] \\n[pdf-img:width]z \\n[pdf-img:depth]z \\n[.ll]z'
+.    in 0
+.    if r pdf-img:ind .ti \\n[pdf-img:ind]u
+.    nop \X'pdf: pdfpic \\*[pdf-img:file] -L \\n[pdf-img:width]z \\n[pdf-img:depth]z'
+.    in
 .    di
 .    nr dn +\\n[pdf-img:depth]-1v
 .    nr pdf-img 1
