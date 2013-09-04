@@ -15623,7 +15623,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       rr #LN
 .       ie '\\$1'RESUME' \{\
 .          LN_PARAMS
-.          nm +0
+.          nm \\*[$LN_NUM]
 .          fam
 .          ft
 .          ps
@@ -15632,6 +15632,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       el \{\
 .          LN_PARAMS
 .          nm
+.\" register ln is still set and may confuse preprocessors like tbl
+.\" still, resuming line numbering must be possible, so save ln in $LN_NUM
+.          ds $LN_NUM \\n[ln]
+.          nr ln 0
 .          fam
 .          ft
 .          ps
