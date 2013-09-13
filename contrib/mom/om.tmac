@@ -9379,6 +9379,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          rr float-depth:\\n[loop-count]
 .       \}
 .       ev
+.       vs \\n[#DOC_LEAD]u
 .       SHIM
 .       rr defer
 .       rr loop-count
@@ -15891,17 +15892,15 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             sp
 .          \}
 .          el \{\
-.             ie \\n[#FORCE] \{\
+.             if !\\n[defer] .nr defer 0 1
+.             rn FLOAT*DIV FLOAT*DIV:\\n+[defer]
+.             if \\n[D-float] .nr D-float:\\n[defer] \\n[D-float]
+.             nr float-depth:\\n[defer] \\n[dn]
+.             if \\n[#FORCE] \{\
 .                NEWPAGE
 .                rr #FORCE
 .             \}
-.             el \{\
-.                if !\\n[defer] .nr defer 0 1
-.                rn FLOAT*DIV FLOAT*DIV:\\n+[defer]
-.                if \\n[D-float] .nr D-float:\\n[defer] \\n[D-float]
-.                nr float-depth:\\n[defer] \\n[dn]
-.                return \" output div after header
-.             \}
+.             return \" output div after header
 .          \}
 .       \}
 .       sp 0\\*[float-adj:top]\\*[float-adj]
@@ -15934,6 +15933,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       rm float-adj
 .       rm float-adj:top
 .       rm float-adj:bottom
+.       rr #FORCE
 .    \}
 .END
 \#
