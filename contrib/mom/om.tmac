@@ -1254,88 +1254,95 @@ end
 .    \}
 .    ie '\\$1'' \{\
 .       nr #OPEN_CLOSE 0
-.       ds $QUOTE0 \\[lq]
-.       ds $QUOTE1 \\[rq]
+.       ds $QUOTE0 \[lq]
+.       ds $QUOTE1 \[rq]
 .       ds $RESTORE_SQ \\$1
 .    \}
 .    el \{\
 .       if '\\$1',,' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Bq]
-.          ds $QUOTE1 \\[lq]
+.          ds $QUOTE0 \[Bq]
+.          ds $QUOTE1 \[lq]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'<<' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Fo]
-.          ds $QUOTE1 \\[Fc]
+.          ds $QUOTE0 \[Fo]
+.          ds $QUOTE1 \[Fc]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'>>' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Fc]
-.          ds $QUOTE1 \\[Fo]
+.          ds $QUOTE0 \[Fc]
+.          ds $QUOTE1 \[Fo]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'DA' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Fc]
-.          ds $QUOTE1 \\[Fo]
+.          ds $QUOTE0 \[Fc]
+.          ds $QUOTE1 \[Fo]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'DE' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Bq]
-.          ds $QUOTE1 \\[lq]
+.          ds $QUOTE0 \[Bq]
+.          ds $QUOTE1 \[lq]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'ES' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[lq]
-.          ds $QUOTE1 \\[rq]
+.          ds $QUOTE0 \[lq]
+.          ds $QUOTE1 \[rq]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'FR' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Fo]\\|
-.          ds $QUOTE1 \\|\\[Fc]
+.          ds $QUOTE0 \[Fo]\|
+.          ds $QUOTE1 \|\[Fc]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'IT' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Fo]\\|
-.          ds $QUOTE1 \\|\\[Fc]
+.          ds $QUOTE0 \[Fo]\|
+.          ds $QUOTE1 \|\[Fc]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'NL' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[rq]
-.          ds $QUOTE1 \\[rq]
+.          ds $QUOTE0 \[rq]
+.          ds $QUOTE1 \[rq]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'NO' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Fo]
-.          ds $QUOTE1 \\[Fc]
+.          ds $QUOTE0 \[Fo]
+.          ds $QUOTE1 \[Fc]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'PT' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Fo]
-.          ds $QUOTE1 \\[Fc]
+.          ds $QUOTE0 \[Fo]
+.          ds $QUOTE1 \[Fc]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'SV' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Fc]
-.          ds $QUOTE1 \\[Fc]
+.          ds $QUOTE0 \[Fc]
+.          ds $QUOTE1 \[Fc]
 .          ds $RESTORE_SQ \\$1
 .       \}
 .    \}
 .    if !r#ARGS_TO_SQ \{\
-.       ds $QUOTE0 \\[lq]
-.       ds $QUOTE1 \\[rq]
-.       nr #RESTORE_SQ 1
+.       ie !'\\$1'' \{\
+.\" Turn smartquotes off
+.          ds $QUOTE0 \[dq]
+.          ds $QUOTE1 \[dq]
+.       \}
+.       el \{\
+.          ds $QUOTE0 \[lq]
+.          ds $QUOTE1 \[rq]
+.          nr #RESTORE_SQ 1
+.       \}
 .    \}
 .END
 \#
@@ -7505,7 +7512,6 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    nr #START 1
 .    if \\n[#DOC_HEADER]=1 .nr #DOC_HEADER 2
 .    rm $TOC_TITLE_ITEM
-.    rm $DOCHEADER_LEAD_ADJ
 .    rr #MISC_NUM
 .    rr #MISCS
 .    rr #NEXT_AUTHOR
@@ -11016,6 +11022,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#
 .MAC QUOTE END
 .    br
+.    if \\n[#PP]>0 .rr #START
 .    if \\n[#LINENUMBERS]=1 \{\
 .       nr #LINENUMBERS 2
 .       nr #NEXT_LN \\n[ln]
@@ -11454,7 +11461,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
 .       el .nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+\\*[$Q_OFFSET_VALUE]
 .    \}
-.    if !\\n[#ENDNOTE] .po \\n[#Q_OFFSET]u
+.    if !\\n[#ENDNOTE] \{\
+.       po \\n[#Q_OFFSET]u
+.       if '\\n[.z]'FLOAT*DIV' \!.po \\n[#Q_OFFSET]u
+.    \}
 .    if \\n[#ENDNOTE] \{\
 .       ie \\n[#Q_OFFSET_VALUE] .in +\\n[#EN_PP_INDENT]u*\\n[#Q_OFFSET_VALUE]u
 .       el .in +\\*[$Q_OFFSET_VALUE]
@@ -11547,7 +11557,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    rr #LINEBREAK
 .    nr #PP_STYLE  1
 .    nr #END_QUOTE 1
-.    if !\\n[#ENDNOTE] .po \\n[#L_MARGIN]u
+.    if !\\n[#ENDNOTE] \{\
+.       po \\n[#L_MARGIN]u
+.       if '\\n[.z]'FLOAT*DIV' \!.po \\n[#L_MARGIN]u
+.    \}
 .    if \\n[#ENDNOTE]  .in \\n[#EN_TEXT_INDENT]u
 .    if \\n[#COLUMNS] \{\
 .       if !\\n[#ENDNOTE] \{\
@@ -15566,6 +15579,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       if \\n[TOC_BH]=2 .pdfswitchtopage after MOM:TOC
 .    \}
 '    NEWPAGE
+.    if '\\n[.ev]'PAGE_TRANSITION' .ev
 .    if \\n[#DEFER_PAGINATION] .PAGINATE
 .    if !'\\*[$RESTORE_PAGENUM_STYLE]'' \{\
 .       PAGENUM_STYLE \\*[$RESTORE_PAGENUM_STYLE]
