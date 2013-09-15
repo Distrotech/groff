@@ -9385,8 +9385,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          rr float-depth:\\n[loop-count]
 .       \}
 .       ev
-.       vs \\n[#DOC_LEAD]u
 .       SHIM
+\# Invoke table header hook.
+\# Will print table header for multipage tables
 .       rr defer
 .       rr loop-count
 .       rr defer-count
@@ -9394,10 +9395,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       rm float-adj:top
 .       rm float-adj:bottom
 .    \}
-.    if \\n[#TABLE] \{\
-.       rs
-.       sp
-.    \}
+.    tbl@top-hook
 .END
 \#
 \# ====================================================================
@@ -9500,6 +9498,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          rr #OVERFLOW_RIGHT
 .       \}
 .    \}
+\# Table bottom hook, draws the table borders in
+\# multipage boxed tables.
+.    tbl@bottom-hook
 .    ch MN_OVERFLOW_TRAP
 .    nr #L_MARGIN_DIFF \\n[#L_MARGIN]-\\n[#DOC_L_MARGIN]
 .    if !\\n[#FN_DEFER] \{\
@@ -15830,21 +15831,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .  sp -1
 .  vpt 1
 ..
-\# Boxed tables don't play nice with vertical spacing.
-\# Compensation is applied in FLOAT.
-.MAC TS END
-.    nr #TABLE 1
-.    if '\\n[.z]'FLOAT*DIV' \{\
-.       if '\\$1'BOXED' \{\
-.          if !\\n[.d] .nr boxed-table 1
-.       \}
-.    \}
-.END
-.
-.MAC TE END
-.    if '\\n[.z]'FLOAT*DIV' .nr bx-tbl-depth \\n[.d]
-.    rr #TABLE
-.END
 \#
 \# FLOAT
 \# -----
@@ -16779,6 +16765,111 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    if \\n[#RESTORE_TRAP] \{\
 .       vpt
 .       rr #RESTORE_TRAP
+.    \}
+.END
+\#
+\# TBL SUPPORT
+\# -----------
+\# Support for multipage tables with headers borrowed from ms and
+\# mommified by Robin Haberkorn <robin.haberkorn@googlemail.com>
+\# with additional modifications by Peter Schaffter.
+\#
+.nr tbl*have-header 0
+.ds T&
+\#
+\# Boxed tables in floats don't play nice with vertical spacing,
+\# hence the BOXED arg.  Compensation is applied in FLOAT.
+\# 'H' arg starts a multi-page table with a repeated header.
+\#
+.MAC TS END
+.    nr #TABLE 1
+.    ie '\\n[.z]'FLOAT*DIV' \{\
+.       if '\\$1'BOXED' \
+.          if !\\n[.d] .nr boxed-table 1
+.    \}
+.    el \{\
+.       if '\\$1'H' \{\
+.          nr tbl*have-header 1
+.          sp .5v
+.          ev table
+.          evc 0
+.          di tbl*header-div
+.       \}
+.    \}
+.END
+\#
+.MAC TH END
+.    ie '\\n[.z]'tbl*header-div' \{\
+.       nr T. 0
+.       T#
+.       br
+.       di
+.       ev
+.       ie (\\n[dn]-\\n[.v])>\\n[.t] \{\
+.          if !\\n[@TOP] .@error ridiculously long table header
+.          ds@need \\n[dn]
+.          tbl*print-header
+.       \}
+.       el \{\
+.          nr tbl*header-ht \\n[dn]
+.          ds@need \\n[dn]u+1v
+.          tbl*print-header
+.       \}
+.    \}
+.    el .@error .TH without .TS H
+.END
+\#
+.MAC TE END
+.    if !'\\$*'' \{\
+.       if !'\\$3'' .sp \\$3
+.       if !'\\$2'' .QUAD \\$2
+.       ie '\\$1'NO_SHIM' .nr tbl*no-shim 1
+.       el .PRINT \\$1
+.    \}
+.    if '\\n[.z]'FLOAT*DIV' .nr bx-tbl-depth \\n[.d]
+.    if '\\n[.z]'tbl*header-div' .@error .TS H but no .TH before .TE
+.    nr tbl*have-header 0
+.    rr #TABLE
+.    if !\\n[tbl*no-shim] .SHIM
+.    rr tbl*no-shim
+.END
+\#
+.MAC tbl*print-header END
+.    if \\n[.u]=1 \{\
+.       nf
+.       nr fill 1
+.    \}
+.    tbl*header-div
+.    if fill=1 \{\
+.       fi
+.       rr fill
+.    \}
+.    mk #T
+.END
+\#
+.MAC tbl@top-hook END
+.    ie \\n[tbl*have-header] \{\
+.       tbl*print-header
+.    \}
+.    el .if \\n[#TABLE] \{\
+.       rs
+.       sp
+.    \}
+.END
+\#
+.MAC tbl@bottom-hook END
+.    if \\n[tbl*have-header] \{\
+.       nr T. 1
+.       T#
+.    \}
+.END
+\#
+.MAC ds@need END \" Move vertically until there is enough space for \$1
+.    if '\\n(.z'' \{\
+.       while \\n[.t]<=(\\$1)&(\\n[nl]>\\n[#PAGE_TOP]) \{\
+.          rs
+'          sp \\n[.t]u
+.       \}
 .    \}
 .END
 \#
