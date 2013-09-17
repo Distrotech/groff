@@ -21,7 +21,7 @@ FDL in the main directory of the groff source package.
 
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
-  <title>Mom -- Graphics and floats</title>
+  <title>Mom -- Graphics, tbl support, and floats</title>
   <link rel="stylesheet" type="text/css" href="stylesheet.css" />
 </head>
 
@@ -39,7 +39,7 @@ FDL in the main directory of the groff source package.
 </tr>
 </table>
 
-<h1 class="docs">Graphics and floats</h1>
+<h1 class="docs">Graphics, tbl support, and floats</h1>
 
 <div style="width: 55%; margin: auto;">
 <ul class="no-enumerator" style="margin-left: -1em;">
@@ -51,11 +51,9 @@ FDL in the main directory of the groff source package.
   </ul></li>
   <li><a href="#pdf-image">The PDF_IMAGE macro</a></li>
   <li><a href="#pspic">The PSPIC macro</a></li>
+  <li><a href="#tbl">tbl support</a></li>
   <li><a href="#floats-intro">Introduction to floats</a></li>
-  <li><a href="#float">The FLOAT macro</a>
-  <ul style="margin-left: -.5em; list-style-type: disc;">
-		<li><a href="#tbl-with-float">Using tbl with FLOAT</a></li>
-	</ul></li>
+  <li><a href="#float">The FLOAT macro</a></li>
 </ul>
 </div>
 
@@ -361,6 +359,124 @@ with
 
 <div class="rule-medium"><hr/></div>
 
+<h2 id="tbl" class="docs">tbl support</h2>
+
+<p>
+Mom documents can include tables generated with the groff
+pre-processor, <kbd>tbl</kbd>.  <kbd>tbl</kbd> usage is beyond the
+scope of this documentation, but is covered fully in <kbd>man(1)
+tbl</kbd>.
+</p>
+
+<p>
+Tables formatted with <kbd>tbl</kbd> begin with the macro
+<kbd>.TS</kbd>
+(<b>T</b>able <b>S</b>art)
+and end with <kbd>.TE</kbd>
+(<b>T</b>able <b>E</b>nd).
+Depending on where you want your tables output in a document, you will likely
+need to wrap your <kbd>tbl</kbd> code inside a
+<a href="#floats-intro">float</a>,
+or use the <kbd>H</kbd> extension to <kbd>.TS</kbd>.  If you put
+<kbd>tbl</kbd> code inside a float, the table will be output
+immediately if it fits on the page, or defered to the top of the
+next page if it doesn&#8217;t.  If you prefer a table to begin where
+you say and span over to the next page, or if you know for certain
+your table will run to multiple pages, use <kbd>.TS H</kbd>.
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+If you use <kbd>.TS H</kbd> to create a table that spans multiple
+pages, do not attempt to wrap the table inside a float. <kbd>.TS
+H</kbd> and <kbd>.FLOAT</kbd> are mutually exclusive. <b>FLOAT</b>
+&#8220;collects&#8221; the table and outputs it where convenient,
+whereas <kbd>.TS H</kbd> begins the table immediately and spans
+multiple pages, with a table header, if necessary.
+</p>
+</div>
+
+<div class="macro-id-overline">
+<h3 id="ts-te" class= "macro-id">.TS/.TE</h3>
+</div>
+
+<div class="box-macro-args">
+Macro: <b>TS</b> <kbd class="macro-args">[ BOXED | H ]</kbd>
+<br/>
+Macro: <b>TH</b>
+<br/>
+Macro: <b>TE</b>
+</div>
+
+<p>
+Tables to be formatted with <kbd>tbl</kbd> begin with the macro
+<kbd>.TS</kbd> and end with <kbd>.TE</kbd>.  Formatting
+instructions, per <kbd>man tbl</kbd> come between the two macros.
+<br/>
+<span class="pre-in-pp">
+  .TS
+  &lt;tbl commands and data&gt;
+  .TE
+</span>
+Tables may be wrapped inside a
+<a href="#float-intro">float</a>,
+in which case, the entire table will be output on the current page
+if it fits, or defered to the next page if it doesn&#8217;t.
+<br/>
+<span class="pre-in-pp">
+  .FLOAT
+  .TS
+  &lt;tbl commands and data&gt;
+  .TE
+  .FLOAT OFF
+</span>
+If a table inside a float is to be boxed (ie have a frame or border
+around it), you must give the optional argument <kbd>BOXED</kbd> to
+<kbd>.TS</kbd>, as in this example:
+<br/>
+<span class="pre-in-pp">
+  .FLOAT
+  .TS BOXED
+  allbox center;
+  c s s
+  c c c
+  n n n.
+  &lt;tbl commands and data&gt;
+  .TE
+  .FLOAT OFF
+</span>
+Unboxed tables inside a float require no special argument to
+<kbd>.TS</kbd>.
+</p>
+
+<p>
+If you prefer a table to start where you say and span multiple
+pages, or if you know for certain the table will run to several
+pages, do not use the <b>FLOAT</b> macro.  Instead, invoke
+<kbd>.TS</kbd> with the <kbd>H</kbd> argument, enter any
+<kbd>tbl</kbd> global options (per <kbd>man(1) tbl</kbd>), and
+follow the last line of the global options, which terminates with
+a period, with text for the table header.  Afterwards, invoke the
+macro, <kbd>.TH</kbd>, then begin entering table data, as in the
+following:
+<br/>
+<span class="pre-in-pp">
+  .TS H
+  allbox center;
+  c s s
+  c c c
+  n n n.
+  AT&T Common Stock
+  .TH
+  &lt;tbl commands and data&gt;
+  .TE
+</span>
+In the example, &#8220;AT&T Common Stock&#8221; will be the
+table&#8217;s header, printed at the start of the table and at the
+top of the table on all subsequent pages.
+</p>
+
 <h2 id="floats-intro" class="docs">Introduction to floats</h2>
 
 <p>
@@ -509,31 +625,6 @@ or
 within the float.
 </p>
 </div>
-
-<h4 id="tbl-with-float" class="docs">Using tbl with FLOAT</h4>
-
-<p>
-Unboxed tables created with <strong>tbl</strong> (see <kbd>man
-tbl(1)</kbd>) may be put in a float with the usual start and end
-macros, <kbd>.TS</kbd> and <kbd>.TE</kbd>.
-</p>
-
-<p>
-Boxed tables don&#8217;t play nice with FLOAT, and require that you
-pass the argument <kbd>BOXED</kbd> to <kbd>.TS</kbd>, otherwise mom
-cannot guarantee the vertical spacing of the float will be
-<a href="#float-spacing">as described</a>.
-<br/>
-<span class="pre-in-pp">
-  .FLOAT
-  .TS BOXED
-  &lt;tbl commands&gt;
-  .TE
-  .FLOAT OFF
-</span>
-You may put text (or anything else you like) above or below the
-table; mom will ensure the float is spaced correctly.
-</p>
 
 <div class="rule-long"><hr/></div>
 
