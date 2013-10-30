@@ -1,3 +1,4 @@
+.PAPER	    A4
 .\" Reference macros (metadata)
 .TITLE     "Producing PDFs" "with groff and mom"
 .PDF_TITLE "\*[$TITLE]
@@ -28,7 +29,6 @@
 .HEADER_LEFT "James, Schaffter"
 .\" Page, style, formatting
 .PRINTSTYLE TYPESET
-.PAPER	    A4
 .L_MARGIN   2.5c
 .R_MARGIN   2.5c
 .B_MARGIN   2.5c
@@ -106,7 +106,7 @@
 .TOC_ENTRY_STYLE 2 FONT I
 .TOC_LEAD 14
 .\"
-.DOCHEADER_ADVANCE 4.5c \" Begin this distance down from top of page
+.DOCHEADER_ADVANCE 5c \" Begin this distance down from top of page
 .\"
 .START
 .\"
@@ -184,7 +184,7 @@ from any part of the document.
 Furthermore, \*[cod]NAMED\|<id>\*[codx] stores the text of the
 heading for use later on when linking to it (see
 .PDF_LINK internal SUFFIX ). +
-If headings are being numbered, the heading number is included.
+If headings are being numbered, the heading number is prepended.
 .HEADING 2 NAMED target  "Creating destination points at arbitrary locations"
 .PP
 Any part of a document can be a link destination, not just headings.
@@ -245,11 +245,13 @@ URL.  Clicking on them causes a browser window to pop up with the
 destination address.
 .PP2
 The format of the macro to create external links is similar to the
-one for creating internal links links links.
+one for creating internal links:
 .COD "\&.PDF_WWW_LINK <url> [PREFIX <text>] [SUFFIX <text>] [\[dq]<hotlink text>\[dq]]"
 \*[cod]<url>\*[codx] is any valid URL, usually a web address;
 \*[cod]PREFIX\|<text>\*[codx] and \*[cod]SUFFIX\|<text>\*[codx] have
-exactly the same meaning.
+exactly the same meaning, as does \*[cod]<hotlink text>\*[codx],
+which furthermore accepts the same expandos, \*[cod]\[dq]+\[dq]\*[codx] and
+\*[cod]\[dq]*\[dq]\*[codx].
 .PP2
 .RW .1
 If no hotlink text is given, then \*[cod]<url>\*[codx] is
@@ -509,12 +511,11 @@ within mom source files (see
 do not require a corresponding \[-P-p<papersize>] option on the
 command line.  It is even possible to create documents with
 unequal-sized pages.
-.NO_SHIM
 .HEADING 2 NAMED pdf-diff \
 "Differences between pdfmom and pdfroff"
 .PP
 Several features described in this manual are not available when
-using \[pdfmom] with the \[-Tps] option, or when using \[pdfroff] or
+using \[pdfmom] with the \[-Tps] option, or when using \[pdfroff], or
 \[groff]\~\[-Tps]\~\[-mpdfmark].
 .SP .25v
 .QUAD LEFT

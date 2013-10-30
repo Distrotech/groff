@@ -50,10 +50,15 @@ else instead.
 </p>
 
 <p>
-Anyone interested in playing around inside mom&#8217;s macro file
-(om.tmac) will find this list useful as well since it lists all (I
-hope) the macros, strings, diversions, aliases and number registers
+Anyone interested in hacking/patching mom&#8217;s macro file
+(om.tmac) will also find this list useful since it lists most of
+the macros, strings, diversions, aliases, and number registers
 mom uses, along with brief descriptions of their functions.
+</p>
+
+<p>
+Please note that PDF-related macros, strings, and registers are not
+included.
 </p>
 
 <div class="rule-medium"><hr/></div>
@@ -295,7 +300,7 @@ mom uses, along with brief descriptions of their functions.
   #NOFILL                 Are we in a nofill mode? (boolean)
   #NOFILL_MODE            Nofill mode
   #OLD_LEAD               Lead in effect prior to changing it with .vs
-                            in .LS
+                            in .LS or .AUTOLEAD
   #OPEN_CLOSE             Manipulates character " to print `` or ''
   #ORIGINAL_L_LENGTH      Used in LIST for IB processing; holds \n[.l]
   p                       Output line horiz position at end of
@@ -311,13 +316,13 @@ mom uses, along with brief descriptions of their functions.
                             in effect (booleand off, i.e. to 0, when
                             QUAD &lt;arg&gt; or JUSTIFY is called)
   #PT_SIZE                Point size (fractional) in units (alias)
-  #PT_SIZE_SET            Was point size set with PT_SIZE? (boolean)
   #Q_AT_TOP               Does a quote start at the top of a new page?
                             (boolean)
   #QUAD                   In autoquad mode? (boolean)
   #QUIT                   Tells LIST whether to exit lists completely
                             (boolean)
   #REMOVE                 Used in LIST OFF cleanup
+  #RESTORE_FILL           Used to restore \[.u] state if temporarily changed
   #RESTORE_LEAD           Lead value in effect prior to AUTOLEAD
   #RESTORE_LINE_LENGTH    Restores actual line length in RULE
   #RESTORE_LN_NUMBER      Start linenumbering again with stored
@@ -1013,6 +1018,14 @@ mom uses, along with brief descriptions of their functions.
   QUIT_LISTS           Exit lists cleanly and completely
   SET_LIST_INDENT      Restore indent of a prev. level of list
   SHIM                 Advance to next "valid" baseline
+  TBL*CLEANUP          Remove selected registers and strings created
+                         by TS/TH/TE
+  TBL*GET_QUAD         Establish quad of tbl caption
+  tbl*float-warning    If tbl in a float exceeds page limits
+  tbl*print-header     Administrivia for printing tbl headers
+  tbl@top-hook         Trap-invoked (HEADER); prints running tbl header
+                         and moves FOOTER/FN_OVERFLOW_TRAP_POS traps
+                         to accommodate tbl
   TERMINATE            .em that ensures deferred footnotes get output
                          on final pages
   TRAPS                Sets hdrftr traps; optionally adjusts #DOC_LEAD
@@ -1032,6 +1045,7 @@ mom uses, along with brief descriptions of their functions.
   CLOSING_TEXT      Closing (i.e. Yours truly,)
   EPI_TEXT          Epigraph text
   END_NOTES         Endnotes text
+  FLOAT*DIV         Float content
   FN_IN_DIVER       Footnotes gathered from inside a diversion
   FN_OVERFLOW       Excess footnotes when B_MARGIN is reached
   FOOTNOTES         Text of footnotes
@@ -1042,6 +1056,7 @@ mom uses, along with brief descriptions of their functions.
   RUNON_FOOTNOTES   Special diversion for run-on footnotes
   RUNON_FN_IN_DIVER Special diversion for run-on footnotes inside
                       (block)quotes
+  tbl*header-div    Running tbl header
   TOC_ENTRIES       TOC entries
 
 <span style="display: block; margin-top: -.5em; margin-bottom: -2.5em;">+++NUMBER REGISTERS+++</span>
@@ -1173,6 +1188,7 @@ mom uses, along with brief descriptions of their functions.
   #DIVER_FN                  Register that tells FOOTNOTE whether to
                                "move" or "defer" a footnote collected
                                inside a diversion
+  defer / new-defer          Appended to FLOAT*DIV: if float deferred
   #DEFER_BIB_SPACING         Tells DEFAULTS to do BIBLIOGRAPHY_SPACING
                                if it was called before START
   #DEFER_PAGINATION          Tells COLLATE to restore pagination (from
@@ -1187,6 +1203,8 @@ mom uses, along with brief descriptions of their functions.
   #DEPTH_2                   Doc header depth without lead adjustment
                                (#DOCHEADER_LINES * #DOC_LEAD)
   #DEPTH_TO_B_MARGIN         Page length minus #B_MARGIN
+  D-float                    Depth of float containing/ending with
+                               DRH, DRV, DBX, or DCL
   #DIVERSIONS_HY_MARGIN      A reasonable value for .hym applied to
                                QUOTE, BLOCKQUOTE and EPIGRAPH to
                                avoid excessive hyphenation if these are
@@ -1352,6 +1370,10 @@ mom uses, along with brief descriptions of their functions.
   #FIRST_DOC_TITLE_PN        Page number of 1st (collated) doc (for TOC)
   #FIRST_DOC_TOC_PN_PADDING  Padding for 1st page number of 1st (collated) doc
                                (for TOC)
+  float*after-shim /         \n[nl]; tests if SHIM has stayed on the same
+    float*before-shim          baseline
+  float-span                 Float can run to multiple pages? (boolean)
+  float*with-tbl             Float contains a tbl block
   #FN_AUTOLEAD               Autolead value of footnotes
   #FN_BL_INDENT              Left indent of INDENT BOTH in footnotes
   #FN_BR_INDENT              Right indent of INDENT BOTH in footnotes
@@ -1419,6 +1441,7 @@ mom uses, along with brief descriptions of their functions.
   #FOOTERS_WERE_ON           Were footers on? - used in FINIS and BLANKPAGE
                                (boolean)
   #FOOTNOTE_COLOR            Colorize footnotes? (boolean)
+  #FORCE                     Force float? (boolean)
   #FROM_BIB_STRING           Tells UNDERSCORE it's underscoring $BIB_STRING
   #FROM_COVER                Tells UNDERSCORE it's underscoring on a cover
   #FROM_DOC_COVER            Tells UNDERSCORE it's underscoring on a doccover
@@ -1823,6 +1846,21 @@ mom uses, along with brief descriptions of their functions.
   #SUSPEND_PAGINATION        Suspend pagination prior to endnotes?
   #SWITCH_HDRFTR             Switch HDRFTR_LEFT and HDRFTR_RIGHT?
                                (boolean)
+  tbl*boxed                  tbl has box or allbox (boolean)
+  tbl*center-label-on-table  Is tbl caption centered? (boolean)
+  tbl*have-header            tbl has a running header (boolean)
+  tbl*header-ht              Depth of tbl*header-div
+  tbl*left-label-on-table    Is tbl caption quad left? (boolean)
+  tbl*move-fn-overflow-trap  Whether to move FN_OVERFLOW_TRAP_POS
+                               to accommodate tbl
+  tbl*move-fn-overflow       Amount by which to change
+                               FN_OVERFLOW_TRAP_POS to accommodate tbl
+  tbl*move-footer            Amount by which to change FOOTER trap
+                               to accommodate tbl
+  tbl*move-footer-trap       Whether to move FOOTER trap to accommodate
+                               tbl
+  tbl*no-shim                Whether to SHIM tbl (boolean)
+  tbl*right-label-on-table   Is tbl caption quad right? (boolean)
   #T_MARGIN_LEAD_ADJ         \n[.v]-12000; ensures critically accurate
                                placement of first lines on pages when
                                doc processing is not being used and
@@ -1850,8 +1888,12 @@ mom uses, along with brief descriptions of their functions.
   #TOC_SH_SIZE_CHANGE        ps in/decrease of toc subhead entries
   #TOC_TITLE_INDENT          Indent of toc doc title entries
   #TOC_TITLE_SIZE_CHANGE     ps in/decrease of toc doc title entries
+  @TOP                       Controls .ns at page top;
+                               trap-invoked (FOOTER); mostly trap-removed
+                               (RR_@TOP)
   #TOTAL_FIELDS              Total number of letter header fields
   #TRAP                      \n[.t]-1 (used in DO_QUOTE)
+  #TW                        Width of tbl block
   #UNADJUSTED_DOC_LEAD       Argument passed to DOC_LEAD prior to
                              adjusting (set in TRAPS)
   #UNDERLINE_ITALIC          For TYPEWRITE. (boolean)
@@ -2157,6 +2199,9 @@ mom uses, along with brief descriptions of their functions.
   $FINIS_COLOR                     Color of FINIS string
   $FINIS_STRING                    What to print when FINIS macro is
                                      invoked
+  float-adj:bottom                 A + or - sign
+  float-adj:top                    A + or - sign
+  float*type                       Used with tbl; 'boxed' or 'table'
   FN_MARK                          Inline, gets #FN_MARK ( \n[ln] )
   $FN_CLOSE_BRACKET                Close bracket for line-number identified
                                      footnotes
@@ -2330,6 +2375,11 @@ mom uses, along with brief descriptions of their functions.
   $SUBTITLE_SIZE_CHANGE            ps in/decrease of subtitle
   $SUBTITLE_PT_SIZE                Absolute ps of subtitle
   $SUITE                           The #SUITE number register
+  tbl*center                       'C' if set
+  tbl*label                        Text of tbl caption
+  tbl*needs                        # of rows of tbl data required to print
+                                     tbl near bottom of page
+  tbl*user-add-space               User-added space before a tbl caption
   $TITLE                           Concatenated args pass to TITLE
   $TITLE_&lt;n&gt;                       Title items
   $TITLE_COLOR                     Color of title

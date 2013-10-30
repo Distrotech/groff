@@ -96,14 +96,14 @@ class="header-link" href="#setup">Preliminary document setup</a></h3>
   </ul></li>
 </ul>
 </div>
-<div class="mini-toc-col-2" style="margin-top: -.5em;">
+<div class="mini-toc-col-2" style="margin-top: -1em;">
 <br/>
 <ul class="toc-docproc" style="margin-top: .5em;">
   <li><a href="#doc-lead-adjust"><b>Adjust linespacing to fill pages</b></a>
   <ul class="toc-docproc">
     <li><a href="#doc-lead-adjust">DOC_LEAD_ADJUST</a></li>
     <li><a href="#shim">SHIM</a> &ndash; get document leading back on track
-    <ul>
+    <ul class="toc-docproc">
       <li><a href="#automatic-shimming">Automatic shimming (headings, etc)</a></li>
     </ul></li>
   </ul></li>
@@ -121,31 +121,33 @@ class="header-link" href="#setup">Preliminary document setup</a></h3>
     <li><a href="#columns">COLUMNS</a></li>
     <li><a href="#breaking-columns">Breaking columns manually</a>
     <ul class="toc-docproc">
-      <li><a href="#col-next">COL_NEXT</a></li>
-      <li><a href="#col-break">COL_BREAK</a></li>
+      <li><a href="#col-next">COL_NEXT</a> and <a href="#col-break">COL_BREAK</a></li>
     </ul></li>
   </ul></li>
 </ul>
 <h3 class="toc toc-docproc-header"><a class="header-link" href="#style-after-start">Changing basic type and formatting<br/><span style="display: block; margin-top: -.3em;">parameters after START</span></a></h3>
 <ul class="toc-docproc" style="margin-top: .5em;">
   <li><a href="#behaviour"><b>Behaviour of the typesetting macros during document processing</b></a></li>
-  <li><a href="docprocessing.html#index-doc-param"><b>Post-START global style change macros</b></a>
+  <li><a href="docprocessing.html#intro-doc-param"><b>Changing document-wide style parameters after START</b></a>
   <ul class="toc-docproc">
-    <li><a href="#doc-left-margin">DOC_LEFT_MARGIN</a></li>
-    <li><a href="#doc-right-margin">DOC_RIGHT_MARGIN</a></li>
-    <li><a href="#doc-line-length">DOC_LINE_LENGTH</a></li>
-    <li><a href="#doc-family">DOC_FAMILY</a></li>
-    <li><a href="#doc-pt-size">DOC_PT_SIZE</a></li>
-    <li><a href="#doc-lead">DOC_LEAD</a></li>
-    <li><a href="#doc-lead-adjust">DOC_LEAD_ADJUST</a></li>
-    <li><a href="#doc-quad">DOC_QUAD</a></li>
+    <li><a href="docprocessing.html#index-doc-param">Post-START global style change macros</a>
+    <ul class="toc-docproc">
+     <li><a href="#doc-left-margin">DOC_LEFT_MARGIN</a></li>
+     <li><a href="#doc-right-margin">DOC_RIGHT_MARGIN</a></li>
+     <li><a href="#doc-line-length">DOC_LINE_LENGTH</a></li>
+     <li><a href="#doc-family">DOC_FAMILY</a></li>
+     <li><a href="#doc-pt-size">DOC_PT_SIZE</a></li>
+     <li><a href="#doc-lead">DOC_LEAD</a></li>
+     <li><a href="#doc-lead-adjust">DOC_LEAD_ADJUST</a></li>
+     <li><a href="#doc-quad">DOC_QUAD</a></li>
+    </ul></li>
   </ul></li>
 </ul>
 <h3 class="toc toc-docproc-header"><a class="header-link" href="#terminating">Terminating a document</a></h3>
 </div>
 </div>
 
-<div class="rule-medium" style="clear: both;"><hr/></div>
+<div class="rule-short"><hr/></div>
 
 <!-- ==================================================================== -->
 
@@ -368,7 +370,7 @@ By default, mom automatically applies shimming
 <ul>
   <li><i>before</i> headings</li>
   <li><i>around</i> quotes and blockquotes</li>
-  <li><i>after</i> PDF images and floats</li>
+  <li><i>after</i> PDF images, floats, and tables</li>
 </ul>
 
 <p>
@@ -391,8 +393,9 @@ or just before
 <a href="docelement.html#quote">QUOTE</a>,
 <a href="docelement.html#blockquote">BLOCKQUOTE</a>,
 <a href="images.html#pdf-image">PDF_IMAGE</a>
-or
 <a href="images.html#float">FLOAT</a>.
+or
+<a href="images.html#ts">TS</a>.
 </p>
 
 <div class="box-tip">
@@ -1735,13 +1738,33 @@ page with a nasty message.
 
 <p class="tip-bottom">
 <span class="important">Just as important:</span>
-PRINTSTYLE <b>must precede any and all page and style parameters
-associated with a document.</b>  This applies primarily to, but is by
-no means restricted to, PRINTSTYLE <kbd>TYPESET</kbd>.   PRINTSTYLE
-sets up complete templates that include default papersize, margins,
-family, fonts, point sizes, and so on.  Therefore, changes to any
-aspect of document style must come afterwards.
+PRINTSTYLE <b>must precede any and all page and style
+parameters associated with a document</b> with the exception of
+<kbd>PAPER</kbd>, <kbd>PAGEWIDTH</kbd>, and/or
+<kbd>PAGELENGTH</kbd>, which should be placed at the top of your
+file.  PRINTSTYLE sets up complete templates that include default
+margins, family, fonts, point sizes, and so on.  Therefore, changes
+to any aspect of document style must come afterwards.  For example,
+<br/>
+<span class="pre-in-pp">
+  .PAPER A4
+  .LS 14
+  .QUAD LEFT
+  .PRINTSTYLE TYPESET
+</span>
+will not change mom&#8217;s default document leading to 14 points,
+nor the default justification style (fully justified) to left
+justified, whereas
+<br/>
+<span class="pre-in-pp">
+  .PAPER A4
+  .PRINTSTYLE TYPESET
+  .LS 14
+  .QUAD LEFT
+</span>
+will.
 </p>
+
 </div>
 
 <p>
@@ -1753,27 +1776,6 @@ You have full access to all the
 as well as the
 <a href="definitions.html#style-control">style control macros</a>
 of document processing.
-</p>
-
-<p>
-As mentioned above, PRINTSTYLE <kbd>TYPESET</kbd> must come before
-any changes to mom&#8217;s default typographic settings.  For
-example,
-<br/>
-<span class="pre-in-pp">
-  .PAPER A4
-  .LS 14
-  .PRINTSTYLE TYPESET
-</span>
-will not changes mom&#8217;s default paper size to A4,
-nor her default document leading 14 points, whereas
-<br/>
-<span class="pre-in-pp">
-  .PRINTSTYLE TYPESET
-  .PAPER A4
-  .LS 14
-</span>
-will.
 </p>
 
 <p>
@@ -2177,11 +2179,10 @@ PRINTSTYLE.
 
 <div class="box-tip">
 <p class="tip">
-<span class="note">Note:</span>
-Don&#8217;t use the macros listed in
+<span class="important">Important:</span>
+Do not use the macros listed in
 <a href="#doc-param-macros">Changing document-wide typesetting parameters after START</a>
-prior to START; they are exclusively for use
-afterwards.
+prior to START; they are exclusively for use afterwards.
 </p>
 </div>
 
@@ -2288,10 +2289,11 @@ with no underscore.  You&#8217;d create a file, let&#8217;s call it
 control macros.
 <br/>
 <span class="pre-in-pp">
-  .HEAD_FAMILY    H
-  .HEAD_FONT      BI
-  .HEAD_QUAD      L
-  .HEAD_UNDERLINE OFF
+  .HEADING_STYLE 1 \
+  FAMILY    H \
+  FONT      BI \
+  QUAD      L \
+  NO_UNDERSCORE
 </span>
 Then, in the preliminary document set-up section of your main file,
 you&#8217;d include the style sheet, or template, like this:
@@ -3294,11 +3296,27 @@ the tops of pages after the first.)
 
                Using LS to temporarily change leading within
                a document will almost certainly result in a
-               bottom margin that doesn&#8217;t align with
-               the bottom margin of subsequent pages.  You&#8217;ll
+               bottom margin that doesn&#8217;t align with the
+               bottom margin of subsequent pages.  You&#8217;ll
                need to use the SHIM macro to get mom back on
                track when you&#8217;re ready to return to the
                document&#8217;s default leading.
+
+
+  AUTOLEAD   &bull;Invoked before START, sets the overall document
+              leading as a function of the overall document
+              point size (ie the point size used in paragraphs);
+              subsequently disabled after START, except for calls
+              to DOC_PT_SIZE
+              
+             &bull;DOC_LEAD before DOC_PT_SIZE cancels the AUTOLEAD
+              set before START
+
+             &bull;Invoked after START, remains in effect for all
+              subsequent point size changes made with PT_SIZE,
+              but does not affect the leading of the document
+              element tags (eg HEADING, PP, QUOTE...), or calls
+              to DOC_PT_SIZE
 
   QUAD        &bull;Changes quad for the duration of the
                current tag only.  As soon as another document
@@ -3414,18 +3432,34 @@ macro immediately after ADD_SPACE.
 
 <!-- *** -->
 
-<h2 id="intro-doc-param" class="macro-group">Changing basic type and formatting parameters after START</h2>
+<h2 id="intro-doc-param" class="macro-group">Changing document-wide style parameters after START</h2>
 
 <p>
-In the normal course of things, you establish the basic type
+In the normal course of things, you establish the basic type style
 parameters of a document prior to invoking
 <a href="#start">START</a>,
 using the
 <a href="typesetting.html#macros-typesetting">typesetting macros</a>
-(<b>L_MARGIN, FAMILY, PT_SIZE, LS,</b> etc).  After
-START, you <i>must</i> use the following macros to make
-global changes to the basic type parameters of a document.
+(<b>L_MARGIN, FAMILY, PT_SIZE, LS,</b> etc).  After START, you must
+use the following macros if you wish to make global changes to the
+basic type style parameters, for example changing the overall leading or
+the justification style.
 </p>
+
+<div class="box-important">
+<p class="tip">
+<span class="important">Important:</span>
+Because these macros globally update the chosen parameter, they
+should only be used immediately prior to
+<a href="rectoverso.html#collate">COLLATE</a>
+or, if an occasional effect is desired,
+<a href="typesetting.html#newpage">NEWPAGE</a>.
+<a href="#doc-pt-size">DOC_PT_SIZE</a>,
+for example, updates the point size of every page element, including
+headers, footers, page numbers, and so on, which is almost certainly
+not what you want in the middle of a page.
+</p>
+</div>
 
 <div class="macro-list-container">
 <h3 id="index-doc-param" class="macro-list">Post-START global style change macros</h3>
@@ -3461,7 +3495,12 @@ Macro: <b>DOC_LEFT_MARGIN</b> <kbd class="macro-args">&lt;left margin&gt;</kbd>
   <li>the argument is the same as for
       <a href="typesetting.html#l-margin">L_MARGIN</a>
   </li>
-  <li>changes all left margins to the new value</li>
+  <li>changes all left margins, including headers, footers, and page
+      numbers to the new value
+  </li>
+  <li>any document elements that use a left indent calculate
+      the indent from the new value
+  </li>
   <li>the line length remains the same (ie the right margin
       shifts when you change the left margin)
   </li>
@@ -3487,19 +3526,10 @@ Macro: <b>DOC_RIGHT_MARGIN</b> <kbd class="macro-args">&lt;right margin&gt;</kbd
   <li>the argument is the same as for
       <a href="typesetting.html#r-margin">R_MARGIN</a>
   </li>
-  <li>changes all right margins, including
-      <a href="definitions.html#docheader">docheaders</a>,
-      headers (or footers) and page numbering to the new value;
-      for changing the right margin of
-      <a href="definitions.html#running">running text</a>
-      only, use
-      <a href="typesetting.html#r-margin">R_MARGIN</a>
-      (see
-      <a href="#behaviour">typesetting macros during
-      document processing</a>,
-      entry for R_MARGIN)
+  <li>changes all right margins, including headers, footers, and
+      page numbers to the new value;
   </li>
-  <li>all mom commands that include a right indent calculate
+  <li>any document elements that use a right indent calculate
       the indent from the new value
   </li>
 </ul>
@@ -3527,13 +3557,6 @@ Macro: <b>DOC_LINE_LENGTH</b> <kbd class="macro-args">&lt;length&gt;</kbd>
   <li>exactly equivalent to changing the right margin with
       DOC_RIGHT_MARGIN (see
       <a href="#doc-right-margin">above</a>);
-      for changing the line length of
-      <a href="definitions.html#running">running text</a>
-      only, use
-      <a href="typesetting.html#linelength">LL</a>
-      (see
-      <a href="#behaviour">typesetting macros during document processing</a>,
-      entry for LL)
   </li>
 </ul>
 
@@ -3603,6 +3626,12 @@ Macro: <b>DOC_PT_SIZE</b> <kbd class="macro-args">&lt;point size&gt;</kbd>
       the pertinent document element for instructions on
       how to do this)
   </li>
+  <li>if
+      <a href="typesetting.html#autolead">AUTOLEAD</a>
+      was invoked before START; the value of AUTOLEAD will be used
+      to update the leading of all document element tags except
+      FOOTNOTE and EPIGRAPH
+  </li>
 </ul>
 
 <!-- -DOC_LEAD- -->
@@ -3641,20 +3670,12 @@ Macro: <b>DOC_LEAD</b> <kbd class="macro-args">&lt;points&gt; [ ADJUST ]</kbd>
       leading adjustment as explained in
       <a href="#doc-lead-adjust">DOC_LEAD_ADJUST</a>
   </li>
+  <li>if
+      <a href="typesetting.html#autolead">AUTOLEAD</a>
+      was invoked before START; the value of that AUTOLEAD will be
+      cancelled
+  </li>
 </ul>
-
-<div class="box-important">
-<p class="tip">
-<span class="important">Important:</span>
-Do not use DOC_LEAD in the middle of a page!  It should always and
-only be invoked immediately prior to a new page, like this:
-<br/>
-<span class="pre-in-pp">
-  .DOC_LEAD &lt;new value&gt;
-  .NEWPAGE
-</span>
-</p>
-</div>
 
 <div class="box-tip">
 <p class="tip">

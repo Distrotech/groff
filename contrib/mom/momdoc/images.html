@@ -21,7 +21,7 @@ FDL in the main directory of the groff source package.
 
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
-  <title>Mom -- Graphics, tbl support, and floats</title>
+  <title>Mom -- Graphics, floats, and preprocessor support</title>
   <link rel="stylesheet" type="text/css" href="stylesheet.css" />
 </head>
 
@@ -39,7 +39,7 @@ FDL in the main directory of the groff source package.
 </tr>
 </table>
 
-<h1 class="docs">Graphics, tbl support, and floats</h1>
+<h1 class="docs">Graphics, floats, and preprocessor support</h1>
 
 <div style="width: 55%; margin: auto;">
 <ul class="no-enumerator" style="margin-left: -1em;">
@@ -51,7 +51,15 @@ FDL in the main directory of the groff source package.
   </ul></li>
   <li><a href="#pdf-image">The PDF_IMAGE macro</a></li>
   <li><a href="#pspic">The PSPIC macro</a></li>
-  <li><a href="#tbl">tbl support</a></li>
+	<li><a href="#preprocessor-support">Preprocessor support</a>
+  <ul style="margin-left: -.5em; list-style-type: disc;">
+  	<li><a href="#tbl">tbl</a>
+		<ul style="margin-left: -1.25em;"><li><a href="#ts-te">.TS / .TH / .TE macros and arguments</a></li>
+		</ul></li>
+  	<li><a href="#pic">pic</a></li>
+  	<li><a href="#eqn">eqn</a></li>
+  	<li><a href="#refer">refer</a></li>
+  </ul></li>
   <li><a href="#floats-intro">Introduction to floats</a></li>
   <li><a href="#float">The FLOAT macro</a></li>
 </ul>
@@ -296,25 +304,24 @@ image; <kbd>width</kbd> and <kbd>height</kbd> give the desired
 width and height of the image as you wish it to appear within the
 document.  The width and height arguments may have
 <a href="definitions.html#unitofmeasure">units of measure</a>
-attached; the default unit of measure is
-<kbd>i</kbd>.  PSPIC will scale the graphic
-uniformly in the x and y directions so that it is no more than
-<kbd>width</kbd> wide and <kbd>height</kbd> high.  By default, the
-graphic will be horizontally centred.  The <kbd>-L</kbd> and
-<kbd>-R</kbd> options cause the graphic to be left-aligned and
-right-aligned, respectively.  The <kbd>-I</kbd> option causes
-the graphic to be indented by <kbd>&lt;n&gt;</kbd>;  the default unit of
-measure is <kbd>m</kbd>
+attached; the default unit of measure is <kbd>i</kbd>.  PSPIC will
+scale the graphic uniformly in the x and y directions so that
+it is no more than <kbd>width</kbd> wide and <kbd>height</kbd>
+high.  By default, the graphic will be horizontally centred.  The
+<kbd>-L</kbd> and <kbd>-R</kbd> options cause the graphic to be
+left-aligned and right-aligned, respectively.  The <kbd>-I</kbd>
+option causes the graphic to be indented by <kbd>&lt;n&gt;</kbd>;
+the default unit of measure is <kbd>m</kbd>
 (<a href="definitions.html#em">ems</a>).
 </p>
 </div>
 
 <p>
-It is not necessary to pass PSPIC the
-<kbd>&lt;width&gt;</kbd> and <kbd>&lt;height&gt;</kbd> arguments unless
-you are scaling the image, in which case you will most likely need
-the original dimensions of the EPS image&#8217;s bounding box.
-These can be found with
+It is not necessary to pass PSPIC the <kbd>&lt;width&gt;</kbd>
+and <kbd>&lt;height&gt;</kbd> arguments unless you are scaling
+the image, in which case you will most likely need the original
+dimensions of the EPS image&#8217;s bounding box.  These can be
+found with
 <span class="pre-in-pp">
  gs -q -dBATCH -dNOPAUSE -sDEVICE=bbox &lt;image file&gt;.pdf 2&gt;&amp;1 \
  | grep "%%BoundingBox" | cut -d " " -f4,5
@@ -341,8 +348,8 @@ macros.
 Additionally, EPS images inserted into
 <a href="definitions.html#running">running text</a>
 will almost certainly disrupt the baseline placement of running
-text.  In order to get mom back on track after
-invoking <kbd>.PSPIC</kbd>, I strongly recommend using the
+text.  In order to get mom back on track after invoking
+<kbd>.PSPIC</kbd>, I strongly recommend using the
 <a href="docprocessing.html#shim">SHIM</a>
 macro so that the bottom margin of running text falls where it
 should.  Please note that with PDF_IMAGE, this is not necessary.
@@ -359,123 +366,360 @@ with
 
 <div class="rule-medium"><hr/></div>
 
-<h2 id="tbl" class="docs">tbl support</h2>
+<h2 id="preprocessor-support" class="docs">Preprocessor support</h2>
+
+<h3 id="tbl" class="docs">tbl support</h3>
 
 <p>
 Mom documents can include tables generated with the groff
-pre-processor, <kbd>tbl</kbd>.  <kbd>tbl</kbd> usage is beyond the
-scope of this documentation, but is covered fully in <kbd>man(1)
-tbl</kbd>.
+pre-processor, <kbd>tbl</kbd>. <kbd>tbl</kbd> usage itself is beyond
+the scope of this documentation, but is covered in the manpage
+<kbd>tbl(1)</kbd>.  You can also download a copy of
+<a href="http://plan9.bell-labs.com/10thEdMan/tbl.pdf">Tbl - A Program to Format Tables</a>,
+which, in addition to providing a thorough introduction to <kbd>tbl</kbd>,
+contains some fine examples.
 </p>
 
 <p>
 Tables formatted with <kbd>tbl</kbd> begin with the macro
-<kbd>.TS</kbd>
-(<b>T</b>able <b>S</b>art)
-and end with <kbd>.TE</kbd>
-(<b>T</b>able <b>E</b>nd).
-Depending on where you want your tables output in a document, you will likely
-need to wrap your <kbd>tbl</kbd> code inside a
+<kbd>.TS</kbd> (<b>T</b>able <b>S</b>art) and end with
+<kbd>.TE</kbd> (<b>T</b>able <b>E</b>nd).  Depending on where you
+want your tables output in a document, you may need to wrap
+your <kbd>tbl</kbd> code inside a
 <a href="#floats-intro">float</a>,
-or use the <kbd>H</kbd> extension to <kbd>.TS</kbd>.  If you put
-<kbd>tbl</kbd> code inside a float, the table will be output
-immediately if it fits on the page, or defered to the top of the
-next page if it doesn&#8217;t.  If you prefer a table to begin where
-you say and span over to the next page, or if you know for certain
-your table will run to multiple pages, use <kbd>.TS H</kbd>.
+or pass the <kbd>H</kbd> argument to <kbd>.TS</kbd>.
+</p>
+
+<p>
+If you put <kbd>tbl</kbd> code inside a float, the table will be
+output immediately if it fits on the page, or deferred to the top
+of the next page if it doesn&#8217;t.  If you prefer a table to
+begin where you say and span over to the next page, or if you know
+for certain a boxed table will run to multiple pages, simply pass the
+<kbd>H</kbd> argument to <kbd>.TS</kbd>, along with a corresponding
+<a href="#th"><kbd>TH</kbd></a>.
 </p>
 
 <div class="box-tip">
 <p class="tip">
 <span class="note">Note:</span>
-If you use <kbd>.TS H</kbd> to create a table that spans multiple
-pages, do not attempt to wrap the table inside a float. <kbd>.TS
-H</kbd> and <kbd>.FLOAT</kbd> are mutually exclusive. <b>FLOAT</b>
-&#8220;collects&#8221; the table and outputs it where convenient,
-whereas <kbd>.TS H</kbd> begins the table immediately and spans
-multiple pages, with a table header, if necessary.
+If you use <kbd>.TS H</kbd> to create a boxed table that spans
+multiple pages, do not attempt to wrap the table inside a float.
+For the purposes of boxed, multipage tables, <kbd>.TS H</kbd> and
+<kbd>.FLOAT</kbd> should be considered mutually exclusive.  This
+restriction is imposed by the <kbd>tbl</kbd> preprocessor itself,
+not groff or mom.
+</p>
+</div>
+
+<h4 id="tbl-placement" class="docs">tbl placement in mom docs</h4>
+
+<p>
+If you use <kbd>.TS</kbd> without the <kbd>H</kbd> argument (and
+therefore no <kbd>.TH</kbd>), tables that fit on the page are output
+in position.  If there is not enough room to output the table,
+<kbd>tbl</kbd> will abort with message instructing you to use
+<kbd>.TS H/.TH</kbd>.
+</p>
+
+<p>
+If you give <kbd>.TS</kbd> the <kbd>H</kbd> argument (with a
+corresponding <kbd>.TH</kbd>), tables will be output in position and
+span as many pages as necessary to complete output.  A table header
+will be printed at the top of each page&#8217;s table output.  In the
+event that there is not enough room to print the table header and
+at least one row of table data near the bottom of a page, mom will
+break to a new page before beginning table output, leaving a blank
+in
+<a href="definitions.html#running">running text</a>.
+</p>
+
+<p>
+Boxed tables inside
+<a href="#floats-intro">floats</a>
+are output in position if they fit on the page.  If not, they are
+deferred to the top of the next page without a break in running
+text.  Boxed tables within floats may not, however, span multiple
+pages; mom will abort with a message should a boxed table in a float
+run longer than the page.
+</p>
+
+<p>
+Unboxed tables inside floats may span multiple pages provided the
+<kbd>SPAN</kbd> argument has been given to
+<a href="#float">FLOAT</a>.
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+The vertical spacing around unfloated tables may appear slightly
+unequal, especially if there are several tables on the page.  This
+is a result of
+<a href="docprocessing.html#shim">shimming</a>
+that mom applies automatically after each table.  You may
+disable shimming with <kbd>.NO_SHIM</kbd>, or by giving the
+<kbd>NO_SHIM</kbd> argument to <kbd>.TE</kbd>.  In either case, you
+will still likely want to adjust the spacing around with table with
+<a href="typesetting.html#ald">ALD</a>
+or
+<a href="typesetting.html#rld">RLD</a>.
+Tables inside floats are more easily adjusted with the
+<kbd>ADJUST</kbd> argument to
+<a href="#float">FLOAT</a>.
 </p>
 </div>
 
 <div class="macro-id-overline">
-<h3 id="ts-te" class= "macro-id">.TS/.TE</h3>
+<h3 id="ts-te" class= "macro-id">.TS / .TH / .TE</h3>
 </div>
 
 <div class="box-macro-args">
-Macro: <b>TS</b> <kbd class="macro-args">[ BOXED | H ]</kbd>
+Macro: <a href="#ts"><b>TS</b></a> <kbd class="macro-args">[ H ]  [ BOXED ]  [ CENTER ]  [ NEEDS ]</kbd>
 <br/>
-Macro: <b>TH</b>
+Macro: <a href="#th"><b>TH</b></a> <kbd class="macro-args">(optional, only if .TS H)</kbd>
 <br/>
-Macro: <b>TE</b>
+Macro: <a href="#te"><b>TE</b></a> <kbd class="macro-args">[ "caption" ] [ &lt;distance&gt; ] [ LEFT | CENTER | RIGHT ] [ NO_SHIM ]</kbd>
 </div>
 
 <p>
 Tables to be formatted with <kbd>tbl</kbd> begin with the macro
-<kbd>.TS</kbd> and end with <kbd>.TE</kbd>.  Formatting
-instructions, per <kbd>man tbl</kbd> come between the two macros.
+<kbd>.TS</kbd> and end with <kbd>.TE</kbd>.  Global <kbd>tbl</kbd>
+options (&#8220;flags&#8221;), formatting, and data (per
+<kbd>tbl(1)</kbd>) come between the two macros.
 <br/>
 <span class="pre-in-pp">
   .TS
-  &lt;tbl commands and data&gt;
+  &lt;tbl options, formatting, and data&gt;
   .TE
 </span>
 Tables may be wrapped inside a
 <a href="#float-intro">float</a>,
 in which case, the entire table will be output on the current page
-if it fits, or defered to the next page if it doesn&#8217;t.
+if it fits, or deferred to the next page if it doesn&#8217;t.
 <br/>
 <span class="pre-in-pp">
   .FLOAT
   .TS
-  &lt;tbl commands and data&gt;
+  &lt;tbl options, formatting, and data&gt;
   .TE
   .FLOAT OFF
 </span>
-If a table inside a float is to be boxed (ie have a frame or border
-around it), you must give the optional argument <kbd>BOXED</kbd> to
-<kbd>.TS</kbd>, as in this example:
-<br/>
-<span class="pre-in-pp">
-  .FLOAT
-  .TS BOXED
-  allbox center;
-  c s s
-  c c c
-  n n n.
-  &lt;tbl commands and data&gt;
-  .TE
-  .FLOAT OFF
-</span>
-Unboxed tables inside a float require no special argument to
-<kbd>.TS</kbd>.
 </p>
 
+<div class="macro-id-overline">
+<h4 id="ts" class="docs" style="font-size: 100%; margin-top: .5em">The .TS macro</h4>
+</div>
+
 <p>
-If you prefer a table to start where you say and span multiple
-pages, or if you know for certain the table will run to several
-pages, do not use the <b>FLOAT</b> macro.  Instead, invoke
-<kbd>.TS</kbd> with the <kbd>H</kbd> argument, enter any
-<kbd>tbl</kbd> global options (per <kbd>man(1) tbl</kbd>), and
-follow the last line of the global options, which terminates with
-a period, with text for the table header.  Afterwards, invoke the
-macro, <kbd>.TH</kbd>, then begin entering table data, as in the
+The <b>TS</b> macro must be invoked before entering a <kbd>tbl</kbd>
+block.  You may give as many or as few of its arguments as required,
+in any order.
+</p>
+
+<h5 class="docs" style="margin-top: 1em; text-transform: none">'H'</h5>
+
+<p>
+With the <b>H</b> argument, a table will span as many pages as
+necessary, with or without a running header.  The placement of the
+corresponding
+<a href="#th"><kbd>.TH</kbd></a>,
+which is required whenever the <b>H</b> argument is given,
+determines what, if anything, goes in the header.  Compare the
 following:
+<span class="pre-in-pp">
+  .TS H                   .TS H
+  c s s                   c s s
+  c s s                   c s s
+  c c c                   c c c
+  n n n.                  n n n. 
+  Percent Increase        .TH
+  2002-2012               Percent Increase
+  .TH                     2002-2012
+  &lt;tbl data&gt;              &lt;tbl data&gt;
+  .TE                     .TE
+</span>
+The first example will create a table that spans multiple
+pages if necessary, with a running header (&#8220;Percent
+Increase&nbsp;/&nbsp;2002-2012&#8221;) for that table appearing at
+the top of each page until the table ends.  The second example,
+equally, may run to several pages, but without the running header.
+See
+<a href="#th"><b>TH</b></a>
+for an explanation of <kbd>.TH</kbd> placement.
+</p>
+
+<div id="h-tip" class="box-tip">
+<p class="tip">
+<span class="note">Tip:</span>
+Generally speaking, it&#8217;s a good idea to get into the habit
+of using <kbd>.TS H</kbd> all the time, since there are no
+circumstances under which it fails, whereas <kbd>.TS</kbd> without
+<kbd>H</kbd> will fail on tables that exceed the page length.
+</p>
+</div>
+
+<h5 class="docs" style="margin-top: 1em; text-transform: none">'BOXED'</h5>
+
+<p>
+If a table is to be boxed (ie <kbd>tbl</kbd> is given the flags
+<kbd>'box'</kbd> or <kbd>'allbox'</kbd>) you must pass the argument
+<kbd>BOXED</kbd> to <kbd>.TS</kbd>, as in this example:
 <br/>
 <span class="pre-in-pp">
-  .TS H
-  allbox center;
+  .TS BOXED
+  allbox;
   c s s
   c c c
   n n n.
-  AT&T Common Stock
-  .TH
-  &lt;tbl commands and data&gt;
+  &lt;tbl data&gt;
   .TE
 </span>
-In the example, &#8220;AT&T Common Stock&#8221; will be the
-table&#8217;s header, printed at the start of the table and at the
-top of the table on all subsequent pages.
 </p>
+
+<h5 class="docs" style="margin-top: 1em; text-transform: none">'CENTER'</h5>
+
+<p>
+If a table is to be centered on the page, (ie <kbd>tbl</kbd> is
+given the <kbd>'center'</kbd> flag), you must pass the argument
+<kbd>CENTER</kbd> to <kbd>.TS</kbd>, as in this example, which
+creates a (possibly) multipage boxed table, centered on the page,
+with a running header.
+<span class="pre-in-pp">
+  .TS H BOXED CENTER
+  allbox center;
+  c s s
+  c s s
+  c c c
+  n n n.
+  Percent Increase
+  2002-2012
+  .TH
+  &lt;tbl data&gt;
+  .TE
+</span>
+</p>
+
+<h5 class="docs" style="margin-top: 1em; text-transform: none">'NEEDS'</h5>
+
+<p>
+If a table is not inside a float and you pass <kbd>.TS </kbd> the
+<kbd>H</kbd> argument (which you should; see the tip
+<a href="#h-tip">here</a>),
+mom begins output immediately where the table occurs in the input
+file <i>if there is enough room on the output page for the table
+header plus at least one row of table data</i>.  If there isn't
+enough room, mom breaks to a new page before beginning the table,
+leaving a gap in
+<a href="definitions.html#running">running text</a>
+at the bottom of the previous page.  If, for aesthetic reasons,
+you would prefer that mom require more than one row of table data
+beneath the header near the bottom of a page, you may increase the
+number with the <kbd>NEEDS</kbd> argument, followed by the desired
+number of rows.
+</p>
+
+<div class="macro-id-overline">
+<h4 id="ts" class="docs" style="font-size: 100%; margin-top: .5em">The .TH macro</h4>
+</div>
+
+<p>
+The <b>TH</b> macro (<b>T</b>able <b>H</b>eader), which is required
+when you begin a table with <kbd>.TS H</kbd>, allows you to
+determine what goes in a table&#8217;s running header if it spans
+multiple pages.  If you place it immediately underneath your
+<kbd>tbl</kbd> formatting specifications, the last line of which
+always ends with a period (see <kbd>tbl(1)</kbd>), there will
+be no running header.  If you place it under the first row of
+<kbd>tbl</kbd> data, the first row will form the header; under the
+second row, the first and second rows form the header, and so on.
+</p>
+
+<div class="macro-id-overline">
+<h4 id="ts" class="docs" style="font-size: 100%; margin-top: .5em">The .TE macro</h4>
+</div>
+
+<p>
+<kbd>tbl</kbd> blocks must be terminated with <kbd>.TE</kbd>.
+Arguments to <b>TE</b> are optional.  If <kbd>&#8220;&lt;caption&gt;&#8221;</kbd>
+is given, you may use as many or as few of the subsequent arguments
+as you wish, in any order.
+</p>
+
+<h5 class="docs" style="margin-top: 1em; text-transform: none">&#8220;&lt;caption&gt;&#8221;</h5>
+
+<p>
+If you wish a table to have a caption, or label, underneath, surround the
+caption in double-quotes after <kbd>.TE</kbd>, like this:
+<span class="pre-in-pp">
+  .TE "Table 1"
+</span>
+</p>
+
+<h5 class="docs" style="margin-top: 1em; text-transform: none">&lt;distance&gt;</h5>
+
+<p>
+If you would like to increase the space between the bottom of a
+table and its caption, enter the increase with a digit to which is
+appended a
+<a href="definitions.html#unitofmeasure">unit of measure</a>:
+<span class="pre-in-pp">
+  .TE "Table 1" 3p
+</span>
+</p>
+
+<h5 class="docs" style="margin-top: 1em; text-transform: none">LEFT | CENTER | RIGHT</h5>
+
+<p>
+By default, mom aligns captions with the left side of tables.  If
+this is what you want, you may enter <kbd>LEFT</kbd>, or simply skip
+stating where you want the caption.  If you would prefer centered or
+right placement, use <kbd>CENTER</kbd> or <kbd>RIGHT</kbd>.
+</p>
+
+<h5 class="docs" style="margin-top: 1em; text-transform: none">NO_SHIM</h5>
+
+<p>
+By default, mom adds
+<a href="docprocessing.html#shim">shimming</a>
+underneath tables.  This behaviour may be disabled with the
+<kbd>NO_SHIM</kbd> argument, which, moreover, can be used for tables
+without a caption, like this:
+<span class="pre-in-pp">
+  .TE NO_SHIM
+</span>
+</p>
+
+<div class="rule-medium"><hr/></div>
+
+<h3 id="pic" class="docs">pic support</h3>
+
+<p>
+At present, mom has no integrated support or special features
+for the <b>pic</b> preprocessor, however <b>pic</b> may be used
+successfully within a mom document.  Generally, it&#8217;s best to
+wrap <b>pic</b> blocks within a float (see below).  If you want
+your <b>pic</b>s centred, you must include <kbd>-mpic</kbd> in the
+options passed to <kbd>pdfmom</kbd> or <kbd>groff</kbd>.
+</p>
+
+<h3 id="eqn" class="docs">eqn support</h3>
+
+<p>
+At present, mom has no integrated support or special features
+for the <b>eqn</b> preprocessor, however <b>eqn</b> may be used
+successfully within a mom document.  Generally, it&#8217;s best to
+wrap <b>eqn</b> blocks within a float (see below).
+</p>
+
+<h3 id="refer" class="docs">refer support</h3>
+
+<p>
+<b>refer</b> support is covered in the section
+<a href="refer.html">Bibliographies and references</a>.
+</p>
+
+<div class="rule-medium"><hr/></div>
 
 <h2 id="floats-intro" class="docs">Introduction to floats</h2>
 
@@ -557,7 +801,7 @@ or
 </div>
 
 <div class="box-macro-args">
-Macro: <b>FLOAT</b> <kbd class="macro-args">[ FORCE ] [ ADJUST +|-&lt;amount&gt; ] | &lt;anything&gt;</kbd>
+Macro: <b>FLOAT</b> <kbd class="macro-args">[ FORCE ] [ ADJUST +|-&lt;amount&gt; ] [ SPAN ] | &lt;anything&gt;</kbd>
 </div>
 
 <div class="box-tip">
@@ -600,6 +844,14 @@ for a discussion of automatic shimming.
 <p>
 <kbd>ADJUST</kbd> is ignored whenever a float is deferred to
 the following page.
+</p>
+
+<p>
+The <kbd>SPAN</kbd> argument tells mom that a float, if deferred,
+may carry onto multiple pages.  Please note that <kbd>SPAN</kbd> may
+not be used for floats containing a boxed table; mom will abort with
+a warning should this occur.  Unboxed tables, on the other hand, are
+acceptable within floats that are given the <kbd>SPAN</kbd> argument.
 </p>
 
 <div class="box-tip">
