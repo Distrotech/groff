@@ -553,7 +553,7 @@ end
 .    ie \\n[#PRE_COLLATE]=1 .
 .    el \{\
 .       if \\n[#COLLATE]=1 \{\
-.          if !r#START .DOC_FAM \\*[$FAMILY]
+.          if !r#START .ds $DOC_FAM \\*[$FAMILY]
 .       \}
 .    \}
 .END
@@ -11786,7 +11786,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    ie '\\$1'' .nr #PAGINATE 1
 .    el \{\
 .      nr #PAGINATE 0
-.      rr #PAGE_NUM_V_POS
+.      if !\\n[#COLLATE] .rr #PAGE_NUM_V_POS
 .    \}
 .    if \\n[#HF_OFF]=1 \{\
 .       rr #PAGINATION_STATE
@@ -11920,14 +11920,14 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .MAC PRINT_PAGE_NUMBER END
 .    ev PAGENUMBER
 .    nf
-.    po \\n[#DOC_L_MARGIN]u
-.    ll \\n[#DOC_L_LENGTH]u
-.    ta \\n[.l]u
-.    FAMILY  \\*[$PAGE_NUM_FAM]
-.    FT      \\*[$PAGE_NUM_FT]
-.    ps \\n[#DOC_PT_SIZE]u\\*[$PAGE_NUM_SIZE_CHANGE]
-.    if \\n[#PRINT_STYLE]=1 .TYPEWRITER
-.    if \\n[#PAGE_NUM_V_POS]=1 .vs 0
+.    po  \\n[#DOC_L_MARGIN]u
+.    ll  \\n[#DOC_L_LENGTH]u
+.    ta  \\n[.l]u
+.    fam \\*[$PAGE_NUM_FAM]
+.    ft  \\*[$PAGE_NUM_FT]
+.    ps  \\n[#DOC_PT_SIZE]u\\*[$PAGE_NUM_SIZE_CHANGE]
+.    if  \\n[#PRINT_STYLE]=1 .TYPEWRITER
+.    if  \\n[#PAGE_NUM_V_POS]=1 .vs 0
 .    if o \{\
 .       ie \\n[#PAGE_NUM_H_POS]=1 .LEFT
 .       el .RIGHT
@@ -11950,10 +11950,6 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    if \\n[#BIB_FIRST_PAGE] \{\
 .       if \\n[#BIB_FIRST_PN] .PAGENUMBER \\n[#BIB_FIRST_PN]
 .       rr #BIB_FIRST_PAGE
-.    \}
-.    if \\n[#TOC_FIRST_PAGE] \{\
-.       PAGENUMBER 1
-.       rr #TOC_FIRST_PAGE
 .    \}
 .    ie \\n[#DRAFT_WITH_PAGENUM] \{\
 .       ie '\\*[$REVISION]'' \
@@ -14807,17 +14803,16 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    \}
 .    ie \\n[#PAGINATE_TOC]=1 .PAGINATE
 .    el .PAGINATION OFF
-.    if \\n[#FOOTERS_ON]=1 \{\
-.       ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_NEW]
-.       rm $HDRFTR_CENTER_OLD
-.       rm $HDRFTR_CENTER_NEW
-.    \}
+.    ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_NEW]
+.    rm $HDRFTR_CENTER_OLD
+.    rm $HDRFTR_CENTER_NEW
 .    rr #COLLATED_DOC
 .    DOCHEADER OFF \\n[#T_MARGIN]u-\\n[#DOC_LEAD]
 .    PAGENUMBER 1
 .    if \\n[#LINENUMBERS]=2 .nr #LINENUMBERS 3
 .    L_MARGIN   \\n[#DOC_L_MARGIN]u
 .    LL         \\n[#DOC_L_LENGTH]u
+.    HEADER_CENTER "\\*[$TOC_HEADER_STRING]
 .    START
 .    nop
 .    nr #COLUMNS 0
