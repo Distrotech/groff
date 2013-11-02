@@ -5891,10 +5891,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#PRINT_STYLE]=1 .char \[idem] \[hy]\[hy]\[hy]
 .    if \\n[#PRINT_STYLE]=2 .char \[idem] \v'-.3m'\l'3m'\v'.3m'
 .\" Adjust doc leading for PRINTSTYLE TYPESET
-.    if \\n[#PRINT_STYLE]=2 \{\
-.       ie \\n[#ADJ_DOC_LEAD]=1 .DOC_LEAD_ADJUST
-.       el .
-.    \}
+.    if \\n[#PRINT_STYLE]=2 \
+.       if \\n[#ADJ_DOC_LEAD]=1 .DOC_LEAD_ADJUST
 .\" This diversion is to get a value for #FN_AUTOLEAD
 .    di NULL
 .       if \\n[#AUTO_LEAD] \{\
@@ -7731,13 +7729,18 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    if \\n[#IGNORE] .return
 .    if !\\n[#DOCS] .DOC_MACRO_ERROR \\$0
 .    br
-.    vs \\$1
-.    rr #DOC_AUTOLEAD
-.    rr #DOC_AUTOLEAD_FACTOR
-.    nr #DOC_LEAD \\n[#LEAD]
+.    if '\\$0'DOC_LEAD' \{\
+.       vs \\$1
+.       rr #DOC_AUTOLEAD
+.       rr #DOC_AUTOLEAD_FACTOR
+.       nr #DOC_LEAD \\n[.v]
+.    \}
 .    nr #RESET_TRAPS 1
 .    if !\\n[#ADJ_DOC_LEAD] .nr #REMOVE_ADJ 1
 .    if !'\\$0'DOC_LEAD' \{\
+.       if '\\$0'EN_LEAD' .nr #DOC_LEAD \\n[#EN_LEAD]
+.       if '\\$0'BIB_LEAD' .nr #DOC_LEAD \\n[#BIB_LEAD]
+.       if '\\$0'TOC_LEAD' .nr #DOC_LEAD \\n[#TOC_LEAD]
 .       if '\\$2'ADJUST' .TRAPS
 .       rr #RESET_TRAPS
 .    \}
@@ -9641,7 +9644,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    ie \\n[#COLUMNS]=1 \{\
 .       ie \\n[#COL_NUM]=\\n[#NUM_COLS] .DO_FOOTER
 .       el \{\
-.          ie \\n[#ENDNOTES] .sp |\\n[ec]u-\\n[#EN_LEAD]u
+.          ie (\\n[#ENDNOTES]=1]):(\\n[#BIBLIOGRAPHY]=1) \{\
+.             if \\n[#ENDNOTES] .sp |\\n[ec]u-\\n[#EN_LEAD]u
+.             if \\n[#BIBLIOGRAPHY] .sp |\\n[bc]u-\\n[#BIB_LEAD]u
+.          \}
 .          el .sp |\\n[dc]u
 .          po \\n[#COL_\\n+[#COL_NUM]_L_MARGIN]u
 .          nr #L_MARGIN \\n[.o]
@@ -9732,14 +9738,14 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .\" last reference falls on the bottom line.
 .    if \\n[num*refs] \{\
 .       if \\n[ref*num]=\\n[num*refs] \{\
-.          PRINT_FOOTER
-.          return
+.          rr num*refs
+.          nr ref*last 1
 .       \}
 .    \}
 .    PRINT_FOOTER
-.    bp
-.\" .bp springs the header trap; this pops the PAGE_TRANSITION ev
-.    ev
+.    if !\\n[ref*last] .bp
+.    rr ref*last
+.    ev \" .bp springs HEADER, so pop PAGE_TRANSITION ev afterwards
 .END
 \#
 .MAC PRINT_FOOTER END
@@ -13299,13 +13305,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    if !\\n[#OK_PROCESS_LEAD] .return
 .    nr #\\*[$SECTION]_LEAD (p;\\$1)
 .    rr #ADJ_\\*[$SECTION]_LEAD
+.    als \\*[$SECTION]_LEAD DOC_LEAD
 .    if '\\$2'ADJUST' \{\
 .       nr #ORIG_DOC_LEAD \\n[#UNADJUSTED_DOC_LEAD]
 .       nr #RESTORE_ADJ_DOC_LEAD \\n[#ADJ_DOC_LEAD]
 .       nr #ADJ_DOC_LEAD 1
 .       nr #ADJ_\\*[$SECTION]_LEAD 1
 .       nr #NO_TRAP_RESET 1
-.       DOC_LEAD \\n[#\\*[$SECTION]_LEAD]u ADJUST
+.       \\*[$SECTION]_LEAD \\n[#\\*[$SECTION]_LEAD]u ADJUST
 .       nr #\\*[$SECTION]_LEAD \\n[#DOC_LEAD]
 .       DOC_LEAD \\n[#ORIG_DOC_LEAD]u
 .       rr #NO_TRAP_RESET
@@ -13740,9 +13747,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          el .LL \\n[#COL_L_LENGTH]u
 .          ta \\n[.l]u
 .       \}
-.       ENDNOTE_LEAD \\*[$EN_LEAD] \\*[$ADJUST_EN_LEAD]
+\!.     if \\\\n[.vpt]=0 .vpt
+\!.     ne 3
 .       vs \\n[#EN_LEAD]u
-.\" Print page header title
+.\" Print identifying doc title (eg Chapter n)
 .       if \\n[#EN_NUMBER]=1 \{\
 .          if \\n[#PRINT_STYLE]=1 .TYPEWRITER
 .          if \\n[#PRINT_STYLE]=2 \{\
@@ -13778,7 +13786,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
 .          if \\n[#EN_NUMBER]=1 \{\
-.             if !'\\*[$EN_TITLE]'' .sp
+.             if !'\\*[$EN_TITLE]'' .sp .5v
 .          \}
 .          if \\n[#EN_MARKER_STYLE]=1 \{\
 .             FAMILY  \\*[$EN_NUMBER_FAM]
@@ -13816,7 +13824,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          \}
 .          nr #EN_MARK 0
 .       \}
-\!.     TRAP OFF
+.       vpt 0
 .       ie \\n[#EN_NUMBERS_ALIGN_RIGHT] .RIGHT
 .       el .LEFT
 .       if \\n[#EN_MARKER_STYLE]=1 \
@@ -13855,7 +13863,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          el .nop \E*[SUP]\\n[#EN_NUMBER]\E*[SUPX]\h'.15m'
 .       \}
 .       EOL
-\!.     TRAP OFF
 .       ll
 .       nr #EN_FIGURE_SPACE \w'\0'
 .       if \\n[#EN_MARKER_STYLE]=1 \{\
@@ -13878,7 +13885,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       \}
 .       nr #EN_TEXT_INDENT \\n[.i]
 .       QUAD \\*[$EN_QUAD]
-\!.     TRAP
+.       vpt 1
 .       if \\n[#PRINT_STYLE]=1 \{\
 .          TYPEWRITER
 .       \}
@@ -13942,9 +13949,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       NUMBER_LINES OFF
 .       nr #LINENUMBERS 2
 .    \}
-.    if \\n[#HEADERS_ON]=1 \{\
+.    if \\n[#HEADERS_ON]=1 \
 .       if !\\n[#EN_ALLOWS_HEADERS_ALL] .HEADERS OFF
-.    \}
 .    if \\n[#HEADER_STATE]=1 \{\
 .       ie \\n[#EN_HDRFTR_CENTER]=1 .
 .       el .rm $HDRFTR_CENTER
@@ -13979,15 +13985,13 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          \}
 .       \}
 .    \}
-.    el \{\
+.    el \
 .       if \\n[#PAGE_NUM_V_POS]=2 .nr #PAGINATE 0
-.    \}
 .    rr #PAGINATION_STATE
 .    PAGENUM_STYLE \\*[$EN_PN_STYLE]
 .    if \\n[#EN_FIRST_PN] .PAGENUMBER \\n[#EN_FIRST_PN]
-.    if \\n[#HEADER_STATE]=1 \{\
+.    if \\n[#HEADER_STATE]=1 \
 .       if \\n[#EN_ALLOWS_HEADERS] .HEADERS
-.    \}
 .\" Collect endnotes title string for TOC
 .    nr #TOC_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
 .    af #TOC_ENTRY_PN \\g[#PAGENUMBER]
@@ -14006,15 +14010,15 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       ie \\n[#ADJ_EN_LEAD] .nr #DOC_LEAD \\n[#EN_LEAD]
 .       el .DOC_LEAD \\n[#EN_LEAD]u
 .    \}
-.    PRINT \&
-.    ie r#EN_STRING_ADVANCE .sp |\\n[#EN_STRING_ADVANCE]u
-.    el .sp |\\n[#T_MARGIN]u
+.    vpt 0
+.    ie r#EN_STRING_ADVANCE .sp |\\n[#EN_STRING_ADVANCE]u-1v
+.    el .sp |\\n[#T_MARGIN]u-1v
+.    vpt 1
 .    mk ec
 .    if \\n[#SLANT_ON] \{\
 \*[SLANTX]\c
 .    \}
 .    sp
-.    ev ENDNOTES
 .    if !'\\*[$EN_STRING]'' \{\
 .       if \\n[#PRINT_STYLE]=1 \{\
 .          TYPEWRITER
@@ -14033,10 +14037,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          ps \\n[#EN_PS]u\\*[$EN_STRING_SIZE_CHANGE]
 .          vs      \\n[#EN_LEAD]u
 .          if \\n[#ENDNOTE_STRING_COLOR]=1 \{\
-.             TRAP OFF
 .             COLOR \\*[$ENDNOTE_STRING_COLOR]
 .             EOL
-.             TRAP
 .          \}
 .       \}
 .       if '\\*[$EN_STRING_QUAD]'L'      .LEFT
@@ -14052,7 +14054,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          nr #FROM_EN_STRING 1
 .          ie \\n[#EN_STRING_UNDERLINE]=2 \
 .             UNDERSCORE2 \\*[$EN_UNDERLINE_GAP] \\*[$EN_RULE_GAP] "\\*[$EN_STRING]"
-.          \}
 .          el .UNDERSCORE "\\*[$EN_STRING]"
 .          rr #FROM_EN_STRING
 .       \}
@@ -14071,7 +14072,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    chop END_NOTES
 .    nf
 .    END_NOTES
-.    ev
 .    rm END_NOTES
 .    if \\n[#PRINT_STYLE]=1 .vs \\n[#DOC_LEAD]u
 .    if \\n[#PRINT_STYLE]=2 \{\
@@ -14086,6 +14086,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       NUMBER_LINES RESUME
 .       nr #LINENUMBERS 1
 .    \}
+.
 .    PRINT_FOOTER
 .    rr #ENDNOTES
 .END
@@ -14263,9 +14264,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          NUMBER_LINES OFF
 .          nr #LINENUMBERS 2
 .       \}
-.       if \\n[#HEADERS_ON]=1 \{\
+.       if \\n[#HEADERS_ON]=1 \
 .          if !\\n[#BIB_ALLOWS_HEADERS_ALL] .HEADERS OFF
-.       \}
 .       if \\n[#HEADER_STATE]=1 \{\
 .          ie \\n[#BIB_HDRFTR_CENTER]=1 .
 .          el .rm $HDRFTR_CENTER
@@ -14287,8 +14287,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          if !'\\*[$HDRFTR_CENTER_OLD]'' \
 .             ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_OLD]
 .       \}
-.       BIBLIOGRAPHY_LEAD \\*[$BIB_LEAD] \\*[$ADJUST_BIB_LEAD]
-.       DOC_LEAD \\n[#BIB_LEAD]u
 .       NEWPAGE
 .       if \\n[#FOOTERS_ON]=1 \{\
 .          ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_NEW]
@@ -14298,21 +14296,17 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       ie !\\n[#SUSPEND_PAGINATION] \{\
 .          if \\n[#PAGE_NUM_V_POS]=1 \{\
 .             if r #BIB_NO_FIRST_PN \{\
-.                if \\n[#PAGINATION_STATE]=1 \{\
-.                   nr #PAGINATE 1
-.                \}
+.                if \\n[#PAGINATION_STATE]=1 .nr #PAGINATE 1
 .             \}
 .          \}
 .       \}
-.       el \{\
+.       el \
 .          if \\n[#PAGE_NUM_V_POS]=2 .nr #PAGINATE 0
-.       \}
 .       rr #PAGINATION_STATE
 .       PAGENUM_STYLE \\*[$BIB_PN_STYLE]
 .       if \\n[#BIB_FIRST_PN] .PAGENUMBER \\n[#BIB_FIRST_PN]
-.       if \\n[#HEADER_STATE]=1 \{\
+.       if \\n[#HEADER_STATE]=1 \
 .          if \\n[#BIB_ALLOWS_HEADERS] .HEADERS
-.       \}
 .\" Collect bibliography title string for TOC
 .       nr #TOC_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
 .       af #TOC_ENTRY_PN \\g[#PAGENUMBER]
@@ -14331,10 +14325,11 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          ie \\n[#ADJ_BIB_LEAD] .nr #DOC_LEAD \\n[#BIB_LEAD]
 .          el .DOC_LEAD \\n[#BIB_LEAD]u
 .       \}
-.       PRINT \&
-.       ie r#BIB_STRING_ADVANCE .sp |\\n[#BIB_STRING_ADVANCE]u
-.       el .sp |\\n[#T_MARGIN]u
-.       mk ec
+.       vpt 0
+.       ie r#BIB_STRING_ADVANCE .sp |\\n[#BIB_STRING_ADVANCE]u-1v
+.       el .sp |\\n[#T_MARGIN]u-1v
+.       vpt 1
+.       mk bc
 .       if \\n[#SLANT_ON] \{\
 \*[SLANTX]\c
 .       \}
@@ -14357,7 +14352,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             ps \\n[#BIB_PS]u\\*[$BIB_STRING_SIZE_CHANGE]
 .             vs      \\n[#BIB_LEAD]u
 .          \}
-.          if '\\*[$BIB_STRING_QUAD]'L'      .LEFT
 .          if '\\*[$BIB_STRING_QUAD]'LEFT'   .LEFT
 .          if '\\*[$BIB_STRING_QUAD]'C'      .CENTER
 .          if '\\*[$BIB_STRING_QUAD]'CENTER' .CENTER
@@ -14370,8 +14364,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             nr #FROM_BIB_STRING 1
 .             ie \\n[#BIB_STRING_UNDERLINE]=2 \
 .                UNDERSCORE2 "\\*[$BIB_STRING]"
-.             el \
-.                UNDERSCORE "\\*[$BIB_STRING]"
+.             el .UNDERSCORE "\\*[$BIB_STRING]"
 .             rr #FROM_BIB_STRING
 .          \}
 .          el .PRINT "\\*[$BIB_STRING]"
@@ -14417,6 +14410,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .\" last ref falls on the bottom line.
 .       nr num*refs \\n[ref*num*first-pass]
 .       nf
+.       chop BIB
 .       BIB
 .    \}
 .END
@@ -14476,7 +14470,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             \}
 .          \}
 .       \}
-\!.     ne 1
 \!.     PAD_MARKER ^
 .       if !'\\$0'HD_TO_TOC' \{\
 \!.        if \\n[#TOC_TITLE_CAPS]=1 .CAPS
@@ -14814,7 +14807,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    LL         \\n[#DOC_L_LENGTH]u
 .    HEADER_CENTER "\\*[$TOC_HEADER_STRING]
 .    START
-.    nop
 .    nr #COLUMNS 0
 .    if \\n[#SLANT_ON] \{\
 \*[SLANTX]\c
@@ -16095,7 +16087,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .END
 \#
 .MAC TRAPS END
-.    nr #UNADJUSTED_DOC_LEAD \\n[#DOC_LEAD]
+.    if !\\n[#UNADJUSTED_DOC_LEAD]  .nr #UNADJUSTED_DOC_LEAD \\n[#DOC@LEAD]
 .\" Remove all header/footer traps
 .    if !\\n[#NO_TRAP_RESET] \{\
 .       ch DO_T_MARGIN
