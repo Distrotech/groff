@@ -509,12 +509,10 @@ end
 .MAC FALLBACK_FONT END
 .    if \\n[#NUM_ARGS]=1 \{\
 .       if '\\$1'ABORT' .nr #ABORT_FT_ERRORS 1
-.       if '\\$1'WARN' \{\
+.       if '\\$1'WARN' \
 .          if r #ABORT_FT_ERRORS .nr #ABORT_FT_ERRORS 0
-.       \}
-.       if !'\\$1'ABORT' \{\
+.       if !'\\$1'ABORT' \
 .          if !'\\$1'WARN' .fp 0 dummy \\$1
-.       \}
 .    \}
 .    if \\n[#NUM_ARGS]=2 \{\
 .       fp 0 dummy \\$1
@@ -552,9 +550,8 @@ end
 .    \}
 .    ie \\n[#PRE_COLLATE]=1 .
 .    el \{\
-.       if \\n[#COLLATE]=1 \{\
+.       if \\n[#COLLATE]=1 \
 .          if !r#START .ds $DOC_FAM \\*[$FAMILY]
-.       \}
 .    \}
 .END
 \#
@@ -579,9 +576,7 @@ end
 .             return
 .          \}
 .       \}
-.       el \{\
-.          UNDERLINE OFF
-.       \}
+.       el .UNDERLINE OFF
 .       return
 .    \}
 .    ft 0
@@ -591,17 +586,15 @@ end
 .          if !F\\n[.fn] \{\
 .             if !S\\*[$FONT] \{\
 .                tm1 "[mom]: Font style "\\*[$FONT]" at line \\n[.c] has not been registered.
-.                ie \\n[#ABORT_FT_ERRORS]=0 \{\
+.                ie \\n[#ABORT_FT_ERRORS]=0 \
 .                   tm1 "       Continuing to process using fallback font.
-.                \}
 .                el .ab Aborting '\\n[.F]' at \\$0, line \\n[.c].
 .             \}
 .             if \\n[.f]=0 \{\
 .                tm1 "[mom]: Either font style "\\*[$FONT]" at line \\n[.c] does not exist in family "\\n[.fam]",
 .                tm1 "       or family "\\n[.fam]" has not been installed.
-.                ie \\n[#ABORT_FT_ERRORS]=0 \{\
+.                ie \\n[#ABORT_FT_ERRORS]=0 \
 .                   tm1 "       Continuing to process using fallback font.
-.                \}
 .                el .ab Aborting '\\n[.F]' at \\$0, line \\n[.c].
 .             \}
 .          \}
@@ -1831,9 +1824,7 @@ end
 \#   be in lower case.
 \#
 .MAC NEWCOLOR END
-.    if \\n[#NUM_ARGS]=2 \{\
-.       defcolor \\$1 rgb \\$2
-.    \}
+.    if \\n[#NUM_ARGS]=2 .defcolor \\$1 rgb \\$2
 .    if \\n[#NUM_ARGS]=3 \{\
 .       if '\\$2'RGB' .ds $COLOR_SCHEME rgb
 .       if '\\$2'CYM' .ds $COLOR_SCHEME cym
@@ -1948,7 +1939,7 @@ end
 .    ie !'\\n[.z]'' \{\
 \c
 .       ie !n \{\
-.if !\\n[.k]=0 \?\h'-\w'\\n[.ss]'u'\?
+.          if !\\n[.k]=0 \?\h'-\w'\\n[.ss]'u'\?
 \?\R'#UNDERLINE_ON 1'\X'ps: exec \\n[_w] \\n[_d] decorline'\?\c
 .       \}
 .       el \{\
@@ -2257,16 +2248,14 @@ end
 .MAC SETSLANT END
 .    ie '\\$1'RESET' \{\
 .       nr #DEGREES 15
-.       if \\n[#PRINT_STYLE]=1 \{\
+.       if \\n[#PRINT_STYLE]=1 \
 .          if \\n[#UNDERLINE_SLANT] .return
-.       \}
 .       ds SLANT \ER'#SLANT_ON 1'\ES'\En[#DEGREES]'
 .    \}
 .    el \{\
 .       nr #DEGREES \\$1
-.       if \\n[#PRINT_STYLE]=1 \{\
+.       if \\n[#PRINT_STYLE]=1 \
 .          if \\n[#UNDERLINE_SLANT] .return
-.       \}
 .       ds SLANT \ER'#SLANT_ON 1'\ES'\En[#DEGREES]'
 .    \}
 .    ds SLANTX \ER'#SLANT_ON 0'\ES'0'
@@ -2816,9 +2805,8 @@ end
 .       vpt 1
 .       rr #RESTORE_TRAP
 .    \}
-.    if '\\n[.z]'FLOAT*DIV' \{\
+.    if '\\n[.z]'FLOAT*DIV' \
 .       if !(\\n[.d]+\\n[#WEIGHT])<\\n[D-float] .nr D-float \\n[.d]+\\n[#WEIGHT]
-.    \}
 .END
 \#
 \# RULE
@@ -2900,9 +2888,7 @@ end
 .    ie !'\\$4'' \{\
 .       ds $RL_COLOR  \\$4
 .    \}
-.    el \{\
-.       ds $RL_COLOR default
-.    \}
+.    el .ds $RL_COLOR default
 .    nr #SAVED_WEIGHT     \\n[#RULE_WEIGHT]
 .    nr #SAVED_WEIGHT_ADJ \\n[#RULE_WEIGHT_ADJ]
 .    RULE_WEIGHT \\*[$RL_WEIGHT]
@@ -2982,9 +2968,7 @@ end
 .    el .ds $BX_COLOR default
 .    nr #SAVED_WEIGHT     \\n[#RULE_WEIGHT]
 .    nr #SAVED_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
-.    if !'\\$1'SOLID' \{\
-.       RULE_WEIGHT \\*[$BX_WEIGHT]
-.    \}
+.    if !'\\$1'SOLID' .RULE_WEIGHT \\*[$BX_WEIGHT]
 .    ds $BX_INDENT \\*[$BX_INDENT]-\\n[#WEIGHT_ADJ]u
 .    ie \\n[#BX_SOLID]=1 \{\
 .       fcolor \\*[$BX_COLOR]
@@ -3023,9 +3007,8 @@ end
 .       vpt 1
 .       rr #RESTORE_TRAP
 .    \}
-.    if '\\n[.z]'FLOAT*DIV' \{\
+.    if '\\n[.z]'FLOAT*DIV' \
 .       if !(\\n[.d]+\\*[$BX_DEPTH])<\\n[D-float] .nr D-float \\n[.d]+\\*[$BX_DEPTH]
-.    \}
 .END
 \#
 \# ELLIPSES - DCL
@@ -3076,9 +3059,7 @@ end
 .    el .ds $CL_COLOR default
 .    nr #SAVED_WEIGHT     \\n[#RULE_WEIGHT]
 .    nr #SAVED_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
-.    if !'\\$1'SOLID' \{\
-.          RULE_WEIGHT \\*[$CL_WEIGHT]
-.    \}
+.    if !'\\$1'SOLID' .RULE_WEIGHT \\*[$CL_WEIGHT]
 .    ds $CL_INDENT \\*[$CL_INDENT]-\\n[#WEIGHT_ADJ]u
 .    ie \\n[#CL_SOLID]=1 \{\
 .       fcolor \\*[$CL_COLOR]
@@ -3119,9 +3100,8 @@ end
 .       vpt 1
 .       rr #RESTORE_TRAP
 .    \}
-.    if '\\n[.z]'FLOAT*DIV' \{\
+.    if '\\n[.z]'FLOAT*DIV' \
 .       if !(\\n[.d]+\\*[$CL_DEPTH])<\\n[D-float] .nr D-float \\n[.d]+\\*[$CL_DEPTH]
-.    \}
 .END
 \#
 \# RULE WEIGHT
@@ -3889,9 +3869,8 @@ end
 \#   The routine is diverted so it remains invisible to output.
 \#
 .MAC SIZESPECS END
-.    if '\\n[.z]'FLOAT*DIV' \{\
+.    if '\\n[.z]'FLOAT*DIV' \
 .       if \\n[dn] .nr saved-dn \\n[dn]
-.    \}
 .    di TYPESIZE
 E\\R'#CAP_HEIGHT \\n[.cht]'
 e\\R'#X_HEIGHT \\n[.cht]'
@@ -3901,9 +3880,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ds $X_HEIGHT \\n[#X_HEIGHT]u
 .    ds $DESCENDER \\n[#DESCENDER]u
 .    di
-.    if '\\n[.z]'FLOAT*DIV' \{\
+.    if '\\n[.z]'FLOAT*DIV' \
 .       nr dn \\n[saved-dn]
-.    \}
 .END
 \#
 \# =====================================================================
@@ -4591,9 +4569,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .MAC CHAPTER END \"If document is a chapter, the chapter number
 .    nr #CHAPTER_CALLED 1
 .    ds $CHAPTER \\$1
-.    if r #CH_NUM \{\
+.    if r #CH_NUM \
 .       if \B'\\*[$CHAPTER]' .nr #CH_NUM \\*[$CHAPTER]
-.    \}
 .END
 \#
 .MAC CHAPTER_TITLE END \" This defines what comes after Chapter #
@@ -5426,9 +5403,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !d $PAPER .PAPER LETTER
 .    if !\\n[#DOC_TYPE] .DOCTYPE DEFAULT
 .    ie \\n[#PAGENUM_STYLE_SET] .PAGENUM_STYLE \\*[$PAGENUM_STYLE]
-.    el \{\
+.    el \
 .       if !\\n[#COPY_STYLE]=1 .PAGENUM_STYLE DIGIT
-.    \}
 .    if !\\n[#COPY_STYLE] .COPYSTYLE FINAL
 .    if \\n[#DRAFT_WITH_PAGENUM] .COPYSTYLE \\*[$COPY_STYLE]
 .    if \\n[#DOC_TYPE]=4 \{\
@@ -5497,14 +5473,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#AUTO_LEAD] .nr #DOC_AUTOLEAD \\n[#AUTOLEAD_VALUE]
 .\" #SAVED_DOC_LEAD is set in COLLATE
 .    if \\n[#SAVED_DOC_LEAD] \{\
-.       if !\\n[#TOC] \{\
+.       if !\\n[#TOC] \
 .          if !\\n[#DOC_LEAD]=\\n[#SAVED_DOC_LEAD] .nr #RERUN_TRAPS 1
-.       \}
 .    \}
 .    ie \\n[#ADJ_DOC_LEAD]=1 .
-.    el \{\
+.    el \
 .       if !\\n[#DOC_LEAD_ADJUST_OFF] .DOC_LEAD_ADJUST
-.    \}
 .    ds $DOC_QUAD \\*[$QUAD_VALUE]
 .    if '\\*[$FONT]''   .FT R
 .    if '\\*[$PP_FT]''  .ds $PP_FT \\*[$FONT]
@@ -5532,18 +5506,16 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    el .PAGENUM_HYPHENS
 .    if !r #HDRFTR_RIGHT_CAPS .HDRFTR_RIGHT_CAPS
-.    if \\n[#HDRFTR_RIGHT_CAPS]=0 \{\
+.    if \\n[#HDRFTR_RIGHT_CAPS]=0 \
 .       if !d $HDRFTR_RIGHT_SIZE_CHANGE .HDRFTR_RIGHT_SIZE +0
-.    \}
 .    if !d $FN_FAM        .FOOTNOTE_FAMILY \\*[$DOC_FAM]
 .    if !d $FN_FT         .FOOTNOTE_FONT R
 .    if !d $FN_QUAD       .FOOTNOTE_QUAD \\*[$DOC_QUAD]
 .    if !r #FN_RULE       .FOOTNOTE_RULE
 .    if !r #FN_MARKERS    .FOOTNOTE_MARKERS
 .    if \\n[#FN_MARKERS]=1 \{\
-.       if \\n[#FN_REF]=1 \{\
+.       if \\n[#FN_REF]=1 \
 .          if !\\n[#FN_MARKER_STYLE] .FOOTNOTE_MARKER_STYLE NUMBER
-.       \}
 .       if !\\n[#FN_MARKER_STYLE] .FOOTNOTE_MARKER_STYLE STAR
 .    \}
 .    if !r #EN_MARKER_STYLE     .ENDNOTE_MARKER_STYLE SUPERSCRIPT
@@ -5596,6 +5568,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !d $TOC_HEADER_QUAD      .TOC_HEADER_QUAD LEFT
 .    if !d $TOC_PN_STYLE         .TOC_PAGENUM_STYLE roman
 .    if !r #TOC_PN_PADDING       .TOC_PADDING 3
+.\" Line numbering
+.    if !r #LN_GUTTER    .nr #LN_GUTTER 2
+.    if !r #Q_LN_GUTTER  .nr #Q_LN_GUTTER 2
+.    if !r #BQ_LN_GUTTER .nr #BQ_LN_GUTTER 2
 .\" PDF link colour
 .    if !\\n[PDFHREF_COLOR_SET] .PDF_LINK_COLOR 0.0 0.3 0.9
 .\" String defaults for both PRINTSTYLEs
@@ -5639,9 +5615,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if '\\*[$Q_OFFSET_VALUE]'' .QUOTE_INDENT 1
 .       \}
 .\" +Epigraphs
-.       if !r #EPI_OFFSET_VALUE \{\
+.       if !r #EPI_OFFSET_VALUE \
 .          if '\\*[$EPI_OFFSET_VALUE]'' .EPIGRAPH_INDENT 2
-.       \}
 .\" +Linebreaks
 .       if !d $LINEBREAK_CHAR .LINEBREAK_CHAR * 3 2p
 .\" +Footnotes
@@ -5799,29 +5774,25 @@ y\\R'#DESCENDER \\n[.cdp]'
 .\" +Headers and footers
 .       if !d $HDRFTR_LEFT_FAM              .HDRFTR_LEFT_FAMILY \\*[$DOC_FAM]
 .       if !d $HDRFTR_LEFT_FT               .HDRFTR_LEFT_FONT R
-.       if \\n[#HDRFTR_LEFT_CAPS] \{\
+.       if \\n[#HDRFTR_LEFT_CAPS] \
 .          if !d $HDRFTR_LEFT_SIZE_CHANGE   .HDRFTR_LEFT_SIZE -2
-.       \}
 .       if !d $HDRFTR_LEFT_SIZE_CHANGE      .HDRFTR_LEFT_SIZE -.5
 .       if !d $HDRFTR_CENTER_FAM            .HDRFTR_CENTER_FAMILY \\*[$DOC_FAM]
 .       if !d $HDRFTR_CENTER_FT             .HDRFTR_CENTER_FONT I
-.       if \\n[#HDRFTR_CENTER_CAPS] \{\
+.       if \\n[#HDRFTR_CENTER_CAPS] \
 .          if !d $HDRFTR_CENTER_SIZE_CHANGE .HDRFTR_CENTER_SIZE -2
-.       \}
 .       if !d $HDRFTR_CENTER_SIZE_CHANGE    .HDRFTR_CENTER_SIZE -.5
 .       if !d $HDRFTR_RIGHT_FAM             .HDRFTR_RIGHT_FAMILY \\*[$DOC_FAM]
 .       if !d $HDRFTR_RIGHT_FT              .HDRFTR_RIGHT_FONT R
-.       if \\n[#HDRFTR_RIGHT_CAPS] \{\
+.       if \\n[#HDRFTR_RIGHT_CAPS] \
 .          if !d $HDRFTR_RIGHT_SIZE_CHANGE  .HDRFTR_RIGHT_SIZE -2
-.       \}
 .       if !d $HDRFTR_RIGHT_SIZE_CHANGE     .HDRFTR_RIGHT_SIZE -.5
 .\" +Quotes
 .       if !d $QUOTE_FAM         .QUOTE_FAMILY \\*[$DOC_FAM]
 .       if !d $QUOTE_FT          .QUOTE_FONT I
 .       if !d $QUOTE_SIZE_CHANGE .QUOTE_SIZE+0
-.       if !r #Q_OFFSET_VALUE \{\
+.       if !r #Q_OFFSET_VALUE \
 .          if '\\*[$Q_OFFSET_VALUE]'' .QUOTE_INDENT 3
-.       \}
 .\" +Blockquotes
 .\"  Note: the leading for quotes and blockquotes is set after .DEFAULTS in START
 .       if !d $BQUOTE_FAM         .BLOCKQUOTE_FAMILY \\*[$DOC_FAM]
@@ -5834,9 +5805,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !d $EPI_SIZE_CHANGE .EPIGRAPH_SIZE -1.5
 .       if !r #EPI_AUTOLEAD    .EPIGRAPH_AUTOLEAD 2
 .       if !d $EPI_QUAD        .EPIGRAPH_QUAD \\*[$DOC_QUAD]
-.       if !\\n[#EPI_OFFSET_VALUE] \{\
+.       if !\\n[#EPI_OFFSET_VALUE] \
 .          if '\\*[$EPI_OFFSET_VALUE]'' .EPIGRAPH_INDENT 3
-.       \}
 .\" +Linebreaks
 .       if !d $LINEBREAK_CHAR  .LINEBREAK_CHAR * 3 3p
 .       if !d $LINEBREAK_COLOR .LINEBREAK_COLOR black
@@ -7106,29 +7076,26 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             nr #MISC_DEPTH +\\n[dn]
 .          \}
 .       \}
-.    nr #MISC_DEPTH -\\n[#DOC_LEAD]
-.    sp |\\n[#VISUAL_B_MARGIN]u-\\n[#MISC_DEPTH]u
-.    nf
-.    MISC_DIV
-.    rm MISC_DIV
-.    rr #MISC_DEPTH
+.       nr #MISC_DEPTH -\\n[#DOC_LEAD]
+.       sp |\\n[#VISUAL_B_MARGIN]u-\\n[#MISC_DEPTH]u
+.       nf
+.       MISC_DIV
+.       rm MISC_DIV
+.       rr #MISC_DEPTH
 .    \}
 .    if '\\$0'DO_COVER'     .nr #COVER_END 1
 .    if '\\$0'DO_DOC_COVER' .nr #DOC_COVER_END 1
 .    if \\n[TOC.RELOCATE]==1 \{\
-.       if !\\n[#COVER_BLANKPAGE] \{\
+.       if !\\n[#COVER_BLANKPAGE] \
 .          if !rTOC_BH .TOC_AFTER_HERE
-.       \}
 .    \}
 .    if '\\$0'DO_COVER' \{\
-.       if \\n[TOC.RELOCATE]==6 \{\
+.       if \\n[TOC.RELOCATE]==6 \
 .          if !rTOC_BH .TOC_AFTER_HERE
-.       \}
 .    \}
 .    if '\\$0'DO_DOC_COVER' \{\
-.       if \\n[TOC.RELOCATE]==4 \{\
+.       if \\n[TOC.RELOCATE]==4 \
 .          if !rTOC_BH .TOC_AFTER_HERE
-.       \}
 .    \}
 .    if '\\$0'DO_DOC_COVER' .rm DOC_
 .    END_COVER
@@ -7143,30 +7110,26 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    if \\n[#PAGINATION_WAS_ON]=1 .nr % +1
 .    if \\n[#DOC_COVER_END]=1 \{\
 .       ie \\n[#DOC_COVER_BLANKPAGE]=1 \{\
-.          if \\n[TOC.RELOCATE] \{\
+.          if \\n[TOC.RELOCATE] \
 .             if !\\n[#TOC_BH] .TOC_AFTER_HERE
-.          \}
 .          NEWPAGE
 .          rr #DOC_COVER_BLANKPAGE
 .          if !\\n[#DOCCOVERS_COUNT]=1 .nr % -2
 .       \}
-.       el \{\
+.       el \
 .          if !\\n[#DOCCOVERS_COUNT]=1 .nr #PAGE_NUM_ADJ -1
-.       \}
 .       rr #DOC_COVER_END
 .    \}
 .    if \\n[#COVER_END]=1 \{\
 .       ie \\n[#COVER_BLANKPAGE]=1 \{\
-.          if \\n[TOC.RELOCATE] \{\
+.          if \\n[TOC.RELOCATE] \
 .             if !\\n[TOC_BH] .TOC_AFTER_HERE
-.          \}
 .          NEWPAGE
 .          rr #COVER_BLANKPAGE
 .          if !\\n[#COVERS_COUNT]=1 .nr % -2
 .       \}
-.       el \{\
+.       el \
 .          if !\\n[#COVERS_COUNT]=1 .nr #PAGE_NUM_ADJ -1
-.       \}
 .       rr #COVER_END
 .    \}
 .    ev
@@ -7213,6 +7176,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       ab [mom]: PRINTSTYLE missing.  Aborting '\\n[.F]'.
 .    \}
 .    if \\n[#LINENUMBERS]=1 \{\
+.       nn
 .       NUMBER_LINES OFF
 .       nr #LINENUMBERS 2
 .    \}
@@ -7316,9 +7280,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .\" End collate stuff
 .    ie \\n[#DOC_HEADER]=0 \{\
 .       if \\n[.ns] .rs
-.       if \\n[#DOC_TYPE]=4 \{\
+.       if \\n[#DOC_TYPE]=4 \
 .          if !'\\n[.z]'' .di
-.       \}
 .       nr #STORED_PP_INDENT \\n[#PP_INDENT]
 .       PARA_INDENT 0
 .       PP
@@ -7504,9 +7467,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             ie \\n[#DOCTYPE_UNDERLINE] \{\
 .             UNDERSCORE2 4p "\\*[$DOC_TYPE]"
 .             \}
-.             el \{\
+.             el \
 .                PRINT "\\*[$DOC_TYPE]"
-.             \}
 .             if \\n[#SINGLE_SPACE]=1 .sp
 .          \}
 .          if \\n[#PRINT_STYLE]=2 .NAMED_DOCHEADER
@@ -7535,9 +7497,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    \}
 .    vs \\n[#DOC_LEAD]u
 .    if \\n[#ADJ_DOC_LEAD]=1 \{\
-.       ie !r#ADVANCE_FROM_TOP \{\
+.       ie !r#ADVANCE_FROM_TOP \
 .          if \\n[#DOC_HEADER]=1 .SHIM
-.       \}
 .       el .rr #ADVANCE_FROM_TOP
 .    \}
 .    mk dc
@@ -7808,13 +7769,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             nr #VALID_BASELINE +\\n[#DOC_LEAD]
 .             nr #SHIM \\n[#VALID_BASELINE]-\\n[#CURRENT_V_POS]
 .          \}
-.          el \{\
-.             PROCESS_SHIM
-.          \}
+.          el .PROCESS_SHIM
 .       \}
-.       el \{\
-.          PROCESS_SHIM
-.       \}
+.       el .PROCESS_SHIM
 .       ALD \\n[#SHIM]u
 .       rr #CURRENT_V_POS
 .    \}
@@ -7835,18 +7792,14 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   attribution is desired.  Blank line results.
 \#
 .MAC ATTRIBUTE_STRING END
-.    if !'\\$1'DOC_COVER' \{\
+.    if !'\\$1'DOC_COVER' \
 .       if !'\\$1'COVER' .nr #NEITHER 1
-.    \}
-.    if !'\\$1'COVER' \{\
+.    if !'\\$1'COVER' \
 .       if !'\\$1'DOC_COVER' .nr #NEITHER 1
-.    \}
-.    if '\\$1'DOC_COVER' \{\
+.    if '\\$1'DOC_COVER' \
 .       ds $ATTRIBUTE_STRING_DOC_COVER \\$2
-.    \}
-.    if '\\$1'COVER' \{\
+.    if '\\$1'COVER' \
 .       ds $ATTRIBUTE_STRING_COVER \\$2
-.    \}
 .    if \\n[#NEITHER]=1 \{\
 .       ds $ATTRIBUTE_STRING \\$1
 .       rr #NEITHER
@@ -8005,9 +7958,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       nr #LINENUMBERS 2
 .    \}
 .    if \\n[#START] \{\
-.       if \\n[#PRINT_STYLE]=1 \{\
+.       if \\n[#PRINT_STYLE]=1 \
 .          if \\n[#AUTHOR_LINES]=1 .ALD \\n[#DOC_LEAD]u
-.       \}
 .    \}
 .    ie '\\$1'' \{\
 .       nr #EPIGRAPH 1
@@ -8130,9 +8082,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             nr #EPI_ACTIVE 1
 .          \}
 .       \}
-.       el \{\
-.          DO_EPIGRAPH
-.       \}
+.       el .DO_EPIGRAPH
 .    \}
 .END
 \#
@@ -8173,16 +8123,13 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{\
 .          nr #EPI_WHITESPACE -\\n[#DOC_LEAD]
 .       \}
-.       if \\n[#PRINT_STYLE]=1 \{\
+.       if \\n[#PRINT_STYLE]=1 \
 .          if !\\n[#SINGLE_SPACE]=1 .ALD \\n[#DOC_LEAD]u
-.       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
 .          ie !\\n[#DOC_TYPE]=2 .RLD \\n[#DOC_LEAD]u
 .          el \{\
 .             ie '\\*[$CHAPTER_TITLE]'' .RLD \\n[#DOC_LEAD]u
-.             el \{\
-.                if '\\*[$CHAPTER]''    .RLD \\n[#DOC_LEAD]u
-.             \}
+.             el .if '\\*[$CHAPTER]''   .RLD \\n[#DOC_LEAD]u
 .          \}
 .          if \\n[#EPI_WHITESPACE]<\\n[#DOC_LEAD] \
 .             ALD \\n[#EPI_LEAD_DIFF]u+(\\n[#EPI_WHITESPACE]u/2u)
@@ -8597,12 +8544,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   on or off.
 \#
 .MAC HDRFTR_RULE END
-.    if r #HEADERS_ON \{\
+.    if r #HEADERS_ON \
 .       if \\n[#HEADERS_ON]=1 .nr #HDRFTR_RULE_GAP \\n[#HEADER_RULE_GAP]
-.    \}
-.    if r #FOOTERS_ON \{\
+.    if r #FOOTERS_ON \
 .       if \\n[#FOOTERS_ON]=1 .nr #HDRFTR_RULE_GAP \\n[#FOOTER_RULE_GAP]
-.    \}
 .    if '\\$0'HDRFTR_RULE_INTERNAL' \{\
 .       ie \\n[#USERDEF_HDRFTR] \{\
 .          nr #CAP_HEIGHT_ADJUST \\n[#HDRFTR_HEIGHT]
@@ -8867,9 +8812,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   Called from within either HEADER or FOOTER.
 \#
 .MAC PRINT_HDRFTR END
-.    if \\n[#DOC_TYPE]=4 \{\
-.       nr #SUITE \En[.pn]
-.    \}
+.    if \\n[#DOC_TYPE]=4 .nr #SUITE \En[.pn]
 .    if \\n[#FOOTERS_ON] \{\
 .       if \\n[#START_FOR_FOOTERS] \{\
 .          rr #START_FOR_FOOTERS
@@ -8923,9 +8866,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       if e .LEFT
 .       if \\n[#RECTO_VERSO]=0    .LEFT
 .       if \\n[#HDRFTR_LEFT_CAPS] .CAPS
-.       ie '\\*[$HDRFTR_LEFT]'#' \{\
-.           PRINT \\n[#PAGENUMBER]
-.       \}
+.       ie '\\*[$HDRFTR_LEFT]'#' .PRINT \\n[#PAGENUMBER]
 .       el \{\
 .          ie !'\\*[$HDRFTR_LEFT]'' .PRINT \\*[$HDRFTR_LEFT]
 .          el .PRINT \&
@@ -9049,9 +8990,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       \}
 .       if \\n[#HDRFTR_RIGHT_CAPS] .CAPS OFF
 .    \}
-.    if \\n[#HDRFTR_RULE] \{\
-.       HDRFTR_RULE_INTERNAL
-.    \}
+.    if \\n[#HDRFTR_RULE] .HDRFTR_RULE_INTERNAL
 .    br
 .END
 \#
@@ -9277,14 +9216,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    \}
 .    if !n .nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
 .    sp -1v
-.    ie \\n[#HEADERS_ON] \{\
-.       PRINT_HDRFTR
-.    \}
+.    ie \\n[#HEADERS_ON] .PRINT_HDRFTR
 .    el \{\
 .       if \\n[#PAGE_NUM_V_POS]=1 \{\
-.          if \\n[#PAGINATE] \{\
-.             PRINT_PAGE_NUMBER
-.          \}
+.          if \\n[#PAGINATE] .PRINT_PAGE_NUMBER
 .       \}
 .    \}
 .    sp |\\n[#T_MARGIN]u-\\n[#DOC_LEAD]u
@@ -9363,9 +9298,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             po \
 \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u+(\\n[#PP_INDENT]u*\\n[#EPI_OFFSET_VALUE]u)
 .          \}
-.          el \{\
-.             po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u+\\*[$EPI_OFFSET_VALUE]
-.          \}
+.          el .po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u+\\*[$EPI_OFFSET_VALUE]
 .       \}
 .    \}
 .    if \\n[#RESET_FN_COUNTERS]=1 \{\
@@ -9380,9 +9313,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    \}
 .    rr #FROM_HEADER
 .    rr #DEFER_SPACE_ADDED
-.    if !\\n[#FN_DEPTH] \{\
-.       if r #DIVERTED .rr #DIVERTED
-.    \}
+.    if !\\n[#FN_DEPTH] .if r #DIVERTED .rr #DIVERTED
 .    if \\n[#MN_OVERFLOW_LEFT]=1 \{\
 .       MN LEFT
 .       nf
@@ -9581,9 +9512,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    ie !n .nop \X'ps: exec decornone'
 .    el .ul 0
 .    br
-.    if \\n[#UNDERLINE_ON]=1 \{\
-.       nr #UNDERLINE_WAS_ON 1
-.    \}
+.    if \\n[#UNDERLINE_ON]=1 .nr #UNDERLINE_WAS_ON 1
 .    if \\n[MN-left]>0 \{\
 .       if !\\n[#no-repeat-MN-left]=1 \{\
 .          MNbottom-left
@@ -9596,9 +9525,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       \}
 .    \}
 .    if \\n[MN-right]>0 \{\
-.       if (\\n[MN-right] > 0) \{\
+.       if (\\n[MN-right] > 0) \
 .          if !\\n[#no-repeat-MN-right]=1 .MNbottom-right
-.       \}
 .       if '\\n[.z]'MN_OVERFLOW_RIGHT' \{\
 .          di
 .          nr #MN_OVERFLOW_RIGHT 1
@@ -9781,9 +9709,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    \}
 .    el \{\
 .       if \\n[#PAGINATE] \{\
-.          if \\n[#PAGE_NUM_V_POS]=2 \{\
+.          if \\n[#PAGE_NUM_V_POS]=2 \
 .             if !\\n[#SKIP_FOOTER]=1 .PRINT_PAGE_NUMBER
-.          \}
 .       \}
 .    \}
 .    rr #SKIP_FOOTER
@@ -9849,7 +9776,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .      el .FOOTER_RULE OFF
 .      if r #PAGINATE .rr #PAGINATE
 .      if r #PAGE_NUM_V_POS .rr #PAGE_NUM_V_POS
-.\}
+.   \}
 .DONE
 .am PRINT_USERDEF_HDRFTR DONE
 .   if \\\\n[#HDRFTR_BOTH]=1 \{\
@@ -9955,22 +9882,17 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          ie \\n[#HEAD_\\n[#LEVEL]_SPACE_AFTER] .ne \\n[#NUM_ARGS]+2
 .          el .ne \\n[#NUM_ARGS]+1
 .          vpt 0
-.          ie !\\n[#START] \{\
+.          ie !\\n[#START] \
 .             if !\\n[#SPACE_ADDED] .if !\\n[#LINEBREAK] .sp
-.          \}
 .          el \{\
-.             ie !\\n[#PP] \{\
-.                rr #START
-.             \}
+.             ie !\\n[#PP] .rr #START
 .             el .sp
 .          \}
-.          if \\n[#EPIGRAPH] \{\
+.          if \\n[#EPIGRAPH] \
 .             if \\n[#SINGLE_SPACE] .sp
-.          \}
 .       \}
-.       if \\n[#PP_SPACE] \{\
+.       if \\n[#PP_SPACE] \
 .          if \\n[#QUOTE_4_HD] .sp .5v
-.       \}
 .       if !\\n[#SPACE_ADDED] .SHIM
 .       if \\n[#SPACE_ADDED] .rr #SPACE_ADDED
 .    \}
@@ -9989,9 +9911,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             SHIM
 .         \}
 .       \}
-.       if (\\n[#QUOTE_4_HD]=0)&(\\n[#LB_4_HD]=0)&(\\n[#START]=0) \{\
+.       if (\\n[#QUOTE_4_HD]=0)&(\\n[#LB_4_HD]=0)&(\\n[#START]=0) \
 .          if !\\n[#LB_4_PARAHEAD] .sp -1v
-.       \}
 .    \}
 .    ev HEADING
 .    evc 0
@@ -10719,8 +10640,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    while \\$2>\\n[#REPEAT] \{\
 .       as $LINEBREAK_CHAR "\\ \\$1
 .       nr #REPEAT \\n[#REPEAT]+1
-.   \}
-.   rr #REPEAT
+.    \}
+.    rr #REPEAT
 .END
 \#
 \# LINE BREAK
@@ -10775,9 +10696,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       ie \\n[#ITALIC_MEANS_ITALIC] .nop
 .       el .return
 .    \}
-.    if \\n[#COLLATE]=1 \{\
+.    if \\n[#COLLATE]=1 \
 .       if !'\\*[$SAVED_PP_FT]'' .rm $SAVED_PP_FT
-.    \}
 .    ds $PP_FT \\$1
 .    FT \\*[$PP_FT]
 .END
@@ -10902,9 +10822,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          if \\n[#SLANT_ON] \{\
 .             if \\n[#UNDERLINE_SLANT] .UNDERLINE
 .          \}
-.          if '\\*[$PP_FT]'I' \{\
+.          if '\\*[$PP_FT]'I' \
 .             if \\n[#ITALIC_MEANS_ITALIC] .FT I
-.          \}
 .       \}
 .       el \{\
 .          ie \\n[#ENDNOTE] \{\
@@ -11146,10 +11065,6 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       di P_QUOTE
 .       ie !'\\*[$Q_OFFSET_VALUE]'' .ll \\n[#L_LENGTH]u-(\\*[$Q_OFFSET_VALUE]*2u)
 .       el .ll \\n[#L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
-.       if \\n[#LINENUMBERS]=2 \{\
-.          if \\n[#QUOTE_LN]=1 \
-.             nm \\n[ln] "" \\*[$Q_LN_GUTTER] -3-\\*[$Q_LN_GUTTER]
-.       \}
 .       ta \\n[.l]u
 .       if \\n[#COLUMNS] \{\
 .          ie \\n[#Q_OFFSET_VALUE] \
@@ -11189,17 +11104,18 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       \}
 .       if \\n[#LINENUMBERS]=2 \{\
 .          ie \\n[#QUOTE_LN]=1 \{\
-.             if '\\*[$Q_LN_GUTTER]'' .ds $Q_LN_GUTTER \\*[$LN_GUTTER]
-.             nm \\n[ln] "" \\*[$Q_LN_GUTTER] -3-\\*[$Q_LN_GUTTER]
+.             if '\\n[#Q_LN_GUTTER]'' .nr #Q_LN_GUTTER \\n[#LN_GUTTER]
+.             LN_PARAMS
+.             nm \\n[ln] "" \\n[#Q_LN_GUTTER] -3-\\n[#Q_LN_GUTTER]
+.             RESTORE_PARAMS
 .          \}
 .          el \{\
 .             if !\\n[#SILENT_QUOTE_LN] .NUMBER_LINES OFF
 .          \}
 .       \}
 .       nr #Q_TOP \\n[nl]
-.       if \\n[#PRINT_STYLE]=1 \{\
+.       if \\n[#PRINT_STYLE]=1 \
 .          if \\n[#UNDERLINE_QUOTES] .FT I
-.       \}
 .    \}
 .    el .DO_QUOTE
 .END
@@ -11254,15 +11170,11 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          ie \\n[#CODE_FT]=1 .ft \\*[$CODE_FT]
 .          el \{\
 .             CODE_FONT R
-.             ft \\*[CODE_FT]
+.             ft \\*[$CODE_FT]
 .          \}
-.          if \\n[#CODE_COLOR]=1 \{\
-.             COLOR \\*[$CODE_COLOR]
-.          \}
+.          if \\n[#CODE_COLOR]=1 .COLOR \\*[$CODE_COLOR]
 .          char ' \[aq]
-.          if !\\n[#CODE_SIZE_ADJ]=0 \{\
-.             ps \\n[#PT_SIZE]u*\\n[#CODE_SIZE_ADJ]u/100u
-.          \}
+.          if !\\n[#CODE_SIZE_ADJ]=0 .ps \\n[#PT_SIZE]u*\\n[#CODE_SIZE_ADJ]u/100u
 .          if \\n[#SQ_ON] \{\
 .             nr #SQ_WAS_ON 1
 .             SMARTQUOTES OFF
@@ -11276,6 +11188,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       rm #RESTORE_FT
 .       if !\\n[#CODE_SIZE_ADJ]=0 .ps
 .       rchar '
+.       if !'\\n[.z]'' \
+.          if \\n[#LINENUMBERS] .nn
 .       if \\n[#CODE_COLOR]=1 .gcolor
 .       if \\n[#RESTORE_UNDERLINE]=1 \{\
 .          rr #RESTORE_UNDERLINE
@@ -11357,9 +11271,6 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    ie '\\$1'' \{\
 .       ev BLOCKQUOTE
 .       evc 0
-.       if \\n[#LINENUMBERS]=2 \{\
-.          if \\n[#SILENT_BQUOTE_LN]=1 .nm \\n[#NEXT_LN] 1000 -4
-.       \}
 .       nr #IN_DIVER 1
 .       nr #QUOTE    2
 .       nr #PP_STYLE 2
@@ -11446,12 +11357,13 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       \}
 .       if \\n[#LINENUMBERS]=2 \{\
 .          ie \\n[#BQUOTE_LN]=1 \{\
-.             if '\\*[$BQ_LN_GUTTER]'' .ds $BQ_LN_GUTTER \\*[$LN_GUTTER]
-.             nm \\n[ln] "" \\*[$BQ_LN_GUTTER] -3-\\*[$BQ_LN_GUTTER]
+.             if '\\n[#BQ_LN_GUTTER]'' .nr #BQ_LN_GUTTER \\n[#LN_GUTTER]
+.             LN_PARAMS
+.             nm \\n[ln] "" \\n[#BQ_LN_GUTTER] -3-\\n[#BQ_LN_GUTTER]
+.             RESTORE_PARAMS
 .          \}
-.          el \{\
+.          el \
 .             if !\\n[#SILENT_BQUOTE_LN] .NUMBER_LINES OFF
-.          \}
 .       \}
 .       nr #Q_TOP \\n[nl]
 .       if \\n[#INDENT_FIRST_PARAS] \{\
@@ -11522,12 +11434,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    \}
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       if \\n[#START]=1 .
-.       if \\n[#START]=0 \{\
+.       if \\n[#START]=0 \
 .          if !\\n[#LINEBREAK] .ALD \\n[#DOC_LEAD]u
-.       \}
-.       if \\n[#HEAD] \{\
+.       if \\n[#HEAD] \
 .          if \\n[#HEAD]=1 .RLD \\n[#DOC_LEAD]u
-.       \}
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       ie \\n[#PP_SPACE] \{\
@@ -11596,14 +11506,11 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       B_QUOTE
 .       br
 .    \}
-.    if \\n[#PRINT_STYLE]=1 \{\
+.    if \\n[#PRINT_STYLE]=1 \
 .       if !\\n[.v]=\\n[#DOC_LEAD] .SHIM
-.    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       ie \\n[#START] \{\
-.          ie \\n[#PP_SPACE] \{\
-.
-.          \}
+.          ie \\n[#PP_SPACE] .
 .          el \{\
 .             ALD \\n[#DOC_LEAD]u
 .             SHIM
@@ -11627,9 +11534,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                      nr #Q_AT_TOP 1
 .                      nr #DELAY_SHIM 1
 .                   \}
-.                   el \{\
+.                   el \
 .                      if !\\n[.v]=\\n[#Q_LEAD_REAL] .SHIM
-.                   \}
 .                \}
 .                el \{\
 .                   SHIM
@@ -11653,8 +11559,16 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    if \\n[#LINENUMBERS]=2 \{\
 .       nr #LINENUMBERS 1
 .       if !\\n[#ENDNOTE] \{\
-.          ie \\n[#RESTORE_LN_NUM]=1 .nm \\n[#NEXT_LN]
-.          el .nm +0
+.          ie \\n[#RESTORE_LN_NUM]=1 \{\
+.             LN_PARAMS
+.             nm \\n[#NEXT_LN]
+.             RESTORE_PARAMS
+.          \}
+.          el \{\
+.             LN_PARAMS
+.             nm +0
+.             RESTORE_PARAMS
+.          \}
 .       \}
 .    \}
 .    if \\n[#ENDNOTE] .nr #FULLSPACE_QUOTES \\n[#RESET_QUOTE_SPACING]
@@ -11682,9 +11596,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       SHIM
 .       rr #DELAY_SHIM
 .    \}
-.    if \\n[#PRINT_STYLE]=1 \{\
+.    if \\n[#PRINT_STYLE]=1 \
 .       if \\n[#UNDERLINE_QUOTES] .FT R
-.    \}
 .    nr #QUOTE_4_HD 1
 .END
 \#
@@ -11728,9 +11641,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                \}
 .                rm Q_TEMP
 .             \}
-.             el \{\
-.                ALD (\\n[#DOC_LEAD]u/2u)+\\n[#Q_SPACE_ADJ]u
-.             \}
+.             el .ALD (\\n[#DOC_LEAD]u/2u)+\\n[#Q_SPACE_ADJ]u
 .          \}
 .       \}
 .       if \\n[#DIVER_FN]=2 .rr #DIVER_FN
@@ -11739,13 +11650,11 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#
 .MAC Q_NOFIT END
 .    rr #Q_FITS
-.    ie r#HEAD \{\
+.    ie r#HEAD \
 .       if \\n[#HEAD]=1 .
-.    \}
 .    el \{\
-.       if \\n[#Q_DEPTH]=0 \{\
+.       if \\n[#Q_DEPTH]=0 \
 .          if \\n[.ns] .rs
-.       \}
 .       ie \\n[#FULLSPACE_QUOTES] \{\
 .          ie \\n[#ENDNOTE] .ALD \\n[#EN_LEAD]u+\\n[#Q_LEAD_DIFF]u
 .          el .ALD \\n[#DOC_LEAD]u+\\n[#Q_LEAD_DIFF]u
@@ -12093,9 +12002,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    if '\\$1'LINE' \{\
 .       nr #FN_MARKER_STYLE 3
 .       FOOTNOTE_MARKERS OFF
-.       if !\\n[#FN_LN_SEP] \{\
+.       if !\\n[#FN_LN_SEP] \
 .          if !\\n[#FN_LN_BRACKETS] .FOOTNOTE_LINENUMBER_BRACKETS SQUARE
-.       \}
 .    \}
 .END
 \#
@@ -12633,9 +12541,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .\" Add footnote markers to footnote text...
 .       ie \\n[#FN_MARKERS] \{\
 .          if !'\\*[$FN_SPACE]'' \{\
-.             if \\n[#FN_COUNT]>0 \{\
-.                ALD \\*[$FN_SPACE]
-.             \}
+.             if \\n[#FN_COUNT]>0 .ALD \\*[$FN_SPACE]
 .          \}
 .          if !\\n[#NO_FN_MARKER] \{\
 .\" ...but not if TERMINATE has been called.
@@ -12711,9 +12617,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .\" Line-numbered footnotes handling
 .          if \\n[#FN_MARKER_STYLE]=3 \{\
 .             if \\n[#FN_SPACE]>0 \{\
-.                if !\\n[#RUN_ON]=1 \{\
+.                if !\\n[#RUN_ON]=1 \
 .                   if \\n[#FN_COUNT]>0 .ALD \\n[#FN_SPACE]u
-.                \}
 .             \}
 .             if \\n[#REF]=1 \{\
 .                if !\\n[#RUN_ON]=1 \{\
@@ -12926,9 +12831,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .                                  ie \\n[#FN_COUNT_FOR_COLS]>1 \{\
 .                                     nr #FN_DEPTH -\\n[#FN_DEPTH]
 .                                     if \\n[#DIVERTED]=1 .nr #DIVERTED 3
-.                                     if !\\n[#PREV_FN_DEFERRED]=1 \{\
+.                                     if !\\n[#PREV_FN_DEFERRED]=1 \
 .                                        nr #FN_DEPTH -\\n[#VFP_DIFF]
-.                                     \}
 .                                  \}
 .                                  el \{\
 .                                     nr #VARIABLE_FOOTER_POS -\\n[#FN_DEPTH]
@@ -12946,9 +12850,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .                         if \\n[#DIVERTED]=1 .nr #DIVERTED 3
 .                         if !\\n[#PREV_FN_DEFERRED]=1 \{\
 .                            ie \\n[#COLUMNS]=1 \{\
-.                               if !\\n[#FROM_FOOTER] \{\
-.
-.                               \}
+.                               if !\\n[#FROM_FOOTER] .
 .                            \}
 .                            el .nr #FN_DEPTH -\\n[#VFP_DIFF]
 .                         \}
@@ -13035,26 +12937,21 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    if \\n[#DONE_ONCE]=1 \{\
 .       if \\n[#FN_DEFER] \{\
 .          if \\n[#SAVED_DIVER_FN_COUNT]=1 \{\
-.             ie \\n[#COLUMNS]=1 \{\
+.             ie \\n[#COLUMNS]=1 \
 .                if \\n[#COL_NUM]=\\n[#NUM_COLS] .nr #FN_DEFER_SPACE 1
-.             \}
 .             el .nr #FN_DEFER_SPACE 1
 .          \}
 .       \}
 .       if \\n[#FN_MARKER_STYLE]=1 \{\
 .          if \\n[#FN_COUNT]>0 .nr #FN_COUNT 0 1
-.          if \\n[#COLUMNS]=1 \{\
+.          if \\n[#COLUMNS]=1 \
 .             if \\n[#COL_NUM]=\\n[#NUM_COLS] .nr #FN_COUNT_FOR_COLS 0 1
-.          \}
 .       \}
 .       if \\n[#FN_MARKER_STYLE]=2 \{\
 .          if \\n[#RESET_FN_NUMBER]=1 \{\
-.             ie \\n[#COLUMNS]=1 \{\
+.             ie \\n[#COLUMNS]=1 \
 .                if \\n[#COL_NUM]=\\n[#NUM_COLS] .nr #FN_NUMBER 0 1
-.             \}
-.             el \{\
-.                nr #FN_NUMBER 0 1
-.             \}
+.             el .nr #FN_NUMBER 0 1
 .          \}
 .       \}
 .    \}
@@ -13080,17 +12977,15 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          if \\n[#FN_COUNT]>0 .nr #FN_COUNT 0 1
 .          if \\n[#COLUMNS]=1 \{\
 .             if \\n[#COL_NUM]=\\n[#NUM_COLS] .nr #FN_COUNT_FOR_COLS 0 1
-.             if !\\n[#COL_NUM]=\\n[#NUM_COLS] \{\
-.             \}
+.             if !\\n[#COL_NUM]=\\n[#NUM_COLS] .
 .          \}
 .       \}
 .       if \\n[#FN_MARKER_STYLE]=2 \{\
 .          if \\n[#FN_COUNT]=0 .nr #DONT_RULE_ME 1
 .          if \\n[#FN_COUNT]>0 .nr #FN_COUNT 0 1
 .          if \\n[#RESET_FN_NUMBER]=1 \{\
-.             ie \\n[#COLUMNS]=1 \{\
+.             ie \\n[#COLUMNS]=1 \
 .                if \\n[#COL_NUM]=\\n[#NUM_COLS] .nr #FN_NUMBER 0 1
-.             \}
 .             el .nr #FN_NUMBER 0 1
 .          \}
 .       \}
@@ -13151,9 +13046,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# DIVERT_FN_OVERFLOW.
 \#
 .MAC PROCESS_FN_LEFTOVER END
-.    if \\n[#PREV_FN_DEFERRED]=2 \{\
+.    if \\n[#PREV_FN_DEFERRED]=2 \
 .       if \\n[#FN_COUNT_AT_FOOTER]>1 .rr #PREV_FN_DEFERRED
-.    \}
 .    ie !\\n[#FN_DEFER] \{\
 .       nr #FN_COUNT 0 1
 .       nr #FN_DEPTH 0
@@ -13182,13 +13076,11 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       \}
 .       el .nr #PREV_FN_DEFERRED 1
 .    \}
-.    if !\\n[#FN_DEFER] \{\
+.    if !\\n[#FN_DEFER] \
 .       if \\n[#FN_OVERFLOW_DEPTH] .DIVERT_FN_LEFTOVER
-.    \}
 .    ie \\n[#COLUMNS]=1 \{\
-.       if \\n[#COL_NUM]>1 \{\
+.       if \\n[#COL_NUM]>1 \
 .          if \\n[#COL_NUM]=\\n[#NUM_COLS] .nr #FN_COUNT 0 1
-.       \}
 .    \}
 .    el .nr #FN_COUNT 0 1
 .    if \\n[#DIVER_FN]=2 .rr #DIVER_FN
@@ -13421,9 +13313,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    if '\\$1'NUMBER' .nr #EN_MARKER_STYLE 1
 .    if '\\$1'LINE' \{\
 .       nr #EN_MARKER_STYLE 2
-.       if !\\n[#EN_LN_SEP] \{\
+.       if !\\n[#EN_LN_SEP] \
 .          if !\\n[#EN_LN_BRACKETS] .ENDNOTE_LINENUMBER_BRACKETS SQUARE
-.       \}
 .    \}
 .    if '\\$1'SUPERSCRIPT' .nr #EN_MARKER_STYLE 3
 .END
@@ -13785,9 +13676,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          if \\n[#EN_MARKER_STYLE]=3 .ps -2
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
-.          if \\n[#EN_NUMBER]=1 \{\
+.          if \\n[#EN_NUMBER]=1 \
 .             if !'\\*[$EN_TITLE]'' .sp .5v
-.          \}
 .          if \\n[#EN_MARKER_STYLE]=1 \{\
 .             FAMILY  \\*[$EN_NUMBER_FAM]
 .             FT      \\*[$EN_NUMBER_FT]
@@ -13886,9 +13776,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       nr #EN_TEXT_INDENT \\n[.i]
 .       QUAD \\*[$EN_QUAD]
 .       vpt 1
-.       if \\n[#PRINT_STYLE]=1 \{\
-.          TYPEWRITER
-.       \}
+.       if \\n[#PRINT_STYLE]=1 .TYPEWRITER
 .       if \\n[#PRINT_STYLE]=2 \{\
 .          FAMILY  \\*[$EN_FAM]
 .          FT      \\*[$EN_FT]
@@ -13980,9 +13868,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    \}
 .    ie !\\n[#SUSPEND_PAGINATION] \{\
 .       if \\n[#PAGE_NUM_V_POS]=1 \{\
-.          if r #EN_NO_FIRST_PN \{\
+.          if r #EN_NO_FIRST_PN \
 .             if \\n[#PAGINATION_STATE]=1 .nr #PAGINATE 1
-.          \}
 .       \}
 .    \}
 .    el \
@@ -14765,9 +14652,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    if !r #PAGINATE_TOC .PAGINATE_TOC
 .    nr #TOC_FIRST_PAGE 1
 .    if \\n[#FINIS] \{\
-.       if \\n[#FOOTERS_WERE_ON] \{\
+.       if \\n[#FOOTERS_WERE_ON] \
 .          FOOTERS \" Have to turn FOOTERS on for next bit to work, so we can't skip this step
-.       \}
 .    \}
 .    if \\n[#FOOTERS_ON]=1 \{\
 .       if !'\\*[$HDRFTR_CENTER_OLD]'' .ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_OLD]
@@ -14782,9 +14668,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       vs 24
 .       nr #IGNORE 1
 .    \}
-.    if \\n[#PRINT_STYLE]=2 \{\
-.          vs \\n[#TOC_LEAD]u
-.    \}
+.    if \\n[#PRINT_STYLE]=2 .vs \\n[#TOC_LEAD]u
 .    if \\n[#FINIS] \{\
 .       if \\n[#FOOTERS_WERE_ON] .FOOTERS  \" Finally, turn footers on if they were on
 .       rr #FOOTERS_WERE_ON
@@ -14830,6 +14714,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    \}
 .    el .PRINT \\*[$TOC_HEADER_STRING]
 .    if !\\n[#PRINT_STYLE]=1 \{\
+.       nop
 .       sp
 .    \}
 .    nf
@@ -14869,9 +14754,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       nr #COL_\\n+[#COL_NUM]_L_MARGIN \\n[#L_MARGIN]+\\n[#COL_TOTAL]
 .       nr #COL_TOTAL \\n+[#COL_TOTAL]
 .    \}
-.    if \\n[#NUM_COLS]=1 \{\
+.    if \\n[#NUM_COLS]=1 \
 .       if !\\n[#COLLATE]=1 .MN_INIT
-.    \}
 .    rr #COL_TOTAL
 .    rr #COL_NUM
 .END
@@ -14950,9 +14834,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       ds $LIST_ARG_1 \\$1
 .       substring $LIST_ARG_1 0 -(\\n[#ROMAN_LENGTH]+1)
 .    \}
-.    el \{\
-.       ds $LIST_ARG_1 \\$1
-.    \}
+.    el .ds $LIST_ARG_1 \\$1
 .    if !r#DEPTH \{\
 .       nr #STORED_HL_INDENT \\n[#HL_INDENT]
 .       nr #STORED_T_INDENT  \\n[#T_INDENT]
@@ -15094,9 +14976,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    \}
 .    if '\\*[$ENUMERATOR_TYPE\\n[#DEPTH]]'roman' \
 .       GET_ROMAN_INDENT
-.    if '\\*[$ENUMERATOR_TYPE\\n[#DEPTH]]'other' \{\
+.    if '\\*[$ENUMERATOR_TYPE\\n[#DEPTH]]'other' \
 .       nr #LIST_INDENT\\n[#DEPTH] \w'\\*[$ENUMERATOR\\n[#DEPTH]]\0'
-.    \}
 .    ll \\n[#CURRENT_L_LENGTH]u
 .    ie \\n[#DEPTH]=1 \{\
 .       ie \\n[#INDENT_ACTIVE]=1 \{\
@@ -15514,12 +15395,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       nr #HL_INDENT\\n+[#DEPTH] +\\w'\\n[#ENUMERATOR\\n[#DEPTH]]'
 .       if '\\$1'LEFT' .nr #PAD_LIST_DIGITS\\n[#DEPTH] 1
 .    \}
-.    if '\\g[#ENUMERATOR\\n[#DEPTH]]'i' \{\
+.    if '\\g[#ENUMERATOR\\n[#DEPTH]]'i' \
 .       if '\\$1'LEFT' .nr #PAD_LIST_DIGITS\\n[#DEPTH] 1
-.    \}
-.    if '\\g[#ENUMERATOR\\n[#DEPTH]]'I' \{\
+.    if '\\g[#ENUMERATOR\\n[#DEPTH]]'I' \
 .       if '\\$1'LEFT' .nr #PAD_LIST_DIGITS\\n[#DEPTH] 1
-.    \}
 .END
 \#
 \# RESET LIST
@@ -15711,14 +15590,12 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       nr #LN \\$1
 .       ds $LN_NUM \\$1
 .       if !'\\n[.z]'' .nr #RESTORE_LN_NUM 1
-.       ie '\\$2'' \{\
+.       ie '\\$2'' \
 .          if '\\*[$LN_INC]'' .ds $LN_INC 1
-.       \}
 .       el .ds $LN_INC \\$2
-.       ie '\\$3'' \{\
-.          if '\\*[$LN_GUTTER]'' .ds $LN_GUTTER 2
-.       \}
-.       el .ds $LN_GUTTER \\$3
+.       ie '\\$3'' \
+.          if !\\n[#LN_GUTTER] .nr #LN_GUTTER 2
+.       el .nr #LN_GUTTER \\$3
 .    \}
 .    ie !\\n[#LN] \{\
 .\" In other words, the first arg was not a digit.
@@ -15726,32 +15603,23 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       ie '\\$1'RESUME' \{\
 .          LN_PARAMS
 .          nm \\*[$LN_NUM]
-.          fam
-.          ft
-.          ps
-.          gcolor
+.          RESTORE_PARAMS
 .       \}
 .       el \{\
-.          LN_PARAMS
 .          nm
 .\" register ln is still set and may confuse preprocessors like tbl
 .\" still, resuming line numbering must be possible, so save ln in $LN_NUM
-.          ds $LN_NUM \\n[ln]
-.          nr ln 0
-.          fam
-.          ft
-.          ps
-.          gcolor
+.          if \\n[tbl] \{\
+.             ds $LN_NUM \\n[ln]
+.             nr ln 0
+.          \}
 .          if !\\n[#LINENUMBERS]=2 .rr #LINENUMBERS
 .       \}
 .    \}
 .    el \{\
 .       LN_PARAMS
-.       nm \\*[$LN_NUM] \\*[$LN_INC] \\*[$LN_GUTTER] -3-\\*[$LN_GUTTER]
-.       fam
-.       ft
-.       ps
-.       gcolor
+.       nm \\*[$LN_NUM] \\*[$LN_INC] \\n[#LN_GUTTER] -3-\\n[#LN_GUTTER]
+.       RESTORE_PARAMS
 .       if !'\\n[.z]'' .nr #DIVER_LN_OFF 1
 .    \}
 .    rr #LN
@@ -15762,12 +15630,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# *Arguments:
 \#   none
 \# *Function:
-\#   Checks if any line numbering parameters have been set, and
-\#   passes the args, if any, to the appropriate request.  If a linenumber
-\#   parameter is missing, passes the current value of the register
-\#   associated with the request to the request.  (Ensures that the
-\#   same requests, called in NUMBER_LINES to reset the registers
-\#   to their former values, stay at those values.)
+\#   LN_PARAMS sets parameters for line numbers.
+\#   RESTORE_PARAMS restores them after internal calls to .nm
 \#
 .MAC LN_PARAMS END
 .    ie d$LN_FAM .fam \\*[$LN_FAM]
@@ -15778,6 +15642,13 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    el .ps \\n[.s]
 .    ie d$LN_COLOR .gcolor \\*[$LN_COLOR]
 .    el .gcolor \\n[.m]
+.END
+\#
+.MAC RESTORE_PARAMS END
+.    fam
+.    ft
+.    ps
+.    gcolor
 .END
 \#
 \# NUMBER QUOTE AND BLOCKQUOTE LINES AS PART OF RUNNING TEXT
@@ -15798,7 +15669,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    el \{\
 .       ie \B'\\$1' \{\
 .          nr #QUOTE_LN 1
-.          ds $Q_LN_GUTTER \\$1
+.          nr #Q_LN_GUTTER \\$1
 .       \}
 .       el \{\
 .          ie '\\$1'SILENT' .nr #SILENT_QUOTE_LN 1
@@ -15815,7 +15686,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    el \{\
 .       ie \B'\\$1' \{\
 .          nr #BQUOTE_LN 1
-.          ds $BQ_LN_GUTTER \\$1
+.          nr #BQ_LN_GUTTER \\$1
 .       \}
 .       el \{\
 .          ie '\\$1'SILENT' .nr #SILENT_BQUOTE_LN 1
@@ -15867,17 +15738,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          PAGINATION OFF
 .       \}
 .       if \\n[#HEADERS_WERE_ON] .HEADERS
-.       if \\n[#PAGE_NUM_V_POS]=1 \{\
+.       if \\n[#PAGE_NUM_V_POS]=1 \
 .          if \\n[#PAGINATE_WAS_ON] .PAGINATE
-.       \}
 .    \}
 .    shift
 .    ie '\\$1'DIVIDER' \{\
 .       if \\n[#FOOTERS_WERE_ON] .FOOTERS
 .       if \\n[#PAGE_NUM_V_POS]=2 \{\
-.          if \\n[#PAGINATE_WAS_ON] \{\
-.             nr #RESTORE_PAGINATION 1
-.          \}
+.          if \\n[#PAGINATE_WAS_ON] .nr #RESTORE_PAGINATION 1
 .       \}
 .       shift
 .       if '\\$1'NULL' .nr #PAGE_NUM_ADJ -\\n[#HOW_MANY]
@@ -15886,21 +15754,18 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       if '\\$1'' \{\
 .          NEWPAGE
 .          if \\n[#FOOTERS_WERE_ON] .FOOTERS
-.          if \\n[#PAGE_NUM_V_POS]=2 \{\
+.          if \\n[#PAGE_NUM_V_POS]=2 \
 .             if \\n[#PAGINATE_WAS_ON] .PAGINATE
-.          \}
 .       \}
 .       if '\\$1'NULL' \{\
 .          NEWPAGE
 .          if \\n[#FOOTERS_WERE_ON] .FOOTERS
-.          if \\n[#PAGE_NUM_V_POS]=2 \{\
+.          if \\n[#PAGE_NUM_V_POS]=2 \
 .             if \\n[#PAGINATE_WAS_ON] .PAGINATE
-.          \}
 .       \}
 .    \}
-.    if \\n[#PAGINATE]=1 \{\
+.    if \\n[#PAGINATE]=1 \
 .       if '\\$1'NULL' .nr #PAGE_NUM_ADJ -\\n[#HOW_MANY]
-.    \}
 .    if \\n[#LINENUMBERS_WERE_ON] .NUMBER_LINES RESUME
 .    rr #HOW_MANY
 .    rr #HEADERS_WERE_ON
@@ -16897,6 +16762,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .MAC TS END
 .    br
 .    rr tbl*have-header
+.    nr tbl 1
 .    if '\\n[.z]'FLOAT*DIV' .nr float*with-tbl 1 \" Removed in FLOAT
 .    if !'\\n[.z]'FLOAT*DIV' \{\
 .       if \\n[.t]=1 \
@@ -17068,6 +16934,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .END
 \#
 .MAC TBL*CLEANUP END
+.    rr tbl
 .    rr tbl*before-shim
 .    rr tbl*after-shim
 .    if !'\\n[.z]'FLOAT*DIV' \{\
@@ -18217,16 +18084,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       ps
 .    \}
 .  \}
-.  el \{\
+.  el \
 .    nr MN-size \\n[#DOC_PT_SIZE]
-.  \}
 .  ie \B'\\$6' \{\
 '    vs \\$6
 .    nr MN-spacing \\n[.v]
 '    vs
-.    if \\n[#PRINT_STYLE]=1 \{\
+.    if \\n[#PRINT_STYLE]=1 \
 .       nr MN-spacing \\n[#DOC_LEAD]
-.    \}
 .  \}
 .  el .nr MN-spacing \\n[#DOC_LEAD]
 .  ie \A'\\$7' \
@@ -18311,9 +18176,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    mk MN-mk-\\*[MN-curr]
 .    di MN-div-\\*[MN-curr]
 .  \}
-.  el \{\
-.    MN_QUIT
-.  \}
+.  el .MN_QUIT
 ..
 \#
 \# MN_QUIT
@@ -18321,13 +18184,13 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# Utility macro to handle .MN OFF | QUIT | X etc
 \#
 .de MN_QUIT
-.    if \\n[MN-active] \{\
+.   if \\n[MN-active] \{\
 .      br
 .      di
 .      nr MN-div-\\*[MN-curr]-depth \\n[dn]
 .      ev
-.    \}
-.    nr MN-active 0
+.   \}
+.   nr MN-active 0
 ..
 \#
 \# MNtop
@@ -18386,9 +18249,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .        ch FOOTER \\n[.p]u
 .        wh \\n[#VARIABLE_FOOTER_POS]u+\\n[MN-lead-adj]u+1u MN_OVERFLOW_TRAP
 .      \}
-.      el \{\
+.      el \
 .        wh \\n[.p]u+\\n[#VARIABLE_FOOTER_POS]u-1u MN_OVERFLOW_TRAP
-.      \}
 .      vpt 1
 .    \}
 .    nf
@@ -18399,9 +18261,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .\}
 .  ev
 .  po
-.  if !\\n[#no-repeat-MN-left]=1 \{\
+.  if !\\n[#no-repeat-MN-left]=1 \
 .     if \\n[MN-right]=0 .vpt 1
-.  \}
 ..
 \#
 \# MNbottom-right
@@ -18409,55 +18270,54 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# The "right" half of Werner's original MNbottom.
 \#
 .de MNbottom-right
-.  nr MN-curr 0
-.  nr MN-last-pos 0
-.  nr MN-lead-adj \\n[#DOC_LEAD]-\\n[MN-spacing]
-.  vpt 0
-.  po \\n[MN-right-start]u
-.  ev MNbottom-right-env
-.  nr #P \\n%+\\n[#PAGE_NUM_ADJ]
-.  while (\\n[MN-curr] < \\n[MN-right]) \{\
-.    nr MN-curr +1
-.    ie (\\n[MN-last-pos] < \\n[MN-mk-r-\\n[MN-curr]]) \
-.      sp |\\n[MN-mk-r-\\n[MN-curr]]u+\\n[MN-lead-adj]u
-.    el \{\
-.      nr MN-shifted 1
-.      sp 1v
-.      SHIM
-.      if \\n[#SHIM]>\\n[MN-spacing] .sp -(1v+\\n[MN-lead-adj]u)
-.      tm [mom]: \
-Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
-.    \}
-.\" If last margin note doesn't fit
-.    if ( (\\n[nl]+\\n[MN-div-r-\\n[MN-curr]-depth]) > (\\n[.p]+\\n[#VARIABLE_FOOTER_POS]-1) ) \{\
-.      if \\n[MN-shifted]=1 \{\
-.        sp -(1v+\\n[#SHIM]u)
-.        rm MN-div-r-\\n[MN-curr]
-.        tm1 \
-[mom]: No room to start right margin note #\\n[MN-curr] on page \\n[#P] on page \\n[#P].
-.        tm1 "       Ignoring margin note.
-.        rr MN-shifted
-.      \}
-.      nr #no-repeat-MN-right 1
-.      nr #OVERFLOW_RIGHT 1
-.      ie \\n[#FN_COUNT]=0 \{\
-.        ch FOOTER \\n[.p]u
-.        wh \\n[#VARIABLE_FOOTER_POS]u+\\n[MN-lead-adj]u+1u MN_OVERFLOW_TRAP
-.      \}
+.   nr MN-curr 0
+.   nr MN-last-pos 0
+.   nr MN-lead-adj \\n[#DOC_LEAD]-\\n[MN-spacing]
+.   vpt 0
+.   po \\n[MN-right-start]u
+.   ev MNbottom-right-env
+.   nr #P \\n%+\\n[#PAGE_NUM_ADJ]
+.   while (\\n[MN-curr] < \\n[MN-right]) \{\
+.      nr MN-curr +1
+.      ie (\\n[MN-last-pos] < \\n[MN-mk-r-\\n[MN-curr]]) \
+.         sp |\\n[MN-mk-r-\\n[MN-curr]]u+\\n[MN-lead-adj]u
 .      el \{\
-.        wh \\n[.p]u+\\n[#VARIABLE_FOOTER_POS]u-1u MN_OVERFLOW_TRAP
+.         nr MN-shifted 1
+.         sp 1v
+.         SHIM
+.         if \\n[#SHIM]>\\n[MN-spacing] .sp -(1v+\\n[MN-lead-adj]u)
+.         tm [mom]: \
+Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .      \}
-.      vpt 1
-.    \}
-.    nf
-.    MN-div-r-\\n[MN-curr]
-.    fi
-.    br
-.    nr MN-last-pos \\n[nl]
-.\}
-.  ev
-.  po
-.  if !\\n[#no-repeat-MN-right]=1 .vpt 1
+.\" If last margin note doesn't fit
+.      if ( (\\n[nl]+\\n[MN-div-r-\\n[MN-curr]-depth]) > (\\n[.p]+\\n[#VARIABLE_FOOTER_POS]-1) ) \{\
+.         if \\n[MN-shifted]=1 \{\
+.            sp -(1v+\\n[#SHIM]u)
+.            rm MN-div-r-\\n[MN-curr]
+.            tm1 \
+[mom]: No room to start right margin note #\\n[MN-curr] on page \\n[#P] on page \\n[#P].
+.            tm1 "       Ignoring margin note.
+.            rr MN-shifted
+.         \}
+.         nr #no-repeat-MN-right 1
+.         nr #OVERFLOW_RIGHT 1
+.         ie \\n[#FN_COUNT]=0 \{\
+.            ch FOOTER \\n[.p]u
+.            wh \\n[#VARIABLE_FOOTER_POS]u+\\n[MN-lead-adj]u+1u MN_OVERFLOW_TRAP
+.         \}
+.         el \
+.            wh \\n[.p]u+\\n[#VARIABLE_FOOTER_POS]u-1u MN_OVERFLOW_TRAP
+.         vpt 1
+.      \}
+.      nf
+.      MN-div-r-\\n[MN-curr]
+.      fi
+.      br
+.      nr MN-last-pos \\n[nl]
+.   \}
+.   ev
+.   po
+.   if !\\n[#no-repeat-MN-right]=1 .vpt 1
 ..
 \#
 \# PDF initial setup
@@ -18747,7 +18607,7 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .END
 \#
 .MAC PDF_TARGET END
-.    ds  ARG_1 \\$1
+.    ds ARG_1 \\$1
 .    shift
 .    pdfhref M -N \\*[ARG_1] -- \\$*
 .    if '\\*[.T]'ps' .if !dpdf:href.map .tm gropdf-info:href \\*[ARG_1] \\$*
