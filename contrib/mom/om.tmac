@@ -15609,10 +15609,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          nm
 .\" register ln is still set and may confuse preprocessors like tbl
 .\" still, resuming line numbering must be possible, so save ln in $LN_NUM
-.          if \\n[tbl] \{\
-.             ds $LN_NUM \\n[ln]
-.             nr ln 0
-.          \}
+.          ds $LN_NUM \\n[ln]
+.          if !\\n[#QUOTE] .nr ln 0
 .          if !\\n[#LINENUMBERS]=2 .rr #LINENUMBERS
 .       \}
 .    \}
@@ -16762,7 +16760,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .MAC TS END
 .    br
 .    rr tbl*have-header
-.    nr tbl 1
 .    if '\\n[.z]'FLOAT*DIV' .nr float*with-tbl 1 \" Removed in FLOAT
 .    if !'\\n[.z]'FLOAT*DIV' \{\
 .       if \\n[.t]=1 \
@@ -16934,7 +16931,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .END
 \#
 .MAC TBL*CLEANUP END
-.    rr tbl
 .    rr tbl*before-shim
 .    rr tbl*after-shim
 .    if !'\\n[.z]'FLOAT*DIV' \{\
