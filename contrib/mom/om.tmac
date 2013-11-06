@@ -1682,7 +1682,10 @@ end
 .        ds $CURRENT_TAB \\*[$CURRENT_TAB]
 .        nr #TAB_OFFSET\\*[$CURRENT_TAB] \\n[#TAB_OFFSET]
 .        nr #ST_OFFSET \\n[#TAB_OFFSET]
-.        po \\\\n[#L_MARGIN]u+\\\\n[#TAB_OFFSET\\\\*[$CURRENT_TAB]]u
+.        ie !'\\\\n[.z]'' \
+\!.         po \\\\n[#L_MARGIN]u+\\\\n[#TAB_OFFSET\\\\*[$CURRENT_TAB]]u
+.        el \
+.           po \\\\n[#L_MARGIN]u+\\\\n[#TAB_OFFSET\\\\*[$CURRENT_TAB]]u
 .        ll \\n[#TAB_LENGTH]u
 .        ta \En[.l]u
 .        ie '\\$5'QUAD' \{\
@@ -5569,9 +5572,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !d $TOC_PN_STYLE         .TOC_PAGENUM_STYLE roman
 .    if !r #TOC_PN_PADDING       .TOC_PADDING 3
 .\" Line numbering
-.    if !r #LN_GUTTER    .nr #LN_GUTTER 2
-.    if !r #Q_LN_GUTTER  .nr #Q_LN_GUTTER 2
-.    if !r #BQ_LN_GUTTER .nr #BQ_LN_GUTTER 2
+.    if !r #LN_GUTTER      .nr #LN_GUTTER 2
+.    if !r #Q_LN_GUTTER    .nr #Q_LN_GUTTER 2
+.    if !r #BQ_LN_GUTTER   .nr #BQ_LN_GUTTER 2
+.    if !d $LN_FAM         .ds $LN_FAM \\*[DOC_FAM]
+.    if !d $LN_FT          .ds $LN_FT R
+.    if !d $LN_SIZE_CHANGE .ds $LN_SIZE_CHANGE +0
+.    if !d $LN_COLOR       .ds $LN_COLOR black
 .\" PDF link colour
 .    if !\\n[PDFHREF_COLOR_SET] .PDF_LINK_COLOR 0.0 0.3 0.9
 .\" String defaults for both PRINTSTYLEs
@@ -9581,6 +9588,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          nr #L_MARGIN \\n[.o]
 .          if \\n[#FN_DEPTH] .PROCESS_FN_LEFTOVER
 .          vs \\n[#SAVED_LEAD]u
+.          if \\n[tbl*have-header] \{\
+.             tbl@top-hook
+.          \}
 .          if \\n[#PREV_FN_DEFERRED] \{\
 .             nr #PREV_FN_DEFERRED 2
 .          \}
@@ -9648,6 +9658,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       rr #DIVERTED
 .       ch RR_@TOP
 .       wh \\n[nl]u+1u RR_@TOP
+.       if \\n[tbl*have-header] .tbl@bottom-hook
 .    \}
 .    el .DO_FOOTER
 .    pdfmarkrestart
@@ -15578,6 +15589,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC NUMBER_LINES END
 .    br
+.    if \\n[#QUOTE] \{\
+.       if \\n[#QUOTE]=1 .ds macro QUOTE
+.       if \\n[#QUOTE]=2 .ds macro BLOCKQUOTE
+.       tm1 "[mom]: \\$0 at line \\n[.c] may not be used inside \\*[macro].
+.       tm1 "       Please set NUMBER_LINES before \\*[macro], followed by
+.       tm1 "       NUMBER_\\*[macro]_LINES.
+.       ab Aborting '\\n[.F]'.
+.    \}
 .    if '\\n[.z]'EPI_TEXT' .return
 .    if '\\$1'' \{\
 .       tm1 "[mom]: NUMBER_LINES at line \\n[.c] has no argument.
@@ -16976,7 +16995,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .END
 \#
 .MAC tbl@bottom-hook END
-.\" Not currently used
+.       if \\n[.ns] .rs
+.       rr #DIVERTED
+.       rr @TOP
+.       ch RR_@TOP
 .END
 \#
 .MAC tbl*float-warning END

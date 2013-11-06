@@ -3063,7 +3063,7 @@ invoke <kbd>.PAD_LIST_DIGITS&nbsp;LEFT</kbd> after
   </ul></li>
   <li><a href="#number-lines-control">Control macros and defaults</a>
   <ul style="margin-left: -.5em;">
-    <li><a href="#number-lines-control-quote">Line numbering control macros for quotes and blockquotes</a></li>
+    <li><a href="#number-quote-lines">Line numbering control macros for quotes and blockquotes</a></li>
   </ul></li>
 </ul>
 
@@ -3073,14 +3073,15 @@ When you turn line-numbering on, mom, by default
 <ul style="margin-top: -.5em;">
   <li>numbers every line of paragraph text; line-numbering is
       suspended for all other document processing tags (like
-      docheaders, epigraphs, heads, subheads, etc.) and special
+      docheaders, epigraphs, headings, quotes, etc.) and special
       pages (covers, endotes, bibliographies, etc.); be aware,
       though, that if you turn
       <a href="definitions.html#docheader">docheaders</a>
       off (with
       <a href="docprocessing.html#docheader">DOCHEADER</a> OFF)
       and create your own docheader, mom
-      <i>will</i> line-number your custom docheader
+      <i>will</i> line-number your custom docheader, so turn
+      line numbering on afterwards
   </li>
   <li>doesn&#8217;t touch your line length; line numbers are hung
       outside your current left margin (as set with
@@ -3096,12 +3097,14 @@ When you turn line-numbering on, mom, by default
 </ul>
 
 <p>
-Line numbering may be enabled and disabled for
-<kbd><a href="#quote">QUOTE</a></kbd>
-and/or
-<kbd><a href="#blockquote">BLOCKQUOTE</a></kbd>
-in one of three styles.  See
-<a href="#number-lines-control-quote">Line numbering control macros for quotes and blockquotes</a>.
+Mom expects that
+<kbd><a href="#quote">QUOTE</a></kbd>s
+and
+<kbd><a href="#blockquote">BLOCKQUOTE</a></kbd>s
+will not be line-numbered, however control macros
+are provided to enable line numbering for either.
+See
+<a href="#number-quote-lines">Line numbering control macros for quotes and blockquotes</a>.
 </p>
 
 <!-- -NUMBER_LINES- -->
@@ -3124,11 +3127,28 @@ NUMBER_LINES does what it says: prints line numbers, to the left of
 of paragraph text.  One of the chief reasons for wanting numbered
 lines is in order to identify footnotes or endnotes by line number
 instead of by a marker in the text.  (See
-<a href="#footnote-linenumbers">FOOTNOTE_MARKER_STYLE LINE</a>
+<a href="#footnotes-by-linenumber">Footnotes by linenumber</a>
 for instructions on line-numbered footnotes, and
-<a href="#endnote-marker-style">ENDNOTE_MARKER_STYLE</a>
+<a href="#endnote-marker-style">ENDNOTE_MARKER_STYLE LINE</a>
 for instructions on line-numbered endnotes.)
 </p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+Do not use <kbd>NUMBER_LINES</kbd> inside 
+<a href="#quote">QUOTE</a>
+or
+<a href="#blockquote">BLOCKQUOTE</a>.
+By default, mom expects that quotes and blockquotes will not be
+line numbered.  If you wish to enable line numbering for them, you
+must invoke
+<a href="#number-quote-lines">NUMBER_QUOTE_LINES</a>
+or
+<a href="#number-quote-lines">NUMBER_BLOCKQUOTE_LINES</a>.
+</p>
+</div>
+
 
 <p>
 The first time you invoke
@@ -3136,7 +3156,7 @@ The first time you invoke
 you must, at a minimum, tell it what line number you want the
 <i>next</i>
 <a href="definitions.html#outputline">output line</a>
-to have.  The optional arguments which <kbd>lines to number</kbd>
+to have.  The optional arguments <kbd>which lines to number</kbd>
 and <kbd>gutter</kbd> allow you to state which lines should
 be numbered (eg every five or every ten lines), and the gutter to
 place between line numbers and
@@ -3301,11 +3321,12 @@ desired result.
 
 <ol style="margin-top: .5em; padding-bottom: .5em;">
   <li><a href="#number-lines-general">Family/font/size/colour</a></li>
-  <li><a href="#number-lines-control-quote">Line numbering control for quotes and blockquotes</a>
-  <ul style="margin-left: -.75em; list-style-type: disc;">
-    <li><a href="#number-quote-lines">Number QUOTE lines</a></li>
-    <li><a href="#number-blockquote-lines">Number BLOCKQUOTE lines</a></li>
-    <li><a href="#number-lines-control-case">Numbering QUOTE and BLOCKQUOTE lines on a case by case basis</a></li>
+  <li><a href="#number-quote-lines">Line numbering control for quotes and blockquotes</a>
+  <ul>
+    <li><a href="#number-quote-lines-global">Including QUOTEs and BLOCKQUOTEs in the line numbering scheme</a></li>
+    <li><a href="#number-quote-lines-selective">Selectively enabling line numbering for QUOTEs and BLOCKQUOTEs</a></li>
+    <li><a href="#number-quote-lines-gutter">Changing the line number gutter for QUOTEs and BLOCKQUOTEs</a></li>
+    <li><a href="#number-quote-lines-silent">Silently increment line numbers during  QUOTE and BLOCKQUOTE</a></li>
   </ul></li>
 </ol>
 </div>
@@ -3325,184 +3346,127 @@ See
 </span>
 </div>
 
-<h4 id="number-lines-control-quote" class="docs" style="margin-top: -1.75em;">2. Line numbering control macros for QUOTE and BLOCKQUOTE</h4>
+<h4 id="number-quote-lines" class="docs" style="margin-top: -1.75em;">2. Line numbering control macros for QUOTE and BLOCKQUOTE</h4>
 
-<h5 id="number-quote-lines" class="docs" style="margin-top: 1em;">Number QUOTE lines</h5>
+<h5 id="number-quote-lines-global" class="docs" style="font-size: 87%">&bull;&nbsp;Including QUOTEs and BLOCKQUOTEs in the line numbering scheme</h5>
 
 <p>
-If you&#8217;d like mom to number lines of output text
-in a
+If you&#8217;d like mom to number lines in a
 <a href="#quote">QUOTE</a> 
-as part of the same order and sequence as paragraph text, simply
+or
+<a href="#blockquote">BLOCKQUOTE</a> 
+as part of the same order and sequence as paragraph text,
 invoke
 <span class="pre-in-pp">
   .NUMBER_QUOTE_LINES
 </span>
-by itself.
+or
+<span class="pre-in-pp">
+  .NUMBER_BLOCKQUOTE_LINES
+</span>
+either before or after <kbd>NUMBER_LINES</kbd>.  Both behave
+identically with respect to the affected macro (ie <kbd>QUOTE</kbd>
+or <kbd>BLOCKQUOTE</kbd>).
+</p>
+
+<h5 id="number-quote-lines-selective" class="docs" style="font-size: 87%">&bull;&nbsp;Selectively enabling line numbering for QUOTEs and BLOCKQUOTEs</h5>
+
+<p>
+If you&#8217;d like to enable line numbering
+selectively for quotes and blockquotes <i>only</i>, enable
+<kbd>NUMBER_QUOTE_LINES</kbd> or <kbd>NUMBER_BLOCKQUOTE_LINES</kbd>
+first, followed by <kbd>NUMBER_LINES&nbsp;&lt;n&gt;</kbd>, where
+<kbd>&lt;n&gt;</kbd> is the first line number of the quote
+or blockquote.  Afterwards, enter your <kbd>QUOTE</kbd> or
+<kbd>BLOCKQUOTE</kbd>.  When the quote or blockquote is finished (ie
+after <kbd>QUOTE&nbsp;OFF</kbd> or <kbd>BLOCKQUOTE&nbsp;OFF</kbd>),
+turn line numbering off.  Each subsequent quote or blockquote you
+want line numbered requires only <kbd>NUMBER_LINES &lt;n&gt;</kbd>
+(with a corresponding <kbd>NUMBER_LINES OFF</kbd>) until you turn
+<kbd>NUMBER_QUOTE_LINES</kbd> or <kbd>NUMBER_BLOCKQUOTE_LINES</kbd>
+off.
 </p>
 
 <p>
-There is a catch with numbering quotes, though.  Owing to groff&#8217;s
-restriction on accepting only the figure space as the line number
-gutter&#8217;s unit of measure, it is not possible for line numbers
-in quotes to hang outside a document&#8217;s overall left margin and
-be reliably flush with the line numbers of paragraph text.
-Conseqently, line numbers in quotes hang to the left of the quote,
-separated from the quote by the <kbd>&lt;gutter&gt;</kbd> argument.
+Here&#8217;s a recipe where the first line number of quotes starts
+repeatedly at &#8220;1&#8221;.
+<span class="pre-in-pp">
+  &lt;running text&gt;
+  .NUMBER_QUOTE_LINES
+  .NUMBER_LINES 1
+  .QUOTE
+  &lt;text of quote&gt;
+  .QUOTE OFF
+  .NUMBER_LINES OFF
+  &lt;further running text&gt;
+  .NUMBER_LINES 1
+  .QUOTE
+  &lt;text of quote&gt;
+  .QUOTE OFF
+  .NUMBER_LINES OFF
+  &lt;further running text&gt;
+</span>
+</p>
+
+<h5 id="number-quote-lines-gutter" class="docs" style="font-size: 87%">&bull;&nbsp;Changing the line number gutter for QUOTEs and BLOCKQUOTEs</h5>
+
+<p>
+Owing to groff&#8217;s restriction on accepting only the figure
+space as the line number
+<a href="definitions.html#gutter">gutter</a>&#8217;s
+unit of measure, it is not possible for line numbers in quotes
+or blockquotes to hang outside a document&#8217;s overall left
+margin and be reliably flush with the line numbers of paragraph
+text.  Conseqently, line numbers in quotes or blockquotes hang
+to the left of the quote, separated by the currently active
+gutter for <kbd>NUMBER_LINES</kbd>.
 </p>
 
 <p>
-If you&#8217;d like to change the gutter for quotes line-numbered in
-this way, invoke <kbd>.NUMBER_QUOTE_LINES</kbd> with a digit
-representing the number of
+If you&#8217;d like to change the line number gutter for
+quotes or blockquotes, invoke <kbd>NUMBER_QUOTE_LINES</kbd> or
+<kbd>NUMBER_BLOCKQUOTE_LINES</kbd> with a digit representing the
+number of
 <a href="definitions.html#figurespace">figure spaces</a>
 you&#8217;d like between the line numbers and the quoted text, like this:
 <br/>
 <span class="pre-in-pp">
-  .NUMBER_QUOTE_LINES 1
+  .NUMBER_QUOTE_LINES 3
 </span>
 With the above, line numbers in quotes (and only quotes) will have
-a gutter of 1 figure space.
+a gutter of 3 figure spaces.
 </p>
 
+<h5 id="number-quote-lines-silent" class="docs" style="font-size: 87%">&bull;&nbsp;Silently increment line numbers during QUOTE and BLOCKQUOTE</h5>
+
 <p>
-If you&#8217;re using "line numbering style" for footnotes
-(<a href="#footnote-marker-style">FOOTNOTE_MARKER_STYLE <kbd>LINE</kbd>)</a>,
-you may not wish to have quotes <i>visibly</i> line-numbered, but
-still want to embed footnotes inside quotes.  In order to do that,
-mom allows you to say
+If you&#8217;ve asked mom not to line number quotes or blockquotes,
+but would like line numbering to continue while they&#8217;re
+being output (as opposed to mom&#8217;s default behaviour of
+<i>suspending</i> incrementing of line numbers during the output of
+quotes and blockquotes), invoke
 <span class="pre-in-pp">
   .NUMBER_QUOTE_LINES&nbsp;SILENT
 </span>
-When you invoke <kbd>.NUMBER_QUOTE_LINES&nbsp;SILENT</kbd>,
-mom continues to increment line numbers while quotes are being
-output, but they won&#8217;t appear in the output copy.  (Compare
-this with mom&#8217;s default behaviour of <i>suspending</i>
-incrementing of line numbers during the output of quotes.)  This
-allows you to embed line-numbered footnotes inside quotes and have
-the line number label in the footnote come out sensibly.
-</p>
-
-<p>
-Once having turned NUMBER_QUOTE_LINES on, you may disable it with
-<span class="pre-in-pp">
-  .NUMBER_QUOTE_LINES OFF
-</span>
-(or <kbd>QUIT, END, X,</kbd> etc).
-</p>
-
-<h5 id="number-blockquote-lines" class="docs">Number BLOCKQUOTE lines</h5>
-
-<p>
-If you&#8217;d like mom to number lines of output text
-in a
-<a href="#quote">BLOCKQUOTE</a>
-as part of the same order and sequence as paragraph text, simply
-invoke
-<span class="pre-in-pp">
-  .NUMBER_BLOCKQUOTE_LINES
-</span>
-by itself.
-</p>
-
-<p>
-There is a catch with numbering blockquotes, though.  Owing to
-groff&#8217;s restriction of accepting only the figure space as the
-line number gutter&#8217;s unit of measure, it is not possible for line
-numbers in blockquotes to hang outside a document&#8217;s overall left
-margin and be reliably flush with the line numbers of paragraph
-text.  Conseqently, line numbers in blockquotes hang to the
-left of the blockquote, separated from the blockquote by the
-<kbd>&lt;gutter&gt;</kbd> argument.
-</p>
-
-<p>
-If you&#8217;d like to change the gutter for blockquotes line-numbered in
-this way, invoke
-<span class="pre-in-pp">
-  .NUMBER_BLOCKQUOTE_LINES
-</span>
-with a digit representing the number of
-<a href="definitions.html#figurespace">figure spaces</a>
-you&#8217;d like between the line numbers and the blockquoted text, like
-this:
-<br/>
-<span class="pre-in-pp">
-  .NUMBER_BLOCKQUOTE_LINES 1
-</span>
-
-With the above, line numbers in blockquotes (and only blockquotes)
-will have a gutter of 1 figure space.
-</p>
-
-<p>
-If you are using "line numbering style" for footnotes
-(<a href="#footnote-marker-style">FOOTNOTE_MARKER_STYLE <kbd>LINE</kbd>)</a>,
-you may not wish to have blockquotes <i>visibly</i> line-numbered,
-but still want to embed footnotes inside blockquotes.  In order to
-do that, mom allows you to say
+or
 <span class="pre-in-pp">
   .NUMBER_BLOCKQUOTE_LINES&nbsp;SILENT
 </span>
-When you invoke <kbd>.NUMBER_BLOCKQUOTE_LINES&nbsp;SILENT</kbd>,
-mom continues to increment line numbers while blockquotes are being
-output, but they won&#8217;t appear in the output copy.  (Compare
-this with mom&#8217;s default behaviour of <i>suspending</i>
-incrementing of line numbers during the output of blockquotes.)
-This allows you to embed line-numbered footnotes inside blockquotes
-and have the line number label in the footnote come out sensibly.
+With these, mom continues to increment line numbers while quotes
+or blockquotes are being output, but the line numbers won&#8217;t
+appear in the output copy.
 </p>
 
 <p>
-Once having turned NUMBER_BLOCKQUOTE_LINES on, you may disable it
-with
+Once having turned <kbd>NUMBER_QUOTE_LINES</kbd> or
+<kbd>NUMBER_BLOCKQUOTE_LINES</kbd> on, you may disable them with
+<span class="pre-in-pp">
+  .NUMBER_QUOTE_LINES OFF
+</span>
+or
 <span class="pre-in-pp">
   .NUMBER_BLOCKQUOTE_LINES OFF
 </span>
-(or <kbd>QUIT, END, X,</kbd> etc).
-</p>
-
-<h4 id="number-lines-control-case" class="docs" style="margin-top: -.25em;">3. Numbering QUOTE and BLOCKQUOTE lines on a case by case basis</h4>
-
-<p>
-Sometimes, you may want quotes or blockquotes to have a different
-line numbering scheme from the one used in the rest of the document.
-Or, you may want line numbering enabled only inside a particular
-quote or blockquote.  A common reason for this would be if you were
-using the
-<a href="#quote">QUOTE</a>
-macro to insert lines of programming code into a document.
-</p>
-
-<p>
-To enable line numbering within quotes or blockquotes on a case by
-case basis, simply invoke
-<a href="#number-lines">NUMBER_LINES</a>
-with the arguments you need immediately after entering
-<kbd><a href="#quote">.QUOTE</a></kbd>
-or
-<kbd><a href="#blockquote">.BLOCKQUOTE</a></kbd>.
-(<a href="number-quote-lines">NUMBER_QUOTE_LINES</a>
-and/or
-<a href="number-blockquote-lines">NUMBER_BLOCKQUOTE_LINES</a>
-should be turned off if you&#8217;re doing this.)  The quote
-or blockquote will then be line-numbered according to your
-specifications: the starting line number of the quote or blockquote
-will be the one you give as a first argument to NUMBER_LINES; which
-lines to number will be the value you pass to <kbd>which lines
-to number</kbd> (defaults to <kbd>1</kbd>); line numbers will
-hang to the left of the quote or blockquote, separated from the
-quote or blockquote by <kbd>gutter</kbd> (defaults to <kbd>2</kbd>).
-</p>
-
-<p>
-As soon as QUOTE or BLOCKQUOTE is turned off, line numbering ceases,
-not only with respect to subsequent paragraph text (if they are
-not being line-numbered), but also for any subsequent invocation
-of <kbd>.QUOTE</kbd> or <kbd>.BLOCKQUOTE</kbd>.  In other words,
-you must re-enable quote or blockquote line-numbering inside every
-instance of QUOTE or BLOCKQUOTE when line-numbering either of them
-on a case by case basis.
 </p>
 
 <div class="rule-short"><hr/></div>
