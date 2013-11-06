@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2003, 2004, 2009 Free Software Foundation, Inc.
+/* Copyright (C) 2001, 2003, 2004, 2009, 2013 Free Software Foundation, Inc.
      Written by Werner Lemberg (wl@gnu.org)
 
 This file is part of groff.
@@ -102,7 +102,9 @@ int gen_tempname(char *tmpl, int dir)
     XXXXXX[5] = letters[v % 62];
 
     int fd = dir ? mkdir(tmpl, S_IRUSR | S_IWUSR | S_IXUSR)
-		 : open(tmpl, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+		 : open(tmpl,
+			O_RDWR | O_CREAT | O_EXCL | O_BINARY,
+			S_IRUSR | S_IWUSR);
 
     if (fd >= 0)
       return fd;
