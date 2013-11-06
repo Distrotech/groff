@@ -1,4 +1,4 @@
-# Copyright (C) 1989-2000, 2002-2004, 2006-2011
+# Copyright (C) 1989-2000, 2002-2004, 2006-2011, 2013
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
@@ -137,7 +137,7 @@ extraclean: distclean
 .man.n:
 	@echo Making $@ from $<
 	@-rm -f $@
-	@sed -e "s|@APPRESDIR@|$(appresdir)|g" \
+	@LC_ALL=C sed -e "s|@APPRESDIR@|$(appresdir)|g" \
 	-e "s|@BINDIR@|$(bindir)|g" \
 	-e "s|@BROKEN_SPOOLER_FLAGS@|$(BROKEN_SPOOLER_FLAGS)|g" \
 	-e "s|@COMMON_WORDS_FILE@|$(common_words_file)|g" \
