@@ -68,10 +68,8 @@ available at the
 and its mirrors.
 .
 The USA site also contains older, obsolete versions.
-
-The development version is available from a CVS repository, see below.
 .
-Development snapshots (produced twice a day from the CVS repository)
+Development snapshots (produced twice a day from the development repository)
 can be downloaded from
 .URL "http://\:groff.ffii.org/\:groff/\:devel" here .
 
@@ -139,7 +137,7 @@ The file MORE.STUFF contains information about add-on packages useful for
 groff.
 .
 .SH
-CVS and FTP access
+Repository and FTP access
 .LP
 The most recent released version of groff is always available by
 .URL "ftp://\:ftp.gnu.org/\:gnu/\:groff" "anonymous ftp" .
@@ -222,7 +220,7 @@ bison \[>=] 1.875b or byacc
 .in
 
 Note that texinfo and bison or byacc are required only for building from
-CVS sources (either a checked out working copy, or a daily snapshot).
+repository sources (either a working copy, or a daily snapshot).
 They are not required for building from a stable release tarball.
 Also note that the version numbers stated are the minimum supported.
 No version of texinfo < 4.8 works, and the original release of bison
@@ -276,7 +274,7 @@ for general discussion of groff
 
 .LI
 .MTO groff-commit@gnu.org groff-commit@gnu.org
-a read-only list showing commitments to the CVS repository
+a read-only list showing commitments to the development repository
 .ULE
 
 To subscribe, send e-mail to \[la]list\[ra]-request@\[la]domain\[ra]

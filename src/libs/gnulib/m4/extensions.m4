@@ -6,9 +6,9 @@
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
 
-# This definition of AC_USE_SYSTEM_EXTENSIONS is stolen from CVS
-# Autoconf.  Perhaps we can remove this once we can assume Autoconf
-# 2.62 or later everywhere, but since CVS Autoconf mutates rapidly
+# This definition of AC_USE_SYSTEM_EXTENSIONS is stolen from the development
+# version of Autoconf.  Perhaps we can remove this once we can assume Autoconf
+# 2.62 or later everywhere, but since Autoconf mutates rapidly
 # enough in this area it's likely we'll need to redefine
 # AC_USE_SYSTEM_EXTENSIONS for quite some time.
 
