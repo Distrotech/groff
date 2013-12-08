@@ -32,8 +32,6 @@
 # We don't have complete option coverage on eqn because this is primarily
 # intended as a pic translator; we can live with eqn defaults. 
 #
-# $Id$
-#
 groffpic_opts=""
 gs_opts=""
 convert_opts=""

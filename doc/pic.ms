@@ -30,7 +30,6 @@
 .\" Eric S. Raymond <esr@thyrsus.com> in August 1995.  It has been put
 .\" under the GPL in March 2006.
 .\"
-.\"	$Id$	
 .
 .
 .\" Set a proper TeX and LaTeX

@@ -32,8 +32,6 @@
 #
 # Thus, we pass -U to groff(1), and everything else to convert(1).
 #
-# $Id$
-#
 groff_opts=""
 convert_opts=""
 format="png"
