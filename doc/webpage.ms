@@ -143,38 +143,8 @@ The most recent released version of groff is always available by
 .URL "ftp://\:ftp.gnu.org/\:gnu/\:groff" "anonymous ftp" .
 
 The current development version of groff is available from a
-.URL "http://\:savannah.gnu.org/\:cvs/\:?group=groff" "CVS repository" .
-You can access it by first selecting a parent directory in
-which to create a working copy (call it, say, ~/cvswork), and then
-executing the commands
-
-.in 2m
-.nf
-.ft C
-cd ~/cvswork
-cvs -d:pserver:anonymous@cvs.savannah.gnu.org/sources/groff -z5 co groff
-.ft P
-.fi
-.in
-
-This creates a subdirectory, ~/cvswork/groff, with a `checked out'
-copy of the CVS repository.
-An update of this working copy may be
-achieved, at any later time by invoking the commands
-
-.in 2m
-.nf
-.ft C
-cd ~/cvswork/groff
-cvs -z5 update -dP
-.ft P
-.fi
-.in
-
-Please read the CVS info pages for further details.
-
-Finally, it is possible to access the CVS with a
-.URL http://\:savannah.gnu.org/\:cvs/\:?group=groff "web browser" .
+repository which you can find through the Savannah project page for groff:
+.URL http://savannah.gnu.org/projects/groff .
 
 Alternatively, you can download snapshots (which are updated twice a day).
 The complete groff source as a single file is available
