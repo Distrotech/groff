@@ -836,11 +836,9 @@ dist:
 	cd tmp; \
 	cp ../Makefile .; \
 	cp $(top_srcdir)/* . 2>/dev/null || true; \
-	rm -rf CVS; \
 	for d in $(DISTDIRS); do \
 	  (cd $$d; \
-	   cp $(top_srcdir)/$$d/* . 2>/dev/null; \
-	   rm -rf CVS || true); \
+	   cp $(top_srcdir)/$$d/* . 2>/dev/null;); \
 	done; \
 	$(MAKE) srcdir=. VPATH=. distfiles; \
 	$(MAKE) srcdir=. VPATH=. extraclean; \
