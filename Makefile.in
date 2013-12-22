@@ -602,12 +602,15 @@ CCPROGDIRS=\
   src/utils/addftinfo
 CPROGDIRS=\
   src/utils/pfbtops
+SHPROGDIRS=\
+  src/devices/gropdf
 PROGDEPDIRS=\
   arch/misc
 PROGDIRS=\
   $(PROGDEPDIRS) \
   $(CCPROGDIRS) \
   $(CPROGDIRS) \
+  $(SHPROGDIRS) \
   $(XPROGDIRS)
 DEVDIRS=\
   font/devps \
@@ -637,7 +640,6 @@ OTHERDIRS=\
   contrib/glilypond \
   contrib/hdtbl \
   contrib/pdfmark \
-  src/devices/gropdf \
   font/devpdf \
   contrib/mom \
   contrib/gdiffmk
@@ -778,7 +780,7 @@ $(CCPROGDIRS): FORCE $(LIBDIRS)
 	  -f $(top_srcdir)/Makefile.ccpg \
 	  -f Makefile.dep $(do)
 
-$(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE $(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
+$(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS) $(SHPROGDIRS): FORCE $(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
@@ -809,7 +811,7 @@ $(GNULIBDIRS): FORCE
 	  $(MAKE) ACLOCAL=: AUTOCONF=: AUTOHEADER=: AUTOMAKE=: $(do) ;; \
 	esac
 
-$(OTHERDIRS): $(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
+$(OTHERDIRS): $(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS) $(SHPROGDIRS)
 
 $(INCDIRS) $(PROGDEPDIRS) $(OTHERDIRS): FORCE
 	@$(ENVSETUP); \

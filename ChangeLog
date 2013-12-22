@@ -1,3 +1,42 @@
+2013-12-06  Mike Frysinger  <vapier@gentoo.org>
+
+	Fix parallel build with gropdf and mom examples.
+
+	The `contrib/mom/examples/' directory uses the helper script from
+	`src/devices/gropdf/'.  Currently though, parallel builds might fail
+	like so:
+
+	  ...
+	  make[2]: Entering directory `.../groff-1.22.2/contrib/mom'
+	  <groff command> examples/letter.mom >examples/letter.pdf
+	  <groff command> examples/mom-pdf.mom >examples/mom-pdf.pdf
+	  /bin/sh: .../groff-1.22.2/src/devices/gropdf/pdfmom: No such file or directory
+	  make[2]: *** [examples/letter.pdf] Error 127
+	  /bin/sh: .../groff-1.22.2/src/devices/gropdf/pdfmom: No such file or directory
+	  make[2]: *** [examples/mom-pdf.pdf] Error 127
+	  make[2]: Leaving directory `.../groff-1.22.2/contrib/mom'
+	  make[1]: *** [contrib/mom] Error 2
+	  ...
+	  make[2]: Entering directory `.../groff-1.22.2/src/devices/gropdf'
+	  sed -f .../groff-1.22.2/arch/misc/shdeps.sed \
+	      -e "s|@VERSION@|1.22.2|" \
+	      -e "s|@PERLPATH@|/usr/bin/perl|" ./pdfmom.pl >pdfmom
+
+	The top level makefile tries to account for this in general with
+	OTHERDIRS, but looks like `src/devices/gropdf/' was added to this
+	variable (which holds `contrib/mom/' too) because gropdf installs a
+	shell script, and the other prog vars require it to be a dir of
+	things to compile.
+
+	  URL: http://crbug.com/324116
+	  URL: https://bugs.gentoo.org/487276
+
+	* Makefile.in (SHPROGDIRS): Declare.
+	(PROGDIRS): Add $(SHPROGDIRS).
+	(OTHERDIRS): Delete src/devices/gropdf.
+	($(SHPROGDIRS):): Add to existing rule.
+	($(OTHERDIRS):): Depend on $(SHPROGDIRS).
+
 2013-12-08  Eric S. Raymond <esr@thyrsus.com>
 
 	Repository fully converted to git.
