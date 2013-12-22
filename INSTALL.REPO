@@ -1,21 +1,19 @@
     Copyright 2013
       Free Software Foundation, Inc.
 
-    Last Update: 16 Apr 2013
+    Last Update: 22 Dec 2013
 
-    Copying and distribution of this file, with or without modification,
-    are permitted in any medium without royalty provided the copyright
-    notice and this notice are preserved.
+    Copying and distribution of this file, with or without
+    modification, are permitted in any medium without royalty provided
+    the copyright notice and this notice are preserved.
 
 This file contains information that supplements the generic
-installation instructions in file `INSTALL.autotools'.  It is meant
-for people building directly from the development repository, rather than
+installation instructions in file `INSTALL.gen'.  It is meant for
+people building directly from the development repository, rather than
 a release or snapshot tarball .
 
-
 If you want to start compiling the `groff' system with an existing
-script `configure' you won't need the information ion this file.
-
+script `configure' you won't need the information in this file.
 
 But if you want to use the `GNU autotools' (`aclocal', `autoreconf')
 for creating the following and some more files:
@@ -24,34 +22,30 @@ for creating the following and some more files:
     configure
     Makefile
 
-
 To change the file `aclocal.m4', run the shell command
 
     $ aclocal -I m4
 
-
-To recreate the files `configure' and `Makefile', use the shell command
+To recreate the files `configure' and `Makefile', use the shell
+command
 
     $ autoreconf -I m4
 
-
 The option `-I m4' is necessary.  It refers to the subdirectory `m4'
-that has files with m4 macro definitions that are needed by the
-`autotools'.
+that has files with m4 macro definitions needed by the `autotools'.
 
+If you use an old `autoreconf' version < 2.69, there might be an error
+warning like:
 
-If you use an old `autoreconf' version < 2.69, there might be an
-error warning like:
+  /usr/share/aclocal/gtkglextmm-1.2.m4:225:
+    warning: underquoted definition of AC_GTKGLEXTMM_SUPPORTS_MULTIHEAD
+  /usr/share/aclocal/gtkglextmm-1.2.m4:225:
+    run info '(automake)Extending aclocal'
+  /usr/share/aclocal/gtkglextmm-1.2.m4:225:
+    or see http://www.gnu.org/software/automake/manual/automake.html#Extending-aclocal
 
-    /usr/share/aclocal/gtkglextmm-1.2.m4:225: warning: underquoted \
-definition of AC_GTKGLEXTMM_SUPPORTS_MULTIHEAD
-    /usr/share/aclocal/gtkglextmm-1.2.m4:225:   run info \
-'(automake)Extending aclocal'
-    /usr/share/aclocal/gtkglextmm-1.2.m4:225:   or see \
-http://www.gnu.org/software/automake/manual/automake.html#Extending-aclocal
-
-Just ignore this.  It doesn't occur in the actual versions of `autoreconf'.
-
+Just ignore this.  It doesn't occur in the actual versions of
+`autoreconf'.
 
 You may even use the shell command
 
@@ -60,11 +54,10 @@ You may even use the shell command
 instead of `autoreconf', but that will ignore some features.  So
 `autoreconf' is better.
 
-
-`automake' is not used.  `autoreconf' does part of this.  If you know
-about creating `Makefile.am' files we are glad to have you for the
-inclusion of `automake'.  Take contact with the `groff Mailinglist'.
-
+`automake' is not used currently, however, we plan to convert the
+build system accordingly.  If you know about creating `Makefile.am'
+files we are glad to have you for the inclusion of `automake'.  Take
+contact with the `groff Mailinglist'.
 
 After the use of the `GNU autotools', the usual compilation should
 work.  If the run of `configure' produces error reports you have
