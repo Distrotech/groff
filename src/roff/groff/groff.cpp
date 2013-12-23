@@ -755,7 +755,7 @@ char **possible_command::get_argv()
 void synopsis(FILE *stream)
 {
   fprintf(stream,
-"usage: %s [-abceghijklpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
+"usage: %s [-abceghijklpstvzCEGNRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
 "       [-wname] [-Wname] [-Mdir] [-dcs] [-rcn] [-nnum] [-olist] [-Parg]\n"
 "       [-Darg] [-Karg] [-Larg] [-Idir] [files...]\n",
 	  program_name);
