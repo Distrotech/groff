@@ -24,24 +24,24 @@ use Data::Dumper;
 our $Legalese;
 
 {
-  use constant VERSION => 'v1.1'; # version of glilypond
-  use constant LASTUPDATE => '10 May 2013'; # date of last update
+  use constant VERSION => 'v1.2'; # version of glilypond
+  use constant LASTUPDATE => '1 Jan 2014'; # date of last update
 
-### This constant `LICENSE' is the license for this file `GPL' >= 3
+### This constant `LICENSE' is the license for this file `GPL' >= 2
   use constant LICENSE => q*
 glilypond - integrate `lilypond' into `groff' files
 
 Source file position: `<groff-source>/contrib/glilypond/glilypond.pl'
 Installed position: `<prefix>/bin/glilypond'
 
-Copyright (C) 2013 Free Software Foundation, Inc.
+Copyright (C) 2013-2014 Free Software Foundation, Inc.
   Written by Bernd Warken <groff-bernd.warken-72@web.de>
 
 This file is part of `GNU groff'.
 
   `GNU groff' is free software: you can redistribute it and/or modify it
 under the terms of the `GNU General Public License' as published by the
-`Free Software Foundation', either version 3 of the License, or (at your
+`Free Software Foundation', either version 2 of the License, or (at your
 option) any later version.
 
   `GNU groff' is distributed in the hope that it will be useful, but
@@ -142,7 +142,7 @@ BEGIN {
   require 'subs.pl';
 }
 
-die "test: ";
+#die "test: ";
 ########################################################################
 # OOP declarations for some file handles
 ########################################################################
