@@ -24,13 +24,19 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use strict;
+use File::Temp qw/tempfile/;
 my @cmd;
 my $dev='pdf';
+my $preconv='';
+my $readstdin=1;
 
 $ENV{PATH}=$ENV{GROFF_BIN_PATH}.':'.$ENV{PATH} if exists($ENV{GROFF_BIN_PATH});
+$ENV{TMPDIR}=$ENV{GROFF_TMPDIR} if exists($ENV{GROFF_TMPDIR});
 
 while (my $c=shift)
 {
+    $c=~s/(?<!\\)"/\\"/g;
+    
     if (substr($c,0,2) eq '-T')
     {
 	if (length($c) > 2)
@@ -41,7 +47,24 @@ while (my $c=shift)
 	{
 	    $dev=shift;
 	}
-
+	next;
+    }
+    elsif (substr($c,0,2) eq '-K')
+    {
+	if (length($c) > 2)
+	{
+	    $preconv=$c;
+	}
+	else
+	{
+	    $preconv=$c;
+	    $preconv.=shift;
+	}
+	next;
+    }
+    elsif (substr($c,0,2) eq '-k')
+    {
+	$preconv=$c;
 	next;
     }
     elsif ($c eq '-z' or $c eq '-Z')
@@ -49,21 +72,57 @@ while (my $c=shift)
 	$dev=$c;
 	next;
     }
-
     elsif ($c eq '-v')
     {
 	print "GNU pdfmom (groff) version @VERSION@\n";
 	exit;
     }
+    elsif (substr($c,0,1) eq '-')
+    {
+	if (length($c) > 1)
+	{
+	    push(@cmd,"\"$c\"");
+	    push(@cmd,"'".shift."'") if length($c)==2 and index('dDfFIKLmMnoPrwW',substr($c,-1)) >= 0;
+	}
+	else
+	{
+	    # Just a '-'
+	    
+	    push(@cmd,$c);
+	    $readstdin=2;
+	}
+    }
+    else
+    {
+	# Got a filename?
+	
+	push(@cmd,"\"$c\"");
+	$readstdin=0 if $readstdin == 1;
+	
+    }
 
-    push(@cmd,$c);
 }
 
-my $cmdstring=join(' ',@cmd);
+my $cmdstring=' '.join(' ',@cmd).' ';
+
+if ($readstdin)
+{
+    my ($fh,$tmpfn)=tempfile('pdfmom-XXXXX', UNLINK=>1);
+
+    while (<STDIN>)
+    {
+	print $fh ($_);
+    }
+    
+    close($fh);
+    
+    $cmdstring=~s/ - / $tmpfn / if $readstdin == 2;
+    $cmdstring.=" $tmpfn " if $readstdin == 1;
+}
 
 if ($dev eq 'pdf')
 {
-    system("groff -Tpdf -dPDF.EXPORT=1 -mom -z $cmdstring 2>&1 | grep '^.ds' | groff -Tpdf -mom - $cmdstring");
+    system("groff -Tpdf -dPDF.EXPORT=1 -mom -z $cmdstring 2>&1 | grep '^.ds' | groff -Tpdf -mom - $preconv $cmdstring");
 }
 elsif ($dev eq 'ps')
 {

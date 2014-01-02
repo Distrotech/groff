@@ -574,7 +574,10 @@ am solely responsible for any bugs I may have introduced into this file.
 .\" if any, and set the marker -- if we still can't identify the name
 .\" for the destination, then this marker will not be created.
 .\"
-.pdf*href.set \\*[pdf:href-N] \\*[pdf:href-D] \\$1
+.ds PDFBOOKMARK.NAME "\\*[pdf:href-N]\\*[pdf:href-D]
+.pdf*href.set \\*[PDFBOOKMARK.NAME] \\$1
+.ds pdf:look(\\*[PDFBOOKMARK.NAME]) \\$*
+.if dPDF.EXPORT .tm .ds pdf:look(\\*[PDFBOOKMARK.NAME]) \\$*
 .\"
 .\"
 .\" Irrespective of whether this marker is created, or not,
@@ -702,7 +705,9 @@ am solely responsible for any bugs I may have introduced into this file.
 .   \"
 \#.   if dPDFHREF.COLOUR .defcolor pdf:href.colour rgb \\*[PDFHREF.COLOUR]
 .   nr pdf:bm.width \\w'\\*[PDFHREF.DESC]'
-.   nop \&\m[\\*[PDFHREF.TEXT.COLOUR]]\X'pdf: markstart \\n[rst] \\n[rsb] \\n[PDFHREF.LEADING] \\*[pdf:href.link]'\\*[PDFHREF.DESC]\X'pdf: markend'\m[]\c
+.   nop \&\m[\\*[PDFHREF.TEXT.COLOUR]]\c
+.   device pdf: markstart \\n[rst] \\n[rsb] \\n[PDFHREF.LEADING] \\*[pdf:href.link]
+.   nop \&\\*[PDFHREF.DESC]\X'pdf: markend'\m[]\c
 .   \"
 .   \" Clean up the temporary registers and strings, used to
 .   \" compute the "hot-spot" bounds, and format the reference,

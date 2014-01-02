@@ -711,6 +711,7 @@ sub do_x
 	    {
 		my $pdfmark=$1;
 		$pdfmark=~s((\d{4,6}) u)(sprintf("%.1f",$1/$desc{sizescale}))eg;
+		$pdfmark=~s(\\\[u00(..)\])(chr(hex($1)))eg;
 
 		if ($pdfmark=~m/(.+) \/DOCINFO/)
 		{
@@ -1125,6 +1126,7 @@ sub PutHotSpot
     $l=~s/Color/C/;
     $l=~s/Action/A/;
     $l=~s'/Subtype /URI'/S /URI';
+    $l=~s(\\\[u00(..)\])(chr(hex($1)))eg;
     my @xwds=split(' ',"<< $l >>");
     my $annotno=BuildObj(++$objct,ParsePDFValue(\@xwds));
     my $annot=$obj[$objct];
@@ -1622,7 +1624,7 @@ sub nextwd
 
     return('') if !defined($wd);
 
-    if ($wd=~m/^(.*?)(<<|>>|\[|\])(.*)/)
+    if ($wd=~m/^(.*?)(<<|>>|(?:(?<!\\)\[|\]))(.*)/)
     {
 	if (defined($1) and length($1))
 	{
@@ -2326,6 +2328,7 @@ sub do_p
     $cpage=$obj[$cpageno]->{DATA};
     $pages->{'Count'}++;
     $stream="q 1 0 0 1 0 0 cm\n$linejoin J\n$linecap j\n";
+    $stream.=$strkcol."\n", $curstrk=$strkcol if $strkcol ne '';
     $mode='g';
     $curfill='';
 #    @mediabox=@defaultmb;
