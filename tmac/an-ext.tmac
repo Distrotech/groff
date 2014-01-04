@@ -181,6 +181,26 @@
 ..
 .
 .
+.\" .FONT (<font name> <text> [<font name> <text> ...])
+.\" Print in different fonts, e.g. using the font names R, I, B, CR, CI, CB
+.de FONT
+.  if (\\n[.$] = 0) \{\
+.       nop \&\f[P]\&
+.       return
+.  \}
+.  ds result \&
+.  while (\\n[.$] >= 2) \{\
+.       as result \,\f[\\$1]\\$2
+.       if !"\\$1"P" .as result \f[P]
+.       shift 2
+.  \}
+.  if (\\n[.$] = 1) .as result \,\f[\\$1]
+.  nh
+.  nop \\*[result]\&
+.  hy
+..
+.
+.
 .\" Start example.
 .de EX
 .  nr mE \\n(.f
