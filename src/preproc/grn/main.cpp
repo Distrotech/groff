@@ -92,6 +92,8 @@ extern ELT *DBRead(register FILE *file);
 extern POINT *PTInit();
 extern POINT *PTMakePoint(double x, double y, POINT **pplist);
 
+#define INIT_FILE_SIZE 50  /* Initial size of array of files from cmd line. */
+#define FILE_SIZE_INCR 50  /* Amount to increase array of files by. */
 
 #define SUN_SCALEFACTOR 0.70
 
@@ -244,6 +246,28 @@ usage(FILE *stream)
 }
 
 
+/* Add a new file entry in the array, expanding array if needs be. */
+
+char **
+add_file(char **file,
+	 char *new_file,
+	 int *count,
+	 int *cur_size)
+{
+  if (*count >= *cur_size) {
+    *cur_size += FILE_SIZE_INCR;
+    file = (char **) realloc((char **) file, *cur_size * sizeof(char *));
+    if (file == NULL) {
+      fatal("unable to extend file array");
+    }
+  }
+  file[*count] = new_file;
+  *count += 1;
+
+  return file;
+}
+
+
 /*----------------------------------------------------------------------------*
  | Routine:	main (argument_count, argument_pointer)
  |
@@ -262,18 +286,22 @@ main(int argc,
   register FILE *fp;
   register int k;
   register char c;
-  register int gfil = 0;
-  char *file[50];
+  int gfil = 0;
+  char **file = NULL;
+  int file_cur_size = INIT_FILE_SIZE;
   char *operand(int *argcp, char ***argvp);
 
+  if ((file = (char **) malloc(file_cur_size * sizeof(char *))) == NULL) {
+    fatal("unable to create file array");
+  }
   while (--argc) {
     if (**++argv != '-')
-      file[gfil++] = *argv;
+      file = add_file(file, *argv, &gfil, &file_cur_size);
     else
       switch (c = (*argv)[1]) {
 
       case 0:
-	file[gfil++] = NULL;
+	file = add_file(file, NULL, &gfil, &file_cur_size);
 	break;
 
       case 'C':		/* compatibility mode */
