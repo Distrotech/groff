@@ -6,7 +6,7 @@
 # Source file position: <groff-source>/src/roff/grog/grog.pl
 # Installed position: <prefix>/bin/grog
 
-# Copyright (C) 1993, 2006, 2009, 2011-2012 Free Software Foundation, Inc.
+# Copyright (C) 1993, 2006, 2009, 2011-2012, 2014 Free Software Foundation, Inc.
 # Written by James Clark, maintained by Werner Lemberg.
 # Rewritten and put under GPL by Bernd Warken <groff-bernd.warken-72@web.de>.
 
@@ -26,7 +26,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################
-my $Last_Update = '24 May 2012';
+my $Last_Update = '12 Feb 2014';
 ########################################################################
 
 require v5.6;
@@ -114,6 +114,7 @@ foreach my $arg (@ARGV) {
 sub process {
   my ($filename, $level) = @_;
   local(*FILE);
+  my %macros;
 
   if (!open(FILE, $filename eq "-" ? $filename : "< $filename")) {
     print STDERR "$Prog: can't open \`$filename': $!\n";
@@ -125,6 +126,25 @@ sub process {
     s/^[.']\s*/./;
     s/^\s+|\s+$//g;
     s/$/\n/;
+
+
+    if ( /^\.de1?\s+\w+/ ) {
+      # this line is a macro definition, add it to %macros
+      my $macro = s/^\.de1?\s+(\w+)\W*$/.$1/;
+      if (exists $macros{$macro}) {
+	next;
+      }
+      $macros{$macro} = 1;
+      next;
+    }
+    if ( /^\.\w+\W*/ ) {
+      # if line command is a defined macro, just ignore this line
+      my $macro = s/^(\.\w+)\W*.*$/$1/;
+      if ( exists $macros{$macro} ) {
+	next;
+      }
+    }
+
 
     if (/^(.cstart)|(begin\s+chem)$/) {
       $Groff{'chem'}++;
@@ -288,7 +308,7 @@ EOF
 sub version {
   my ($exit_status) = @_;
   print "Perl version of GNU $Prog of $Last_Update " .
-    "in groff version @VERSION@\n";
+    "in groff version " . '@VERSION@' . "\n";
   exit $exit_status;
 }
 
