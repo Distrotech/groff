@@ -6,7 +6,8 @@
 # Source file position: <groff-source>/src/roff/grog/grog.pl
 # Installed position: <prefix>/bin/grog
 
-# Copyright (C) 1993, 2006, 2009, 2011-2012, 2014 Free Software Foundation, Inc.
+# Copyright (C) 1993, 2006, 2009, 2011-2012, 2014
+#               Free Software Foundation, Inc.
 # Written by James Clark, maintained by Werner Lemberg.
 # Rewritten and put under GPL by Bernd Warken <groff-bernd.warken-72@web.de>.
 
@@ -14,7 +15,7 @@
 
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License (GPL) as published
-# by the Free Software Foundation, either version 3 of the License, or
+# by the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 
 # `groff' is distributed in the hope that it will be useful, but
@@ -26,7 +27,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################
-my $Last_Update = '12 Feb 2014';
+my $Last_Update = '14 Feb 2014';
 ########################################################################
 
 require v5.6;
@@ -46,7 +47,34 @@ my $Sp = qr([\s\n]);
 
 my @Command;			# stores the final output
 my @Mparams;			# stores the options -m*
-my %Groff;
+my %Groff = (
+	     'chem' => 0,
+	     'eqn' => 0,
+	     'grap' => 0,
+	     'grn' => 0,
+	     'lilypond' => 0,
+	     'mdoc' => 0,
+	     'mdoc_old' => 0,
+	     'me' => 0,
+	     'mm' => 0,
+	     'mom' => 0,
+	     'ILP' => 0,
+	     'LP' => 0,
+	     'NH' => 0,
+	     'Oo' => 0,
+	     'P' => 0,
+	     'PP' => 0,
+	     'SH' => 0,
+	     'TL' => 0,
+	     'TH' => 0,
+	     'TL' => 0,
+	     'pic' => 0,
+	     'refer' => 0,
+	     'refer_open' => 0,
+	     'refer_close' => 0,
+	     'soelim' => 0,
+	     'tbl' => 0,
+);
 
 {
   my @filespec = ();
@@ -146,7 +174,10 @@ sub process {
     }
 
 
-    if (/^(.cstart)|(begin\s+chem)$/) {
+    if (/^\.lilypond/) {
+      $Groff{'lilypond'}++;
+      $Groff{'soelim'}++ if $level;
+    } elsif (/^(\.cstart)|(begin\s+chem)$/) {
       $Groff{'chem'}++;
       $Groff{'soelim'}++ if $level;
     } elsif (/^\.TS$Sp/) {
@@ -317,6 +348,11 @@ sub version {
   my $is_man = 0;
   my $is_mm = 0;
   my $is_mom = 0;
+  my @preprograms = ();
+
+  if ( $Groff{'lilypond'} ) {
+    push @preprograms, 'glilypond';
+  }
 
   $Groff{'refer'} ||= $Groff{'refer_open'} && $Groff{'refer_close'};
 
@@ -368,7 +404,19 @@ sub version {
   }
 
   unshift @Command, 'groff';
-  push(@Command, @ARGV);
+  if ( @preprograms ) {
+    my @progs;
+    $progs[0] = shift @preprograms;
+    push(@progs, @ARGV);
+    for ( @preprograms ) {
+      push @progs, '|';
+      push @progs, $_;
+    }
+    push @progs, '|';
+    unshift @Command, @progs;
+  } else {
+    push(@Command, @ARGV);
+  }
 
   foreach (@Command) {
     next unless /\s/;
