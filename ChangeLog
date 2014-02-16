@@ -1,3 +1,37 @@
+2014-02-15  Ingo Schwarze  <schwarze@openbsd.org>
+
+	* tmac/groff_mdoc.man: Improve the manual page template.
+
+	 - Add the EXIT STATUS section.  It is widely used in at least
+	   NetBSD, FreeBSD, OpenBSD, and DragonFly manuals.
+	 - Recommend the DIAGNOSTICS section for section 4 manuals.  Such
+	   usage is very widespread, in particular for kernel printf
+	   messages emitted by device drivers.
+	 - Do not recommend the DIAGNOSTICS section for command return
+	   values to the shell any longer.  While such usage historically
+	   existed, it does not seem common nowadays, and in any case, using
+	   the now well-established EXIT STATUS section seems preferable to
+	   me.
+	 - Mention the possibility to use ERRORS for section 4 manuals. 
+	   While most section 4 manuals have a DIAGNOSTICS section, only
+	   some will need an ERRORS section, but these cases aren't exactly
+	   rare, either.  Quite some device driver manuals explain how to
+	   use the device using system calls like ioctl(2), open(2), read(2)
+	   or write(2), in which case the ERRORS section is the natural
+	   place to explain which errno values the driver may set during
+	   such system calls.
+	 - Mentioning signal handling as a content of the ERRORS section
+	   seems redundant, it is already covered by talking about the
+	   errno.  The case of errno == EINTR should be handled just like
+	   all other errno cases.  For an example showing that there is no
+	   need to single out error handling in any way, please look at a
+	   typical read(2) manual page.
+	 - Mention the CAVEATS section.  It first appeared in the 4.2BSD
+	   execve(2) manual in 1983, was already used by several manuals by
+	   the time of 4.4BSD-Lite2 in 1995, and is in whidespread use
+	   today, not just in BSD base system manuals, but for example in
+	   Perl manuals as well.
+
 2014-02-14  Bernd Warken  <groff-bernd.warken-72@web.de>
 
 	* src/roff/grog/grog.pl: Add detection of glilypond-parts in groff
