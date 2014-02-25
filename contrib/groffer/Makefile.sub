@@ -2,18 +2,18 @@
 
 # File position: <groff-source>/contrib/groffer/Makefile.sub
 
-# Copyright (C) 2001, 2002, 2005, 2006, 2009, 2011, 2013
+# Copyright (C) 2001, 2002, 2005, 2006, 2009, 2011, 2013-14
 #   Free Software Foundation, Inc.
 # Written by Werner Lemberg <wl@gnu.org> and
 # Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 23 Dec 2013
+# Last update: 25 Feb 2014
 
 # This file is part of `groffer' which is part of `groff'.
 
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 
 # `groff' is distributed in the hope that it will be useful, but
@@ -47,31 +47,19 @@ RM=rm -f
 
 all: groffer
 
-GROFFER_PERL=$(srcdir)/perl/func.pl \
-             $(srcdir)/perl/man.pl \
-             $(srcdir)/perl/perl_test.pl \
-             $(srcdir)/perl/split_env.sh
-# GROFFER_SHELL=$(srcdir)/shell/groffer2.sh
+GROFFER_PERL=$(srcdir)/func.pl \
+             $(srcdir)/man.pl \
+             $(srcdir)/perl_test.pl \
+             $(srcdir)/split_env.sh
 GROFFER_REST=$(srcdir)/roff2.man \
              $(srcdir)/version.sh \
-             $(srcdir)/perl/groffer.man \
-             $(srcdir)/perl/groffer.pl \
-             $(srcdir)/perl/roff2.pl
-
-#             $(srcdir)/shell/roff2.sh \
-#             $(srcdir)/shell/groffer.man \
-#             $(srcdir)/shell/groffer.sh
-
-GROFFER_PERL_=`echo $(GROFFER_PERL) | sed 's|$(srcdir)/perl/||g'`
-
-# GROFFER_SHELL_=`echo $(GROFFER_SHELL) | sed 's|$(srcdir)/shell||g'`
-
-# TODO: Add perl check to configure script.
-# groffer: $(GROFFER_PERL) $(GROFFER_SHELL) \
+             $(srcdir)/groffer.man \
+             $(srcdir)/groffer.pl \
+             $(srcdir)/roff2.pl
 
 groffer: $(GROFFER_PERL) \
          $(GROFFER_REST) $(SH_DEPS_SED_SCRIPT)
-	if perl $(srcdir)/perl/perl_test.pl 2>&1 >/dev/null; then \
+	if perl $(srcdir)/perl_test.pl 2>&1 >/dev/null; then \
 	  : >HAVE_PERL; \
 	  echo "Using perl version of groffer."; \
 	  sed -f "$(SH_DEPS_SED_SCRIPT)" \
@@ -81,10 +69,9 @@ groffer: $(GROFFER_PERL) \
 	    -e "s|@groffer_dir@|$(DESTDIR)$(groffer_dir)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
-	    $(srcdir)/perl/groffer.pl >$@; \
-	  cp $(srcdir)/perl/groffer.man groffer.man; \
+	    $(srcdir)/groffer.pl >$@; \
 	  for f in $(ROFF2PROGS); do \
-	    cp $(srcdir)/perl/roff2.pl $$f; \
+	    cp $(srcdir)/roff2.pl $$f; \
 	  done; \
 	fi
 	chmod +x $@
@@ -92,24 +79,6 @@ groffer: $(GROFFER_PERL) \
 	  cat $(srcdir)/roff2.man \
 	  | sed 's/@ROFF2MODE@/'"$$m"'/g' > roff2$${m}.man; \
 	done
-
-#	else \
-#	  : >HAVE_SHELL; \
-#	  echo "Using shell version of groffer."; \
-#	  sed -f "$(SH_DEPS_SED_SCRIPT)" \
-#            -e "s|@g@|$(g)|g" \
-#	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
-#	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
-#	    -e "s|@groffer_dir@|$(DESTDIR)$(groffer_dir)|g" \
-#	    -e "s|@VERSION@|$(version)$(revision)|g" \
-#	    -e "$(SH_SCRIPT_SED_CMD)" \
-#            $(srcdir)/shell/groffer.sh >$@; \
-#	  cp $(srcdir)/shell/groffer.man groffer.man; \
-#	  for f in $(ROFF2PROGS); do \
-#	    cp $(srcdir)/shell/roff2.sh $$f; \
-#	  done; \
-
-
 
 install_data: groffer
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
@@ -124,23 +93,15 @@ install_data: groffer
 	$(RM) $(DESTDIR)$(groffer_dir)/version.sh
 	$(INSTALL_DATA) $(srcdir)/version.sh \
           $(DESTDIR)$(groffer_dir)/version.sh
-	for f in $(GROFFER_PERL_) $(GROFFER_SHELL_); do \
+	for f in $(GROFFER_PERL); do \
           $(RM) $(DESTDIR)$(groffer_dir)/$$f; \
         done
 	if test -f HAVE_PERL; then \
-          for f in $(GROFFER_PERL_); do \
-            $(INSTALL_SCRIPT) $(srcdir)/perl/$$f \
+          for f in $(GROFFER_PERL); do \
+            $(INSTALL_SCRIPT) $(srcdir)/$$f \
               $(DESTDIR)$(groffer_dir)/$$f; \
           done; \
         fi;
-
-
-#       elif test -f HAVE_SHELL; then \
-#          for f in $(GROFFER_SHELL_); do \
-#            $(INSTALL_SCRIPT) $(srcdir)/shell/$$f \
-#              $(DESTDIR)$(groffer_dir)/$$f; \
-#          done; \
-
 
 uninstall_sub:
 	$(RM) $(DESTDIR)$(bindir)/groffer
@@ -149,9 +110,6 @@ uninstall_sub:
           $(RM) $(DESTDIR)$(groffer_dir)/$$f; \
         done
 	-rmdir $(DESTDIR)$(libdir)/groff/groffer
-
-#	for f in $(GROFFER_PERL_) $(GROFFER_SHELL_) version.sh; do \
-
 
 ########################################################################
 # Emacs settings

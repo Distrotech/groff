@@ -5,18 +5,18 @@
 # Source file position: <groff-source>/contrib/groffer/perl/groffer.pl
 # Installed position: <prefix>/bin/groffer
 
-# Copyright (C) 2006, 2009, 2011, 2013
+# Copyright (C) 2006, 2009, 2011, 2013-14
 #   Free Software Foundation, Inc.
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 29 Mar 2013
+# Last update: 25 Feb 2014
 
 # This file is part of `groffer', which is part of `groff'.
 
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 
 # `groff' is distributed in the hope that it will be useful, but
@@ -105,63 +105,59 @@ our $File_split_env_sh;
 our $File_version_sh;
 our $Groff_Version;
 
-BEGIN {
-  {
-    my $before_make;		# script before run of `make'
-    {
-      my $at = '@';
-      $before_make = 1 if '@VERSION@' eq "${at}VERSION${at}";
-    }
+my $before_make;		# script before run of `make'
+{
+  my $at = '@';
+  $before_make = 1 if '@VERSION@' eq "${at}VERSION${at}";
+}
 
-    my %at_at;
-    my $file_perl_test_pl;
-    my $groffer_libdir;
+my %at_at;
+my $file_perl_test_pl;
+my $groffer_libdir;
 
-    if ($before_make) {
-      my $groffer_perl_dir = $FindBin::Bin;
-      my $groffer_top_dir = File::Spec->catdir($groffer_perl_dir, '..');
-      $groffer_top_dir = Cwd::realpath($groffer_top_dir);
-      $at_at{'BINDIR'} = $groffer_perl_dir;
-      $at_at{'G'} = '';
-      $at_at{'LIBDIR'} = '';
-      $groffer_libdir = $groffer_perl_dir;
-      $file_perl_test_pl = File::Spec->catfile($groffer_perl_dir,
+if ($before_make) {
+  my $groffer_perl_dir = $FindBin::Bin;
+  my $groffer_top_dir = File::Spec->catdir($groffer_perl_dir, '..');
+  $groffer_top_dir = Cwd::realpath($groffer_top_dir);
+  $at_at{'BINDIR'} = $groffer_perl_dir;
+  $at_at{'G'} = '';
+  $at_at{'LIBDIR'} = '';
+  $groffer_libdir = $groffer_perl_dir;
+  $file_perl_test_pl = File::Spec->catfile($groffer_perl_dir,
 					       'perl_test.pl');
-      $File_version_sh = File::Spec->catfile($groffer_top_dir, 'version.sh');
-      $Groff_Version = '';
-    } else {
-      $Groff_Version = '@VERSION@';
-      $at_at{'BINDIR'} = '@BINDIR@';
-      $at_at{'G'} = '@g@';
-      $at_at{'LIBDIR'} = '@libdir@';
-      $groffer_libdir = '@groffer_dir@';
-      $file_perl_test_pl = File::Spec->catfile($groffer_libdir,
+  $File_version_sh = File::Spec->catfile($groffer_top_dir, 'version.sh');
+  $Groff_Version = '';
+} else {
+  $Groff_Version = '@VERSION@';
+  $at_at{'BINDIR'} = '@BINDIR@';
+  $at_at{'G'} = '@g@';
+  $at_at{'LIBDIR'} = '@libdir@';
+  $groffer_libdir = '@groffer_dir@';
+  $file_perl_test_pl = File::Spec->catfile($groffer_libdir,
 					       'perl_test.pl');
-      $File_version_sh = File::Spec->catfile($groffer_libdir, 'version.sh');
-    }
+  $File_version_sh = File::Spec->catfile($groffer_libdir, 'version.sh');
+}
 
-    die "$groffer_libdir is not an existing directory;"
-      unless -d $groffer_libdir;
+die "$groffer_libdir is not an existing directory;"
+  unless -d $groffer_libdir;
 
-    unshift(@INC, $groffer_libdir);
+unshift(@INC, $groffer_libdir);
 
-    $File_split_env_sh = File::Spec->catfile($groffer_libdir, 'split_env.sh');
-    die "$File_split_env_sh does not exist;" unless -f "$File_split_env_sh";
+$File_split_env_sh = File::Spec->catfile($groffer_libdir, 'split_env.sh');
+die "$File_split_env_sh does not exist;" unless -f "$File_split_env_sh";
 
-    # test perl on suitable version
-    die "$file_perl_test_pl does not exist;" unless -f "$file_perl_test_pl";
-    do "$file_perl_test_pl" or die "Perl test: $@";
+# test perl on suitable version
+die "$file_perl_test_pl does not exist;" unless -f "$file_perl_test_pl";
+do "$file_perl_test_pl" or die "Perl test: $@";
 
-    require 'func.pl';
-    require 'man.pl';
+require 'func.pl';
+require 'man.pl';
 
-    @Path = &path_uniq( File::Spec->path() );
+@Path = &path_uniq( File::Spec->path() );
 
-    if ( &where_is_prog('gzip') ) {
-      $Has_Compression = 1;
-      $Has_bzip = 1 if &where_is_prog('bzip2');
-    }
-  }
+if ( &where_is_prog('gzip') ) {
+  $Has_Compression = 1;
+  $Has_bzip = 1 if &where_is_prog('bzip2');
 }
 
 
@@ -176,7 +172,7 @@ my @Conf_Files = (File::Spec->catfile(File::Spec->rootdir(),
 				      'groffer.conf')
 		 );
 
-my @Default_Modes = ('pdf', 'html', 'ps', 'x', 'dvi', 'tty');
+my @Default_Modes = ('pdf', 'pdf2', 'html', 'ps', 'x', 'dvi', 'tty');
 my $Default_Resolution = 75;
 my $Default_tty_Device = 'latin1';
 
@@ -256,7 +252,7 @@ sub main_set_options {
   'debug-keep', 'debug-lm', 'debug-params', 'debug-stacks',
   'debug-tmpdir', 'debug-user', 'default', 'do-nothing', 'dvi',
   'groff', 'help', 'intermediate-output', 'html', 'man',
-  'no-location', 'no-man', 'no-special', 'pdf', 'ps', 'rv', 'source',
+  'no-location', 'no-man', 'no-special', 'pdf', 'pdf2', 'ps', 'rv', 'source',
   'text', 'to-stdout', 'text-device', 'tty', 'tty-device', 'version',
   'whatis', 'where', 'www', 'x', 'X');
 
@@ -838,6 +834,7 @@ sub main_parse_params {
 			  'html' => 'html',
 			  'lbp' => 'groff',
 			  'lj4' => 'groff',
+			  'pdf' => 'pdf',
 			  'ps' => 'ps',
 			  'ascii' => 'tty',
 			  'cp1047' => 'tty',
@@ -936,6 +933,7 @@ sub main_parse_params {
 			 'www' => 'html',
 			 'dvi' => 'dvi',
 			 'pdf' => 'pdf',
+			 'pdf2' => 'pdf2',
 			 'ps' => 'ps',
 			 'text' => 'text',
 			 'tty' => 'tty',
@@ -965,7 +963,8 @@ sub main_parse_params {
      '--pager' =>		# set paging program for tty mode, arg
      sub { $Opt{'PAGER'} = &_get_arg(); },
      '--pdf' => sub { $Opt{'MODE'} = 'pdf'; },
-     '--pdf-viewer' =>		# viewer program for pdf mode; arg
+     '--pdf2' => sub { $Opt{'MODE'} = 'pdf2'; },
+     '--pdf-viewer' =>		# viewer program for pdf and pdf2 mode; arg
      sub { $Opt{'VIEWER_PDF'} = &_get_arg(); },
      '--print' =>		# print argument, for argument test
      sub { my $arg = &_get_arg; print STDERR "$arg\n"; },
@@ -1212,6 +1211,8 @@ sub main_set_mode {
       $Display{'MODE'} = $m;
       return 1;
     } elsif ($m eq 'pdf') {
+      &_get_prog_args($m) ? return 1: next LOOP;
+    } elsif ($m eq 'pdf2') {
       next LOOP if $PDF_Did_Not_Work;
       $PDF_Has_gs = &where_is_prog('gs') ? 1 : 0
 	unless (defined $PDF_Has_gs);
@@ -1992,6 +1993,20 @@ sub main_display {
     };
 
     /^pdf$/ and do {
+      if ($Opt{'DEVICE'} && $Opt{'DEVICE'} ne 'pdf') {
+	warn "main_display(): " .
+	  "wrong device for $Display{'MODE'} mode: $Opt{'DEVICE'};"
+      }
+      $modefile .= '.pdf';
+      $groggy = `cat $tmp_cat | grog -Tpdf`;
+      die "main_display(): grog error;" if $?;
+      chomp $groggy;
+      print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
+      &_do_display();
+      next SWITCH;
+    };
+
+    /^pdf2$/ and do {
       if ($Opt{'DEVICE'} && $Opt{'DEVICE'} ne 'ps') {
 	warn "main_display(): " .
 	  "wrong device for $Display{'MODE'} mode: $Opt{'DEVICE'};"
@@ -2001,7 +2016,7 @@ sub main_display {
       die "main_display(): grog error;" if $?;
       chomp $groggy;
       print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
-      &_do_display(\&_make_pdf);
+      &_do_display(\&_make_pdf2);
       next SWITCH;
     };
 
@@ -2149,17 +2164,18 @@ sub _do_opt_V {
   1;
 } # _do_opt_V() of main_display()
 
+
 ##############
-# _make_pdf ()
+# _make_pdf2 ()
 #
-# Transform to pdf format; for pdf mode in _do_display().
+# Transform to ps/pdf format; for pdf2 mode in _do_display().
 #
 # Globals: $md_modefile (from main_display())
 #
-sub _make_pdf {
-  die "_make_pdf(): pdf mode did not work;" if $PDF_Did_Not_Work;
+sub _make_pdf2 {
+  die "_make_pdf2(): pdf2 mode did not work;" if $PDF_Did_Not_Work;
   my $psfile = $modefile;
-  die "_make_pdf(): empty output;" if -z $modefile;
+  die "_make_pdf2(): empty output;" if -z $modefile;
   $modefile =~ s/\.ps$/.pdf/;
   unlink $modefile;
   my $done;
@@ -2174,7 +2190,7 @@ sub _make_pdf {
   }
   if (! $done) {
     $PDF_Did_Not_Work = 1;
-    warn '_make_pdf(): Could not transform into pdf format, ' .
+    warn '_make_pdf2(): Could not transform into pdf format, ' .
       'the Postscript mode (ps) is used instead;';
     $Opt{'MODE'} = 'ps';
     &main_set_mode();
@@ -2184,7 +2200,7 @@ sub _make_pdf {
   }
   unlink $psfile unless $Debug{'KEEP'};
   1;
-} # _make_pdf() of main_display()
+} # _make_pdf2() of main_display()
 
 
 ########################################################################

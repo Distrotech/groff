@@ -13,7 +13,7 @@ groffer \- display groff files and man\~pages on X and tty
 This file was written by Bernd Warken <groff-bernd.warken-72@web.de>.
 ..
 .de copyleft
-Copyright (C) 2001, 2002, 2004-2006, 2009-2012
+Copyright (C) 2001, 2002, 2004-2006, 2009-2012, 2014
   Free Software Foundation, Inc.
 .
 .P
@@ -31,7 +31,7 @@ as published by the
 .nh
 .BR "Free Software Foundation" ,
 .hy
-either version 3 of the License, or (at your option) any later version.
+either version 2 of the License, or (at your option) any later version.
 .
 .P
 You should have received a copy of the \f[CR]GNU General Public
@@ -320,6 +320,7 @@ Long options can be abbreviated in several ways.
 .OP --html\-viewer prog
 .OP --mode display_mode
 .OP --pdf
+.OP --pdf2
 .OP --pdf\-viewer prog
 .OP --ps
 .OP --ps\-viewer prog
@@ -807,10 +808,32 @@ The text html viewer is
 .
 .TP
 .Header_CB pdf
-Display formatted input in a
-.I \%PDF
-(Portable Document Format) viewer
-program.
+Transform
+.I roff input files
+into a
+.I PDF file
+by using the
+.B groff (@MAN1EXT@)
+device
+.BR -Tpdf .
+.
+This is the default
+.B PDF
+generator.
+.
+The generated
+.I PDF file
+is displayed with suitable viewer programs, such as
+.BR ocular (1).
+.
+.
+.TP
+.Header_CB pdf2
+This is the traditional
+.IR "pdf mode" .
+.
+Sometimes this mode produces more correct output than the default
+.BR "PDF mode" .
 .
 By default, the input is formatted by
 .B \%groff
@@ -819,15 +842,12 @@ format using
 .BR \%gs (1),
 or
 .BR ps2pdf (1).
+.
 If that's not possible, the
 .I Postscript mode (ps)
 is used instead.
 .
 Finally it is displayed using different viewer programs.
-.
-.I \%pdf
-has a big advantage because the text is displayed graphically and
-is searchable as well.
 .
 .
 .TP
@@ -949,6 +969,12 @@ processing.
 .B --pdf
 Equivalent to
 .BR --mode=pdf .
+.
+.
+.TP
+.B --pdf2
+Equivalent to
+.BR --mode=pdf2 .
 .
 .
 .TP
