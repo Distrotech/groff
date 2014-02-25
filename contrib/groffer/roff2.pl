@@ -2,7 +2,7 @@
 
 # roff2* - transform roff files into other formats
 
-# Source file position: <groff-source>/contrib/groffer/perl/roff2.pl
+# Source file position: <groff-source>/contrib/groffer/roff2.pl
 # Installed position: <prefix>/bin/roff2*
 
 # Copyright (C) 2006, 2008, 2009, 2014 Free Software Foundation, Inc.

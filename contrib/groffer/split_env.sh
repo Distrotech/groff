@@ -2,7 +2,7 @@
 
 # groffer - display groff files
 
-# Source file position: <groff-source>/contrib/groffer/perl/split_env.sh
+# Source file position: <groff-source>/contrib/groffer/split_env.sh
 # Installed position: <prefix>/lib/groff/groffer/split_env.sh
 
 # Copyright (C) 2006, 2009, 2014 Free Software Foundation, Inc.

@@ -2,7 +2,7 @@
 
 # groffer - display groff files
 
-# Source file position: <groff-source>/contrib/groffer/perl/perl_test.sh
+# Source file position: <groff-source>/contrib/groffer/perl_test.sh
 # Installed position: <prefix>/lib/groff/groffer/perl_test.sh
 
 # Copyright (C) 2006, 2009 Free Software Foundation, Inc.

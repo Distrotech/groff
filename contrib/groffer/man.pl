@@ -2,7 +2,7 @@
 
 # groffer - display groff files
 
-# Source file position: <groff-source>/contrib/groffer/perl/man.pl
+# Source file position: <groff-source>/contrib/groffer/man.pl
 # Installed position: <prefix>/lib/groff/groffer/man.pl
 
 # Copyright (C) 2006, 2009, 2011, 2014 Free Software Foundation, Inc.
