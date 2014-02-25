@@ -5,16 +5,16 @@
 # Source file position: <groff-source>/contrib/groffer/perl/func.pl
 # Installed position: <prefix>/lib/groff/groffer/func.pl
 
-# Copyright (C) 2006, 2009 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2009, 2014 Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 5 Jan 2009
+# Last update: 25 Feb 2014
 
 # This file is part of `groffer', which is part of `groff'.
 
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 
 # `groff' is distributed in the hope that it will be useful, but
@@ -23,7 +23,8 @@
 # General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+# along with this program. If not, see
+# <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
 
