@@ -117,16 +117,14 @@ my $file_perl_test_pl;
 my $groffer_libdir;
 
 if ($before_make) {
-  my $groffer_perl_dir = $FindBin::Bin;
-  my $groffer_top_dir = File::Spec->catdir($groffer_perl_dir, '..');
-  $groffer_top_dir = Cwd::realpath($groffer_top_dir);
-  $at_at{'BINDIR'} = $groffer_perl_dir;
+  my $groffer_source_dir = $FindBin::Bin;
+  $at_at{'BINDIR'} = $groffer_source_dir;
   $at_at{'G'} = '';
   $at_at{'LIBDIR'} = '';
-  $groffer_libdir = $groffer_perl_dir;
-  $file_perl_test_pl = File::Spec->catfile($groffer_perl_dir,
+  $groffer_libdir = $groffer_source_dir;
+  $file_perl_test_pl = File::Spec->catfile($groffer_source_dir,
 					       'perl_test.pl');
-  $File_version_sh = File::Spec->catfile($groffer_top_dir, 'version.sh');
+  $File_version_sh = File::Spec->catfile($groffer_source_dir, 'version.sh');
   $Groff_Version = '';
 } else {
   $Groff_Version = '@VERSION@';
