@@ -10,7 +10,7 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 25 Feb 2014
+# Last update: 27 Feb 2014
 my $version = '1.0';
 
 # This file is part of `gperl', which is part of `groff'.
@@ -108,15 +108,35 @@ foreach (@ARGV) {
 }
 
 
+#######################################################################
+# temporary file
+#######################################################################
+
+my $out_file;
+{
+  my $template = 'gperl_' . "$$" . '_XXXX';
+  my $tmpdir;
+  foreach ($ENV{'GROFF_TMPDIR'}, $ENV{'TMPDIR'}, $ENV{'TMP'}, $ENV{'TEMP'},
+	   $ENV{'TEMPDIR'}, 'tmp', $ENV{'HOME'},
+	   File::Spec->catfile($ENV{'HOME'}, 'tmp')) {
+    if ($_ && -d $_ && -w $_) {
+      eval { $tmpdir = tempdir( $template,
+				CLEANUP => 1, DIR => "$_" ); };
+      last if $tmpdir;
+    }
+  }
+  $out_file = File::Spec->catfile($tmpdir, $template);
+}
+
+
 ########################################################################
-# stdin
+# input
 #######################################################################
 
 my $perl_mode = 0;
-my $out_file = '/tmp/out';
 my %set_cmd;
 
-foreach (<STDIN>) {
+foreach (<>) {
   chomp;
   if ( /^[.']\s*Perl\s?/ ) { # .Perl ...
     my $res = &perl_request( $_ );
