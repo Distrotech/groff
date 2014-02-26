@@ -27,7 +27,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################
-my $Last_Update = '14 Feb 2014';
+my $Last_Update = '27 Feb 2014';
 ########################################################################
 
 require v5.6;
@@ -35,6 +35,8 @@ require v5.6;
 use warnings;
 use strict;
 use File::Spec;
+
+$\ = "\n";
 
 my $Prog = $0;
 {
@@ -50,6 +52,7 @@ my @Mparams;			# stores the options -m*
 my %Groff = (
 	     'chem' => 0,
 	     'eqn' => 0,
+	     'gperl' => 0,
 	     'grap' => 0,
 	     'grn' => 0,
 	     'lilypond' => 0,
@@ -89,7 +92,7 @@ my %Groff = (
       if (-f $arg && -r $arg) {
 	push @filespec, $arg;
       } else {
-	print STDERR "grog: $arg is not a readable file.\n";
+	print STDERR "grog: $arg is not a readable file.";
       }
       next;
     }
@@ -109,7 +112,7 @@ my %Groff = (
 
     &version(0) if $arg eq '-v' || '--version' =~ /^$arg/;
     &help() if $arg eq '-h' || '--help' =~ /^$arg/;
-    print STDERR "grog: wrong option $arg.\n" if $arg =~ /^--/;
+    print STDERR "grog: wrong option $arg." if $arg =~ /^--/;
 
     if ($arg =~ /^-m/) {
       push @Mparams, $arg;
@@ -125,7 +128,7 @@ my %Groff = (
       if (-f $arg && -r $arg) {
 	push @filespec, $arg;
       } else {
-	print STDERR "grog: $arg is not a readable file.\n";
+	print STDERR "grog: $arg is not a readable file.";
       }
       next;
     }
@@ -145,37 +148,38 @@ sub process {
   my %macros;
 
   if (!open(FILE, $filename eq "-" ? $filename : "< $filename")) {
-    print STDERR "$Prog: can't open \`$filename': $!\n";
+    print STDERR "$Prog: can't open \`$filename': $!";
     exit 1 unless $level;
     return;
   }
   while (<FILE>) {
     chomp;
-    s/^[.']\s*/./;
-    s/^\s+|\s+$//g;
-    s/$/\n/;
+    next unless ( /^[.']/ );
+    next if ( /^[.']{2}/ );
 
+    s/^['.]\s*/./; # use only a dot as leading character
+    s/\s*$//;
 
-    if ( /^\.de1?\s+\w+/ ) {
+    if ( /^\.de1?\W?/ ) {
       # this line is a macro definition, add it to %macros
-      my $macro = s/^\.de1?\s+(\w+)\W*$/.$1/;
-      if (exists $macros{$macro}) {
-	next;
-      }
-      $macros{$macro} = 1;
+      my $macro = s/^\.de1?\s+(\w+)\W*/.$1/;
+      next if ( exists $macros{$macro} );
+      $macros{ $macro } = 1;
       next;
     }
-    if ( /^\.\w+\W*/ ) {
+
+    {
       # if line command is a defined macro, just ignore this line
-      my $macro = s/^(\.\w+)\W*.*$/$1/;
-      if ( exists $macros{$macro} ) {
-	next;
-      }
+      my $macro = $_;
+      $macro =~ s/^(\.\w+)/$1/;
+      next if ( exists $macros{ $macro } );
     }
 
-
-    if (/^\.lilypond/) {
+    if ( /^\.lilypond/ ) {
       $Groff{'lilypond'}++;
+      $Groff{'soelim'}++ if $level;
+    } elsif ( /^\.Perl/ ) {
+      $Groff{'gperl'}++;
       $Groff{'soelim'}++ if $level;
     } elsif (/^(\.cstart)|(begin\s+chem)$/) {
       $Groff{'chem'}++;
@@ -260,13 +264,12 @@ sub process {
       $Groff{'Oo'}++;
       s/^\.Oo/\. /;
       redo;
-    }
-    # The test for `Oo' and `Oc' not starting a line (as allowed by the
-    # new implementation of -mdoc) is not complete; it assumes that
-    # macro arguments are well behaved, i.e., "" is used within "..." to
-    # indicate a doublequote as a string element, and weird features
-    # like `.foo a"b' are not used.
-    elsif (/^\..* Oo( |$)/) {
+    } elsif (/^\..* Oo( |$)/) {
+      # The test for `Oo' and `Oc' not starting a line (as allowed by the
+      # new implementation of -mdoc) is not complete; it assumes that
+      # macro arguments are well behaved, i.e., "" is used within "..." to
+      # indicate a doublequote as a string element, and weird features
+      # like `.foo a"b' are not used.
       s/\\\".*//;
       s/\"[^\"]*\"//g;
       s/\".*//;
@@ -305,6 +308,7 @@ sub process {
       # blocks like .EQ/.EN or .TS/.TE; but it doesn't harm if we call
       # soelim even if we don't need to.
       if ( $Groff{'pic'} || $Groff{'tbl'} || $Groff{'eqn'} ||
+	   $Groff{'gperl'} ||
 	   $Groff{'grn'} || $Groff{'grap'} || $Groff{'refer'} ||
 	   $Groff{'refer_open'} || $Groff{'refer_close'} ||
 	   $Groff{'chem'} ) {
@@ -339,7 +343,7 @@ EOF
 sub version {
   my ($exit_status) = @_;
   print "Perl version of GNU $Prog of $Last_Update " .
-    "in groff version " . '@VERSION@' . "\n";
+    "in groff version " . '@VERSION@';
   exit $exit_status;
 }
 
@@ -352,6 +356,10 @@ sub version {
 
   if ( $Groff{'lilypond'} ) {
     push @preprograms, 'glilypond';
+  }
+
+  if ( $Groff{'gperl'} ) {
+    push @preprograms, 'gperl';
   }
 
   $Groff{'refer'} ||= $Groff{'refer_open'} && $Groff{'refer_close'};
@@ -425,12 +433,6 @@ sub version {
 
   # We could implement an option to execute the command here.
 
-#  foreach (@Command) {
-#    next unless /[\$\\\"\';&()|<> \t\n]/;
-#    s/\'/\'\\\'\'/;
-#    $_ = "'" . $_ . "'";
-#  }
-
   my $n = scalar @m;
   my $np = scalar @Mparams;
   print STDERR "$Prog: more than 1 `-m' argument: @Mparams" if $np > 1;
@@ -438,14 +440,14 @@ sub version {
     unshift @Command, $Mparams[0] if $np == 1;
   } elsif ($n == 1) {
     if ($np == 1) {
-      print STDERR "$Prog: wrong `-m' argument: $Mparams[0]\n"
+      print STDERR "$Prog: wrong `-m' argument: $Mparams[0]"
 	if $m[0] ne $Mparams[0];
     }
   } else {
-    print STDERR "$Prog: error: there are several macro packages: @m\n";
+    print STDERR "$Prog: error: there are several macro packages: @m";
   }
 
-  print "@Command\n";
+  print "@Command";
 
   exit $n if $n > 1;
   exit 0;
