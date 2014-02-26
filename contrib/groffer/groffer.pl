@@ -171,7 +171,7 @@ my @Conf_Files = (File::Spec->catfile(File::Spec->rootdir(),
 				      'groffer.conf')
 		 );
 
-my @Default_Modes = ('pdf', 'pdf2', 'html', 'ps', 'x', 'dvi', 'tty');
+my @Default_Modes = ('pdf', 'html', 'ps', 'x', 'dvi', 'tty');
 my $Default_Resolution = 75;
 my $Default_tty_Device = 'latin1';
 
@@ -834,6 +834,7 @@ sub main_parse_params {
 			  'lbp' => 'groff',
 			  'lj4' => 'groff',
 			  'pdf' => 'pdf',
+			  'pdf2' => 'pdf',
 			  'ps' => 'ps',
 			  'ascii' => 'tty',
 			  'cp1047' => 'tty',
@@ -932,7 +933,7 @@ sub main_parse_params {
 			 'www' => 'html',
 			 'dvi' => 'dvi',
 			 'pdf' => 'pdf',
-			 'pdf2' => 'pdf2',
+			 'pdf2' => 'pdf',
 			 'ps' => 'ps',
 			 'text' => 'text',
 			 'tty' => 'tty',
@@ -1992,10 +1993,6 @@ sub main_display {
     };
 
     /^pdf$/ and do {
-      if ($Opt{'DEVICE'} && $Opt{'DEVICE'} ne 'pdf') {
-	warn "main_display(): " .
-	  "wrong device for $Display{'MODE'} mode: $Opt{'DEVICE'};"
-      }
       $modefile .= '.pdf';
       $groggy = `cat $tmp_cat | grog -Tpdf`;
       die "main_display(): grog error;" if $?;
