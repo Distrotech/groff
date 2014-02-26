@@ -1,0 +1,64 @@
+# Makefile.sub for `gperl' (preprocessor for added Perl parts)
+
+# File position: <groff-source>/contrib/gperl/Makefile.sub
+
+# Copyright (C) 2014
+#   Free Software Foundation, Inc.
+# Written by Bernd Warken <groff-bernd.warken-72@web.de>.
+
+# Last update: 25 Feb 2014
+
+# This file is part of `gperl' which is part of `groff'.
+
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see
+# <http://www.gnu.org/licenses/gpl-2.0.html>.
+
+########################################################################
+
+MAN1=gperl.n
+
+MOSTLYCLEANADD=gperl $(MAN1)
+
+# not all make programs have $(RM) predefined.
+RM=rm -f
+
+all: gperl
+
+gperl: gperl.pl
+	sed -f "$(SH_DEPS_SED_SCRIPT)" \
+            -e "s|@g@|$(g)|g" \
+	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
+	    -e "s|@VERSION@|$(version)$(revision)|g" \
+	    -e "$(SH_SCRIPT_SED_CMD)" \
+	    $(srcdir)/gperl.pl >$@; \
+	chmod +x $@
+
+.PHONY: install_data
+install_data: gperl
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	$(RM) $(DESTDIR)$(bindir)/gperl
+	$(INSTALL_SCRIPT) gperl $(DESTDIR)$(bindir)/gperl
+
+.PHONY: uninstall_sub
+uninstall_sub:
+	$(RM) $(DESTDIR)$(bindir)/gperl
+
+
+########################################################################
+# Emacs settings
+########################################################################
+#
+# Local Variables:
+# mode: makefile
+# End:

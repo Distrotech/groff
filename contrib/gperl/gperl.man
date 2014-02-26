@@ -1,0 +1,310 @@
+.TH GPERL @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+gperl \- groff preprocessor for Perl parts in roff files
+.
+.SH "SYNOPSIS"
+.\" The .SH was moved to this place in order to appease `apropos'.
+.
+.\" --------------------------------------------------------------------
+.\" Legalese
+.\" --------------------------------------------------------------------
+.
+.de author
+This file was written by Bernd Warken <groff-bernd.warken-72@web.de>.
+..
+.
+.de co
+Copyright (C) 2014 Free Software Foundation, Inc.
+.
+.P
+This file is part of
+.IR \%gperl ,
+which is part of
+.IR \%groff ,
+a free software project.
+.
+You can redistribute it and/or modify it under the terms of the
+.nh
+.B "GNU General Public License"
+.hy
+as published by the
+.nh
+.BR "Free Software Foundation" ,
+.hy
+version\~2.
+.
+.P
+The license text is available in the internet at
+.UR http://www.gnu.org/licenses/gpl-2.0.html
+.UE .
+..
+.
+.\" --------------------------------------------------------------------
+.\" Setup
+.\" --------------------------------------------------------------------
+.
+.ds Ellipsis "\&.\|.\|.\&\"
+.
+.\" --------------------------------------------------------------------
+.\" Macro definitions
+.
+.\" --------------------------------------------------------------------
+.\" .CB  (<text>...)
+.\"
+.\" Print in constant-width bold font.
+.\"
+.de CB
+.  ft CB
+.  Text \\$*
+.  ft
+..
+.\" --------------------------------------------------------------------
+.\" .CI  (<text>...)
+.\"
+.\" Print in constant-width italic font.
+.\"
+.de CI
+.  ft CI
+.  Text \\$*
+.  ft
+..
+.\" --------------------------------------------------------------------
+.\" .CR  (<text>...)
+.\"
+.\" Print in constant-width roman font.
+.\"
+.de CR
+.  ft CR
+.  Text \\$*
+.  ft
+..
+.\" End of macro definitions
+.
+.
+.\" --------------------------------------------------------------------
+.\" SH "SYNOPSIS"
+.\" --------------------------------------------------------------------
+.
+.SY gperl
+.OP option \*[Ellipsis]
+.OP --
+.OP \%filespec \*[Ellipsis]
+.YS
+.
+.SY gperl
+.BR -h | --help
+.YS
+.
+.SY gperl
+.BR -v | --version
+.YS
+.
+.
+.\" --------------------------------------------------------------------
+.SH DESCRIPTION
+.\" --------------------------------------------------------------------
+.
+This is a preprocesor for
+.BR \%groff (@MAN1EXT@).
+.
+It allows to add
+.BR perl (7)
+code into
+.BR groff (7)
+files.
+.
+The result of a
+.I Perl part
+can be stored in
+.I roff
+strings
+.RB ( .ds )
+or numerical registers
+.RB ( .rn ).
+.
+.
+.\" --------------------------------------------------------------------
+.SH "OPTION OVERVIEW"
+.\" --------------------------------------------------------------------
+.
+.TP
+.I breaking options
+.RS
+.P
+.SY
+.OP -h\~\fR|\fB\~--help
+.OP -v\~\fR|\fB\~--version
+.YS
+.RE
+.
+.
+.\" --------------------------------------------------------------------
+.SH "OPTION DETAILS"
+.\" --------------------------------------------------------------------
+.
+As soon as one of these options is found on the command line it is
+executed, printed to standard output, and the running
+.B \%gperl
+preprocessor is finished thereafter.
+.
+All other arguments are ignored.
+.
+.
+.TP
+.B -h\~\fR|\fB\~--help
+Print help information with a short explanation of options to
+standard output.
+.
+.
+.TP
+.B -v\~\fR|\fB\~--version
+Print version information to standard output.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "PERL PARTS"
+.\" --------------------------------------------------------------------
+.
+.I Perl
+parts in
+.I groff files
+are created by the new command
+.BR .Perl .
+.
+.
+.P
+A
+.I Perl part
+is started either by the request
+.B .Perl
+wiothout arguments, or by a request that's has the term
+.B start
+as its first argument.
+.
+.
+.P
+All
+.B .Perl
+command lines with other arguments finish a running
+.IR "Perl part" .
+.
+So one can add arbitrary arguments for closing.
+.
+It would be reasonable to add the argument
+.BI stop ;
+that's possible, but not necessary.
+.
+.
+.P
+A useful feature is to store the standard output of a
+.I Perl part
+into a
+.I roff
+string or register.
+.
+Storable data can be reached by
+.I printing to standard output
+with the
+.I Perl
+command
+.BR print .
+.
+.
+.P
+Numerical output can be stored into a
+.IR "roff register" ,
+by adding the following 2 arguments to a
+.B .Perl
+stopping command line; the argument
+.B ds
+or
+.B .ds
+and a suitable variable name.
+.
+.
+.P
+String output can be stored into a
+.IR "roff string" ,
+by adding the following 2 arguments to a
+.B .Perl
+stopping command line; the argument
+.B nr
+or
+.B .nr
+and a suitable variable name.
+.
+.
+.P
+Other arguments in a
+.B .Perl
+command line are just ignored.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "EXAMPLE"
+.\" --------------------------------------------------------------------
+.
+A possible
+.I Perl part
+in a
+.I roff file
+could look like that:
+.RS
+.EX
+before
+.Perl start
+my $result = 'some data';
+print $result . \[rq]\[rs]n\[rq];
+.Perl stop .ds some_string 
+after
+.EE
+.RE
+.
+.
+.P
+This stores the result
+.B \[rq]some data\[rq]
+into the
+.I roff string
+called
+.BR some_string ,
+such that the following line is printed:
+.RS
+.EX
+\&.ds some_string some data
+.EE
+.RE
+.
+.
+.\" --------------------------------------------------------------------
+.SH "SEE ALSO"
+.\" --------------------------------------------------------------------
+.
+.P
+.BR \%groff (@MAN1EXT@),
+.BR \%groff (@MAN7EXT@),
+.BR \%grog (@MAN1EXT@),
+.BR \%groffer (@MAN1EXT@),
+.BR \%perl (@MAN1EXT@),
+.BR \%perl (@MAN7EXT@).
+.
+.
+.\" --------------------------------------------------------------------
+.SH "AUTHOR"
+.\" --------------------------------------------------------------------
+.author
+.
+.
+.\" --------------------------------------------------------------------
+.SH "COPYING"
+.\" --------------------------------------------------------------------
+.co
+.
+.
+.\" --------------------------------------------------------------------
+.\" Emacs settings
+.\" --------------------------------------------------------------------
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" End:
