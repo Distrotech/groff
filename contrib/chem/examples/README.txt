@@ -37,9 +37,9 @@ chemically.
 
 ####### License
 
-Last update: 5 Jan 2009
+Last update: 27 Feb 2014
 
-Copyright (C) 2006, 2009 Free Software Foundation, Inc.
+Copyright (C) 2006, 2009, 2014 Free Software Foundation, Inc.
 Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
 This file is part of `chem', which is part of `groff'.
@@ -54,8 +54,9 @@ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
+The GPL2 license text is available in the internet at
+<http://www.gnu.org/licenses/gpl-2.0.html>.
+
 
 
 ####### Emacs settings
