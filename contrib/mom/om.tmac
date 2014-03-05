@@ -3,7 +3,7 @@
 Mom -- a typesetting/document-processing macro set for groff.
 
 Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
-2011, 2012, 2013
+2011, 2012, 2013, 2014
 Free Software Foundation, Inc.
  Written by Peter Schaffter <peter@schaffter.ca>
  PDF integration contributed by Deri James <deri.james@chuzzlewit.co.uk>
@@ -23,9 +23,9 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-Version 2.1-b
+Version 2.1-c
 -------------
-Antoine de St-ExupÃ©ry asserted that elegance in engineering is
+Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
 nothing left to take away.
 
@@ -38,11 +38,11 @@ and cruft, but mom still needs some nip and tuck.
 "<anything>" in the description of arguments that can be passed
 to a macro means that any argument turns the feature off.
 
-Thanks to everyone who has contributed suggestions and patches, and
-to those whose GPL'd work has been plundered.  Special thanks to
-Werner Lemberg (margin notes), Tadziu Hoffman (underlining),
-Deri James (pdf integration), Robin Haberkorn (tbl integration and
-float management).
+Thanks to everyone who has contributed suggestions and patches,
+and to those whose GPL'd work has been plundered.  Special thanks
+to Werner Lemberg (margin notes), Tadziu Hoffman (underlining),
+Deri James (pdf integration), Robin Haberkorn (tbl integration, eqn
+extentions, and float management).
 ..
 .\" %beginstrip%
 \#
@@ -423,10 +423,8 @@ end
 \#
 .MAC DO_B_MARGIN END
 .    nr #T_MARGIN_LEAD_ADJ \\n[#LEAD]-12000
-.    ev B_MARGIN
-.    bp
+'    bp
 .    if !n .nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
-.    ev
 .END
 \#
 \# NEWPAGE
@@ -440,30 +438,31 @@ end
 \#   breaks to a new page.
 \#
 .MAC NEWPAGE END
+.    if \\n[.vpt]=0 .vpt
 .    ie \\n[#NO_BREAK] \{\
 '       br
 .       rr #NO_BREAK
 .    \}
 .    el .br
 .    nr #NEWPAGE 1
+.    nr @TOP 1
 .    ie \\n[#B_MARGIN_SET]=1 \{\
 .       ie !\\n[#DOCS]=1 \{\
 .          ev NP
-.          bp
-.          if !n .nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
+.          DO_B_MARGIN
 .          ev
 .       \}
 .       el \{\
 .          if \\n[#COLUMNS]=1 .nr #COL_NUM \\n[#NUM_COLS]
 .          ie !\\n[#FN_DEPTH] \{\
 .             ch FN_OVERFLOW_TRAP
-.             bp
+.             DO_FOOTER
 .             wh -(\\n[#FN_OVERFLOW_TRAP_POS]u) FN_OVERFLOW_TRAP
 .          \}
-.          el .bp
+.          el .DO_B_MARGIN
 .       \}
 .    \}
-.    el .DO_B_MARGIN
+.    el 'bp
 .END
 \#
 \# =====================================================================
@@ -942,7 +941,7 @@ end
 \#   Enables/disables .br's before .RW and .EW
 \# *Notes:
 \#   Mostly, users will want .br's before any kind of line kerning, but
-\#   there may be cases where they don't.  BR_BEFORE_LINE_KERN is off by
+\#   there may be cases where they don't.  BR_AT_LINE_KERN is off by
 \#   default and must be invoked explicitly.
 \#
 .MAC BR_AT_LINE_KERN END
@@ -986,6 +985,9 @@ end
 .MAC HY END
 .    ie '\\$1'' \{\
 .       hy 14
+.       if \\n[#LINES]  .hlm \\n[#LINES]
+.       if \\n[#MARGIN] .hym \\n[#MARGIN]]
+.       if \\n[#SPACE]  .hys \\n[#SPACE]
 .       nr #HYPHENATE 1
 .    \}
 .    el \{\
@@ -1005,13 +1007,25 @@ end
 .          nh
 .          nr #HYPHENATE 0
 .       \}
-.       if '\\$1'LINES'  .hlm \\$2
-.       if '\\$1'MARGIN' .hym \\$2
-.       if '\\$1'SPACE'  .hys \\$2
+.       if '\\$1'LINES'  \{\
+.          hlm \\$2
+.          nr #HY_LINES \\$2
+.       \}
+.       if '\\$1'MARGIN' \{\
+.          hym \\$2
+.          nr #HY_MARGIN \\$2
+.       \}
+.       if '\\$1'SPACE'  \{\
+.          hys \\$2
+.          nr #HY_SPACE \\$2
+.       \}
 .       if '\\$1'DEFAULT' \{\
 .          hlm -1
 .          hym 0
 .          hys 0
+.          rr #HY_LINES
+.          rr #HY_SPACE
+.          rr #HY_MARGIN
 .       \}
 .    \}
 .END
@@ -1603,6 +1617,10 @@ end
 .ds ST100X \Ek[#ST100_MARK]
 .ds ST101  \Ek[#ST101_OFFSET]
 .ds ST101X \Ek[#ST101_MARK]
+.ds ST102  \Ek[#ST102_OFFSET]
+.ds ST102X \Ek[#ST102_MARK]
+.ds ST103  \Ek[#ST103_OFFSET]
+.ds ST103X \Ek[#ST103_MARK]
 \#
 \# QUAD AND SET STRING TABS
 \# ------------------------
@@ -2323,8 +2341,8 @@ end
 \#   subsequent \*[COND] or \*[EXT] escapes until a new value is set.
 \#
 \#  \*[COND] or \*[EXT] must be turned off before all changes of point
-\#  size and reinvoked afterwards (if so desired).  This refers to
-\#  changes of point size via control lines AND with via inlines.
+\#  size, and reinvoked afterwards (if so desired).  This refers to
+\#  changes of point size via control lines AND via inlines.
 \#
 .MAC CONDENSE_OR_EXTEND END
 .    if '\\$0'CONDENSE' \{\
@@ -2394,7 +2412,7 @@ end
 \#   String tabs may be marked off during PAD.
 \#
 .MAC PAD END
-.    if \\n[.u]=1 .nr #FILL_MODE 1
+.    if \\n[.u]=1 .nr fill 1
 .    nf
 .    if !d$PAD_MARKER .ds $PAD_MARKER #
 .    char \\*[$PAD_MARKER] \R'#PAD_COUNT \En[#PAD_COUNT]+1'
@@ -2427,9 +2445,9 @@ end
 .    \}
 .    if \\n[#SILENT] .SILENT OFF
 .    br
-.    if \\n[#FILL_MODE]=1 \{\
+.    if \\n[fill] \{\
 .       fi
-.       rr #FILL_MODE
+.       rr fill
 .    \}
 .    rr #PAD_COUNT
 .    rr #SPACE_TO_END
@@ -2622,8 +2640,8 @@ end
 .    nr #DC_LINES +1
 .    if \\n[#DC_LINES]v>\\n[.t] \{\
 .       nr pgnum \\n%+\\n[#PAGE_NUM_ADJ] 1
-.       tm1 "[mom]: Dropcap at line \\n[.c] does not fit on page \\n[#PAGENUMBER].
-.       tm1 "       Shifting paragraph to top of page \\n+[pgnum].
+.       tm1 "[mom]: Dropcap at line \\n[.c] does not fit on page \\n[pgnum].
+.       tm1 "       Shifting paragraph to page \\n+[pgnum].
 .       bp
 .    \}
 .    ie \\n[#DC_COLOR]=1 \{\
@@ -2824,7 +2842,7 @@ end
 \#
 .MAC RULE END
 .    if \\n[.u]=1 \{\
-.       nr #FILLED 1
+.       nr fill 1
 .       ds $CURRENT_QUAD \\*[$QUAD_VALUE]
 .       nf
 .    \}
@@ -2833,6 +2851,7 @@ end
 .       if \\n[#INDENT_LEFT_ACTIVE] .ll \\n[.l]u-\\n[#L_INDENT]u
 .       PRINT \
 \D't \\n[#RULE_WEIGHT]'\v'\\n[#RULE_WEIGHT_ADJ]u'\
+\h'-\\n[#RULE_WEIGHT]u'\
 \D'l \En[.l]u 0'\v'-\\n[#RULE_WEIGHT_ADJ]u'\h'|0'\c
 .       ll
 .       rr #RESTORE_L_LENGTH
@@ -2840,11 +2859,12 @@ end
 .    el \{\
 .       PRINT \
 \D't \\n[#RULE_WEIGHT]'\v'\\n[#RULE_WEIGHT_ADJ]u'\
+\h'-\\n[#RULE_WEIGHT]u'\
 \D'l \En[.l]u 0'\v'-\\n[#RULE_WEIGHT_ADJ]u'\h'|0'\c
 .    \}
-.    if r #FILLED \{\
+.    if \\n[fill] \{\
 .       fi
-.       rr #FILLED
+.       rr fill
 .       QUAD \\*[$CURRENT_QUAD]
 .       rm $CURRENT_QUAD
 .    \}
@@ -3875,9 +3895,9 @@ end
 .    if '\\n[.z]'FLOAT*DIV' \
 .       if \\n[dn] .nr saved-dn \\n[dn]
 .    di TYPESIZE
-E\\R'#CAP_HEIGHT \\n[.cht]'
-e\\R'#X_HEIGHT \\n[.cht]'
-y\\R'#DESCENDER \\n[.cdp]'
+E\R'#CAP_HEIGHT \\n[.cht]'
+e\R'#X_HEIGHT \\n[.cht]'
+y\R'#DESCENDER \\n[.cdp]'
 .    br
 .    ds $CAP_HEIGHT \\n[#CAP_HEIGHT]u
 .    ds $X_HEIGHT \\n[#X_HEIGHT]u
@@ -4048,7 +4068,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          el \{\
 .             if !\\n[#DOC_TYPE]=4 \{\
 .                vs 24
-.                nr #FOOTER_ADJ \\n[.v]
+.                nr #FOOTER_ADJ \\n[.v]/2
 .                nr #ORIGINAL_DOC_LEAD \\n[.v]
 .             \}
 .          \}
@@ -4124,10 +4144,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          ds $HEAD_\\n[#HD_LEVEL]_SIZE +\\n[#HD_SIZE_CHANGE]
 .       \}
 .\" Set up TOC title style
-.       TOC_TITLE_STYLE \
-            FONT   R \
-            SIZE  +0 \
-            INDENT 0
+.       TOC_TITLE_STYLE FONT R SIZE +0 INDENT 0
+.\" Set up captions, labels, sources
+.       LABELS ALL FONT B AUTOLEAD 2
+.       LABELS EQN FONT R QUAD RIGHT
+.       CAPTIONS ALL AUTOLEAD 2
+.       CAPTIONS EQN QUAD CENTER
+.       SOURCES TBL AUTOLEAD 2
 .    \}
 .END
 \#
@@ -4636,7 +4659,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       as $AUTHORS \\*[$AUTHOR_\\n[#AUTHOR_NUM]], \"
 .    \}
 .    ds $AUTHOR \\*[$AUTHOR_1]
-.    substring $AUTHORS 0 -3
+.    substring $AUTHORS 0 -2
 .    ds PDF_AUTHORS \\*[$AUTHORS]
 .    pdfmomclean PDF_AUTHORS
 .    nop \!x X ps:exec [/Author (\\*[PDF_AUTHORS]) /DOCINFO pdfmark
@@ -5464,7 +5487,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #DOC_L_MARGIN \\n[#L_MARGIN]
 .    nr #DOC_L_LENGTH \\n[#L_LENGTH]
 .    nr #DOC_R_MARGIN \\n[#PAGE_WIDTH]-(\\n[#DOC_L_MARGIN]+\\n[#L_LENGTH])
-.    ds $DOC_FAM      \\*[$FAMILY]
+.    if '\\*[$SAVED_DOC_FAM]'' \{\
+.       ds $DOC_FAM \\*[$FAMILY]
+.       rm $SAVED_DOC_FAM
+.    \}
 .    nr #DOC_PT_SIZE  \\n[#PT_SIZE]
 .\"
 .    if \\n[#TOC]          .nr #DOC_PT_SIZE \\n[#TOC_PS]
@@ -5476,7 +5502,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#AUTO_LEAD] .nr #DOC_AUTOLEAD \\n[#AUTOLEAD_VALUE]
 .\" #SAVED_DOC_LEAD is set in COLLATE
 .    if \\n[#SAVED_DOC_LEAD] \{\
-.       if !\\n[#TOC] \
+.       if \
+(\\n[#TOC]=0):\
+(\\n[#LIST_OF_FIGURES]=0):\
+(\\n[#LIST_OF_TABLES]=0):\
+(\\n[#LIST_OF_EQUATIONS]=0) \
 .          if !\\n[#DOC_LEAD]=\\n[#SAVED_DOC_LEAD] .nr #RERUN_TRAPS 1
 .    \}
 .    ie \\n[#ADJ_DOC_LEAD]=1 .
@@ -5581,6 +5611,26 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !d $LN_COLOR       .ds $LN_COLOR black
 .\" PDF link colour
 .    if !\\n[PDFHREF_COLOR_SET] .PDF_LINK_COLOR 0.0 0.3 0.9
+.\" PDF frame
+.    if !d pdf-img:frame-weight .ds pdf-img:frame-weight .5
+.    if !d pdf-img:frame-color  .ds pdf-img:frame-color  black
+.\" Captions, labels, sources
+.\" All at default doc specs except leading, which is autolead 2
+.   nr label-type-counter 0 1
+.   while \\n+[label-type-counter]<=4 \{\
+.      if \\n[label-type-counter]=1 .ds label-type eqn
+.      if \\n[label-type-counter]=2 .ds label-type pdf-img
+.      if \\n[label-type-counter]=3 .ds label-type pic
+.      if \\n[label-type-counter]=4 .ds label-type tbl
+.      nr spec-type-counter 0 1
+.      while \\n+[spec-type-counter]<=3 \{\
+.         if \\n[spec-type-counter]=1 .ds spec-type label
+.         if \\n[spec-type-counter]=2 .ds spec-type caption
+.         if \\n[spec-type-counter]=3 .ds spec-type source
+.         set-defaults
+.         set-inline-specs
+.      \}
+.   \}
 .\" String defaults for both PRINTSTYLEs
 .    ie \\n[#DOC_TYPE]=1 \{\
 .       ie '\\*[$DOC_TITLE]'' \{\
@@ -5612,6 +5662,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !r #COVER_UNDERLINE          .COVER_UNDERLINE
 .\" Defaults for printstyle TYPEWRITE
 .    if \\n[#PRINT_STYLE]=1 \{\
+.       TYPEWRITER
 .       SS DEFAULT
 .       if \\n[#UNDERLINE_QUOTES]=1 .UNDERLINE_QUOTES
 .       if \\n[#UNDERLINE_QUOTES]=0 .UNDERLINE_QUOTES OFF
@@ -5812,7 +5863,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !d $EPI_SIZE_CHANGE .EPIGRAPH_SIZE -1.5
 .       if !r #EPI_AUTOLEAD    .EPIGRAPH_AUTOLEAD 2
 .       if !d $EPI_QUAD        .EPIGRAPH_QUAD \\*[$DOC_QUAD]
-.       if !\\n[#EPI_OFFSET_VALUE] \
+.       if !r #EPI_OFFSET_VALUE \
 .          if '\\*[$EPI_OFFSET_VALUE]'' .EPIGRAPH_INDENT 3
 .\" +Linebreaks
 .       if !d $LINEBREAK_CHAR  .LINEBREAK_CHAR * 3 3p
@@ -5884,7 +5935,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
 .          ps  \\n[#DOC_PT_SIZE]u\\*[$FN_SIZE_CHANGE]
-.          vs \\n[.ps]u+\\n[#FN_AUTOLEAD]
+.          vs \\n[.ps]u+\\n[#FN_AUTOLEAD]u
 .       \}
 .       nr #FN_LEAD \\n[#LEAD]
 .       ev
@@ -5930,6 +5981,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       nr #DOC_LEAD \\n[#RESTORE_DOC_LEAD]u
 .       nr #B_MARGIN \\n[#RESTORE_B_MARGIN]
+.       vs \\n[#DOC_LEAD]u
 .    \}
 .    el \{\
 .       if \\n[#COLLATE] \{\
@@ -6412,8 +6464,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \# leading
 \#
 .MAC MISC_AUTOLEAD END
-.    if '\\$0'DOC_COVER_MISC_AUTOLEAD' .nr #DOC_COVER_MISC_AUTOLEAD \\$1
-.    if '\\$0'COVER_MISC_AUTOLEAD'     .nr #COVER_MISC_AUTOLEAD \\$1
+.    if '\\$0'DOC_COVER_MISC_AUTOLEAD' .nr #DOC_COVER_MISC_AUTOLEAD (p;\\$1)
+.    if '\\$0'COVER_MISC_AUTOLEAD'     .nr #COVER_MISC_AUTOLEAD (p;\\$1)
 .END
 \#
 .ALIAS DOC_COVER_MISC_AUTOLEAD  MISC_AUTOLEAD
@@ -6487,10 +6539,14 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                   DOC_COVER_UNDERLINE_WEIGHT \\$1
 .                if '\\$0'DOCTYPE_UNDERLINE' \
 .                   DOCTYPE_UNDERLINE_WEIGHT \\$1
-.                if '\\$0'ENDNOTE_STRING_UNDERLINE' \
+.                if '\\$0'ENDNOTE_STRING_UNDERLINE' \{\
 .                   ENDNOTE_STRING_UNDERLINE_WEIGHT \\$1
-.                if '\\$0'ENDNOTE_STRING_UNDERSCORE' \
+.                   nr #EN_STRING_UNDERLINE 1
+.                \}
+.                if '\\$0'ENDNOTE_STRING_UNDERSCORE' \{\
 .                   ENDNOTE_STRING_UNDERLINE_WEIGHT \\$1
+.                   nr #EN_STRING_UNDERLINE 1
+.                \}
 .                if '\\$0'ENDNOTE_TITLE_UNDERLINE' \
 .                   ENDNOTE_TITLE_UNDERLINE_WEIGHT \\$1
 .                if '\\$0'ENDNOTE_TITLE_UNDERSCORE' \
@@ -6517,6 +6573,14 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                ie '\\$1'DOUBLE' .nr #EN_STRING_UNDERLINE 2
 .                el .nr #EN_STRING_UNDERLINE 0
 .             \}
+.             if '\\$0'ENDNOTE_TITLE_UNDERLINE' \{\
+.                ie '\\$1'DOUBLE' .nr #EN_TITLE_UNDERLINE 2
+.                el .nr #EN_TITLE_UNDERLINE 0
+.             \}
+.             if '\\$0'ENDNOTE_TITLE_UNDERSCORE' \{\
+.                ie '\\$1'DOUBLE' .nr #EN_TITLE_UNDERLINE 2
+.                el .nr #EN_TITLE_UNDERLINE 0
+.             \}
 .          \}
 .       \}
 .       el \{\
@@ -6528,12 +6592,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                   shift
 .                \}
 .                BIBLIOGRAPHY_STRING_UNDERLINE_WEIGHT \\$1
-.                if !'\\$2'' \{\
+.                if !'\\$2'' \
 .                   ds $BIB_STRING_UNDERLINE_GAP \\$2
-.                \}
-.                if !'\\$3'' \{\
+.                if !'\\$3'' \
 .                   ds $BIB_STRING_RULE_GAP \\$3
-.                \}
 .             \}
 .             if '\\$0'BIBLIOGRAPHY_STRING_UNDERSCORE' \{\
 .                nr #BIB_STRING_UNDERLINE 1
@@ -6560,8 +6622,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                DOCTYPE_UNDERLINE_WEIGHT \\$1
 .                ds $DOCTYPE_UNDERLINE_GAP \\$2
 .             \}
-.\" ENDNOTE_STRING_UNDERLINE and ENDNOTE_STRING_UNDERSCORE are identical;
-.\" _UNDERSCORE left in for backward compatibility.
+.\" ENDNOTE_STRING_UNDERLINE and ENDNOTE_STRING_UNDERSCORE are identical
+.\" _UNDERLINE left in for backward compatibility
 .             if '\\$0'ENDNOTE_STRING_UNDERLINE' \{\
 .                nr #EN_STRING_UNDERLINE 1
 .                if '\\$1'DOUBLE' \{\
@@ -6582,15 +6644,15 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                if !'\\$2'' .ds $EN_STRING_UNDERLINE_GAP \\$2
 .                if !'\\$3'' .ds $EN_STRING_RULE_GAP \\$3
 .             \}
-.\" ENDNOTE_TITLE_UNDERLINE and ENDNOTE_TITLE_UNDERSCORE are identical;
-.\" _UNDERSCORE version left in for backward compatibility.
+.\" ENDNOTE_TITLE_UNDERLINE and ENDNOTE_TITLE_UNDERSCORE are identical
+.\" _UNDERLINE left in for backward compatibility
 .             if '\\$0'ENDNOTE_TITLE_UNDERLINE' \{\
-.                nr #ENDNOTE_TITLE_UNDERLINE 1
+.                nr #EN_TITLE_UNDERLINE 1
 .                ENDNOTE_TITLE_UNDERLINE_WEIGHT \\$1
 .                ds $EN_TITLE_UNDERLINE_GAP \\$2
 .             \}
 .             if '\\$0'ENDNOTE_TITLE_UNDERSCORE' \{\
-.                nr #ENDNOTE_TITLE_UNDERLINE 1
+.                nr #EN_TITLE_UNDERLINE 1
 .                ENDNOTE_TITLE_UNDERLINE_WEIGHT \\$1
 .                ds $EN_TITLE_UNDERLINE_GAP \\$2
 .             \}
@@ -7015,7 +7077,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       fam \\*[$\\*[DOC_]COVER_COPYRIGHT_FAM]
 .       ft  \\*[$\\*[DOC_]COVER_COPYRIGHT_FT]
 .       ps \\*[$\\*[DOC_]COVER_COPYRIGHT_PT_SIZE]
-.       vs \\n[.ps]u+\\n[#\\*[DOC_]COVER_MISC_AUTOLEAD]
+.       vs \\n[.ps]u+\\n[#\\*[DOC_]COVER_MISC_AUTOLEAD]u
 .       nr #COPYRIGHT_V_ADJ \\n[#DOC_LEAD]-\\n[.v]
 .       sp \\n[#COPYRIGHT_V_ADJ]u
 .       rr #COPYRIGHT_V_ADJ
@@ -7066,17 +7128,17 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       el \{\
 .          nr #MISCS \\n[#MISC_NUM]
 .          nr #NEXT_MISC 0 1
-.          while \\n[#MISCS]>\\n[#NEXT_MISC] \{\
+.          while (\\n[#MISCS]>=\\n+[#NEXT_MISC]) \{\
 .             ie \\n[#\\*[DOC_]COVER_MISC_COLOR]=1 \{\
 .                da MISC_DIV
 .                PRINT \
-\m[\\*[$\\*[DOC_]COVER_MISC_COLOR]]\\*[$MISC_\\n+[#NEXT_MISC]]\m[]
+\m[\\*[$\\*[DOC_]COVER_MISC_COLOR]]\\*[$MISC_\\n[#NEXT_MISC]]\m[]
 .                br
 .                da
 .             \}
 .             el \{\
 .                da MISC_DIV
-.                PRINT \\*[$MISC_\\n+[#NEXT_MISC]]
+.                PRINT \\*[$MISC_\\n[#NEXT_MISC]]
 .                br
 .                da
 .             \}
@@ -7333,14 +7395,17 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          LL       \\n[#DOC_L_LENGTH]u
 .          ta \\n[.l]u
 .          if \\n[#PRINT_STYLE]=1 \{\
-.             CENTER
+.             DOC_HEADER_QUAD
 .             TYPEWRITER
-.             if !\\n[#SINGLE_SPACE] .vs \\n[#DOC_LEAD]u/2u
+.             if !\\n[#SINGLE_SPACE] \{\
+.                vs (\\n[#DOC_LEAD]u/2u)+(\\n[.v]u/3u)
+.                sp |\\n[#T_MARGIN]u-1v
+.             \}
 .             if !'\\*[$TITLE_1]'' \{\
 .                CAPS
 .                nr #ARG_NUM 0 1
 .                while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE 4p "\\*[$TITLE_\\n[#ARG_NUM]]"
+.                   UNDERSCORE 3p "\\*[$TITLE_\\n[#ARG_NUM]]"
 .                \}
 .                CAPS OFF
 .             \}
@@ -7348,7 +7413,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                sp
 .                nr #ARG_NUM 0 1
 .                while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE 4p "\\*[$SUBTITLE_\\n[#ARG_NUM]]"
+.                   UNDERSCORE 3p "\\*[$SUBTITLE_\\n[#ARG_NUM]]"
 .                \}
 .             \}
 .             if !'\\*[$AUTHOR_1]'' \{\
@@ -7356,7 +7421,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                PRINT \&\\*[$ATTRIBUTE_STRING]
 .                nr #AUTHORS \\n[#AUTHOR_NUM]
 .                nr #NEXT_AUTHOR 0 1
-.                if !\\n[#SINGLE_SPACE] .vs \\n[#DOC_LEAD]u/2u
+.                if !\\n[#SINGLE_SPACE] .vs (\\n[#DOC_LEAD]u/2u)+(\\n[.v]u/3u)
 .                while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
 .                   PRINT \\*[$AUTHOR_\\n+[#NEXT_AUTHOR]]
 .                \}
@@ -7382,19 +7447,21 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             CENTER
 .             TYPEWRITER
-.             vs \\n[#DOC_LEAD]u
-.             if !\\n[#SINGLE_SPACE]=1 .vs \\n[#DOC_LEAD]u/2u
+.             if !\\n[#SINGLE_SPACE] \{\
+.                vs (\\n[#DOC_LEAD]u/2u)+(\\n[.v]u/3u)
+.                sp |\\n[#T_MARGIN]u-1v
+.             \}
 .             ie '\\*[$CHAPTER]'' \{\
 .                CAPS
 .                ie !'\\*[$CHAPTER_TITLE]'' \{\
 .                   nr #ARG_NUM 0 1
 .                   while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                      UNDERSCORE 4p "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
+.                      UNDERSCORE 3p "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
 .                   \}
 .                \}
 .                el \{\
 .                   CAPS
-.                   UNDERSCORE 4p "\\*[$CHAPTER_STRING]"
+.                   UNDERSCORE 3p "\\*[$CHAPTER_STRING]"
 .                \}
 .                CAPS OFF
 .                RLD 1v
@@ -7407,13 +7474,13 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                   sp
 .                   nr #ARG_NUM 0 1
 .                   while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                      UNDERSCORE 4p "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
+.                      UNDERSCORE 3p "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
 .                   \}
 .                \}
 .                RLD 1v
 .             \}
 .             vs \\n[#DOC_LEAD]u
-.             if \\n[#SINGLE_SPACE] .ALD 2v
+.             if \\n[#SINGLE_SPACE] .sp 2
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             CHAPTER_DOCHEADER
@@ -7443,20 +7510,23 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             CENTER
 .             TYPEWRITER
-.             if !\\n[#SINGLE_SPACE] .vs \\n[#DOC_LEAD]u/2u
-.             CAPS
-.             if !'\\*[$TITLE]'' \{\
+.             if !\\n[#SINGLE_SPACE] \{\
+.                vs (\\n[#DOC_LEAD]u/2u)+(\\n[.v]u/3u)
+.                sp |\\n[#T_MARGIN]u-1v
+.             \}
+.             if !'\\*[$TITLE_1]'' \{\
+.                CAPS
 .                nr #ARG_NUM 0 1
 .                while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE 4p "\\*[$TITLE_\\n[#ARG_NUM]]"
+.                   UNDERSCORE 3p "\\*[$TITLE_\\n[#ARG_NUM]]"
 .                \}
+.                CAPS OFF
 .             \}
-.             CAPS OFF
 .             if !'\\*[$SUBTITLE]'' \{\
 .                sp
 .                nr #ARG_NUM 0 1
 .                while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE 4p "\\*[$SUBTITLE_\\n[#ARG_NUM]]"
+.                   UNDERSCORE 3p "\\*[$SUBTITLE_\\n[#ARG_NUM]]"
 .                \}
 .             \}
 .             if !'\\*[$AUTHOR_1]'' \{\
@@ -7464,7 +7534,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                PRINT \&\\*[$ATTRIBUTE_STRING]
 .                nr #AUTHORS \\n[#AUTHOR_NUM]
 .                nr #NEXT_AUTHOR 0 1
-.                if !\\n[#SINGLE_SPACE] .vs \\n[#DOC_LEAD]u/2u
+.                if !\\n[#SINGLE_SPACE] .vs (\\n[#DOC_LEAD]u/2u)+(\\n[.v]u/3u)
 .                while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
 .                   PRINT \\*[$AUTHOR_\\n+[#NEXT_AUTHOR]]
 .                \}
@@ -7472,7 +7542,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             ie !\\n[#SINGLE_SPACE] .sp 2
 .             el .sp
 .             ie \\n[#DOCTYPE_UNDERLINE] \{\
-.             UNDERSCORE2 4p "\\*[$DOC_TYPE]"
+.             UNDERSCORE2 3p "\\*[$DOC_TYPE]"
 .             \}
 .             el \
 .                PRINT "\\*[$DOC_TYPE]"
@@ -7483,7 +7553,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       \}
 .       if !\\n[#DOC_TYPE]=4 \{\
 .          if \\n[#PRINT_STYLE]=1 .sp
-.          if \\n[#PRINT_STYLE]=2 .ALD \\n[#DOC_LEAD]u*2u
+.          if \\n[#PRINT_STYLE]=2 .sp \\n[#DOC_LEAD]u*2u
 .          if \\n[#COLUMNS] \{\
 .             nr #COL_NUM 0 1
 .             nr #L_LENGTH_FOR_EPI \\n[#L_LENGTH]
@@ -7504,7 +7574,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    \}
 .    vs \\n[#DOC_LEAD]u
 .    if \\n[#ADJ_DOC_LEAD]=1 \{\
-.       ie !r#ADVANCE_FROM_TOP \
+.       ie \\n[#ADVANCE_FROM_TOP]=0 \
 .          if \\n[#DOC_HEADER]=1 .SHIM
 .       el .rr #ADVANCE_FROM_TOP
 .    \}
@@ -7584,7 +7654,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   Default is same as T_MARGIN.
 \#
 .MAC DOCHEADER_ADVANCE END
-.    nr #DOCHEADER_ADVANCE (\\$1)
+.    nr #DOCHEADER_ADVANCE \\$1
 .END
 \#
 \# DOCUMENT LEFT MARGIN
@@ -7766,20 +7836,18 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .MAC SHIM END
 .    ie \\n[#NO_SHIM] .return
 .    el \{\
-.       nr #VALID_BASELINE \\n[#T_MARGIN]-1v \\n[#DOC_LEAD]
+.       nr #VALID_BASELINE \\n[#T_MARGIN]-\\n[#DOC_LEAD] \\n[#DOC_LEAD]
 .       if !r#CURRENT_V_POS .nr #CURRENT_V_POS \\n[.d]
 .       ie r#ADVANCE_FROM_TOP \{\
 .          ie \\n[#CURRENT_V_POS]<(\\n[#T_MARGIN]-1v) \{\
-.             while \\n-[#VALID_BASELINE]>\\n[#CURRENT_V_POS] \{\
-.
-.             \}
+.             while \\n-[#VALID_BASELINE]>\\n[#CURRENT_V_POS] .
 .             nr #VALID_BASELINE +\\n[#DOC_LEAD]
 .             nr #SHIM \\n[#VALID_BASELINE]-\\n[#CURRENT_V_POS]
 .          \}
 .          el .PROCESS_SHIM
 .       \}
 .       el .PROCESS_SHIM
-.       ALD \\n[#SHIM]u
+'       sp \\n[#SHIM]u
 .       rr #CURRENT_V_POS
 .    \}
 .END
@@ -7917,8 +7985,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   Default is 2 for TYPEWRITE, 3 for TYPESET.
 \#
 .MAC EPIGRAPH_INDENT END
-.    if \\n[#EPI_OFFSET_VALUE] .rr #EPI_OFFSET_VALUE
-.    if !'\\*[$EPI_OFFSET_VALUE]'' .rm $EPI_OFFSET_VALUE
+.    rr #EPI_OFFSET_VALUE
+.    rm $EPI_OFFSET_VALUE
 .    ds $EVAL_EI_ARG \\$1
 .    substring $EVAL_EI_ARG -1
 .    ie \B'\\*[$EVAL_EI_ARG]' .nr #EPI_OFFSET_VALUE \\$1
@@ -7936,7 +8004,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   Default is 2 (for TYPESET; TYPEWRITE doesn't require this).
 \#
 .MAC EPIGRAPH_AUTOLEAD END
-.    nr #EPI_AUTOLEAD \\$1
+.    nr #EPI_AUTOLEAD (p;\\$1)
 .END
 \#
 \# EPIGRAPH
@@ -7966,7 +8034,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    \}
 .    if \\n[#START] \{\
 .       if \\n[#PRINT_STYLE]=1 \
-.          if \\n[#AUTHOR_LINES]=1 .ALD \\n[#DOC_LEAD]u
+.          if \\n[#AUTHOR_LINES]=1 .sp \\n[#DOC_LEAD]u
 .    \}
 .    ie '\\$1'' \{\
 .       nr #EPIGRAPH 1
@@ -8005,7 +8073,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \m[\\*[$EPI_COLOR]]
 .             EOL
 .          \}
-.          vs \\n[.ps]u+\\n[#EPI_AUTOLEAD]
+.          vs \\n[.ps]u+\\n[#EPI_AUTOLEAD]u
 .          nr #EPI_LEAD      \\n[#LEAD]
 .          nr #EPI_LEAD_DIFF \\n[#DOC_LEAD]-\\n[#EPI_LEAD]
 .       \}
@@ -8019,6 +8087,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       ie '\\$1'BLOCK' \{\
 .          nr #EPIGRAPH 2
 .          ev EPIGRAPH
+.          evc 0
 .          ie \\n[#START] \{\
 .             ie \\n[#COLUMNS] \{\
 .                ie r#EPI_OFFSET_VALUE \
@@ -8078,7 +8147,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \m[\\*[$EPI_COLOR]]
 .                EOL
 .             \}
-.             vs \\n[.ps]u+\\n[#EPI_AUTOLEAD]
+.             vs \\n[.ps]u+\\n[#EPI_AUTOLEAD]u
 .             QUAD     \\*[$EPI_QUAD]
 .             nr #DIVERSIONS_HY_MARGIN (p;\\n[.ps]u*2.75)/1000
 .             HY_SET 1 \\n[#DIVERSIONS_HY_MARGIN]u (\\n[#PT_SIZE]u/1000u/8u)p
@@ -8191,7 +8260,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       \}
 .    \}
 .    if \\n[#EPIGRAPH]=2 \{\
-.       ie r#EPI_OFFSET_VALUE \
+.       ie \\n[#EPI_OFFSET_VALUE] \
 .          nr #EPI_OFFSET \
 \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
 .       el .nr #EPI_OFFSET \\n[#L_MARGIN]+\\*[$EPI_OFFSET_VALUE]
@@ -8340,6 +8409,16 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \# not the same thing as using the shortform # in hdrftr strings.
 \#
 .ds PAGE# \En[#PAGENUMBER]
+\#
+.MAC RESTORE_SPACE END
+.   vpt 0
+.   rs
+.   nop \&
+.   sp -1
+.   ch RR_@TOP
+.   rr @TOP
+.   vpt
+.END
 \#
 \# HDRFTR RULE GAP
 \# ---------------
@@ -9170,8 +9249,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    vpt 0
 .    if \\n[#NEW_DOC_PT_SIZE] .nr #DOC_PT_SIZE \\n[#NEW_DOC_PT_SIZE]
 .    rr #NEW_DOC_PT_SIZE
-.    if \\n[#RESET_TRAPS] .TRAPS
-.    if \\n[#REMOVE_ADJ] .nr #DOC_LEAD -\\n[#DOC_LEAD_ADJ]
+.    if \\n[#RESET_TRAPS] \{\
+.       TRAPS
+.       if \\n[#REMOVE_ADJ] .nr #DOC_LEAD -\\n[#DOC_LEAD_ADJ]
+.    \}
 .    rr #REMOVE_ADJ
 .    rr #RESET_TRAPS
 .    MNtop
@@ -9356,91 +9437,27 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    ch RR_@TOP
 .    ie \\n[tbl*have-header] .rr @TOP
 .    el .wh \\n[nl]u+1u RR_@TOP
-.    if d PDF*IMAGE \{\
-.       rs
-.       nf
-.       PDF*IMAGE
-.       sp \\n[pdf-img:depth]u
-.       PDF_IMAGE_CLEAN
+.    ie \\n[defer] .PROCESS_FLOATS
+.    el \{\
+.       if \\n[tbl*have-caption] \{\
+.          RESTORE_SPACE
+.          ie \\n[#MLA] .sp \n[tbl*label-lead-diff]u
+.          el .sp \n[tbl*caption-lead-diff]u
+.       \}
 .    \}
-.    if (\\n[float*defer]>0):(\\n[defer]=0) \{\
-.        nf
-.        if !\\n[tbl*no-top-hook] .tbl@top-hook
-.        rr tbl*no-top-hook
-.    \}
-.    if \\n[defer] \{\
-.       ev protect
-.       evc 0
+.\" So tables without TH that don't fit don't overprint first row
+.\" at top of page
+.    ie \\n[tbl*no-header] \{\
 .       rs
-.       sp |\\n[#T_MARGIN]u-\\n[.v]u
-.       if '\\*[float*type:1]'boxed' \{\
-.          if (\\n[.t] > 1)&(\\n[float-depth:1] > \\n[.t]) \
-.             tbl*float-warning
-.       \}
-.       nf
-.       nr defer-count \\n[defer]
-.       nr loop-count  0 1
-.       nr new-defer   0 1
-.       while \\n+[loop-count]<=\\n[defer-count] \{\
-.          if \\n[defer] .rnn defer float*defer \" So .if \n[defer] is skipped during float output
-.          vpt
-.          if \\n[loop-count]>1 .SHIM
-.          sp 1u
-.          nr #NEXT_TRAP \\n[.t]
-.          sp -1u
-.          if '\\*[float*type:\\n[loop-count]]'table' \{\
-.             ch FOOTER \\n[#VARIABLE_FOOTER_POS]u+\\n[#DOC_LEAD]u
-.             ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u+\\n[#DOC_LEAD]u
-.          \}
-.          ie !\\n[float-span:\\n[loop-count]] \{\
-.             ie ((\\n[float-depth:\\n[loop-count]]-\\n[.v])>\\n[#NEXT_TRAP]):(\\n[D-float:\\n[loop-count]]>\\n[#NEXT_TRAP]) \{\
-.\" Insufficient space, defer to next page
-.                rn FLOAT*DIV:\\n[loop-count] NEW*FLOAT*DIV:\\n+[new-defer]
-.                rnn float-depth:\\n[loop-count] new-float-depth:\\n[new-defer]
-.                rnn D-float:\\n[loop-count] new-D-float:\\n[new-defer]
-.             \}
-.             el \{\
-.                output-float
-.             \}
-.          \}
-.          el \{\
-.             output-float
-.          \}
-.       \}
-.       rm FLOAT*DIV:\\n[loop-count]
-.       rr float-depth:\\n[loop-count]
-.       rm tbl*header-div:\\n[loop-count]
-.       rm float*type:\\n[loop-count]
-.\" FLOAT arrays are empty now
-.\" Rename new arrays (FLOATs deferred to next page) to proper names
-.       nr loop-count 0 1
-.       rnn new-defer defer
-.       while \\n+[loop-count]<=\\n[defer] \{\
-.          rn NEW*FLOAT*DIV:\\n[loop-count] FLOAT*DIV:\\n[loop-count]
-.          rnn new-float-depth:\\n[loop-count] float-depth:\\n[loop-count]
-.          rnn new-D-float:\\n[loop-count] D-float:\\n[loop-count]
-.       \}
-.       rr float*defer
-.       ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
-.       ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u
-.       nr float*before-shim \\n[nl]
+.       nop \&
+.       vpt
+.       rr \\n[tbl*no-header]
 .       SHIM
-.       nr float*after-shim \\n[nl]
-.       if '\\*[float*type:\\n[loop-count]]'boxed' \
-.          if \\n[float*before-shim]=\\n[float*after-shim] .sp
-.       if '\\*[float*type:\\n[loop-count]]'table' \
-.          if \\n[float*before-shim]=\\n[float*after-shim] .sp
-.       ev
-.       nr tbl*have-header 0
-.       rr loop-count
-.       rr defer-count
-.       rr float*before-shim
-.       rr float*after-shim
-.       rm float-adj
-.       rm float-adj:top
-.       rm float-adj:bottom
 .    \}
-.    vpt
+.    el .vpt
+.    if \\n[#NEWPAGE] .rr #NEWPAGE
+.    if \\n[tbl*interrupted] .tbl*print-header
+.    rr tbl*interrupted
 .END
 \#
 \# ====================================================================
@@ -9511,10 +9528,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   FINAL respects PAGENUMBER.
 \#
 .MAC FOOTER END
+.    ev PAGE_TRANSITION
 .    rr #LB_4_HD
 .    rr #QUOTE_4_HD
 .    nr #SAVED_LEAD \\n[.v]
-.    ev PAGE_TRANSITION
 .    pdfmarksuspend
 .    ie !n .nop \X'ps: exec decornone'
 .    el .ul 0
@@ -9579,7 +9596,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    ie \\n[#COLUMNS]=1 \{\
 .       ie \\n[#COL_NUM]=\\n[#NUM_COLS] .DO_FOOTER
 .       el \{\
-.          ie (\\n[#ENDNOTES]=1]):(\\n[#BIBLIOGRAPHY]=1) \{\
+.          ie (\\n[#ENDNOTES]=1):(\\n[#BIBLIOGRAPHY]=1) \{\
 .             if \\n[#ENDNOTES] .sp |\\n[ec]u-\\n[#EN_LEAD]u
 .             if \\n[#BIBLIOGRAPHY] .sp |\\n[bc]u-\\n[#BIB_LEAD]u
 .          \}
@@ -9588,12 +9605,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          nr #L_MARGIN \\n[.o]
 .          if \\n[#FN_DEPTH] .PROCESS_FN_LEFTOVER
 .          vs \\n[#SAVED_LEAD]u
-.          if \\n[tbl*have-header] \{\
-.             tbl@top-hook
-.          \}
-.          if \\n[#PREV_FN_DEFERRED] \{\
+.          if \\n[#PREV_FN_DEFERRED] \
 .             nr #PREV_FN_DEFERRED 2
-.          \}
 .          rr #RULED
 .          if !\\n[#EPIGRAPH] .rr #COL_NEXT
 .          if !\\n[#QUOTE] .rr #COL_NEXT
@@ -9659,8 +9672,20 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       ch RR_@TOP
 .       wh \\n[nl]u+1u RR_@TOP
 .       if \\n[tbl*have-header] .tbl@bottom-hook
+.       if \\n[defer] .PROCESS_FLOATS
+.       ie \\n[tbl*no-header] \{\
+.          rs
+.          nop \&
+.          vpt
+.          rr \\n[tbl*no-header]
+.          SHIM
+.       \}
+.       el .vpt
+.       if \\n[tbl*interrupted] .tbl*print-header
+.       rr tbl*interrupted
 .    \}
 .    el .DO_FOOTER
+.    if !'\\n[.ev]'0' .ev
 .    pdfmarkrestart
 .END
 \#
@@ -9682,9 +9707,11 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       \}
 .    \}
 .    PRINT_FOOTER
-.    if !\\n[ref*last] .bp
+.    if !\\n[ref*last] \{\
+.       if \\n[defer]>0 \c
+'       bp
+.    \}
 .    rr ref*last
-.    ev \" .bp springs HEADER, so pop PAGE_TRANSITION ev afterwards
 .END
 \#
 .MAC PRINT_FOOTER END
@@ -10621,9 +10648,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#
 .MAC PREFIX_CH_NUM_WARNING END
 .    tm1 "[mom]: PREFIX_CHAPTER_NUMBER cannot determine a chapter number.
-.    tm1 "       Please enter the current chapter number as a digit after
+.    tm1 "       Enter the current chapter number as a digit after
 .    tm1 "       PREFIX_CHAPTER_NUMBER.
-.    ab Aborting '\\n[.F]' at PREFIX_CHAPTER_NUMBER, line \\n[.c].
+.    ab Aborting '\\n[.F]', line \\n[.c].
 .END
 \#
 \# ====================================================================
@@ -10646,13 +10673,17 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .MAC LINEBREAK_CHAR END
 .    nr #REPEAT 1
 .    ds $LINEBREAK_CHAR \\$1
-.    ds $LINEBREAK_CHAR_V_ADJ \\$3
+.    if !'\\$2'' .nr #LB_CHAR_ITERATIONS \\$2
+.    if !'\\$3'' .ds $LINEBREAK_CHAR_V_ADJ \\$3
 .    if '\\*[$LINEBREAK_CHAR_V_ADJ]'' .ds $LINEBREAK_CHAR_V_ADJ +0
-.    while \\$2>\\n[#REPEAT] \{\
-.       as $LINEBREAK_CHAR "\\ \\$1
-.       nr #REPEAT \\n[#REPEAT]+1
+.    if \\n[#LB_CHAR_ITERATIONS] \{\
+.       while (\\n[#LB_CHAR_ITERATIONS]>\\n[#REPEAT]) \{\
+.          as $LINEBREAK_CHAR "\\ \\$1
+.          nr #REPEAT \\n[#REPEAT]+1
+.       \}
 .    \}
 .    rr #REPEAT
+.    rr #LB_CHAR_ITERATIONS
 .END
 \#
 \# LINE BREAK
@@ -10666,7 +10697,6 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#
 .MAC LINEBREAK END
 .    if r #Q_AT_TOP .rr #Q_AT_TOP
-.    po \\n[#DOC_L_MARGIN]u
 .    ie  '\\*[$LINEBREAK_CHAR]'' .sp 2
 .    el \{\
 .       ie \\n[#END_QUOTE] .
@@ -10896,7 +10926,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          if '\\n[.z]'END_NOTES' \
 .             ti \\n[#EN_PP_INDENT]u+\\n[#EN_TEXT_INDENT]u
 .       \}
-.       if r #START  .rr #START
+.       if r #START     .rr #START
 .       if r #QUOTE     .rr #QUOTE
 .       if r #END_QUOTE .rr #END_QUOTE
 .       if r #HEAD      .rr #HEAD
@@ -11006,14 +11036,11 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   Sets autolead for quotes and/or blockquotes.
 \#
 .MAC QUOTE_AUTOLEAD END
-.    ie '\\$1'DEFAULT' .nr #\\$0_DEFAULT 1
-.    el \{\
-.       rr #\\$0_DEFAULT
-.       if '\\$0'QUOTE_AUTOLEAD'              .nr #Q_AUTOLEAD \\$1
-.       if '\\$0'BLOCKQUOTE_AUTOLEAD'         .nr #BQ_AUTOLEAD \\$1
-.       if '\\$0'ENDNOTE_QUOTE_AUTOLEAD'      .nr #EN_Q_AUTOLEAD \\$1
-.       if '\\$0'ENDNOTE_BLOCKQUOTE_AUTOLEAD' .nr #EN_BQ_AUTOLEAD \\$1
-.    \}
+.    rr #\\$0_DEFAULT
+.    if '\\$0'QUOTE_AUTOLEAD'              .nr #Q_AUTOLEAD (p;\\$1)
+.    if '\\$0'BLOCKQUOTE_AUTOLEAD'         .nr #BQ_AUTOLEAD (p;\\$1)
+.    if '\\$0'ENDNOTE_QUOTE_AUTOLEAD'      .nr #EN_Q_AUTOLEAD (p;\\$1)
+.    if '\\$0'ENDNOTE_BLOCKQUOTE_AUTOLEAD' .nr #EN_BQ_AUTOLEAD (p;\\$1)
 .END
 \#
 .ALIAS BLOCKQUOTE_AUTOLEAD         QUOTE_AUTOLEAD
@@ -11094,14 +11121,14 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          ps \\n[#DOC_PT_SIZE]u\\*[$QUOTE_SIZE_CHANGE]
 .          ie !r #Q_AUTOLEAD .vs \\n[#DOC_LEAD]u
 .          el \{\
-.             vs \\n[.ps]u+\\n[#Q_AUTOLEAD]
+.             vs \\n[.ps]u+\\n[#Q_AUTOLEAD]u
 .             nr #Q_LEAD \\n[.v]
 .          \}
 .          if \\n[#ENDNOTE] \{\
 .             ps \\n[#EN_PS]u\\*[$QUOTE_SIZE_CHANGE]
 .             ie !r #EN_Q_AUTOLEAD .vs \\n[#EN_Q_LEAD]u
 .             el \{\
-.                vs \\n[.ps]u+\n[#EN_Q_AUTOLEAD]
+.                vs \\n[.ps]u+\n[#EN_Q_AUTOLEAD]u
 .                nr #EN_Q_LEAD \\n[.v]
 .             \}
 .          \}
@@ -11144,19 +11171,22 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \c
 .    if '\\$1'BR' \{\
 .       br
+.       nr #BREAK_OR_SPREAD 1
 .       shift
 .    \}
 .    if '\\$1'BREAK' \{\
+.       nr #BREAK_OR_SPREAD 1
 .       br
 .       shift
 .    \}
 .    if '\\$1'SPREAD' \{\
+.       nr #BREAK_OR_SPREAD 2
 .       brp
 .       shift
 .    \}
 .    ie '\\$1'' \{\
-.       ds #RESTORE_FAM \\n[.fam]
-.       ds #RESTORE_FT  \\n[.sty]
+.       ds $RESTORE_FAM \\n[.fam]
+.       ds $RESTORE_FT  \\n[.sty]
 .       ie \\n[#PRINT_STYLE]=1 \{\
 .          CODE_FAMILY C
 .          ie \\n[#CODE_FT]=1 .ft \\*[$CODE_FT]
@@ -11195,10 +11225,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    el \{\
 .       fam \\*[#RESTORE_FAM]
 .       ft  \\*[#RESTORE_FT]
-.       rm #RESTORE_FAM
-.       rm #RESTORE_FT
+.       rm $RESTORE_FAM
+.       rm $RESTORE_FT
 .       if !\\n[#CODE_SIZE_ADJ]=0 .ps
-.       rchar '
+.       char ' \[aq]
 .       if !'\\n[.z]'' \
 .          if \\n[#LINENUMBERS] .nn
 .       if \\n[#CODE_COLOR]=1 .gcolor
@@ -11210,12 +11240,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          rr #SQ_WAS_ON
 .          SMARTQUOTES
 .       \}
-.       if \\n[#QUOTE] .RLD 1v
-.    \}
-.    if \\n[#NUM_ARGS]=2 \{\
-.       if '\\$2'BR' .br
-.       if '\\$2'BREAK' .br
-.       if '\\$2'SPREAK' .brp
+.       if \\n[#QUOTE] .sp 1v
 .    \}
 .END
 \#
@@ -11344,14 +11369,14 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          ps \\n[#DOC_PT_SIZE]u\\*[$BQUOTE_SIZE_CHANGE]
 .          ie !r #BQ_AUTOLEAD .vs \\n[#DOC_LEAD]u
 .          el \{\
-.             vs \\n[.ps]u+\\n[#BQ_AUTOLEAD]
+.             vs \\n[.ps]u+\\n[#BQ_AUTOLEAD]u
 .             nr #BQ_LEAD \\n[.v]
 .          \}
 .          if \\n[#ENDNOTE] \{\
 .             ps \\n[#EN_PS]u\\*[$BQUOTE_SIZE_CHANGE]
 .             ie !r#EN_BQ_AUTOLEAD .vs \\n[#EN_BQ_LEAD]u
 .             el \{\
-.                vs \\n[.ps]u+\\n[#EN_BQ_AUTOLEAD]
+.                vs \\n[.ps]u+\\n[#EN_BQ_AUTOLEAD]u
 .                nr #EN_BQ_LEAD \\n[.v]
 .             \}
 .          \}
@@ -11941,7 +11966,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   Default is #DOC_LEAD/2 for TYPEWRITE; 2 for TYPESET
 \#
 .MAC FOOTNOTE_AUTOLEAD END
-.    nr #FN_AUTOLEAD \\$1
+.    nr #FN_AUTOLEAD (p;\\$1)
 .END
 \#
 \# FOOTNOTE MARKERS
@@ -12303,7 +12328,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          nr #FOOTER_POS \\n[#PAGE_LENGTH]+(\\n[#VARIABLE_FOOTER_POS]-1)
 .          nr #SPACE_TO_FOOTER \\n[#FOOTER_POS]-\\n[#PAGE_POS]
 .\" Are we on a "defer" line?  If so, defer the text of the footnote.
-.          ie \\n[#SPACE_TO_FOOTER]=\\n[#DOC_LEAD]:\\n[#SPACE_TO_FOOTER]=0 \
+.          ie \\n[#SPACE_TO_FOOTER]<=\\n[#DOC_LEAD] \
 .             nr #DIVER_FN 2 \" treat like a normal deferred footnote
 .          el \
 .             nr #DIVER_FN 2 \" treat like a normal footnote
@@ -12450,7 +12475,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       FAMILY   \\*[$FN_FAM]
 .       FT       \\*[$FN_FT]
 .       ps  \\n[#DOC_PT_SIZE]u\\*[$FN_SIZE_CHANGE]
-.       vs \\n[.ps]u+(\\n[#FN_AUTOLEAD]u*1000u)
+.       vs \\n[.ps]u+\\n[#FN_AUTOLEAD]u
 .       QUAD     \\*[$FN_QUAD]
 .       if \\n[#PRINT_STYLE]=1 \{\
 .          TYPEWRITER
@@ -12731,7 +12756,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             nr #GET_DEPTH 1
 .\" If the footnote is the 1st on the page and it falls too close
 .\" to the bottom margin, defer the footnote text to the next page...
-.             if (\\n[#SPACE_REMAINING]-1)<=(\\n[#DOC_LEAD]) \{\
+.             if (\\n[#SPACE_REMAINING]-1)<=(\\n[.v]) \{\
 .\" ...but not if PROCESS_FN_LEFTOVER has set #PREV_FN_DEFERRED to 1
 .                if !\\n[#PREV_FN_DEFERRED]=1 \{\
 .                   nr #FN_DEFER 1
@@ -13046,7 +13071,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .\" When #FROM_DIVERT_FN is 1, it signals to FOOTNOTE, when run from
 .\" within DIVERT_FN_LEFTOVER, to set #SPACE_REMAINING to the total
 .\" area allowable for running text.
-.    nr #FROM_DIVERT_FN 1
+\#.    nr #FROM_DIVERT_FN 1
 .END
 \#
 \# PROCESS_FN_LEFTOVER is called at the top of HEADER, and in
@@ -13797,7 +13822,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    el \{\
 \!.     ie \\n[#EN_NUMBER]=\\\\n[#LAST_EN] .vpt 0
 \!.     el .br
-.       ALD \\*[$EN_SPACE]
+.       if \\n[#PRINT_STYLE]=2 .sp \\*[$EN_SPACE]
 .       in 0
 .       if \\n[#EN_MARKER_STYLE]=2 \{\
 \!.        in 0
@@ -13839,6 +13864,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   with endnotes, then outputs diversion END_NOTES.
 \#
 .MAC ENDNOTES END
+.    if \\n[defer] .NEWPAGE
 .    nr #LAST_EN \\n[#EN_NUMBER]
 .    nr #ENDNOTES 1
 .    nr #EN_FIRST_PAGE 1
@@ -13893,7 +13919,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .\" Collect endnotes title string for TOC
 .    nr #TOC_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
 .    af #TOC_ENTRY_PN \\g[#PAGENUMBER]
-.    ds $TOC_TITLE_ITEM \\*[$EN_STRING]\\|
+.    ds $TOC_TITLE_ITEM \\*[$EN_STRING]\|
 .    PDF_BOOKMARK 1 \\*[$EN_STRING]
 .    TITLE_TO_TOC
 .\" End collection of endnotes title string for TOC
@@ -13971,6 +13997,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    nf
 .    END_NOTES
 .    rm END_NOTES
+.    ps \\n[#DOC_PT_SIZE]u
 .    if \\n[#PRINT_STYLE]=1 .vs \\n[#DOC_LEAD]u
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       ie \\n[#ADJ_EN_LEAD] \
@@ -14319,16 +14346,16 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 \# Strings to allocate space for leaders and entry page numbers
 \#
-.ds $TOC_PN \\*[ST100]\F[\\*[$TOC_PN_FAM]]\f[\\*[$TOC_PN_FT]]\
-\s[\\n[#TOC_PS]u]^\\*[ST100X]\\*[ST101]\s[\\*[$TOC_PN_SIZE_CHANGE]]\|\
-\h'\w'0'u*\\n[#TOC_PN_PADDING]u'\*[ST101X]
+.ds $TOC_PN \\*[ST102]\F[\\*[$TOC_PN_FAM]]\f[\\*[$TOC_PN_FT]]\
+\s[\\n[#TOC_PS]u]^\\*[ST102X]\\*[ST103]\s[\\*[$TOC_PN_SIZE_CHANGE]]\
+\|\|\|\h'\w'0'u*\\n[#TOC_PN_PADDING]u'\\*[ST103X]
 \#
-.ds $TOC_PN_TYPEWRITE \\*[ST100]^\\*[ST100X]\\*[ST101]\|\
-\h'\w'0'u*\\n[#TOC_PN_PADDING]u'\\*[ST101X]
+.ds $TOC_PN_TYPEWRITE \\*[ST102]^\\*[ST102X]\\*[ST103]\
+\h'\w'0'u*\\n[#TOC_PN_PADDING]u'\\*[ST103X]
 \#
 \# TOC collector
 \#
-.MAC TITLE_TO_TOC END
+.MAC TO_TOC END
 .    if !'\\n[.ev]'TOC_EV' .ev TOC_EV
 .    nr #TOC_CH_NUM_INDENT \w'\\*[$TOC_CH_NUM]'
 .    da TOC_ENTRIES
@@ -14337,20 +14364,20 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \!.  \}
 \!.  el \{\
 .       br
-.       if \\n[#PRINT_STYLE]=1 \{\
+.       ie \\n[#PRINT_STYLE]=1 \{\
 \!.        fam \\*[$TYPEWRITER_FAM]
 \!.        ft  R
 \!.        ps \\*[$TYPEWRITER_PS]
 .          ds _TYPEWRITE _TYPEWRITE
 .       \}
-.       if \\n[#PRINT_STYLE]=2 \{\
+.       el \{\
 .          ie '\\$0'HD_TO_TOC' \{\
 \!.           ps \\n[#TOC_PS]u\\*[$TOC_HEAD_\\n[#LEVEL]_SIZE]
 .          \}
 .          el \{\
 \!.           FAMILY  \\*[$TOC_TITLE_FAM]
 \!.           FT      \\*[$TOC_TITLE_FT]
-\!.           ps \\n[#TOC_PS]u\\*[$TOC_TITLE_SIZE] N
+\!.           ps \\n[#TOC_PS]u\\*[$TOC_TITLE_SIZE]
 .          \}
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
@@ -14399,16 +14426,19 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       \}
 \!.     PAD_MARKER #
 \!.     EOL
-\!.     ST 100 L
-\!.     ST 101 R
+\!.     ST 102 L
+\!.     ST 103 R
 .       if \\n[#PRINT_STYLE]=2 \{\
 \!.        FAMILY  \\*[$TOC_PN_FAM]
 \!.        FT      \\*[$TOC_PN_FT]
-\!.        ps \\n[#TOC_PS]u\\*[$TOC_PN_SIZE_CHANGE]
+\!.        ps \\n[#TOC_PS]u
 .       \}
-\!.     TAB 100
-\!.     PRINT \\*[LEADER]\c
+\!.     TAB 102
+\!.     PRINT \\*[LEADER]
 \!.     TN
+.       if \\n[#PRINT_STYLE]=2 \{\
+\!.        ps \\*[$TOC_PN_SIZE_CHANGE]u
+.       \}
 \!.     PRINT \\n[#TOC_ENTRY_PN]
 \!.     TQ
 \!.     vpt
@@ -14417,7 +14447,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .   ev
 .END
 \#
-.ALIAS HD_TO_TOC TITLE_TO_TOC
+.ALIAS HD_TO_TOC  TO_TOC
+.ALIAS TITLE_TO_TOC TO_TOC
 \#
 \# Control macros for toc
 \# ----------------------
@@ -14495,8 +14526,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# *Notes:
 \#   This size control macro differs from other size control macros
 \#   in that it sets an absolute point size, not a relative one.
-\#   See notes for ENDNOTE_PT_SIZE for explanation.  No unit of
-\#   measure required.
+\#   See notes for ENDNOTE_PT_SIZE for explanation.
 \#
 \#   No unit of measure required (points assumed).  Default is 12.5
 \#   for TYPESET.
@@ -14533,6 +14563,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .MAC PAGINATE_TOC END
 .    ie '\\$1'' .nr #PAGINATE_TOC 1
 .    el .nr #PAGINATE_TOC 0
+.END
+\#
+.MAC TOC_FIRST_PAGENUM END
+.    nr #TOC_START_PAGENUM \\$1
 .END
 \#
 \# TOC PAGES PAGE-NUMBERING STYLE
@@ -14675,9 +14709,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    rr #COLUMNS
 .    COLLATE
 .    if \\n[#PRINT_STYLE]=1 \{\
-.       rr #IGNORE
-.       vs 24
-.       nr #IGNORE 1
+.       if \\n[#SINGLE_SPACE] .vs 24
+.       DOC_LEAD_ADJUST
 .    \}
 .    if \\n[#PRINT_STYLE]=2 .vs \\n[#TOC_LEAD]u
 .    if \\n[#FINIS] \{\
@@ -14695,18 +14728,15 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    rm $HDRFTR_CENTER_OLD
 .    rm $HDRFTR_CENTER_NEW
 .    rr #COLLATED_DOC
-.    DOCHEADER OFF \\n[#T_MARGIN]u-\\n[#DOC_LEAD]
-.    PAGENUMBER 1
+.    DOCHEADER OFF \\n[#T_MARGIN]u-\\n[#DOC_LEAD]u
+.    if !r #TOC_START_PAGENUM .nr #TOC_START_PAGENUM 1
+.       PAGENUMBER \\n[#TOC_START_PAGENUM]
 .    if \\n[#LINENUMBERS]=2 .nr #LINENUMBERS 3
 .    L_MARGIN   \\n[#DOC_L_MARGIN]u
 .    LL         \\n[#DOC_L_LENGTH]u
 .    HEADER_CENTER "\\*[$TOC_HEADER_STRING]
+.    if \\n[#SLANT_ON] .nop \\*[SLANTX]
 .    START
-.    nr #COLUMNS 0
-.    if \\n[#SLANT_ON] \{\
-\*[SLANTX]\c
-.    \}
-.    \\*[$TOC_HEADER_QUAD]
 .    PAGENUM_STYLE \\*[$TOC_PN_STYLE]
 .    PDF_BOOKMARK 1 \\*[$TOC_HEADER_STRING]
 .    if \\n[#PRINT_STYLE]=1 .TYPEWRITER
@@ -14715,19 +14745,13 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       FT      \\*[$TOC_HEADER_FT]
 .       ps \\n[#TOC_PS]u\\*[$TOC_HEADER_SIZE_CHANGE]
 .    \}
-.    nr #TOC_PS
 .    ie \\n[#PRINT_STYLE]=1 \{\
 .       CAPS
-.       UNDERLINE
-.       PRINT \\*[$TOC_HEADER_STRING]
-.       UNDERLINE OFF
+.       UNDERSCORE 3p "\\*[$TOC_HEADER_STRING]"
 .       CAPS      OFF
 .    \}
 .    el .PRINT \\*[$TOC_HEADER_STRING]
-.    if !\\n[#PRINT_STYLE]=1 \{\
-.       nop
-.       sp
-.    \}
+.    sp
 .    nf
 .    TOC_ENTRIES
 .    rr #TOC
@@ -14736,6 +14760,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       nr #LINENUMBERS 1
 .       nn 1
 .    \}
+.    rr #TOC
 .    pdfsync
 .END
 \#
@@ -14817,7 +14842,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC LIST END
 .    ds $1ST_LETTER \\$1
-.    substring $1ST_LETTER 0 0
+.    if !'\\*[$1ST_LETTER]'' .substring $1ST_LETTER 0 0
 .    if '\\*[$1ST_LETTER]'r' .ds $1ST_LETTER R
 .    ie '\\*[$1ST_LETTER]'R' \{\
 .       ds $LAST_CHAR \\$1
@@ -14831,7 +14856,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             LIST OFF
 .             return
 .          \}
-.          tm1 "[mom]: You must append a number to the \\$1 argument to LIST at line \\n[.c].
+.          tm1 "[mom]: You must append a number to the \\$1 argument to \\$0.
 .          tm1 "       The number should be the total number of items in this list.
 .          tm1 "       See the documentation.
 .          ab Aborting '\\n[.F]' at \\$0, line \\n[.c].
@@ -15526,9 +15551,13 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   N.B.--the START macro must be used after every COLLATE
 \#
 .MAC COLLATE END
+.    if \\n[defer] \
+.       DO_FOOTER
+.    EOL
 .    nr #COLLATED_DOC 1
 .    if ( (\\n[.t]-1) <= \\n[.v] ) .nr #NO_BREAK 1
-.    ds $SAVED_PP_FT \\*[$PP_FT]
+.    ds $SAVED_DOC_FAM \\*[$DOC_FAM]
+.    ds $SAVED_PP_FT   \\*[$PP_FT]
 .    nr #COLLATE 1
 .    nr #PRE_COLLATE 1
 .    nr #HEADER_STATE \\n[#HEADERS_ON]
@@ -15536,7 +15565,16 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    nr #ARG_NUM 0 1
 .    nr #LOOP \\n[#ACTIVE_LEVELS]      \" loop count                                   
 .    nr #HEAD_1_NUM 0 1
-.    HEADERS OFF
+.    nr eqn*label-width     (\\n[eqn*label-num] >? \\n[eqn*label-width])
+.    nr pdf-img*label-width (\\n[pdf-img*label-num] >? \\n[pdf-img*label-width])
+.    nr pic*label-width     (\\n[pic*label-num] >? \\n[pic*label-width])
+.    nr tbl*label-width     (\\n[tbl*label-num] >? \\n[tbl*label-width])
+.    nr fig*label-width     (\\n[pdf-img*label-width] >? \\n[pic*label-width])
+.    if \\n[eqn*label-with-chapter]=1     .nr eqn*label-num     0 1
+.    if \\n[pdf-img*label-with-chapter]=1 .nr pdf-img*label-num 0 1
+.    if \\n[pic*label-with-chapter]=1     .nr pic*label-num     0 1
+.    if \\n[tbl*label-with-chapter]=1     .nr tbl*label-num     0 1
+.    if (\\n[defer]=0)&(\\n[float*defer]=0) .HEADERS OFF
 .    if \\n[#DOC_HEADER]=2 .nr #DOC_HEADER 1
 .    if \\n[#PAGE_NUM_V_POS]=1 \{\
 .       nr #PAGINATION_STATE \\n[#PAGINATE]
@@ -15545,7 +15583,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    IQ CLEAR
 .    TQ
 .    LL \\n[#DOC_L_LENGTH]u
-.    QUAD $DOC_QUAD
+.    QUAD \\*[$DOC_QUAD]
 .    nr #SAVED_DOC_LEAD \\n[#DOC_LEAD]
 .    vs \\n[#DOC_LEAD]u
 \*[SLANTX]
@@ -15555,14 +15593,22 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       if \\n[TOC_BH]=1 .pdfswitchtopage before MOM:TOC
 .       if \\n[TOC_BH]=2 .pdfswitchtopage after MOM:TOC
 .    \}
-'    NEWPAGE
+.    if !\\n[#NO_NEWPAGE] .NEWPAGE
+.    rr #NO_NEWPAGE
+.    ch RR_@TOP
+.    rr @TOP
+.    if \\n[.ns] \{\
+.      rs
+.      nop \&
+.    \}
 .    if '\\n[.ev]'PAGE_TRANSITION' .ev
 .    if \\n[#DEFER_PAGINATION] .PAGINATE
 .    if !'\\*[$RESTORE_PAGENUM_STYLE]'' \{\
 .       PAGENUM_STYLE \\*[$RESTORE_PAGENUM_STYLE]
 .       rm $RESTORE_PAGENUM_STYLE
 .    \}
-.    if \\n[#CH_NUM] .nr #CH_NUM +1
+.    if \\n[#CH_NUM] \
+.       if \\n[#TOC]=0 .nr #CH_NUM +1
 .    rm $EN_TITLE
 .    COVERTITLE
 .    DOCCOVERTITLE
@@ -15595,7 +15641,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       tm1 "[mom]: \\$0 at line \\n[.c] may not be used inside \\*[macro].
 .       tm1 "       Please set NUMBER_LINES before \\*[macro], followed by
 .       tm1 "       NUMBER_\\*[macro]_LINES.
-.       ab Aborting '\\n[.F]'.
+.       ab Aborting '\\n[.F]' at \\$0, line \\n[.c].
 .    \}
 .    if '\\n[.z]'EPI_TEXT' .return
 .    if '\\$1'' \{\
@@ -15800,9 +15846,161 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .  vpt 1
 ..
 \#
+.MAC PROCESS_FLOATS END
+.    if (\\n[float*defer]>0):(\\n[defer]=0) \{\
+.        if !\\n[tbl*no-top-hook] .tbl@top-hook
+.        rr tbl*no-top-hook
+.    \}
+.    if \\n[defer] \{\
+.       ev protect
+.       evc FLOAT
+.       nf
+.       rs
+.       nop \&
+.       sp |\\n[#T_MARGIN]u-\\n[#DOC_LEAD]u
+.       if '\\*[float*type:1]'boxed-tbl' \{\
+.          ch RR_@TOP
+.          if (\\n[.t] >= 1)&(\\n[float-depth:1] > \\n[.t]) \
+.             tbl*float-warning
+.          if \\n[#MLA] .sp \\n[tbl*label-lead-diff]u
+.          if (\\n[tbl*have-caption]=1)&(\\n[tbl*caption-after-label]=0) \
+.             sp \\n[tbl*caption-lead-diff]u
+.          if \\n[tbl*caption-after-label] .sp 1n+(\\n[tbl*caption-lead-diff]u*2u)
+.       \}
+.       if \\n[float*pic] \{\
+.          if (\\n[pic*have-caption]=1)&(\\n[pic*caption-after-label]=0) \{\
+.             ie \\n[#COLUMNS] \{\
+.                sp |\\n[dc]u-.5v
+.             \}
+.             el \
+.                sp |\\n[#T_MARGIN]u-\\n[#DOC_LEAD]u-.5v
+.          \}
+.          rr pic*caption-lead-diff
+.          rr pic*top-lead-diff
+.          rr float*pic
+.       \}
+.       if \\n[float*img] \{\
+.             ie \\n[#COLUMNS] \
+.                sp |\\n[dc]u
+.             el \
+.                sp |\\n[#T_MARGIN]u-\\n[#DOC_LEAD]u
+.       \}
+.       nr defer-count \\n[defer]
+.       nr loop-count  0 1
+.       nr new-defer   0 1
+.       while \\n+[loop-count]<=\\n[defer-count] \{\
+.          nr tbl*no-top-hook 1
+.          if \\n[defer] .rnn defer float*defer \" So '.if \n[defer]' is skipped during float output
+.          vpt
+.          ch RR_@TOP
+.          rr @TOP
+.          if \\n[pdf-img*have-caption] \{\
+.             if !\\n[pdf-img*caption-after-label] .sp -.5v
+.          \}
+.          rr pdf-img*have-caption
+.          rr pic*have-caption
+.          if '\\*[float*type:\\n[loop-count]]'table' \{\
+.             ch FOOTER \\n[#VARIABLE_FOOTER_POS]u+\\n[#DOC_LEAD]u
+.             ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u+\\n[#DOC_LEAD]u
+.          \}
+.          ie !\\n[float-span:\\n[loop-count]] \{\
+.             ie ((\\n[float-depth:\\n[loop-count]]-\\n[.v])>\\n[.t]):(\\n[D-float:\\n[loop-count]]>\\n[.t]) \{\
+.\" Insufficient space, defer to next page
+.                rn FLOAT*DIV:\\n[loop-count] NEW*FLOAT*DIV:\\n+[new-defer]
+.                rnn float-depth:\\n[loop-count] new-float-depth:\\n[new-defer]
+.                rnn D-float:\\n[loop-count] new-D-float:\\n[new-defer]
+.             \}
+.             el \{\
+.                output-float
+.             \}
+.          \}
+.          el \{\
+.             rr tbl*no-top-hook
+.             output-float
+.          \}
+.       \}
+.       rm FLOAT*DIV:\\n[loop-count]
+.       rr float-depth:\\n[loop-count]
+.       rm tbl*header-div:\\n[loop-count]
+.       rm float*type:\\n[loop-count]
+.\" FLOAT arrays are empty now
+.\" Rename new arrays (FLOATs deferred to next page) to proper names
+.       nr loop-count 0 1
+.       rnn new-defer defer
+.       while \\n+[loop-count]<=\\n[defer] \{\
+.          rn NEW*FLOAT*DIV:\\n[loop-count] FLOAT*DIV:\\n[loop-count]
+.          rnn new-float-depth:\\n[loop-count] float-depth:\\n[loop-count]
+.          rnn new-D-float:\\n[loop-count] D-float:\\n[loop-count]
+.       \}
+.       rr float*defer
+.       ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
+.       ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u
+.       ev
+.       SHIM
+.       if \\n[#SHIM]>(\\n[#DOC_LEAD]-(\\n[#DOC_LEAD]/4)) 'sp -\\n[#DOC_LEAD]u
+.       nr tbl*have-header 0
+.       rr loop-count
+.       rr defer-count
+.       rr float*before-shim
+.       rr float*after-shim
+.       rm float-adj
+.       rm float-adj:top
+.       rm float-adj:bottom
+.       if \\n[#NEWPAGE] \{\
+.          vpt
+'          bp
+.          rr #NEWPAGE
+.       \}
+.    \}
+.    rr float*img
+.    rr float*eqn
+.    rr float*tbl
+.    rr float*pic
+.END
+\#
 .MAC output-float END
-.    FLOAT*DIV:\\n[loop-count]
 .    vpt 0
+.    nop \&
+.    sp -1
+.    if \\n[no-top-space] \{\
+.       ie !\\n[#COLUMNS] \{\
+.          sp |\\n[#T_MARGIN]u-\\n[#DOC_LEAD]u
+.          ns
+.       \}
+.       el .sp |\\n[dc]u
+.       if \\n[float*tbl] \{\
+.          rs
+.          if \\n[tbl*caption-top-lead-diff] \{\
+.             sp \\n[tbl*caption-top-lead-diff]u
+.             rr tbl*caption-top-lead-diff
+.          \}
+.          rr float*tbl
+.       \}
+.    \}
+.    if \\n[float*pic] \{\
+.       nr pic*top-space-adj \\n[#DOC_LEAD]-\\n[pic@text-lead]
+.       if (\\n[pic*have-caption]=0):(\\n[pic*caption-after-label]=1) \{\
+.          sp \\n[pic*top-space-adj]u
+.       \}
+.       if \\n[#COLUMNS] \{\
+.          if !'\\*[pic*space-adj]'' .sp \\*[pic*space-adj]
+.       \}
+.       rr float*pic
+.    \}
+.    if \\n[float*eqn] \{\
+.       sp -.5v
+.       rr float*eqn
+.    \}
+.    FLOAT*DIV:\\n[loop-count]
+.    if \\n[no-top-space] \{\
+.       rs
+.       nop \&
+.       sp -1
+.       rr no-top-space
+.    \}
+.    if \\n[#COLUMNS] \
+.       if !'\\*[pic*space-adj]'' .sp -\\*[pic*space-adj]
+.    rm pic*space-adj
 .    if \\n[D-float:\\n[loop-count]] \{\
 .       sp \
 -\\n[float-depth:\\n[loop-count]]u+\\n[D-float:\\n[loop-count]]u+\\n[#DOC_LEAD]u
@@ -15813,83 +16011,103 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# FLOAT
 \# -----
 \# *Arguments:
-\#   [ ADJUST +|-<amount> ] | <anything>
+\#   [ ADJUST +|-<amount> ] [ FORCE] [ SPAN] [ NO_SHIM] | <anything>
 \# *Function:
 \#   Captures input in a diversion, which is output immediately if
 \#   there's room on the page; otherwise outputs diversion at top of
 \#   next page.
 \# *Notes:
 \#   ADJUST allows for raising or lowering the contents of
-\#   the diversion within the space allotted.
+\#   the diversion within the space allotted.  FORCE breaks to
+\#   a new page immediately.
 \#
 .MAC FLOAT END
 .\"  Case where upcoming .br breaks to a new page, causing a defered float
 .\"  to be output by HEADER and the defer register to be cleared.
 .    nr pagenum \\n%+\\n[#PAGE_NUM_ADJ]
 .    br
-.\"  Possibly breaks to a new page.  This may create problems, so the
-.\"  condition and a flag are set here, commented out for possible
-.\"  later use.
-.\"
-.\"  if !(\\n%+\\n[#PAGE_NUM_ADJ])=\\n[pagenum] .nr broken*at*float 1
-.\"
 .\" Clear .ns when a single line of running text precededs float
 .\" at the top of the page.
-.    if \\n[nl]=\\n[#T_MARGIN] \{\
+.    if \\n[nl]=\\n[#PAGE_TOP] \{\
 .       vpt 0
 .       sp -1v
 .       sp
+.       ch RR_@TOP
+.       rr @TOP
 .       vpt
 .    \}
-.    if '\\$1'FORCE' \{\
-.       nr #FORCE 1
-.       shift
-.    \}
-.    if '\\$1'SPAN' \{\
-.        nr float-span 1
-.        shift
-.    \}
-.    if '\\$1'ADJUST' \{\
-.       shift
-.       ds float-adj:top \\$1
-.       substring float-adj:top 0 0
-.       ds float-adj \\$1
-.       substring float-adj 1
-.       shift
-.       if '\\*[float-adj:top]'+' .ds float-adj:bottom -
-.       if '\\*[float-adj:top]'-' .ds float-adj:bottom +
+.    if \\n[#NUM_ARGS]>0 \{\
+.    nr loop-count 0 1
+.    nr loop-counter \\n[#NUM_ARGS]
+.       while \\n+[loop-count]<=\\n[loop-counter] \{\
+.          if '\\$1'FORCE' \{\
+.             nr #FORCE 1
+.             shift
+.          \}
+.          if '\\$1'SPAN' \{\
+.              nr float-span 1
+.              shift
+.          \}
+.          if '\\$1'ADJUST' \{\
+.             shift
+.             ds float-adj \\$1
+.             shift
+.          \}
+.          if '\\$1'NO_SHIM' \{\
+.             nr float*no-shim 1
+.             shift
+.          \}
+.       \}
 .    \}
 .    ie '\\$1'' \{\
 .       ev FLOAT
 .       evc 0
-.       di FLOAT*DIV
 .       nf
+.       di FLOAT*DIV
 .    \}
 .    el \{\
 .       br
 .       di
-.       if \\n[float*with-table] \
+.       if \\n[float*table] \
 .          if !\\n[tbl*have-header] .ev
 .       ev
-.       if \\n[tbl*boxed] .nr dn +.65v
+.       if \\n[tbl*boxed] \{\
+.          ie !\\n[#MLA] \{\
+.             ie (\\n[tbl@label]=1):(\\n[tbl@source]=1) .nr dn -.65v
+.             el .nr dn +.65v
+.          \}
+.          el \{\
+.             if !\\n[tbl@source] .nr dn -1.65v
+.          \}
+.       \}
 .       if (\\n[dn]>\\n[.t]):(\\n[D-float]>\\n[.t]) \{\
 .          ie \\n[@TOP] \
-.             if !\\n[tbl*boxed] .rs
+.             if \\n[tbl*boxed] .rs
 .          el \{\
 .             if !\\n[defer] .nr defer 0 1
 .             rn FLOAT*DIV FLOAT*DIV:\\n+[defer]
 .             if \\n[float-span] \
 .                if !\\n[tbl*boxed] .rnn float-span float-span:\\n[defer]
-.             if \\n[float*with-tbl] \{\
-.                rr float*with-tbl
+.             if \\n[float*tbl] \{\
+.                if \\n[defer]=1 .nr no-top-space 1
 .                ie \\n[tbl*boxed] \{\
-.                   ds float*type:\\n[defer] boxed
+.                   ds float*type:\\n[defer] boxed-tbl
 .                   rr float-span
 .                \}
 .                el .ds float*type:\\n[defer] table
-.                if !'\\*[tbl*center]'' .nr float*tbl-center:\\n[defer] 1
+.                if \\n[tbl*center] .nr float*tbl-center:\\n[defer] 1
 .                rn tbl*header-div tbl*header-div:\\n[defer]
-.                rm tbl*center
+.                rr tbl*center
+.             \}
+.             if \\n[float*eqn] \{\
+.                if \\n[defer]=1 .nr no-top-space 1
+.                ds float*type:\\n[defer] eqn
+.             \}
+.             if \\n[float*pic] \{\
+.                ds float*type:\\n[defer] pic
+.             \}
+.             if \\n[float*img] \{\
+.                ds float*type:\\n[defer] img
 .             \}
 .             if \\n[D-float] .nr D-float:\\n[defer] \\n[D-float]
 .             nr float-depth:\\n[defer] \\n[dn]
@@ -15900,52 +16118,65 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             return \" output div after header
 .          \}
 .       \}
-.       sp 0\\*[float-adj:top]\\*[float-adj]
-.       if \\n[float*with-tbl] \{\
-.          ie \\n[tbl*boxed] \{\
-.             if !\\n[@TOP] .sp .65v
-.             ch FOOTER \\n[#VARIABLE_FOOTER_POS]u+\\n[#DOC_LEAD]u
-.             if !\\n[#FN_DEPTH] \
-.                ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u+\\n[#DOC_LEAD]u
-.          \}
-.          el .sp
-.       \}
-.       if \\n[.u] .nr #RESTORE_FILL 1
-.       nf
+.       if !'\\*[float-adj]'' .sp \\*[float-adj]
+.       if \\n[.u] .nr fill 1
 .       if \\n[@TOP] \{\
 .          nr no-adjust 1
 .          rr @TOP
-.          nop
+.       \}
+.       nf
+.       if \\n[float*tbl] \
+.          if (\\n[#MLA]=1)&(\\n[tbl@source]=0) \
+.             chop FLOAT*DIV
+.          if \\n[nl]=\\n[#PAGE_TOP] \{\
+.             if \\n[tbl*have-caption] \{\
+.                ie !\\n[#MLA] .sp \\n[tbl*caption-lead-diff]u
+.                el \{\
+.                ch RR_@TOP
+.                sp \\n[tbl*label-lead-diff]u-.5v
+.             \}
+.          \}
 .       \}
 .       FLOAT*DIV
-.       rm tbl*header-div
-.       if \\n[float*with-tbl] \{\
+.       if \\n[float*tbl] \{\
 .          ie \\n[tbl*boxed] \{\
 .             if \\n[dn]=\\n[bx-tbl-depth] .sp .35v
+.             if \\n[tbl*plain-boxed] .sp .5v
 .             ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
 .             ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u
 .             rr tbl*boxed
 .             rr bx-tbl-depth
 .          \}
-.          el .if '\\*[tbl*label]'' .sp
-.          rr float*with-tbl
-.          rm tbl*center
+.          el \{\
+.             if '\\*[tbl*label]'' \
+.                if \\n[tbl*autolabel]=0 .sp
+.          \}
+.          rr float*tbl
+.          rr tbl*center
+.          rm tbl*header-div
+.          rr tbl*have-caption
+.          rr tbl*have-label
+.          rr tbl*have-source
+.          rm tbl*caption
+.          rm tbl*label
+.          rm tbl*source
 .       \}
-.       if \\n[D-float] \{\
+.       if \\n[D-float] \
 .          sp -\\n[dn]u+\\n[#DOC_LEAD]u+\\n[D-float]u
-.       \}
-.       if \\n[#RESTORE_FILL] \{\
+.       if \\n[fill] \{\
 .          fi
-.          rr #RESTORE_FILL
+.          rr fill
 .       \}
 .       rm FLOAT*DIV
-.       if !\\n[no-adjust] .sp 0\\*[float-adj:bottom]\\*[float-adj]
-.       SHIM
+.       if !'\\*[float-adj]'' \
+.          if !\\n[no-adjust] .sp -\\*[float-adj]
+.          if !\\n[float*no-shim] .SHIM
 .       rm float-adj
 .       rm no-adjust
 .       rm float-adj:top
 .       rm float-adj:bottom
 .       rr D-float
+.       rr float*no-shim
 .       rr #FORCE
 .    \}
 .END
@@ -15965,6 +16196,15 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC RR_@TOP END \" Trap-invoked after first line of text on a new page
 .    rr @TOP
+.    if \\n[.ns] \{\
+.       vpt 0
+.       rs
+.       if \\n[.u] .nr fill 1
+.       nf
+.       nop \&
+.       sp -1
+.       if \\n[fill] .fi
+.    \}
 .    if \\n[.vpt]=0 .vpt
 .END
 \#
@@ -16092,7 +16332,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# output.
 \#
 .MAC TERMINATE END
-\c
 .    ie \\n[#FN_DEPTH] \{\
 .       ie \\n[#FN_DEFER] \{\
 .          br
@@ -16104,13 +16343,12 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       el \{\
 .          br
 .          ch FN_OVERFLOW_TRAP
-.          DO_B_MARGIN
+.          DO_FOOTER
 .       \}
 .    \}
 .    el \{\
-.       br
 .       ch FN_OVERFLOW_TRAP
-.       DO_B_MARGIN
+.       DO_FOOTER
 .    \}
 .END
 \#
@@ -16767,58 +17005,1189 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    \}
 .END
 \#
-\# TBL SUPPORT
-\# -----------
+\#
+\# PREPROCESSOR SUPPORT
+\# ====================
+\#
+\# Utility macros--label and caption styles, lists collector, lists
+\# generator.
+\#
+.nr lists*target 0 1
+.
+.MAC get-label-type END
+.    if \\n[all]=1 .ds label-type eqn
+.    if \\n[all]=2 .ds label-type pdf-img
+.    if \\n[all]=3 .ds label-type pic
+.    if \\n[all]=4 .ds label-type tbl
+.END
+\#
+.MAC set-defaults END
+.    if '\\*[\\*[label-type]*\\*[spec-type]-family]'' \
+.       ds \\*[label-type]*\\*[spec-type]-family \\*[$DOC_FAM]\"
+.    if '\\*[\\*[label-type]*\\*[spec-type]-font]'' \
+.       ds \\*[label-type]*\\*[spec-type]-font R\"
+.    if '\\*[\\*[label-type]*\\*[spec-type]-size-change]'' \
+.       ds \\*[label-type]*\\*[spec-type]-size-change +0\"
+.    if !r \\*[label-type]*\\*[spec-type]-autolead \
+.       nr \\*[label-type]*\\*[spec-type]-autolead 2
+.    if '\\*[\\*[label-type]*\\*[spec-type]-color]'' \
+.       ds \\*[label-type]*\\*[spec-type]-color black\"
+.    if '\\*[\\*[label-type]*\\*[spec-type]-quad]'' \{\
+.       ie '\\*[label-type]'eqn' \{\
+.          if '\\*[spec-type]'caption' \
+.             ds \\*[label-type]*\\*[spec-type]-quad C\"
+.       \}
+.       el .ds \\*[label-type]*\\*[spec-type]-quad L\"
+.    \}
+.    if '\\n[\\*[label-type]*\\*[spec-type]-quad-on-ll]'' \
+.       nr \\*[label-type]*\\*[spec-type]-quad-on-ll 1
+.    if '\\*[spec-type]'caption' \{\
+.       nr default-left 1
+.    \}
+.END
+\#
+.MAC set-inline-specs END
+.    ds \\*[label-type]*\\*[spec-type]-specs \
+\f[\\*[\\*[label-type]*\\*[spec-type]-family]\\*[\\*[label-type]*\\*[spec-type]-font]]\
+\s[\\*[\\*[label-type]*\\*[spec-type]-size-change]]\
+\m[\\*[\\*[label-type]*\\*[spec-type]-color]]
+.END
+\#
+\# Line lengths, indents, and quads for captions and labels.
+\# Aliased for eqn, pic, pdf-image, and tbl.
+\#
+.MAC SET_QUAD END
+.    ds label-type \\$0
+.    substring label-type 0 2
+.    if '\\*[label-type]'PDF'     .ds label-type pdf-img
+.    if '\\*[label-type]'TBL'     .ds label-type tbl
+.    if '\\*[label-type]'PIC'     .ds label-type pic
+.    if '\\*[label-type]'EQN'     .ds label-type eqn
+.    ds spec-type \\$0
+.    substring spec-type -6 -10
+.    if '\\*[spec-type]'PTION' .ds spec-type caption
+.    if '\\*[spec-type]'LABEL' .ds spec-type label
+.    if '\\*[spec-type]'OURCE' .ds spec-type source
+.    QUAD \\$1
+.    ds \\*[label-type]*\\*[spec-type]-quad \\$1
+.    substring \\*[label-type]*\\*[spec-type]-quad 0 0
+.    if '\\*[label-type]'pdf-img' \{\
+.       if '\\*[\\*[label-type]*\\*[spec-type]-quad]'L' \{\
+.          if '\\*[pdf-img:pos]'-C' \{\
+.             ll \\n[pdf-img:ind]u+\\n[pdf-img:width]u+\\n[pdf-img:frame-inset]u
+.             in \\n[pdf-img:ind]u-\\n[pdf-img:frame-inset]u
+.          \}
+.          if '\\*[pdf-img:pos]'-R' \{\
+.             ll -\\n[ind-pre-div]u
+.             in \\n[.l]u-(\\n[pdf-img:width]u+(\\n[pdf-img:frame-inset]u*2u))
+.          \}
+.          if '\\*[pdf-img:pos]'-I' \
+.             in \\n[pdf-img:ind]u
+.       \}
+.       if '\\*[\\*[label-type]*\\*[spec-type]-quad]'C' \{\
+.          if '\\*[pdf-img:pos]'-L' \
+.             ll \\n[pdf-img:width]u+(\\n[pdf-img:frame-inset]u*2u)
+.          if '\\*[pdf-img:pos]'-C' \{\
+.             ll -\\n[ind-pre-div]u
+.          \}
+.          if '\\*[pdf-img:pos]'-R' \{\
+.             ll -\\n[ind-pre-div]u
+.             in \\n[.l]u-(\\n[pdf-img:width]u+(\\n[pdf-img:frame-inset]u*2u))
+.          \}
+.          if '\\*[pdf-img:pos]'-I' \{\
+.             ll \\n[pdf-img:ind]u+\\n[pdf-img:width]u+(\\n[pdf-img:frame-inset]u*2u)
+.             in \\n[pdf-img:ind]u
+.          \}
+.       \}
+.       if '\\*[\\*[label-type]*\\*[spec-type]-quad]'R' \{\
+.          if '\\*[pdf-img:pos]'-L' \
+.             ll \\n[pdf-img:width]u+(\\n[pdf-img:frame-inset]u*2u]
+.          if '\\*[pdf-img:pos]'-C' \{\
+.             ll (\\n[.l]u-\\n[ind-pre-div]u-\\n[pdf-img:width]u/2u)+\\n[pdf-img:width]u+\\n[pdf-img:frame-inset]u
+.             in \\n[pdf-img:ind]u
+.          \}
+.          if '\\*[pdf-img:pos]'-R' \
+.             ll -\\n[ind-pre-div]u
+.          if '\\*[pdf-img:pos]'-I' \{\
+.             ll \\n[pdf-img:ind]u+\\n[pdf-img:width]u+(\\n[pdf-img:frame-inset]u*2u)
+.             in \\n[pdf-img:ind]u
+.          \}   
+.       \}
+.    \}
+.    if '\\*[label-type]'tbl' \{\
+.       if !'\\*[spec-type]'caption' \{\
+.          if '\\*[tbl*\\*[spec-type]-quad]'L' \{\
+.             if !\\n[tbl*\\*[spec-type]-quad-on-ll] \{\
+.                if \\n[tbl*center] \{\
+.                   if !\\n[#MLA] \{\
+.                      ll \\n[ll-pre-tbl]u-\\n[TW]u/2u+\\n[TW]u
+.                      in \\n[ll-pre-tbl]u-\\n[TW]u/2u
+.                   \}
+.                \}
+.             \}
+.          \}
+.          if '\\*[tbl*\\*[spec-type]-quad]'C' \{\
+.             if !\\n[tbl*center] \{\
+.                if !\\n[#MLA] \{\
+.                   if !\\n[tbl*\\*[spec-type]-quad-on-ll] .ll \\n[TW]u
+.                \}
+.             \}
+.          \}
+.          if '\\*[tbl*\\*[spec-type]-quad]'R' \{\
+.             if !\\n[tbl*\\*[spec-type]-quad-on-ll] \{\
+.                if !\\n[#MLA] \{\
+.                   ie \\n[tbl*center] \{\
+.                      ll \\n[ll-pre-tbl]u-\\n[TW]u/2u+\\n[TW]u
+.                      in \\n[ll-pre-tbl]u-\\n[TW]u/2u
+.                   \}
+.                   el .ll \\n[TW]u
+.                \}
+.             \}
+.          \}
+.       \}
+.    \}
+.END
+\#
+.ALIAS TBL*SET_CAPTION_QUAD     SET_QUAD
+.ALIAS TBL*SET_LABEL_QUAD       SET_QUAD
+.ALIAS TBL*SET_SOURCE_QUAD      SET_QUAD
+.ALIAS PDF_IMG*SET_CAPTION_QUAD SET_QUAD
+.ALIAS PDF_IMG*SET_LABEL_QUAD   SET_QUAD
+.ALIAS PIC*SET_CAPTION_QUAD     SET_QUAD
+.ALIAS PIC*SET_LABEL_QUAD       SET_QUAD
+\#
+.MAC style END
+.    ds label-type \\$0
+.    substring label-type 0 2
+.    if '\\*[label-type]'img' .ds label-type pdf-img
+.    if '\\*[label-type]'tbl' .ds label-type tbl
+.    if '\\*[label-type]'pic' .ds label-type pic
+.    ds spec-type \\$0
+.    substring spec-type 4 6
+.    if '\\*[spec-type]'cap' .ds spec-type caption
+.    if '\\*[spec-type]'lab' .ds spec-type label
+.    if '\\*[spec-type]'sou' .ds spec-type source
+.    fam \\*[\\*[label-type]*\\*[spec-type]-family]
+.    ft \\*[\\*[label-type]*\\*[spec-type]-font]
+.    ps \\n[#DOC_PT_SIZE]u\\*[\\*[label-type]*\\*[spec-type]-size-change]
+.    gcolor \\*[\\*[label-type]*\\*[spec-type]-color]
+.END
+\#
+.ALIAS tbl*caption-style style
+.ALIAS tbl*label-style   style
+.ALIAS tbl*source-style  style
+.ALIAS img*caption-style style
+.ALIAS img*label-style   style
+.ALIAS img*source-style  style
+.ALIAS pic*caption-style style
+.ALIAS pic*label-style   style
+.ALIAS pic*source-style  style
+\#
+\# User style macros
+\#
+\# TYPE SPECS FOR LABELS, CAPTIONS, AND SOURCES
+\# --------------------------------------------
+\#  Aliased as CAPTIONS and LABELS for eqn, pic, tbl, and pdf images.
+\# *Arguments:
+\#   EQN | IMG | PIC | TBL \
+\#   Remaining arguments are optional
+\#   FAMILY fam \
+\#   FONT   sty \
+\#   SIZE   +|-size \
+\#   QUAD   LEFT | CENTRE | RIGHT [ ON_LL ] \
+\#   COLOR  color \
+\#   AUTOLEAD n \
+\#   ADJUST   +|-n
+\# *Function:
+\#   Sets type specs for captions, labels, and sources according to
+\#   calling alias name
+\# *Notes:
+\#   SIZE is relative to running text.
+\#   QUAD optional arg says quad on full line length rather than
+\#    pdf-img or pre-processor output.  
+\#
+.MAC CAPTION_LABEL_SPECS END
+.    if '\\$0'CAPTIONS' .ds spec-type caption
+.    if '\\$0'LABELS'   .ds spec-type label
+.    if '\\$0'SOURCES'  .ds spec-type source
+.    if '\\$1'EQN' .ds label-type eqn
+.    if '\\$1'IMG' .ds label-type pdf-img
+.    if '\\$1'PIC' .ds label-type pic
+.    if '\\$1'TBL' .ds label-type tbl
+.    if '\\$1'ALL' .nr all 1
+.    shift
+.    nr loop-counter \\n[#NUM_ARGS]
+.    nr loop-count 0 1
+.    while \\n+[loop-count]<=\\n[loop-counter] \{\
+.       if '\\$1'FAMILY' \{\
+.          shift
+.          ie r all \{\
+.             nr all 0 1
+.             while \\n+[all]<=4 \{\
+.                 get-label-type
+.                 ds \\*[label-type]*\\*[spec-type]-family \\$1
+.             \}
+.          \}
+.          el .ds \\*[label-type]*\\*[spec-type]-family \\$1
+.          if \\n[#PRINT_STYLE]=1 \
+.             ds \\*[label-type]*\\*[spec-type]-family \\*[$TYPEWRITER_FAM]
+.          shift
+.       \}
+.       if '\\$1'FONT' \{\
+.          shift
+.          ie r all \{\
+.             nr all 0 1
+.             while \\n+[all]<=4 \{\
+.                 get-label-type
+.                 ds \\*[label-type]*\\*[spec-type]-font \\$1
+.             \}
+.          \}
+.          el .ds \\*[label-type]*\\*[spec-type]-font \\$1
+.          if \\n[#PRINT_STYLE]=1 \
+.             ds \\*[label-type]*\\*[spec-type]-font R
+.          shift
+.       \}
+.       if '\\$1'SIZE' \{\
+.          shift
+.          ie r all \{\
+.             nr all 0 1
+.             while \\n+[all]<=4 \{\
+.                 get-label-type
+.                 ds \\*[label-type]*\\*[spec-type]-size-change \\$1
+.             \}
+.          \}
+.          el .ds \\*[label-type]*\\*[spec-type]-size-change \\$1
+.          if \\n[#PRINT_STYLE]=1 \
+.             ds \\*[label-type]*\\*[spec-type]-size-change +0
+.          shift
+.       \}
+.       if '\\$1'AUTOLEAD' \{\
+.          shift
+.          ie r all \{\
+.             nr all 0 1
+.             while \\n+[all]<=4 \{\
+.                 get-label-type
+.                 nr \\*[label-type]*\\*[spec-type]-autolead (p;\\$1)
+.             \}
+.          \}
+.          el .nr \\*[label-type]*\\*[spec-type]-autolead (p;\\$1)
+.          shift
+.       \}
+.       if '\\$1'QUAD' \{\
+.          shift
+.          ie r all \{\
+.             nr all 0 1
+.             while \\n+[all]<=4 \{\
+.                 get-label-type
+.                 ds \\*[label-type]*\\*[spec-type]-quad \\$1
+.                 substring \\*[label-type]*\\*[spec-type]-quad 0 0
+.             \}
+.          \}
+.          el \{\
+.             ds \\*[label-type]*\\*[spec-type]-quad \\$1
+.             substring \\*[label-type]*\\*[spec-type]-quad 0 0
+.             if \\n[\\*[label-type]*\\*[spec-type]-quad-on-ll] \
+.                rr \\*[label-type]*\\*[spec-type]-quad-on-ll 
+.          \}
+.          shift
+.          if '\\$1'ON_LL' \{\
+.             nr \\*[label-type]*\\*[spec-type]-quad-on-ll 1
+.             shift
+.          \}
+.       \}
+.       if '\\$1'COLOR' \{\
+.          shift
+.          ie r all \{\
+.             nr all 0 1
+.             while \\n+[all]<=4 \{\
+.                 get-label-type
+.                 ds \\*[label-type]*\\*[spec-type]-color \\$1
+.             \}
+.          \}
+.          el .ds \\*[label-type]*\\*[spec-type]-color \\$1
+.          if \\n[#PRINT_STYLE]=1 \
+.             ds \\*[label-type]*\\*[spec-type]-color black
+.          shift
+.       \}
+.       if '\\$1'ADJUST' \{\
+.          shift
+.          ie r all \{\
+.             nr all 0 1
+.             while \\n+[all]<=4 \{\
+.                 get-label-type
+.                 ds \\*[label-type]*\\*[spec-type]-space \\$1
+.             \}
+.          \}
+.          el .ds \\*[label-type]*\\*[spec-type]-space \\$1
+.          if \\n[#PRINT_STYLE]=1 \
+.             ds \\*[label-type]*\\*[spec-type]-space +0
+.          shift
+.       \}
+.    \}
+.    ie r all \{\
+.       nr all 0 1
+.       while \\n+[all]<=4 \{\
+.          get-label-type
+.          set-defaults
+.          set-inline-specs
+.       \}
+.    \}
+.    el \{\
+.       set-defaults
+.       set-inline-specs
+.    \}
+.    ds revert-specs \f[]\s[0]\m[]
+.    rr all
+.END
+\#
+.ALIAS CAPTIONS CAPTION_LABEL_SPECS
+.ALIAS LABELS   CAPTION_LABEL_SPECS
+.ALIAS SOURCES  CAPTION_LABEL_SPECS
+\#
+\# CAPTION_AFTER_LABEL
+\# -------------------
+\# *Arguments:
+\#   <none> | <anything>
+\# *Function:
+\#   Sets register indicating non-MLA captions should come after labels.
+\#
+.MAC CAPTION_AFTER_LABEL END
+.    if '\\$1'IMG' .ds type pdf-img
+.    if '\\$1'PIC' .ds type pic
+.    if '\\$1'TBL' .ds type tbl
+.    if !\\n[#MLA] \{\
+.       nr \\*[type]*caption-after-label 1
+.       if '\\$1'ALL' \{\
+.          if '\\$1'IMG' .nr pdf-img*caption-after-label 1
+.          if '\\$1'TBL' .nr tbl*caption-after-label 1
+.          if '\\$1'PIC' .nr pic*caption-after-label 1
+.       \}
+.       if !'\\$2'' \{\
+.          ie !'\\$1'ALL' .rr \\*[type]*caption-after-label
+.          el \{\
+.             rr pdf-img*caption-after-label
+.             rr tbl*caption-after-label
+.             rr pic*caption-after-label
+.          \}
+.       \}
+.    \}
+.END
+\#
+\# AUTOLABELLING
+\# -------------
+\# *Argument:
+\#   [ PREFIX <prefix> SUFFIX <suffix> ] | <anything>
+\# *Function:
+\#   Turns label autonumbering on of off; optionally lets user set
+\#   prefix and suffix for labels.
+\# *Notes:
+\#   Aliased for images (pdf), tbl, pic, and eqn.
+\#
+.MAC AUTOLABEL END
+.    if '\\$0'AUTOLABEL_EQUATIONS' .ds label-type eqn
+.    if '\\$0'AUTOLABEL_IMAGES'    .ds label-type pdf-img
+.    if '\\$0'AUTOLABEL_PIC'       .ds label-type pic
+.    if '\\$0'AUTOLABEL_TABLES'    .ds label-type tbl
+.    if !'\\$1'' \{\
+.       ds \\*[label-type]-label-args \\$1
+.       substring \\*[label-type]-label-args -1 -3
+.    \}
+.    if '\\*[\\*[label-type]-label-args]'FIX' .nr \\*[label-type]-label-args 1
+.    if '\\*[\\*[label-type]-label-args]'TER' .nr \\*[label-type]-label-args 1
+.    if !\\n[\\*[label-type]*label-num] \
+.       nr \\*[label-type]*label-num 0 1
+.    if '\\*[label-type]'pdf-img' .nr fig*label-num 0 1
+.    if '\\*[label-type]'pic'     .nr fig*label-num 0 1
+.    nr \\*[label-type]*autolabel 1
+.    nr loop-counter 0 1
+.    nr loop-count \\n[#NUM_ARGS]
+.    while \\n+[loop-counter]<=\\n[loop-count] \{\
+.       if '\\$1'PREFIX' \{\
+.          ds \\*[label-type]*label-prfx \\$2
+.          nr \\*[label-type]*label-prfx-set 1
+.          shift 2
+.       \}
+.       if '\\$1'SUFFIX' \{\
+.          ds \\*[label-type]*label-sffx \\$2
+.          nr \\*[label-type]*label-sffx-set 1
+.          shift 2
+.       \}
+.       if '\\$1'PREFIX_CHAPTER' \{\
+.          nr \\*[label-type]*label-with-chapter 1
+.          ie !'\\$2'' \{\
+.             ie \B'\\$2' .nr #CH_NUM \\$2
+.             el .autolabel@error
+.          \}
+.          el \{\
+.             ie \\n[#CHAPTER_CALLED] \
+.                ie \B'\\*[$CHAPTER]' .nr #CH_NUM \\*[$CHAPTER]
+.                el .autolabel@error \\$0
+.             el .autolabel@error \\$0
+.          \}
+.          shift 2
+.       \}
+.    \}
+.    if '\\*[\\*[label-type]*label-prfx]'' \{\
+.       if '\\*[label-type]'eqn' \
+.          if !\\n[\\*[label-type]*label-prfx-set] \
+.             ds \\*[label-type]*label-prfx (\"
+.       if '\\*[label-type]'pic' \
+.          if !\\n[\\*[label-type]*label-prfx-set] \
+.             ds \\*[label-type]*label-prfx Fig. \"
+.       if '\\*[label-type]'pdf-img' \
+.          if !\\n[\\*[label-type]*label-prfx-set] \
+.             ds \\*[label-type]*label-prfx Fig. \"
+.       if '\\*[label-type]'tbl' \
+.          if !\\n[\\*[label-type]*label-prfx-set] \
+.             ds \\*[label-type]*label-prfx Table \"
+.    \}
+.    if '\\*[\\*[label-type]*label-sffx]'' \{\
+.       if '\\*[label-type]'eqn' \
+.          if !\\n[\\*[label-type]*label-sffx-set] \
+.             ds \\*[label-type]*label-sffx )\"
+.       if '\\*[label-type]'pic' \
+.          if !\\n[\\*[label-type]*label-sffx-set] \
+.             ds \\*[label-type]*label-sffx .\"
+.       if '\\*[label-type]'pdf-img' \
+.          if !\\n[\\*[label-type]*label-sffx-set] \
+.             ds \\*[label-type]*label-sffx .\"
+.       if '\\*[label-type]'tbl' \
+.          if !\\n[\\*[label-type]*label-sffx-set] \
+.             ds \\*[label-type]*label-sffx .\"
+.    \}
+.    ie \\n[args]>0 \{\
+.       if \\n[\\*[label-type]*label-prfx-set]+\\n[\\*[label-type]*label-sffx-set]=1 \{\
+.          ie (\\n[\\*[label-type]*label-prfx-set]=1)&(\\n[\\*[label-type]*label-sffx-set]=0) \
+.             ds missing-arg SUFFIX
+.          el .ds missing-arg PREFIX
+.          tm1 "[mom]: You must supply a \\*[missing-arg] argument to \\$0.
+.          tm1 "       If you wish the \\*[missing-arg] to be blank, use \\*[missing-arg] "".
+.          ab Aborting '\\n[.F]' at \\$0, line \\n[.c].
+.       \}
+.       if !\\n[\\*[label-type]-label-args] \{\
+.          rr \\*[label-type]*autolabel
+.          rr \\*[label-type]*label-prfx-set
+.          rr \\*[label-type]*label-suffx-set
+.          rr \\*[label-type]-label-args
+.       \}
+.    \}
+.    rr \\*[label-type]-label-args
+.END
+\#
+.ALIAS AUTOLABEL_EQUATIONS AUTOLABEL
+.ALIAS AUTOLABEL_IMAGES    AUTOLABEL
+.ALIAS AUTOLABEL_PIC       AUTOLABEL
+.ALIAS AUTOLABEL_TABLES    AUTOLABEL
+\#
+.MAC autolabel@error END
+.    tm1 "[mom]: \\$1 cannot determine a chapter number.
+.    tm1 "       Enter the current chapter number as a digit after the
+.    tm1 "       PREFIX_CHAPTER argument at line \\n[.c].
+.    ab Aborting '\\n[.F]', line \\n[.c]. 
+.END
+\#
+\# MLA STYLE
+\# ---------
+\# *Argument:
+\#   <none> | <anything>
+\# *Function:
+\#   Sets or removes register #MLA.
+\# *Notes:
+\#   MLA formatting differs from other styles wrt caption and
+\#   label placement.
+\#
+.MAC MLA END
+.    ie '\\$1'' \{\
+.       nr #MLA 1
+.       nr pdf-img*caption-after-label 1
+.       nr pic*caption-after-label 1
+.       rr tbl*caption-after-label
+.    \}
+.    el \{\
+.       rr #MLA
+.    \}
+.END
+\#
+.MAC mla@error END
+.    tm1 "[mom]: MLA style enabled, but \\$1 has no corresponding \\$2.
+.    ab Aborting '\\$3' at \\$4, line \\$5.
+.END
+\#
+\# LISTS_OF
+\# --------
+\# *Aliases:
+\#   LIST_OF_EQUATIONS
+\#   LIST_OF_FIGURES
+\#   LIST_OF_TABLES
+\# *Arguments:
+\#   TITLE_STRING <string> START_PAGENUM <pagenumber>
+\# *Function:
+\#   Generates lists-of based on calling alias.
+\# *Notes:
+\#   Called at end of file.
+\#   If after TOC, and TOC is being auto-relocated, lists are also
+\#   relocated.  If called before, lists are output at end of file.
+\#
+.MAC LISTS_OF END
+.    ds $LIST_TYPE \\$0
+.    substring $LIST_TYPE -1 -4
+.    if '\\*[$LIST_TYPE]'URES' \{\
+.       ds $LIST_TYPE FIGURES
+.       ds \\*[$LIST_TYPE]_TITLE_STRING "List of Figures
+.    \}
+.    if '\\*[$LIST_TYPE]'BLES' \{\
+.       ds $LIST_TYPE TABLES
+.       ds \\*[$LIST_TYPE]_TITLE_STRING "List of Tables
+.    \}
+.    if '\\*[$LIST_TYPE]'IONS' \{\
+.       ds $LIST_TYPE EQUATIONS
+.       ds \\*[$LIST_TYPE]_TITLE_STRING "List of Equations
+.    \}
+.    nr #LIST_OF_\\*[$LIST_TYPE] 1
+.    nr loop-count 0 1
+.    nr loop-counter \\n[#NUM_ARGS]
+.    while \\n+[loop-count]<=\\n[loop-counter] \{\
+.       if '\\$1'TITLE_STRING' \{\
+.          ds \\*[$LIST_TYPE]_TITLE_STRING \\$2
+.          shift 2
+.       \}
+.       if '\\$1'START_PAGENUM' \{\
+.          nr #\\*[$LIST_TYPE]_START_PAGENUM \\$2
+.          shift 2
+.       \}
+.    \}
+.    char \[leader] " .
+.    LEADER_CHARACTER \[leader]
+.    if \\n[#LINENUMBERS]=1 \{\
+.       NUMBER_LINES OFF
+.       nr #LINENUMBERS 2
+.    \}
+.    if \\n[#FINIS] \{\
+.       if \\n[#FOOTERS_WERE_ON] \
+.          FOOTERS
+.    \}
+.    if \\n[#FOOTERS_ON]=1 \{\
+.       if !'\\*[$HDRFTR_CENTER_OLD]'' .ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_OLD]
+.       ie \\n[#LISTS_NO_PAGENUM]=1 .PAGINATION off
+.       el .PAGINATE
+.    \}
+.    if \\n[#FOOTERS_WERE_ON] .FOOTERS OFF
+.    rr #COLUMNS
+.    COLLATE
+.    if \\n[#PRINT_STYLE]=1 \{\
+.       if \\n[#SINGLE_SPACE] .LS 24
+.       DOC_LEAD_ADJUST
+.    \}
+.    if \\n[#FINIS] \{\
+.       if \\n[#FOOTERS_WERE_ON] .FOOTERS
+.       rr #FOOTERS_WERE_ON
+.       if \\n[#PAGINATION_WAS_ON] \{\
+.          nr #PAGINATE 1
+.          rr #PAGINATION_WAS_ON
+.       \}
+.       rr #FINIS
+.    \}
+.    ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_NEW]
+.    rm $HDRFTR_CENTER_OLD
+.    rm $HDRFTR_CENTER_NEW
+.    rr #COLLATED_DOC
+.    DOCTYPE DEFAULT
+.    DOCHEADER
+.    TITLE "\\*[\\*[$LIST_TYPE]_TITLE_STRING]
+.    AUTHOR ""
+.    L_MARGIN \\n[#DOC_L_MARGIN]u
+.    LL       \\n[#DOC_L_LENGTH]u
+.    if '\\*[$LISTS_FAM]'' \
+.       ds $LISTS_FAM \\*[$TOC_FAM]
+.    if '\\*[$LISTS_FT]'' \
+.       ds $LISTS_FT \\*[$TOC_TITLE_FT]
+.    if !\\n[#LISTS_PS] \
+.       nr #LISTS_PS \\n[#TOC_PS]
+.    ps \\n[#LISTS_PS]u
+.    if !\\n[#LISTS_LEAD] \
+.       nr #LISTS_LEAD \\n[#TOC_LEAD]
+.    if \\n[#PRINT_STYLE]=2 \{\
+.       ie \\n[#LISTS_LEAD_ADJUST]=1 \{\
+.          vs \\n[#LISTS_LEAD]u
+.          DOC_LEAD_ADJUST
+.       \}
+.       el \{\
+.          vs \\n[#LISTS_LEAD]u
+.          DOC_LEAD_ADJUST OFF
+.       \}
+.    \}
+.    ie !'\\*[$LISTS_TITLE_QUAD]'' \
+.       DOCHEADER_QUAD \\*[$LISTS_TITLE_QUAD]
+.    el .DOCHEADER_QUAD \\*[$TOC_HEADER_QUAD]
+.    if '\\*[$LISTS_TITLE_QUAD]'' \
+.       ds $LISTS_TITLE_QUAD \\*[$TOC_HEADER_QUAD]
+.    if !'\\*[$LISTS_TITLE_FAM]'' \
+.       TITLE_FAMILY \\*[$LISTS_TITLE_FAM]
+.    if !'\\*[$LISTS_TITLE_FT]'' \
+.       TITLE_FONT  \\*[$LISTS_TITLE_FT]
+.    if !'\\*[$LISTS_TITLE_SIZE]'' \
+.       TITLE_SIZE \\*[$LISTS_TITLE_SIZE]
+.    if !'\\*[$LISTS_TITLE_COLOR]'' \
+.       TITLE_COLOR \\*[$LISTS_TITLE_COLOR]
+.    if '\\*[$LISTS_PN_FAM]'' \
+.       ds $LISTS_PN_FAM \\*[$TOC_PN_FAM]
+.    if '\\*[$LISTS_PN_FT]'' \
+.       ds $LISTS_PN_FT \\*[$TOC_PN_FT]
+.    if '\\*[$LISTS_PN_SIZE_CHANGE]'' \
+.       ds $LISTS_PN_SIZE_CHANGE \\*[$TOC_PN_SIZE_CHANGE]
+.    if !\\n[#EQN_PN_PADDING] \
+.       nr #EQN_PN_PADDING \\n[#TOC_PN_PADDING]
+.    if !\\n[#FIG_PN_PADDING] \
+.       nr #FIG_PN_PADDING \\n[#TOC_PN_PADDING]
+.    if !\\n[#TBL_PN_PADDING] \
+.       nr #TBL_PN_PADDING \\n[#TOC_PN_PADDING]
+.    ie '\\*[$LISTS_PAGENUM_STYLE]'' \
+.       PAGENUM_STYLE \\*[$TOC_PAGENUM_STYLE]
+.    el \
+.       PAGENUM_STYLE \\*[$LISTS_PAGENUM_STYLE]
+.    if r #\\*[$LIST_TYPE]_START_PAGENUM  \
+.       PAGENUMBER \\n[#\\*[$LIST_TYPE]_START_PAGENUM]
+.    if r #LISTS_NO_PAGENUM .PAGINATION off
+.    HEADER_LEFT "\\*[$HDRFTR_LEFT]
+.    HEADER_RIGHT "\\*[$HDRFTR_RIGHT]
+.    HEADER_CENTER "\\*[\\*[$LIST_TYPE]_TITLE_STRING]
+.    if \\n[#LINENUMBERS]=2 .nr #LINENUMBERS 3
+.\" Get num placeholders for ch. num and label num.
+.    if \\n[\\*[list-type]*autolabel] \{\
+.       if \\n[#CH_NUM]<1000 .nr chapno-width 3
+.       if \\n[#CH_NUM]<100  .nr chapno-width 2
+.       if \\n[#CH_NUM]<10   .nr chapno-width 1
+.       if \\n[\\*[list-type]*label-width]<1000 .nr label-width 3
+.       if \\n[\\*[list-type]*label-width]<100  .nr label-width 2
+.       if \\n[\\*[list-type]*label-width]<10   .nr label-width 1
+.\" Calculate width of label-num tab
+.       nr label-width \w'\0'*(\\n[chapno-width]+\\n[label-width])+\w'.'
+.    \}
+.    if \\n[#SLANT_ON] .nop \\*[SLANTX]
+.    if \\n[#COLUMNS]=1 .nr #COLUMNS 0
+.    START
+.    if \\n[#PRINT_STYLE]=2 .sp -1
+.    if '\\*[$LIST_TYPE]'FIGURES'   .LIST_OF_FIG
+.    if '\\*[$LIST_TYPE]'TABLES'    .LIST_OF_TBL
+.    if '\\*[$LIST_TYPE]'EQUATIONS' .LIST_OF_EQN
+.    if \\n[#LINENUMBERS]=3 \{\
+.       NUMBER_LINES RESUME
+.       nr #LINENUMBERS 1
+.       nn 1
+.    \}
+.    pdfsync
+.END
+.\"
+.ALIAS LIST_OF_EQUATIONS LISTS_OF
+.ALIAS LIST_OF_FIGURES   LISTS_OF
+.ALIAS LIST_OF_TABLES    LISTS_OF
+\#
+\# LISTS-OF STYLE
+\# --------------
+\# *Arguments:
+\#   FAMILY        fam  /
+\#   FONT          sty /
+\#   PT_SIZE       size /
+\#   LEAD          leading [ADJUST] /
+\#   TITLE_FAMILY  fam /
+\#   TITLE_FONT    sty /
+\#   TITLE_SIZE    +|-size /
+\#   TITLE_QUAD    LEFT | CENTER | RIGHT /
+\#   TITLE_COLOR   color /
+\#   NO_PAGINATION /
+\#   PAGENUM_STYLE format /
+\#   PN_FAMILY     fam /
+\#   PN_FONT       sty /
+\#   PN_SIZE       +|-size /
+\#   PN_PADDING    n
+\# *Function:
+\#   Allows setting of all style parameters for lists-of.
+\# *Notes:
+\#   Assumption is that lists-of will all have the same style.
+\#   TOC style is used if LISTS_STYLE is omitted.
+\#
+.MAC LISTS_STYLE END
+.    nr loop-count 0 1
+.    nr loop-counter \\n[#NUM_ARGS]
+.    while \\n+[loop-count]<=\\n[loop-counter] \{\
+.       if '\\$1'FAMILY' \{\
+.          ds $LISTS_FAM \\$2
+.          shift 2
+.       \}
+.       if '\\$1'FONT' \{\
+.          ds $LISTS_FT \\$2
+.          shift 2
+.       \}
+.       if '\\$1'TITLE_FAMILY' \{\
+.          ds $LISTS_TITLE_FAM \\$2
+.          shift 2
+.       \}
+.       if '\\$1'TITLE_FONT' \{\
+.          ds $LISTS_TITLE_FT \\$2
+.          shift 2
+.       \}
+.       if '\\$1'TITLE_SIZE' \{\
+.          ds $LISTS_TITLE_SIZE \\$2
+.          shift 2
+.       \}
+.       if '\\$1'TITLE_QUAD' \{\
+.          ds $LISTS_TITLE_QUAD \\$2
+.          shift 2
+.       \}
+.       if '\\$1'TITLE_COLOR' \{\
+.          ds $LISTS_TITLE_COLOR \\$2
+.          shift 2
+.       \}
+.       if '\\$1'PT_SIZE' \{\
+.          nr #LISTS_PS (p;\\$2)
+.          shift 2
+.       \}
+.       if '\\$1'LEAD' \{\
+.          nr #LISTS_LEAD (p;\\$2)
+.          ie !'\\$3'ADJUST' \{\
+.             nr #LISTS_LEAD_ADJUST 0
+.             shift 2
+.          \}
+.          el \{\
+.             nr #LISTS_LEAD_ADJUST 1
+.             shift 3
+.          \}
+.       \}
+.       if '\\$1'NO_PAGINATION' \{\
+.          nr #LISTS_NO_PAGENUM 1
+.          shift 1
+.       \}
+.       if '\\$1'PAGENUM_STYLE' \{\
+.          ds $LISTS_PAGENUM_STYLE \\$2
+.          shift 2
+.       \}
+.       if '\\$1'PN_FAMILY' \{\
+.          ds $LISTS_PN_FAM \\$2
+.          shift 2
+.       \}
+.       if '\\$1'PN_FONT' \{\
+.          ds $LISTS_PN_FT \\$2
+.          shift 2
+.       \}
+.       if '\\$1'PN_SIZE' \{\
+.          ds $LISTS_PN_SIZE_CHANGE \\$2
+.          shift 2
+.       \}
+.       if '\\$1'EQN_PN_PADDING' \{\
+.          nr #EQN_PN_PADDING \\$2
+.          shift 2
+.       \}
+.       if '\\$1'FIG_PN_PADDING' \{\
+.          nr #FIG_PN_PADDING \\$2
+.          shift 2
+.       \}
+.       if '\\$1'TBL_PN_PADDING' \{\
+.          nr #TBL_PN_PADDING \\$2
+.          shift 2
+.       \}
+.    \}
+.END
+\#
+\# Lists-of collector
+\# Strings to allocate space for leaders and entry page numbers
+\#
+.ds $LISTS_PN \\*[ST102]\F[\\*[$LISTS_PN_FAM]]\f[\\*[$LISTS_PN_FT]]\
+\s[\\n[#LISTS_PS]u]^\\*[ST102X]\\*[ST103]\s[\\\\*[$LISTS_PN_SIZE_CHANGE]]\
+\|\|\|\h'\w'0'u*\\\\n[#LISTS_PN_PADDING]u'\\*[ST103X]
+\#
+.ds $LISTS_PN_TYPEWRITE \\*[ST102]^\\*[ST102X]\\*[ST103]\|\
+\h'\w'0'u*\\\\n[#LISTS_PN_PADDING]u'\\*[ST103X]
+\#
+.MAC LISTS_COLLECTOR END
+.    if '\\$0'TO_EQUATIONS' \{\
+.       ds list-type eqn
+.       da LIST_OF_EQN
+\!.       nr #LISTS_PN_PADDING \\\\n[#EQN_PN_PADDING]
+.       nr label-width \w'\\$1'
+.    \}
+.    if '\\$0'TO_FIGURES' \{\
+.       ds list-type fig
+.       da LIST_OF_FIG
+\!.       nr #LISTS_PN_PADDING \\\\n[#FIG_PN_PADDING]
+.       nr label-width \w'\\$1'
+.    \}
+.    if '\\$0'TO_TABLES' \{\
+.       ds list-type tbl
+.       da LIST_OF_TBL
+\!.       nr #LISTS_PN_PADDING \\\\n[#TBL_PN_PADDING]
+.       nr label-width \w'\\$1'
+.    \}
+.    br
+.    nr #LISTS_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
+.    ie \\n[#PRINT_STYLE]=1 \{\
+\!.     fam \\*[$TYPEWRITER_FAM]
+\!.     ft  R
+\!.     ps \\*[$TYPEWRITER_PS]
+.       ds _TYPEWRITE _TYPEWRITE
+.    \}
+.    el \{\
+\!.     FAMILY \\\\*[$LISTS_FAM]
+\!.     FONT \\\\*[$LISTS_FT]
+\!.     ps \\\\n[#LISTS_PS]u
+.    \}
+.    if \\n[#PRINT_STYLE]=2 .rm _TYPEWRITE
+\!.  PAD_MARKER ^
+\!.  vpt 0
+\!.  PAD \
+"\\*[ST100]\h'\\n[label-width]u'\\*[ST100X]\0\\*[ST101]\h'\w'\\$2'u'\\*[ST101X]\\\\*[$LISTS_PN\\*[_TYPEWRITE]]" \
+"\\*[PDFBOOKMARK.NAME]"
+\!.  PAD_MARKER #
+\!.  EOL
+.    ie !\\n[\\*[label-type]*autolabel] \
+\!.     ST 100 L
+.    el \
+\!.     ST 100 R
+\!.  ST 101 L
+\!.  ST 102 L
+\!.  ST 103 R
+.    if \\n[#PRINT_STYLE]=2 \{\
+\!.     FAMILY  \\\\*[$LISTS_FAM]
+\!.     FT      \\\\*[$LISTS_FT]
+\!.     ps \\\\n[#LISTS_PS]u
+.    \}
+\!.  TAB 100
+\!.  PDF_LINK \\*[list-type]:\\n[lists*target] "\\$1"
+\!.  TN
+\!.  PDF_LINK \\*[list-type]:\\n[lists*target] "\\$2"
+\!.  TN
+\!.  PRINT \\*[LEADER]
+\!.  TN
+.    if \\n[#PRINT_STYLE]=2 \{\
+\!.     FAMILY  \\\\*[$LISTS_PN_FAM]
+\!.     FT      \\\\*[$LISTS_PN_FT]
+\!.     ps \\\\*[$LISTS_PN_SIZE_CHANGE]u
+.    \}
+\!.  PRINT \\n[#LISTS_ENTRY_PN]
+\!.  TQ
+\!.  vpt
+.    da
+.END
+\#
+.ALIAS TO_EQUATIONS LISTS_COLLECTOR
+.ALIAS TO_FIGURES   LISTS_COLLECTOR
+.ALIAS TO_TABLES    LISTS_COLLECTOR
+\#
+\# ***tbl***
+\#
 \# Support for multipage tables with headers borrowed from ms and
 \# mommified by Robin Haberkorn <robin.haberkorn@googlemail.com>
-\# with additional modifications by Peter Schaffter.
+\# with extensions by Peter Schaffter.
 \#
 .nr tbl*have-header 0
 .ds T&
 \#
 .MAC TS END
+.    di NULL \" Set rule weight for boxed tables
+\D't 500'
+.    di
 .    br
+.    if !\\n[@TOP] \
+.       if \\n[.t]=1 .sp \\n[.t]u
 .    rr tbl*have-header
-.    if '\\n[.z]'FLOAT*DIV' .nr float*with-tbl 1 \" Removed in FLOAT
+.    rr float*tbl
+.    if '\\n[.z]'FLOAT*DIV' .nr float*tbl 1
 .    if !'\\n[.z]'FLOAT*DIV' \{\
-.       if \\n[.t]=1 \
-.          if !\\n[@TOP] .NEWPAGE
+.       if \\n[.t]=1 \{\
+.          if !\\n[@TOP] \{\
+.             if \\n[#COL_NUM]=\\n[#NUM_COLS] \
+.                NEWPAGE
+.          \}
+.       \}
 .    \}
 .    rr tbl*boxed
 .    rm tbl*label
-.    nr #ARGS  0 1
-.    nr #COUNT 4
-.    while \\n+[#ARGS]<=\\n[#COUNT] \{\
-.      if '\\$1'H'      .nr tbl*have-header 1
-.      if '\\$1'BOXED'  .nr tbl*boxed 1
-.      if '\\$1'CENTER' .ds tbl*center \\$1
-.      if '\\$1'NEEDS'  .nr tbl*needs \\$2
-.      shift
+.    rm tbl*caption
+.    nr loop-count 0 1
+.    nr loop-counter \\n[#NUM_ARGS]
+.    while \\n+[loop-count]<=\\n[loop-counter] \{\
+.       if '\\$1'H' \{\
+.          nr tbl*have-header 1
+.          shift
+.          if \\n[#NUM_ARGS]=0 .nr tbl*plain 1
+.       \}
+.       if '\\$1'BOXED' \{\
+.          nr tbl*boxed 1
+.          shift
+.       \}
+.       if '\\$1'CENTER' \{\
+.          nr tbl*center 1
+.          shift
+.       \}
+.       if '\\$1'NEEDS' \{\
+.          nr tbl*needs \\$2
+.          shift 2
+.       \}
+.       if '\\$1'NO_SHIM' \{\
+.          nr tbl*no-shim 1
+.          shift
+.       \}
+.       if '\\$1'ADJUST' \{\
+.          ds tbl*space-adj \\$2
+.          shift 2
+.       \}
+.       if '\\$1'CAPTION' \{\
+.          nr tbl*have-caption 1
+.          ds tbl*caption \\$2
+.          shift 2
+.       \}
+.       if '\\$1'SHORT_CAPTION' \{\
+.          ds tbl*caption-short \\$2
+.          shift 2
+.       \}
+.       if '\\$1'LABEL' \{\
+.          nr tbl*have-label 1
+.          ds tbl*label \\$2
+.          ds label-type tbl
+.          shift 2
+.       \}
+.    \}
+.    if \\n[tbl*boxed]=1 \{\
+.       if (\\n[tbl*have-label]=0)&(\\n[tbl*have-caption]=0)&\
+(\\n[tbl*autolabel]=0)&(\\n[tbl*have-source]=0) \
+.       nr tbl*plain-boxed 1
 .    \}
 .    if !\\n[tbl*needs] .nr tbl*needs 1
-.    if \\n[@TOP] \{\
+.    if !\\n[tbl*have-header] .nr tbl*no-header 1
+.    ds tbl*label-sffx-tmp \\*[tbl*label-sffx]
+.    substring tbl*label-sffx-tmp -1
+.    if '\\*[tbl*label-sffx-tmp]'.' \
+.       if (\\n[tbl*caption-after-label]=0):(\\n[#MLA]=1) .chop tbl*label-sffx
+.    if \\n[tbl*caption-after-label] \{\
+.       if !'\\*[tbl*label-sffx]'' \
+.          if '\\*[tbl*caption]'' .chop tbl*label-sffx
+.    \}
+.    ie \\n[@TOP] \{\
 .       if !'\\n[.z]'FLOAT*DIV' \{\
-.          rr @TOP
 .          vpt 0
+.          rr @TOP
+.          ch RR_@TOP
 .          rs
 .          nop \&
-.          sp |\\n[#T_MARGIN]u-1v
+.          if \\n[#COLUMNS] \{\
+.             if !'\\*[tbl*space-adj]'' .sp \\*[tbl*space-adj]-1v
+.          \}
+.          nr tbl*boxed 2
 .          vpt
 .       \}
 .    \}
-.    nr tbl*move-footer-trap 1
-.    nr tbl*move-footer \\n[#VARIABLE_FOOTER_POS]-\\n[#DOC_LEAD]
-.    nr tbl*move-fn-overflow-trap 1
-.    nr tbl*move-fn-overflow \\n[#FN_OVERFLOW_TRAP_POS]-\\n[#DOC_LEAD]
-.    ch FOOTER \\n[tbl*move-footer]u
-.    if !\\n[#FN_DEPTH] .ch FN_OVERFLOW_TRAP -\\n[tbl*move-fn-overflow]u
-.    if !'\\n[.z]'FLOAT*DIV' .sp
-.    substring tbl*center 0 0
-.    if '\\*[tbl*center]'C' .nr tbl*center-label 1
+.    el \
+.       if !'\\*[tbl*space-adj]'' .sp \\*[tbl*space-adj]u
+.    if !\\n[#MLA] \{\
+.      if (\\n[tbl*have-caption]=0):(\\n[tbl*caption-after-label]=1) \{\
+.         ie !'\\n[.z]'FLOAT*DIV' \{\
+.            sp .5v
+.            if \\n[tbl*boxed] .sp .25v
+.         \}
+.         el .sp 1n
+.      \}
+.    \}
+.    if '\\n[.z]'FLOAT*DIV' \{\
+.       if \\n[defer]>0 .sp .5v
+.    \}
+.    ds ev-current   \\n[.ev]
+.    nr ll-pre-tbl   \\n[.l]
+.    nr lead-pre-tbl \\n[.v]
+.    nr ind-pre-tbl  \\n[.i]
+.    ll \\n[.l]u-\\n[.i]u
+.    if \\n[#MLA] \{\
+.       if (\\n[tbl*have-label]=1):(\\n[tbl*autolabel]=1) \{\
+.          ie !\\n[tbl*have-caption] \
+.             mla@error label caption \\n[.F] \\$0 \\n[.c]
+.          el \{\
+.             ie !'\\n[.z]'FLOAT*DIV' \{\
+.                ie (\\n[nl]=\\n[#PAGE_TOP]):(\\n[nl]=\\n[dc]) \{\
+.                   ie !\\n[#COLUMNS] .sp |\\n[#PAGE_TOP]u+\\n[tbl*caption-lead-diff]u
+.                   el .sp |\\n[dc]u+\\n[tbl*caption-lead-diff]u
+.                \}
+.                el .sp .5v
+.             \}
+.             el .sp .5v
+.          \}
+.          ev label
+.          evc \\*[ev-current]
+.          nh
+.          ie \\n[#PRINT_STYLE]=1 .TYPEWRITER
+.          el \{\
+.             tbl*label-style
+.             vs \\n[.ps]u+\\n[tbl*label-autolead]u
+.             nr tbl*label-lead-diff \\n[lead-pre-tbl]-\\n[.v]
+.          \}
+.          if \\n[tbl*label-with-chapter] \
+.             ds chapno \\n[#CH_NUM].
+.          di tbl*mla-label-caption
+.          TBL*SET_LABEL_QUAD \\*[tbl*label-quad]
+\!.        in -\\n[ind-pre-tbl]u
+.          ie \\n[tbl*autolabel] \
+.             nop \
+\\*[tbl*label-prfx]\\*[chapno]\\n+[tbl*label-num]\\*[tbl*label-sffx]
+.          el .if !'\\*[tbl*label]'' .nop \\*[tbl*label]
+.          if \\n[tbl*autolabel] \
+.             ds tbl*label \\*[chapno]\\n[tbl*label-num]
+.          br
+.          di
+.       \}
+.    \}
+.    if (\\n[nl]=\\n[#PAGE_TOP]):(\\n[nl]=\\n[dc]) \
+.       nr tbl*caption-lead-diff-adj 1
+.    if \\n[tbl*have-caption] \{\
+.       ie !\\n[#MLA] \{\
+.          if !\\n[tbl*caption-after-label] \{\
+.             ie !'\\n[.z]'FLOAT*DIV' \{\
+.                ie (\\n[nl]=\\n[#PAGE_TOP]):(\\n[nl]=\\n[dc]) \{\
+.                   ie \\n[#COLUMNS] \
+.                      sp |\\n[dc]u
+.                   el \
+.                      sp |\\n[#T_MARGIN]u-\\n[#DOC_LEAD]u
+.                   sp \\n[tbl*caption-lead-diff]u
+.                \}
+.                el .sp .5v
+.             \}
+.             el .sp .5v
+.          \}
+.          ev caption
+.          evc \\*[ev-current]
+.          nh
+.       \}
+.       el \{\
+.          if !\\n[tbl*autolabel] \{\
+.             ie !\\n[tbl*have-label] \
+.                mla@error caption label \\n[.F] \\$0 \\n[.c]
+.             el .ev label
+.          \}
+.       \}
+.       ie \\n[#PRINT_STYLE]=1 .nr tmp-ind 2m
+.       el .nr tmp-ind 1.25m
+.       ie \\n[#PRINT_STYLE]=1 .TYPEWRITER
+.       el \{\
+.          if !\\n[#MLA] \{\
+.             tbl*caption-style
+.             nr lead-current \\n[.v]
+.             vs \\n[.ps]u+\\n[tbl*caption-autolead]u
+.             nr tbl*caption-lead-diff \\n[lead-pre-tbl]-\\n[.v]
+.             nr tbl*caption-top-lead-diff \\n[tbl*caption-lead-diff]
+.          \}
+.       \}
+.       ie !\\n[#MLA] \{\
+.          ie !\\n[tbl*caption-after-label] \{\
+.             di tbl*caption-div
+\!.           in -\\n[ind-pre-tbl]u
+.             TBL*SET_CAPTION_QUAD \\*[tbl*caption-quad]
+.             nop \\*[tbl*caption]
+.             br
+.             di
+.             if !'\\n[.z]'FLOAT*DIV' \{\
+.                nr caption-needs 2
+.                if (\\n[dn]+(\\n[#DOC_LEAD]*(\\n[tbl*needs]*2)))>\\n[.t] \{\
+.                   nr pgnum \\n%+\\n[#PAGE_NUM_ADJ] 1
+.                   ie \\n[#COL_NUM]=\\n[#NUM_COLS] \{\
+.                      tm1 "[mom]: Table with caption at line \\n[.c] does not fit on page \\n[pgnum].
+.                      tm1 "       Shifting table to page \\n+[pgnum].
+.                      rr tbl*no-header
+.                      NEWPAGE
+.                   \}
+.                   el \{\
+.                      sp \\n[.t]u
+.                      sp |\\n[#PAGE_TOP]u+\\n[tbl*caption-lead-diff]u
+.                   \}
+.                \}
+.             \}
+.             if \\n[.u] .nr fill 1
+.             nf
+.             if \\n[.ns] .RESTORE_SPACE
+.             tbl*caption-div
+.             if \\n[#PRINT_STYLE]=1 .sp .5v
+.             if !'\\*[tbl*caption-space]'' \
+.                sp \\*[tbl*caption-space]
+.             if \\n[tbl*caption-lead-diff-adj] \{\
+.                sp -\\n[tbl*caption-lead-diff]u
+.                rr tbl*label-lead-diff-adj
+.             \}
+.             if \\n[fill] .fi
+.             rr fill
+.          \}
+.          el \{\
+.             if (\\n[tbl*have-label]=0):(\\n[tbl*autolabel]=0) \{\
+.                tm1 "[mom]: CAPTION_AFTER_LABEL enabled, but no label given
+.                tm1 "       for table at line \\n[.c].
+.                tm1 "       Skipping caption but continuing to process.
+.             \}
+.          \}
+.       \}
+.       el \{\
+.          da tbl*mla-label-caption
+.          ie \\n[#PRINT_STYLE]=1 .TYPEWRITER
+.          el \
+.             tbl*caption-style
+\!.        in \\n[ind-pre-tbl]u
+\!.        in \\n[tmp-ind]u
+\!.        ti -\\n[tmp-ind]u
+.          nop \\*[tbl*caption]
+.          br
+\!.        in
+.          da
+.       \}
+.       if !'\\n[.z]'FLOAT*DIV' \{\
+.          ie \\n[#MLA] .nr caption-needs 3
+.          el .nr caption-needs 2
+.          if (\\n[dn]+(\\n[#DOC_LEAD]*(\\n[tbl*needs]+\\n[caption-needs])))>\\n[.t] \{\
+.             nr pgnum \\n%+\\n[#PAGE_NUM_ADJ] 1
+.             ie \\n[#COL_NUM]=\\n[#NUM_COLS] \{\
+.                tm1 "[mom]: Table with caption at line \\n[.c] does not fit on page \\n[pgnum].
+.                tm1 "       Shifting table to page \\n+[pgnum].
+.                rr tbl*no-header
+.                if \\n[defer] .nr skip-th-warning 1
+.                NEWPAGE
+.             \}
+.             el \{\
+.                nr tbl*no-top-hook 1
+.                sp \\n[.t]u
+.                if (\\n[tbl*caption-after-label]=1):(\\n[tbl*plain]) \
+.                   sp 1n-2p
+.             \}
+.          \}
+.       \}
+.       nf
+.       if (\\n[nl]=\\n[#PAGE_TOP]):(\\n[nl]=\\n[dc]) \
+.          nr tbl*label-lead-diff-adj 1
+.       ie (\\n[.t]>1)&(\\n[@TOP]=0) \{\
+.          sp \\n[tbl*label-lead-diff]u
+.       \}
+.       el \{\
+.          if \\n[.t]=1 .sp \\n[.t]u
+.          ie \\n[#COL_NUM]>1 \
+.             ie (\\n[nl]=\\n[#PAGE_TOP]):(\\n[nl]=\\n[dc]) \
+.                sp |\\n[dc]u+\\n[tbl*label-lead-diff]u
+.             el .sp .5v
+.       \}
+.       tbl*mla-label-caption
+.       ie \\n[#PRINT_STYLE]=1 .sp .5v
+.       el .sp .5n
+.       if \\n[tbl*label-lead-diff-adj] \{\
+.          sp -\\n[tbl*label-lead-diff]u
+.          rr tbl*label-lead-diff-adj
+.       \}
+.       br
+.       if !'\\*[tbl*caption-space]'' .sp \\*[tbl*caption-space]
+.    \}
+.    ev
+.    if \\n[#MLA] \
+.       if \\n[tbl*have-label]+\\n[tbl*have-caption]=0 \
+.          sp .5v
+.    if \\n[tbl*boxed]=2 \{\
+.       if \\n[#MLA]=0 \{\
+.          if (\\n[tbl*caption-after-label]=1):(\\n[tbl*have-caption]=0) .sp 1n
+.       \}
+.    \}
 .    if \\n[tbl*have-header] \{\
 .       ev table-header
-.       evc 0
+.       evc \\*[ev-current]
 .       di tbl*header-div
+.       if !\\n[float-span] \!.in 0
 .    \}
 .END
 \#
@@ -16828,156 +18197,270 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       T#
 .       di
 .       ev
+.       PDF_TARGET tbl:\\n+[lists*target]
 .       if !'\\n[.z]'FLOAT*DIV' \{\
-.          ie !'\\n[tbl*boxed]'' .ne \\n[dn]u+\\n[tbl*needs]
-.          el .ne \\n[dn]u+2p+\\n[tbl*needs]
+.          ie !\\n[tbl*boxed] \{\
+.             nr th*needs (u;\\n[dn]+\\n[tbl*needs]v)
+.             if \\n[th*needs]>\\n[.t] \{\
+.                ne \\n[dn]u+\\n[tbl*needs]
+.                nr tbl@needs 1
+.             \}
+.          \}
+.          el \{\
+.             nr th*needs (u;\\n[dn]+2p+\\n[tbl*needs]v)
+.             if \\n[th*needs]>\\n[.t] \{\
+.                ne \\n[dn]u+2p+\\n[tbl*needs]
+.                if \\n[#COLUMNS] \
+.                   if !\\n[#COL_NUM]=\\n[#NUM_COLS] .nr tbl*no-top-hook 1
+.                nr tbl@needs 1
+.             \}
+.          \}
+.          if \\n[defer] .nr tbl*interrupted 1
 .       \}
 .       ie (\\n[dn]-\\n[.v])>\\n[.t] \{\
 .          if !\\n[@TOP] .@error ridiculously long table header
+.          if \\n[tbl@needs] \{\
+.             if \\n[tbl*boxed] \{\
+.                rs
+.                nop \&
+.                sp -1n
+.             \}
+.             rr tbl@needs
+.          \}
 .          tbl*print-header
 .       \}
 .       el \{\
 .          nr tbl*header-ht \\n[dn]
+.          if \\n[tbl@needs] \{\
+.             if \\n[tbl*boxed] \{\
+.                rs
+.                nop \&
+.                sp -1n
+.             \}
+.             rr tbl@needs
+.          \}
 .          tbl*print-header
 .       \}
 .    \}
-.    el .@error .TH without .TS H
+.    el \{\
+.       if !\\n[skip-th-warning] .@error .TH without .TS H
+.       rr skip-th-warning
+.    \}
 .\" When centering a boxed table inside a float, .T# won't place
 .\" vertical rules in the correct horizontal position unless .ll is
 .\" given a nominal value (can be anything) and an indent is set
 .\" manually.
 .    if '\\n[.z]'FLOAT*DIV' \{\
-.       if !'\\*[tbl*center]'' \{\
-.          if \\n[tbl*boxed] \{\
-.             nr float*ll \\n[.l]
-.             ll 0
-.             in \\n[float*ll]u-\\n[TW]u/2u
-.          \}
+.       if \\n[tbl*center] \{\
+.          nr float*ll \\n[.l]
+.          ll 0
+.          in \\n[float*ll]u-\\n[TW]u/2u
 .       \}
 .    \}
 .END
 \#
 .MAC TE END
 .    ev tbl*end \" Needed because of .ad changes
-.    evc 0
+.    evc \\*[ev-current] 
+.    nh
 .    nf
-.    ie '\\$1'NO_SHIM' .nr tbl*no-shim 1
-.    el .ds tbl*label \\$1
-.    shift
-.    ie \B'\\$1' \{\
-.       ds tbl*user-add-space \\$1
-.       nr tbl*left-label-on-table 1
-.       shift
-.       if !'\\$1'NO_SHIM' \{\
-.          TBL*GET_QUAD \\$1
+.    rr tbl*no-header
+.    if !'\\n[.z]'FLOAT*DIV' \{\
+.       ie \\n[.t]<(\\n[.v]+(\\n[.v]/2u)) \{\
+.          rm tbl*header-div
+.          nr tbl*no-top-hook 1
+.          nr pgnum \\n%+\\n[#PAGE_NUM_ADJ]
+.          tm1 "[mom]: '\\n[.F]', macro \\$0, line \\n[.c]:
+.          tm1 "        Insufficient room for label, caption, and/or source after
+.          tm1 "        table on page \\n[pgnum].  Omitting, but continuing to process.
+.          NEWPAGE
+.          nr tbl*skip-source 1
+.          nr tbl*skip-label 1
+.          ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u
+.       \}
+.       el \{\
+.          ch FOOTER 0+\\n[pre-tbl-vfp]u
+.          ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u
+.       \}
+.    \}
+.    if !'\\$1'' \{\
+.       if '\\$1'SOURCE' \{\
+.          nr tbl*have-source 1
 .          shift
 .       \}
 .    \}
-.    el \{\
-.       if !'\\$1'NO_SHIM' \{\
-.          ie !'\\$1'' \{\
-.             TBL*GET_QUAD \\$1
-.             shift
-.             if \B'\\$1' \{\
-.                ds tbl*user-add-space \\$1
-.                nr tbl*left-label-on-table 1
-.             \}
+.    if !\\n[#MLA] \{\
+.       if (\\n[tbl*have-label]=1):(\\n[tbl*autolabel]=1):(\\n[tbl*caption-after-label]=1) \{\
+.          ev label
+.          evc tbl*end
+.          ie \\n[#PRINT_STYLE]=1 .TYPEWRITER
+.          el \{\
+.             tbl*label-style
+.             vs \\n[.ps]u+\\n[tbl*label-autolead]u
 .          \}
-.          el .nr tbl*left-label-on-table 1
-.       shift
-.    \}
-.    if '\\$1'NO_SHIM' .nr tbl*no-shim 1
-.    if \\n[.t]<\\n[.v] \{\
-.       nr tbl*label-warning 1
-.       if d tbl*header-div .rm tbl*header-div
-.    \}
-.    rr tbl*move-footer-trap
-.    rr tbl*move-footer
-.    rr tbl*move-fn-overflow-trap
-.    rr tbl*move-fn-overflow
-.    ie !\\n[tbl*center-label] \{\
-.       if \\n[tbl*center-label-on-table] .ll \\n[TW]u
-.       if \\n[tbl*right-label-on-table] .ll \\n[TW]u
-.    \}
-.    el \{\
-.       if \\n[tbl*left-label-on-table] .in \\n[.l]u-\\n[TW]u/2u
-.       if \\n[tbl*center-label-on-table] \
-.          if \\n[.i] .in 0
-.       if \\n[tbl*right-label-on-table] .ll -((\\n[.l]u-\\n[TW]u)/2u)
-.    \}
-.    SIZESPECS
-.    if !'\\*[tbl*label]'' \{\
-.       ie \\n[tbl*label-warning] \{\
-.          tm1 "[mom]: '\\n[.F]', line \\n[.c]: Insufficient room for table caption, output page \\n[#PAGENUMBER].
-.          tm1 "        Skipping caption, but continuing to process.
-.          NEWPAGE
+.          SIZESPECS
+.          if \\n[tbl*label-with-chapter] \
+.             ds chapno \\n[#CH_NUM].
+.          TBL*SET_LABEL_QUAD \\*[tbl*label-quad]
+.          di tbl*label-div
+\!.        in -\\n[ind-pre-tbl]u
+.          ie \\n[tbl*boxed] .sp \\n[#CAP_HEIGHT]u
+.          el .sp \\n[#DOC_LEAD]u/4u
+.          if (\\n[tbl*have-label]=1):(\\n[tbl*autolabel]=1) \{\
+.             if !'\\*[tbl*label-space]'' .sp \\*[tbl*label-space]
+.             ie \\n[tbl*autolabel] \{\
+.                ie !\\n[tbl*caption-after-label] .nop \
+\\*[tbl*label-prfx]\\*[chapno]\\n+[tbl*label-num]\\*[tbl*label-sffx]
+.                el \{\
+.                   nop \\*[tbl*label-prfx]\\*[chapno]\\n+[tbl*label-num]\\*[tbl*label-sffx]
+.                   tbl*caption-style
+.                   vs \\n[.ps]u+\\n[tbl*caption-autolead]u
+.                   nop \ \\*[tbl*caption]
+.                \}
+.             \}
+.             el \{\
+.                if !'\\*[tbl*label]'' \{\
+.                   ie !\\n[tbl*caption-after-label] .nop \\*[tbl*label]
+.                   el \{\
+.                      nop \\*[tbl*label]\ \c
+.                      tbl*caption-style
+.                      vs \\n[.ps]u+\\n[tbl*caption-autolead]u
+.                      nop \ \\*[tbl*caption]
+.                   \}
+.                \}
+.             \}
+.             if \\n[tbl*autolabel] \
+.                ds tbl*label \\*[chapno]\\n[tbl*label-num]
+.             br
+.          \}
+.          di
+.          ev
+.          nr pgnum \\n%+\\n[#PAGE_NUM_ADJ]
+.          ie !'\\n[.z]'FLOAT*DIV' \{\
+.             ie \\n[dn]>\\n[.t] \{\
+.                tm1 "[mom]: '\\n[.F]', macro \\$0, line \\n[.c]:
+.                tm1 "        Insufficient room for label, caption, and/or source after
+.                tm1 "        table on page \\n[pgnum].  Omitting, but continuing to process.
+.                if d tbl*header-div .rm tbl*header-div
+.                rr tbl*caption-top-lead-diff
+.                rr tbl*have-header
+.                nr tbl*skip-source 1
+.                nr tbl*skip-label 1
+.                NEWPAGE
+.             \}
+.             el .print-label
+.          \}
+.          el .print-label
 .       \}
-.       el \{\
-.          ie !'\\*[tbl*user-add-space]'' .sp \\*[tbl*user-add-space]
-.          el .sp \\n[#CAP_HEIGHT]u/4u
-.          PRINT \\*[tbl*label]
+.    \}
+.    if !'\\*[tbl*caption-short]'' .ds short -short
+.    ie !'\\*[tbl*label]'' \
+.       TO_TABLES "\\*[tbl*label]" "\\*[tbl*caption\\*[short]]"
+.    el .TO_TABLES "\\*[tbl*caption]\\*[short]]"
+.    if !\\n[tbl*skip-source] \{\
+.       if \\n[tbl*have-source] \{\
+.          ds tbl*source \\$1
+.          SIZESPECS
+.          ev source
+.          nh
+.          ie \\n[#PRINT_STYLE]=1 \{\
+.             TYPEWRITER
+.             sp
+.          \}
+.          el \{\
+.             tbl*source-style
+.             vs \\n[.ps]u+\\n[tbl*source-autolead]u
+.          \}
+.          TBL*SET_SOURCE_QUAD \\*[tbl*source-quad]
+.          di tbl*source-div
+.          if \\n[#MLA] \{\
+.             in \\n[ind-pre-tbl]u+\\n[tmp-ind]u
+.             ti -\\n[tmp-ind]u
+.          \}
+.          if (\\n[tbl*have-label]=0)&(\\n[#MLA]=0) \
+.             if !\\n[tbl*autolabel] .sp \\n[#CAP_HEIGHT]u
+.          if \\n[#MLA] \
+.             sp \\n[#CAP_HEIGHT]u
+.          if !'\\*[tbl*source-space]'' .sp \\*[tbl*source-space]
+.          nop \\*[tbl*source]
 .          br
+.          if \\n[#MLA] .in
+.          di
+.          nf
+.          tbl*source-div
+.          ev
 .       \}
 .    \}
-.    if \\n[tbl*boxed] \
-.       if '\\*[tbl*label]'' .sp
-.    ll
-.    if '\\n[.z]'FLOAT*DIV' .nr bx-tbl-depth \\n[.d]
+.    if '\\n[.z]'FLOAT*DIV' .nr bx-tbl-depth \\n[.d]-1v
 .    if '\\n[.z]'tbl*header-div' \{\
 .       @error .TS with 'H' flag but no corresponding .TH
 .       ab Aborting.
 .    \}
 .    ev
-.    if !\\n[tbl*no-shim] \{\
-.       if !'\\n[.z]'FLOAT*DIV' \{\
-.          nr tbl*before-shim \\n[nl]
-.          SHIM
-.          nr tbl*after-shim \\n[nl]
-.          if \\n[tbl*before-shim]=\\n[tbl*after-shim] .sp
-.       \}
+.    if !\\n[tbl*plain] \{\
+.       ie \\n[tbl*plain-boxed] .sp 1
+.       el .sp .5v
 .    \}
+.    ll \\n[ll-pre-tbl]u
+.    if !'\\*[tbl*space-adj]'' .sp -\\*[tbl*space-adj]u
+.    if !\\n[tbl*no-shim] .SHIM
 .    TBL*CLEANUP
-.    ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
 .END
 \#
-.MAC TBL*GET_QUAD END
-.    QUAD \\$1
-.    ds tbl*label-quad \\$1
-.    substring tbl*label-quad 0 0
-.    if '\\*[tbl*label-quad]'L' .nr tbl*left-label-on-table 1
-.    if '\\*[tbl*label-quad]'C' .nr tbl*center-label-on-table 1
-.    if '\\*[tbl*label-quad]'R' .nr tbl*right-label-on-table 1
-.END
+\# Utility macros for tbl
 \#
 .MAC TBL*CLEANUP END
-.    rr tbl*before-shim
-.    rr tbl*after-shim
 .    if !'\\n[.z]'FLOAT*DIV' \{\
-.       rm tbl*center
-.       if !'\\n[.z]'FLOAT*DIV' .rm tbl*header-div
+.       rr tbl*center
+.       rm tbl*header-div
+.       rr tbl*caption-top-lead-diff
 .    \}
-.    rr tbl*no-shim
-.    rm tbl*user-add-space
-.    rm tbl*label-quad
-.    rr tbl*center-label
-.    rr tbl*left-label-on-table
-.    rr tbl*center-label-on-table
-.    rr tbl*right-label-on-table
+.    rr tbl*have-header
+.    if !'\\n[.z]'FLOAT*DIV' \{\
+.       rr tbl*have-caption
+.       rr tbl*have-label
+.    \}
 .    rr tbl*label-warning
+.    rr tbl*no-shim
+.    rr tbl*skip-source
+.    if !'\\n[.z]'FLOAT*DIV' \{\
+.       rm short
+.       rm tbl*caption
+.       rm tbl*caption-short
+.       rm tbl*label
+.    \}
+.    rm tbl*space-adj
+.    rnn tbl*have-label tbl@label
+.    rnn tbl*have-source tbl@source
+.    rr tbl*have-label
+.    rr tbl*plain
+.    if '\\*[tbl*label-sffx-tmp]'.' .ds tbl*label-sffx .
+.END
+\#
+.MAC print-label END
+.    if \\n[.u] .nr fill 1
+.    nf
+.    if !\\n[tbl*skip-label] \{\
+.       tbl*label-div
+.    \}
+.    if \\n[fill] .fi
+.    rr fill
 .END
 \#
 .MAC tbl@top-hook END
 .    if \\n[tbl*have-header] \{\
-.       if !\\n[.ne] \{\
-.          rr @TOP
-.          ch RR_@TOP
-.          tbl*print-header
-.       \}
+.       nf
+.       rr @TOP
+.       ch RR_@TOP
+.       ev top-hook
+.       evc 0
+.       rs
+.       nop \&
+.       ie !\\n[tbl*boxed] .sp -1
+.       el .sp -1n
+.       tbl*print-header
+.       ev
 .    \}
-.    if \\n[tbl*move-footer-trap] \
-.       ch FOOTER \\n[#VARIABLE_FOOTER_POS]u+\\n[#DOC_LEAD]u
-.    if \\n[tbl*move-fn-overflow-trap] \
-.       ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u+\\n[#DOC_LEAD]u
 .END
 \#
 .MAC tbl*print-header END
@@ -16985,13 +18468,20 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       nf
 .       nr fill 1
 .    \}
+.    if \\n[#COL_NUM]>1 \
+.       sp 2p
 .    ie d tbl*header-div:\\n[loop-count] \{\
 .       tbl*header-div:\\n[loop-count]
 .    \}
 .    el .tbl*header-div
 .    if '\\n[.z]'FLOAT*DIV' \
-.       if !'\\*[tbl*center]'' .ce 1000
+.       if \\n[tbl*center] .ce 1000
 .    mk #T
+.    if !'\\n[.z]'FLOAT*DIV' \{\
+.       nr pre-tbl-vfp 0+\\n[#VARIABLE_FOOTER_POS]
+.       ch FOOTER \\n[#VARIABLE_FOOTER_POS]u+\\n[#DOC_LEAD]u
+.       ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u+\\n[#DOC_LEAD]u
+.    \}
 .END
 \#
 .MAC tbl@bottom-hook END
@@ -17003,8 +18493,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC tbl*float-warning END
 .    tm1 "[mom]: Table in FLOAT, output page \\n[#PAGENUMBER], exceeds page vertical limits.
-.    tm1 "       Multipage tables cannot be contained within floats.
-.    ab Aborting.
+.    tm1 "       Multipage boxed tables cannot be contained within floats.
+.    ab Aborting '\\n[.F]'.
 .END
 \#
 .MAC ds@need END \" Move vertically until there is enough space for \$1
@@ -17016,8 +18506,631 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    \}
 .END
 \#
-\# REFER SUPPORT
-\# -------------
+\# ***eqn***
+\#
+\# EQ/EN macros borrowed from ms, mommified by Robin Haberkorn
+\# <robin.haberkorn@googlemail.com>, expanded by Peter Schaffter.
+\#
+\# EQ [ -L | -C | -I <indent> ] [label]
+\# EN [ CONT | CONTINUED | ... ]
+\#
+\# Equations are centered by default, but can be left-justified
+\# (EQ -L), explicitly centered, or indented (EQ -I).
+\#
+\# Each eqn block for multi-line equations aligned with 'mark' and
+\# 'lineup' should be terminated by passing 'CONT' or 'CONTINUED'
+\# or '...' to EN.
+\#
+\# Note that geqn mark and lineup work correctly in centered equations.
+\#
+.MAC EQ END
+.    if \\n[eqn*copy-in]=1 \{\
+.       if !\\n[eqn-linenum] .nr eqn-linenum \\n[.c]
+.       if !\\n[pgnum] .nr pgnum \\n%+\\n[#PAGE_NUM_ADJ]
+.       br
+.       if \\n[.u] .nr fill 1
+.       rr float*eqn
+.       if '\\n[.z]'FLOAT*DIV' .nr float*eqn 1
+.       nr eqn*restore-adj \\n[.j]
+.       if !\\n[continued] \{\
+.          PDF_TARGET eqn:\\n+[lists*target]
+.          rr eqn*type
+.          nr loop-counter \\n[#NUM_ARGS]
+.          nr loop-count 0 1
+.          while \\n+[loop-count]<=\\n[loop-counter] \{\
+.             if '\\$1'-L' \{\
+.                nr eqn*left 1
+.                nr eqn*type 1
+.                shift
+.             \}
+.             if '\\$1'-I' \{\
+.                nr eqn*ind  1
+.                nr eqn*type 2
+.                shift
+.                ds DI \\$1
+.                ds DI@cont \\*[DI]
+.                shift
+.             \}
+.             if '\\$1'-C' \{\
+.                nr eqn*center 1
+.                nr eqn*type   3
+.                shift
+.             \}
+.             if '\\$1'ADJUST' \{\
+.                ds eqn*space-adj \\$2
+.                shift 2
+.             \}
+.             if '\\$1'NO_SHIM' \{\
+.                nr eqn*no-shim 1
+.                shift 1
+.             \}
+.             if '\\$1'LABEL' \{\
+.                ds eqn*label \\$2
+.                ds label-type eqn
+.                shift 2
+.             \}
+.             if '\\$1'SHIFT_LABEL' \{\
+.                ds eqn*shift-label \\$2
+.                shift 2
+.             \}
+.             if '\\$1'CAPTION' \{\
+.                ds eqn*caption \\$2
+.                shift 2
+.             \}
+.             if '\\$1'SHORT_CAPTION' \{\
+.                ds eqn*caption-short \\$2
+.                shift 2
+.             \}
+.          \}
+.       \}
+.       if '\\*[eqn*shift-label]'' .ds eqn*shift-label 0
+.       if !\\n[eqn*type] \{\
+.          nr eqn*center 1
+.          nr eqn*type   3
+.          shift
+.       \}
+.       if !'\\*[eqn*caption]'' \{\
+.          if '\\*[caption-quad]'L' \{\
+.             if \\n[default-left] .ds caption-quad R
+.             rr default-left
+.          \}
+.       \}
+.       if \\n[continued] \{\
+.          rm continued
+.          rr continued
+.       \}
+.       if \\n[eqn@left*cont] .nr eqn*type 1
+.       if \\n[eqn@ind*cont]  \{\
+.           nr eqn*type 2
+.           ds DI \\*[DI@cont]
+.       \}
+.    \}
+.    if \\n[eqn@center*cont] .nr eqn*type 3
+.    ev EQN
+.    evc 0
+.    di eqn*div
+.    in 0
+.    nf
+.END
+\#
+.MAC EN END
+.    if !'\\n(.z'eqn*div' \{\
+.       @error mismatched EN
+.       return
+.    \}
+.    br
+.    di
+.    ev
+.    if !'\\*[eqn*label]''   .nr eqn*have-label   1
+.    if !'\\*[eqn*caption]'' .nr eqn*have-caption 1
+.    if !'\\$1'' \{\
+.       ie '\\$1'...' .ds continued CONT
+.       el .ds continued \\$1
+.       substring continued 0 3
+.       ie '\\*[continued]'CONT' \{\
+.          nr continued 1
+.          rm continued
+.          if \\n[eqn*ind]    .nr eqn@ind*cont    1
+.          if \\n[eqn*left]   .nr eqn@left*cont   1
+.          if \\n[eqn*center] .nr eqn@center*cont 1
+.       \}
+.       el \{\
+.          tm1 "[mom]: Invalid argument \\$1 to \\$0.
+.          tm1 "       Must be 'CONTINUED', 'CONT', or '...'
+.          ab Aborting '\\n[.F]' at line \\n[.c].
+.       \}
+.    \}
+.    if \\n[dl]:\\n[eqn*have-label] \{\
+.       ds eqn*tabs \\n[.tabs]
+.       if \\n[eqn*label-with-chapter] \
+.          ds chapno \\n[#CH_NUM].
+.       nf
+.       ie \\n[dl] \{\
+.          if !'\\n[.z]'FLOAT*DIV' \{\
+.             ie \\n[eqn*have-caption] .ne \\n[dn]u-\\n[.V]
+.             el .ne \\n[dn]u-1v-\\n[.V]
+.          \}
+.          chop eqn*div
+.          if '\\*[DD]'' \{\
+.             ds DD .5v
+.             if !\\n[@TOP] \{\
+.                sp \\*[DD]
+.                if !'\\*[eqn*space-adj]'' .sp \\*[eqn*space-adj]u
+.             \}
+.          \}
+.          ie \\n[eqn*type]=1 \{\
+.             ta (u;\\n[.l]-\\n[.i])R
+.             ie \\n[continued] .nop \\*[eqn*div]
+.             el \{\
+.                ie \\n[eqn*autolabel] \
+.nop \
+\\*[eqn*div]\
+\\*[eqn*label-specs]\
+\t\v'+\\*[eqn*shift-label]'\
+\\*[eqn*label-prfx]\\*[chapno]\\n+[eqn*label-num]\\*[eqn*label-sffx]\
+\v'-\\*[eqn*shift-label]'\
+\\*[revert-specs]
+.                el \
+.nop \
+\\*[eqn*div]\
+\\*[eqn*label-specs]\
+\t\v'+\\*[eqn*shift-label]'\
+\\*[eqn*label]\
+\v'-\\*[eqn*shift-label]'\
+\\*[revert-specs]
+.             \}
+.             if !\\n[continued] \{\
+.                if \\n[eqn*have-caption] \
+.                   ADD_CAPTION
+.             \}
+.          \}
+.          el \{\
+.             ie \\n[eqn*type]=2 \{\
+.                ie '\\*[eqn*label-quad]'L' \{\
+.                   ta \\*[DI]
+.                   ie \\n[continued] .nop \t\\*[eqn*div]
+.                   el \{\
+.                      ie \\n[eqn*autolabel] \
+.nop \
+\\*[eqn*label-specs]\
+\v'+\\*[eqn*shift-label]'\
+\\*[eqn*label-prfx]\\*[chapno]\\n+[eqn*label-num]\\*[eqn*label-sffx]\
+\v'-\\*[eqn*shift-label]'\
+\t\\*[eqn*div]\
+\\*[revert-specs]
+.                      el \
+.nop \
+\\*[eqn*label-specs]\
+\v'+\\*[eqn*shift-label]'\
+\\*[eqn*label]\
+\v'-\\*[eqn*shift-label]'\
+\\*[revert-specs]\
+\t\\*[eqn*div]
+.                   \}
+.                \}
+.                el \{\
+.                   ta \\*[DI] (u;\\n[.l]-\\n[.i])R
+.                   ie \\n[continued] .nop \t\\*[eqn*div]
+.                   el \{\
+.                      ie \\n[eqn*autolabel] \
+.nop \
+\t\\*[eqn*div]\
+\\*[eqn*label-specs]\
+\t\v'+\\*[eqn*shift-label]'\
+\\*[eqn*label-prfx]\\*[chapno]\\n+[eqn*label-num]\\*[eqn*label-sffx]\
+\v'-\\*[eqn*shift-label]'\
+\\*[revert-specs]
+.                      el \
+.nop \
+\t\\*[eqn*div]\
+\\*[eqn*label-specs]\
+\t\v'+\\*[eqn*shift-label]'\
+\\*[eqn*label]\
+\v'-\\*[eqn*shift-label]'\
+\\*[revert-specs]
+.                   \}
+.                \}
+.                if !\\n[continued] \{\
+.                   if \\n[eqn*have-caption] \
+.                      ADD_CAPTION
+.                \}
+.             \}
+.             el \{\
+.                ie '\\*[eqn*label-quad]'L' \{\
+.                   ta (u;\\n[.l]-\\n[.i]/2)C
+.                   ie \\n[continued] .nop \t\\*[eqn*div]
+.                   el \{\
+.                      ie \\n[eqn*autolabel] \
+.nop \
+\\*[eqn*label-specs]\
+\v'+\\*[eqn*shift-label]'\
+\\*[eqn*label-prfx]\\*[chapno]\\n+[eqn*label-num]\\*[eqn*label-sffx]\
+\v'-\\*[eqn*shift-label]'\
+\t\\*[eqn*div]\
+\\*[revert-specs]
+.                      el \
+.nop \
+\\*[eqn*label-specs]\
+\v'+\\*[eqn*shift-label]'\
+\\*[eqn*label]\
+\v'-\\*[eqn*shift-label]'\
+\\*[revert-specs]\
+\t\\*[eqn*div]
+.                   \}
+.                \}
+.                el \{\
+.                   ta (u;\\n[.l]-\\n[.i]/2)C (u;\\n[.l]-\\n[.i])R
+.                   ie \\n[continued] .nop \t\\*[eqn*div]
+.                   el \{\
+.                      ie \\n[eqn*autolabel] \
+.nop \
+\t\\*[eqn*div]\
+\\*[eqn*label-specs]\
+\t\v'+\\*[eqn*shift-label]'\
+\\*[eqn*label-prfx]\\*[chapno]\\n+[eqn*label-num]\\*[eqn*label-sffx]\
+\v'-\\*[eqn*shift-label]'\
+\\*[revert-specs]
+.                      el \
+.nop \
+\t\\*[eqn*div]\
+\\*[eqn*label-specs]\
+\t\v'+\\*[eqn*shift-label]'\
+\\*[eqn*label]\
+\v'-\\*[eqn*shift-label]'\
+\\*[revert-specs]
+.                   \}
+.                \}
+.                if !\\n[continued] \{\
+.                   if \\n[eqn*have-caption] \
+.                      ADD_CAPTION
+.                \}
+.             \}
+.          \}
+.       \}
+.       el \{\
+.          ta (u;\\n[.l]-\\n[.i])R
+.nop \
+\\*[eqn*label-specs]\
+\t\v'+\\*[eqn*shift-label]'\
+\t\\*[eqn*label]\
+\v'-\\*[eqn*shift-label]'\
+\\*[revert-specs]
+.       \}
+.       ta \\*[eqn*tabs]
+.\" if continuing (ie is a multi-line equation), don't space and SHIM
+.       if !\\n[continued] \{\
+.          sp \\*[DD]
+.          if !'\\*[eqn*space-adj]'' .sp -\\*[eqn*space-adj]u
+.          if !'\\n[.z]'FLOAT*DIV' \{\
+.             if !\\n[eqn*no-shim] .SHIM
+.          \}
+.          if !'\\*[eqn*caption-short]'' .ds short -short
+.          if \\n[eqn*autolabel] \
+.             ds eqn*label \\*[chapno]\\n[eqn*label-num]
+.          ie !'\\*[eqn*label]'' \
+.             TO_EQUATIONS "\\*[eqn*label]" "\\*[eqn*caption\\*[short]]"
+.          el .TO_EQUATIONS "\\*[eqn*caption\\*[short]]"
+.          rm DD
+.          rm eqn*caption
+.          rm eqn*caption-short
+.          rm eqn*label
+.          rm short
+.          rr eqn*copy-in
+.       \}
+.       rm DI@cont
+.       rr eqn*center
+.       rr eqn@center*cont
+.       rr eqn*have-label
+.       rr eqn*ind
+.       rr eqn@ind*cont
+.       rr eqn*left
+.       rr eqn@left*cont
+.    \}
+.    nr eqn*copy-in 1
+.    if \\n[fill] .fi
+.    ad \\n[eqn*restore-adj]
+.    rr fill
+.END
+\#
+.MAC ADD_CAPTION END
+.    ie \\n[.t]<\\n[.v] \{\
+.       if !'\\n[.z]'FLOAT*DIV' \{\
+.          if \\n[#COL_NUM]=\\n[#NUM_COLS] \{\
+.             tm1 "[mom]: '\\n[.F]', macro EQ, line \\n[eqn-linenum]: Insufficient room for
+.             tm1 "        equation caption on page \\n[pgnum].
+.             tm1 "        Skipping caption, but continuing to process.
+.             if !\\n[@TOP] \{\
+.                if \\n[#COL_NUM]=\\n[#NUM_COLS] \
+.                   NEWPAGE
+.             \}
+.             rr eqn-linenum
+.             rr pgnum
+.          \}
+.       \}
+.    \}
+.    el \{\
+.       if \\n[#PRINT_STYLE]=2 \{\
+.          ps \\*[eqn*caption-size-change]
+.          nr lead-curr \\n[.v]
+.          sp .5v
+.          vs \\n[.ps]u+\\n[eqn*caption-autolead]u
+.          nr eqn*caption-lead-diff \\n[lead-curr]-\\n[.v]
+.          sp \\n[eqn*caption-lead-diff]u
+.          ps
+.          if !'\\*[eqn*caption-space]'' \
+.             sp \\*[eqn*caption-space]
+.       \}
+.       if '\\*[eqn*caption-quad]'L' \{\
+.          fi
+.          ad l
+.          nop \
+\\*[eqn*caption-specs]\
+\\*[eqn*caption]\
+\\*[revert-specs]
+.          nf
+.       \}
+.       if '\\*[eqn*caption-quad]'C' \{\
+.          fi
+.          ad c
+.          nop \
+\\*[eqn*caption-specs]\
+\\*[eqn*caption]\
+\\*[revert-specs]
+.          nf
+.       \}
+.       if '\\*[eqn*caption-quad]'R' \{\
+.          fi
+.          ad r
+.          nop \
+\\*[eqn*caption-specs]\
+\\*[eqn*caption]\
+\\*[revert-specs]
+.          nf
+.       \}
+.       if !'\\*[eqn*caption-space]'' \
+.          sp -\\*[eqn*caption-space]
+.       vs
+.    \}
+.END
+\#
+\# ***pic***
+\#
+.MAC have-adjust END
+.    nr #ARGS  0 1
+.    nr #COUNT \\n[#NUM_ARGS]
+.    while \\n+[#ARGS]<=\\n[#COUNT] \{\
+.       if '\\$1'ADJUST' \{\
+.          ds pic*space-adj \\$2
+.          break
+.       \}
+.       shift
+.    \}
+.END
+\#
+\# User settable text style for pic
+\#
+\# PIC_TEXT_STYLE
+\# --------------
+\# *Argument:
+\#   <offset from page left>
+\# *Function:
+\#   Stores user supplied page offset in register #L_MARGIN.
+\#   Sets .po to user supplied offset.
+\# *Notes:
+\#   Requires unit of measure.
+\#
+.MAC PIC_TEXT_STYLE END
+.    nr #ARGS  0 1
+.    nr #COUNT \\n[#NUM_ARGS]
+.    while \\n+[#ARGS]<=\\n[#COUNT] \{\
+.       if '\\$1'FAMILY' \{\
+.          shift
+.          ds pic*text-family \\$1
+.          shift
+.       \}
+.       if '\\$1'FONT' \{\
+.          shift
+.          ds pic*text-font \\$1
+.          shift
+.       \}
+.       if '\\$1'SIZE' \{\
+.          shift
+.          ds pic*text-size-change \\$1
+.          shift
+.       \}
+.       if '\\$1'AUTOLEAD' \{\
+.          shift
+.          nr pic*text-autolead \\$1
+.          shift
+.       \}
+.    \}
+.END
+\#
+\# Main macros
+\#
+.MAC PS END
+.    br
+.    have-adjust \\$@ \" Adjusting is handled by FLOAT
+.    ds ev-current \\n[.ev]
+.    rr float*pic
+.    if !'\\n[.z]'FLOAT*DIV' .FLOAT ADJUST \\*[pic*space-adj]
+.    PDF_TARGET fig:\\n+[lists*target]
+.    nr float*pic 1
+.    nr ind-pre-pic  \\n[.i]
+.    nr ll-pre-pic   \\n[.l]
+.    nr lead-pre-pic \\n[.v]
+.    if \\n[#MLA] .sp .5v
+.    in 0
+.    ev PIC
+.    evc \\n[ev-current]
+.    nf
+.    ie \\n[#NUM_ARGS]<2 .@error bad arguments to PS (not preprocessed with pic?)
+.    el \{\
+.       if \B'\\$1' \{\
+.          ie !\B'\\$2' .ds pic*scale-width \\$1
+.          el .ds pic*scale-width \\$2
+.       \}
+.       in +(u;\\n[.l]-\\n[.i]-\\*[pic*scale-width]/2>?0)
+.    \}
+. \" This is a bit confusing. pic is decorated with 2 args (width
+. \" and height), which are read during pre-processing but have to be
+. \" ignored when parsing args during main processing.  We shift pic's
+. \" args out of the way, then pop them off the arg stack because
+. \" they're not needed during macro processing.
+.    shift 2
+.    if \B'\\$1' .shift
+.    if \B'\\$1' .shift
+.    if !'\\*[pic*space-adj]'' .shift 2
+.    nr loop-counter \\n[#NUM_ARGS]
+.    nr loop-count 0 1
+.    while \\n+[loop-count]<=\\n[loop-counter] \{\
+.       if '\\$1'NO_SHIM' \{\
+.          nr float*no-shim 1
+.          shift 1
+.       \}
+.       if '\\$1'CAPTION' \{\
+.          nr pic*have-caption 1
+.          ds pic*caption \\$2
+.          shift 2
+.       \}
+.       if '\\$1'SHORT_CAPTION' \{\
+.          ds pic*caption-short \\$2
+.          shift 2
+.       \}
+.       if '\\$1'LABEL' \{\
+.          nr pic*have-label 1
+.          ds pic*label \\$2
+.          ds label-type pic
+.          shift 2
+.       \}
+.    \}
+.    ds pic*label-sffx-tmp \\*[pic*label-sffx]
+.    substring pic*label-sffx-tmp -1
+.    if '\\*[pic*label-sffx-tmp]'.' \
+.       if \\n[pic*caption-after-label]=0 .chop pic*label-sffx
+.    if \\n[#MLA] \{\
+.       if (\\n[pic*have-label]=1):(\\n[pic*autolabel]=1) \{\
+.          if !\\n[pic*have-caption] \
+.             mla@error label caption \\n[.F] \\$0 \\n[.c]
+.       \}
+.       if \\n[pic*have-caption] \{\
+.          if !\\n[pic*have-label] \{\
+.             if !\\n[pic*autolabel] \
+.                mla@error caption label \\n[.F] \\$0 \\n[.c]
+.          \}
+.       \}
+.    \}
+.    if (\\n[pic*have-caption]=1)&(\\n[pic*caption-after-label]=0) \{\
+.       sp .5v
+.       ev caption
+.       evc \\*[ev-current]
+.       nh
+.       ie \\n[#PRINT_STYLE]=1 .TYPEWRITER
+.       el \{\
+.          pic*caption-style
+.          nr lead-current \\n[.v]
+.          vs \\n[.ps]u+\\n[pic*caption-autolead]u
+.          nr pic*caption-lead-diff \\n[lead-current]-\\n[.v]
+.          in \\n[ind-pre-pic]u
+.       \}
+.       PIC*SET_CAPTION_QUAD \\*[pic*caption-quad]
+.       if \\n[@TOP] .RESTORE_SPACE
+\!.     in -\\n[ind-pre-pic]u
+.       sp \\n[pic*caption-lead-diff]u
+\!.     if \\\\n[.ns] .rs
+.       nop \\*[pic*caption]
+.       if \\n[#PRINT_STYLE]=1 .sp .5v
+.       if !'\\*[pic*caption-space]'' \
+.          sp \\*[pic*caption-space]
+.       br
+.       ev
+.    \}
+.    if !'\\*[pic*text-family]'' \
+.       fam \\*[pic*text-family]
+.    if !'\\*[pic*text-font]'' \
+.       ft \\*[pic*text-font]
+.    if !'\\*[pic*text-size-change]'' \
+.       ps \\n[#DOC_PT_SIZE]u\\*[pic*text-size-change]
+.    nr lead-current \\n[.v]
+.    ie \\n[pic*text-autolead] \
+.       vs \\n[.ps]u+(\\n[pic*text-autolead]u*1000u)
+.    el .vs \\n[.ps]u
+.    nr pic@text-lead \\n[.v]
+.    nr pic@text-size \\n[.ps]
+.    if !'\\*[pic*text-color]'' .gcolor \\*[pic*text-color]
+.    if \\n[@TOP] \{\
+.       RESTORE_SPACE
+.       nr pic*top-lead-adj 1
+.    \}
+.    nr pic*top-lead-diff \\n[lead-pre-pic]u-\\n[.v]u
+.    if (\\n[pic*have-caption]=0):(\\n[pic*caption-after-label]=1) \{\
+.       ie \\n[pic*top-lead-adj] \{\
+.          sp \\n[pic*top-lead-diff]u
+.          rr pic*top-lead-adj
+.       \}
+.       el .if (\\n[pic*caption-after-label]=0):(\\n[#MLA]=0) .sp \\n[lead-pre-pic]u/2u
+.    \}
+.END
+\#
+.MAC PE END
+.    if \\n[@TOP] \{\
+.       RESTORE_SPACE
+.    \}
+.    sp \\n[lead-pre-pic]u/2u
+.    if (\\n[pic*have-label]=1):(\\n[pic*autolabel]=1):(\\n[pic*caption-after-label]=1) \{\
+.       nr lead-pre-label \\n[.v]
+.       ev label
+.       evc \\*[ev-current]
+.       ie \\n[#PRINT_STYLE]=1 .TYPEWRITER
+.       el \{\
+.          pic*label-style
+.          nr lead-current \\n[.v]
+.          vs \\n[.ps]u+\\n[pic*label-autolead]u
+.          in \\n[ind-pre-pic]u
+.          sp \\n[lead-current]u-\\n[.v]u
+.       \}
+.       if \\n[pic*label-with-chapter] \
+.          ds chapno \\n[#CH_NUM].
+.       PIC*SET_LABEL_QUAD \\*[pic*label-quad]
+\!.     in -\\n[ind-pre-pic]u
+.       sp \\n[lead-pre-label]u-\\n[.v]u
+.       if !'\\*[pic*label-space]'' .sp \\*[pic*label-space]
+.       if \\n[#PRINT_STYLE]=1 .sp .5v
+.       ie \\n[pic*autolabel] \
+.         nop \
+\\*[pic*label-prfx]\\*[chapno]\\n+[fig*label-num]\\*[pic*label-sffx]
+.       el .if !'\\*[pic*label]'' .nop \\*[pic*label]
+.       if \\n[pic*autolabel] \
+.          ds pic*label \\*[chapno]\\n[fig*label-num]
+.       fam
+.       ft
+.       ps
+.       gcolor
+.       ie !\\n[pic*caption-after-label] .br
+.       el \{\
+.          if !'\\*[pic*caption]'' .nop \ \\*[pic*caption-specs]\\*[pic*caption]\\*[revert-specs]
+.          br
+.       \}
+.       ev
+.       in 0
+.    \}
+.    ev
+.    sp .5v
+.    FLOAT off
+.    if !'\\*[pic*caption-short]'' .ds short -short
+.    ie !'\\*[pic*label]'' \
+.       TO_FIGURES "\\*[pic*label]" "\\*[pic*caption\\*[short]]"
+.    el .TO_FIGURES "\\*[pic*caption\\*[short]]"
+.    rm pic*caption
+.    rm pic*label
+.    rm short
+.    if !\\n[defer] .rr pic*have-caption
+.    rr pic*have-label
+.    rr float*pic
+.    if '\\*[pic*label-sffx-tmp]'.' .ds pic*label-sffx .
+.END
+\#
+\# ***refer***
 \#
 \# Footnote references
 \# -------------------
@@ -18219,7 +20332,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .  nr MN-right 0
 .  nr MN-active 0
 .  rr MN-shifted
-\#.  ch FOOTER -\\n[#B_MARGIN]u
 .  ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
 ..
 \#
@@ -18276,7 +20388,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    fi
 .    br
 .    nr MN-last-pos \\n[nl]
-.\}
+.  \}
 .  ev
 .  po
 .  if !\\n[#no-repeat-MN-left]=1 \
@@ -18338,8 +20450,10 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .   if !\\n[#no-repeat-MN-right]=1 .vpt 1
 ..
 \#
-\# PDF initial setup
-\# =================
+\# PDF SUPPORT
+\# ===========
+\#
+\# Initial setup
 \#
 .nr CURRENT_LEVEL 0
 .nr VIRTUAL_LEVEL 0
@@ -18371,8 +20485,8 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 \# -----------------
 \#
 \# Arguments:-
-\#    <name defined by previous call to XCOLOR or NEWCOLOR> or
-\#    <red> <green> <blue> all 0.0 -> 1.0
+\#   <name defined by previous call to XCOLOR or NEWCOLOR> or
+\#   <red> <green> <blue> all 0.0 -> 1.0
 \# Notes
 \#   Should be called before START but can also be called at any time to change colour
 \#   The colour assigned at the end of the document is used for all links in the TOC
@@ -18605,17 +20719,19 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .    el .ds PDF_POST
 .    ds PDF_AST_Q
 .    ds PDF_TXT \\$1
-.    ds PDF_AST \\*[PDF_TXT]
-.    substring PDF_AST -1 -1
-.    if '\\*[PDF_AST]'+' \{\
-.       ds PDF_AST *
-.       ds PDF_AST_Q ""
+.    ie !'\\*[PDF_TXT]'' \{\
+.       ds PDF_AST \\*[PDF_TXT]
+.       substring PDF_AST -1 -1
+.       if '\\*[PDF_AST]'+' \{\
+.          ds PDF_AST *
+.          ds PDF_AST_Q ""
+.       \}
+.       if '\\*[PDF_AST]'*' \{\
+.          chop PDF_TXT
+.          as PDF_TXT \&\\*[PDF_AST_Q]\\*[PDF_NM]\\*[PDF_AST_Q]
+.       \}
 .    \}
-.    if '\\*[PDF_AST]'*' \{\
-.       chop PDF_TXT
-.       as PDF_TXT \&\\*[PDF_AST_Q]\\*[PDF_NM]\\*[PDF_AST_Q]
-.    \}
-.    if '\\*[PDF_TXT]'' .ds PDF_TXT \\*[PDF_NM]
+.    el .ds PDF_TXT \\*[PDF_NM]
 .    pdfhref W -D "\\*[PDF_NM]" \\*[PDF_PRE] \\*[PDF_POST] -- \\*[PDF_TXT]
 .    rm PDF_NM
 .    rm PDF_PRE
@@ -18644,9 +20760,15 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 \#   <image file> <width> <height> are required.
 \#
 .MAC PDF_IMAGE END
-.    br
-.    ev IMG  \" Protect fill mode of running text
-.    evc 0
+.    rr float*img
+.    if !'\\n[.z]'FLOAT*DIV' .FLOAT
+.    nr float*img 1
+.    ds ev-current \\n[.ev]
+.    ev IMG
+.    evc \\*[ev-current]
+.    if \\n[#HYPHENATE] .nh
+.    nr ind-pre-div \\n[.i]
+.    in 0
 .    ds pos:tmp \\$1
 .    substring pos:tmp 0 0
 .    ie !'\\*[pos:tmp]'-' .ds pdf-img:pos -C
@@ -18663,7 +20785,7 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .    substring pdf-img@file -1 -3
 .    if !'\\*[pdf-img@file]'pdf' \{\
 .       tm1 "[mom]: Image file '\\*[pdf-img:file]' at line \\n[.c] not found, or not a PDF image.
-.       ab Aborting.
+.       ab Aborting '\\n[.F]' at \\$0, line \\n[.c].
 .    \}
 .    nr pdf-img:width \\$2
 .    nr pdf-img:depth \\$3
@@ -18680,73 +20802,242 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .       \}
 .       if '\\$1'ADJUST' \{\
 .         shift
-.         ds pdf-img@adj \\$1
-.         substring pdf-img@adj 0 0
-.         ie '\\*[pdf-img@adj]'+' \{\
-.            ds pdf-img:top     +
-.            ds pdf-img:bottom  -
-.         \}
-.         el \{\
-.            ds pdf-img:top     -
-.            ds pdf-img:bottom  +
-.         \}
-.         ds pdf-img@adj \\$1
-.         substring pdf-img@adj 1
-.         ds pdf-img:adj \\*[pdf-img@adj]
-.         rm pdf-img@adj
+.         ds pdf-img:adj \\$1
 .         shift
 .       \}
-.    \}
-.    if '\\*[pdf-img:adj]'' \{\
-.       ds pdf-img:adj    0
-.       ds pdf-img:bottom +
-.    \}
-.    if '\\*[pdf-img:pos]'-C' \{\
-.       nr pdf-img:ind (\\n[.ll]-\\n[pdf-img:width])/2
-.       if \\n[.in] .nr pdf-img:ind -(\\n[.in]/2)
-.    \}
-.    if '\\*[pdf-img:pos]'-R' \{\
-.       nr pdf-img:ind \\n[.ll]-\\n[pdf-img:width]
-.       if \\n[.in] .nr pdf-img:ind -\\n[.in]
-.    \}
-.    di PDF*IMAGE
-.    nf
-.    in 0
-.    if r pdf-img:ind .ti \\n[pdf-img:ind]u
-.    nop \X'pdf: pdfpic \\*[pdf-img:file] -L \\n[pdf-img:width]z \\n[pdf-img:depth]z'
-.    in
-.    di
-.    nr dn +\\n[pdf-img:depth]-1v
-.    nr pdf-img 1
-.    if \\n[pdf-img:depth]>\\n[.t] \{\
-.       ie \\n[@TOP] .rs
-.       el \{\
-.          nr pgnum \\n%+\\n[#PAGE_NUM_ADJ] 1
-.          tm1 "[mom]: Image '\\*[pdf-img:file]' at line \\n[.c] does not fit on output page \\n[pgnum].
-.          tm1 "       Shifting to top of page \\n+[pgnum].
-.          ev
-.          return
+.       if '\\$1'FRAME' \{\
+.          nr pdf-img:frame 1
+.          if !r pdf-img:frame-inset .nr pdf-img:frame-inset 6p
+.          shift
+.       \}
+.       if '\\$1'CAPTION' \{\
+.          nr pdf-img*have-caption 1
+.          ds pdf-img*caption \\$2
+.          shift 2
+.       \}
+.       if '\\$1'SHORT_CAPTION' \{\
+.          ds pdf-img*caption-short \\$2
+.          shift 2
+.       \}
+.       if '\\$1'LABEL' \{\
+.          nr pdf-img*have-label 1
+.          ds pdf-img*label \\$2
+.          ds label-type pdf-img
+.          shift 2
+.       \}
+.       if '\\$1'NO_SHIM' \{\
+.          nr float*no-shim 1
 .       \}
 .    \}
-.    sp \\*[pdf-img:top]\\*[pdf-img:adj]
-.    PDF*IMAGE
-.    rm PDF*IMAGE
+.    ds pdf-img*label-sffx-tmp \\*[pdf-img*label-sffx]
+.    substring pdf-img*label-sffx-tmp -1
+.    if '\\*[pdf-img*label-sffx-tmp]'.' \
+.       if \\n[pdf-img*caption-after-label]=0 .chop pdf-img*label-sffx
+.    PDF_TARGET fig:\\n+[lists*target]
+.    if '\\*[pdf-img:pos]'-C' \
+.       nr pdf-img:ind (\\n[.ll]-\\n[ind-pre-div]-\\n[pdf-img:width])/2
+.    if '\\*[pdf-img:pos]'-R' \{\
+.       nr pdf-img:ind \\n[.ll]-\\n[pdf-img:width]-\\n[ind-pre-div]
+.    \}
+.    di PDF*IMAGE
+.    if \\n[@TOP] \{\
+.       ch RR_@TOP
+.       rs
+.       nop \&
+.       sp -1v
+.    \}
+.    if \\n[pdf-img*have-caption] \{\
+.       if !\\n[pdf-img*autolabel] \{\
+.          if !\\n[pdf-img*have-label] \{\
+.             if \\n[#MLA] \
+.                mla@error caption label \\n[.F] \\$0 \\n[.c]
+.          \}
+.       \}
+.       if !\\n[pdf-img*caption-after-label] \{\
+.          if !\\n[@TOP] .sp .5v
+.          nr lead-pre-caption \\n[.v]
+.          ev caption
+.          evc IMG
+.          ie \\n[#PRINT_STYLE]=1 .TYPEWRITER
+.          el \{\
+.             img*caption-style
+.             vs \\n[.ps]u+\\n[pdf-img*caption-autolead]u
+.          \}
+.          PDF_IMG*SET_CAPTION_QUAD \\*[pdf-img*caption-quad]
+.          sp \\n[lead-pre-caption]u-\\n[.v]u
+.          nop \\*[pdf-img*caption]
+.          br
+.          if !'\\*[pdf-img*caption-space]'' .sp \\*[pdf-img*caption-space]
+.          ev
+.          in 0
+.          sp -.5v
+.       \}
+.    \}
+.    nf
+.    if \\n[pdf-img:frame] \{\
+.       nr frame-width \\n[pdf-img:width]+(\\n[pdf-img:frame-inset]*2)
+.       nr frame-depth \\n[pdf-img:depth]+(\\n[pdf-img:frame-inset]*2)
+.       if '\\*[pdf-img:pos]'-L' \{\
+.          nr pdf-img:ind \\n[pdf-img:frame-inset]
+.          nr pdf-img:dbx-ind 0
+.       \}
+.       if '\\*[pdf-img:pos]'-C' \{\
+.          nr pdf-img:dbx-ind \
+\\n[.ll]-\\n[ind-pre-div]-\\n[pdf-img:width]/2-\\n[pdf-img:frame-inset]
+.       \}
+.       if '\\*[pdf-img:pos]'-R' \{\
+.          nr pdf-img:ind -\\n[pdf-img:frame-inset]
+.          nr pdf-img:dbx-ind \
+\\n[.l]u-(\\n[pdf-img:width]u+(\\n[pdf-img:frame-inset]u*2u)+\\n[ind-pre-div]u)
+.       \}
+.       if '\\*[pdf-img:pos]'-I' \{\
+.          nr pdf-img:ind +\\n[pdf-img:frame-inset]
+.          nr pdf-img:dbx-ind \\n[pdf-img:ind]-\\n[pdf-img:frame-inset]
+.       \}
+.       DBX \\*[pdf-img:frame-weight] \
+            \\n[pdf-img:dbx-ind]u \
+            \\n[frame-width]u \
+            \\n[frame-depth]u \
+            \\*[pdf-img:frame-color]
+.       sp \\n[pdf-img:frame-inset]u
+.       nr pdf-img:ind -\\n[pdf-img:frame-inset]
+.    \}
+.    ti \\n[pdf-img:ind]u+\\n[pdf-img:frame-inset]u
+.    nop \X'pdf: pdfpic \\*[pdf-img:file] -L \\n[pdf-img:width]z \\n[pdf-img:depth]z'
+.    if '\\*[pdf-img:pos]'-C' .nr pdf-img:ind +\\n[pdf-img:frame-inset]
 .    sp \\n[pdf-img:depth]u
-.    PDF_IMAGE_CLEAN
+.    if \\n[pdf-img:frame] .sp \\n[pdf-img:frame-inset]u
+.    if (\\n[pdf-img*have-label]=1):(\\n[pdf-img*autolabel]=1):(\\n[pdf-img*caption-after-label]=1) \{\
+.       if \\n[#MLA] \{\
+.          if (\\n[pdf-img*have-label]=1):(\\n[pdf-img*autolabel]=1) \{\
+.             if !\\n[pdf-img*have-caption] \
+.                mla@error label caption \\n[.F] \\$0 \\n[.c]
+.          \}
+.       \}
+.       nr lead-pre-label \\n[.v]
+.       ev label
+.       evc IMG
+.       ie \\n[#PRINT_STYLE]=1 .TYPEWRITER
+.       el \{\
+.          img*label-style
+.          vs \\n[.ps]u+\\n[pdf-img*label-autolead]u
+.       \}
+.       if \\n[pdf-img*label-with-chapter] \
+.          ds chapno \\n[#CH_NUM].
+.       PDF_IMG*SET_LABEL_QUAD \\*[pdf-img*label-quad]
+.       sp \\n[lead-pre-label]u-\\n[.v]u
+.       if !'\\*[pdf-img*label-space]'' .sp \\*[pdf-img*label-space]
+.       ie \\n[pdf-img*autolabel] \
+.          nop \
+\\*[pdf-img*label-prfx]\\*[chapno]\\n+[fig*label-num]\\*[pdf-img*label-sffx]
+.       el .if !'\\*[pdf-img*label]'' .nop \\*[pdf-img*label]
+.       if \\n[pdf-img*autolabel] \
+.          ds pdf-img*label \\*[chapno]\\n[fig*label-num]
+.       fam
+.       ft
+.       ps
+.       gcolor
+.       if !'\\*[pdf-img*caption]'' .nop \ \\*[pdf-img*caption-specs]\\*[pdf-img*caption]\\*[revert-specs]
+.       sp .5v
+.       ev
+.       in 0
+.    \}
+\!.  in
+.    di
+.    nf
+.    vpt 0
+.    if !'\\*[pdf-img:adj]'' \{\
+.       if \\n[@TOP] \
+.          if \\n[#COLUMNS]>1 \
+\!.           rs
+\!.     sp \\*[pdf-img:adj]
+.    \}
+.    PDF*IMAGE
+.    if !'\\*[pdf-img:adj]'' \
+.       if !\\n[@TOP] \!.sp -\\*[pdf-img:adj]
+.    vpt
 .    ev
+.    FLOAT off
+.    if !'\\*[pdf-img*caption-short]'' .ds short -short
+.    ie !'\\*[pdf-img*label]'' \
+.       TO_FIGURES "\\*[pdf-img*label]" "\\*[pdf-img*caption\\*[short]]"
+.    el .TO_FIGURES "\\*[pdf-img*caption\\*[short]]"
+.    PDF_IMAGE_CLEAN 
+.END
+\#
+\# PDF_IMAGE_FRAME
+\# ---------------
+\# *Arguments:
+\#   [ <inset> ] [ <rule weight> ] [ <color> ]
+\# *Function:
+\#   Sets parameters for pdf image frames.
+\# *Notes:
+\#   Defaults are '6p' '.5' 'black'.  Arguments to be left at default
+\#   must be entered as "".
+\#
+.MAC PDF_IMAGE_FRAME END
+.    if !'\\$1''\{\
+.       ds frame-arg \\$1
+.       substring frame-arg -1
+.       ie \B'\\*[frame-arg]' \{\
+.          tm1 "[mom]: \\$0 inset argument at line \\n[.c]
+.          tm1 "       of '\\n[.F]' requires a unit of measure.
+.          tm1 "       Default 6 point inset will be used instead.
+.       \}
+.       el .nr pdf-img:frame-inset \\$1
+.    \}
+.    shift
+.    if !'\\$1'' \{\
+.       ds frame-arg \\$1
+.       substring frame-arg -1
+.       ie \B'\\*[frame-arg]' \{\
+.          ds pdf-img:frame-weight \\$1
+.          shift
+.       \}
+.       el \{\
+.          ds frame-arg \\$1
+.          substring frame-arg -1 
+.          length arg-len \\*[frame-arg]
+.          if \\n[arg-len]=1 \{\
+.             tm1 "[mom]: \\$0 rule weight argument at line \\n[.c]
+.             tm1 "       of '\\n[.F]' must not have a unit of measure appended.
+.             tm1 "       Default .5 rule weight will be used instead.
+.             shift
+.          \}
+.       \}
+.    \}
+.    if !'\\$1'' \{\
+.       ie m \\$1 .ds pdf-img:frame-color \\$1
+.       el \{\
+.          tm1 "[mom]: \\$0 color argument '\\$1' at line \\n[.c]
+.          tm1 "       of '\\n[.F]' is not a valid color.
+.          tm1 "       Default black will be used instead.
+.       \}
+.    \}
 .END
 \#
 .MAC PDF_IMAGE_CLEAN END
-.    if !'\\n[.z]'FLOAT*DIV' .SHIM  \" Get ourselves back on the baseline grid
 .    rm PDF*IMAGE
 .    rm pdf-img:adj
-.    rm pdf-img:bottom
+.    rm pdf-img*caption
+.    rm pdf-img*caption-short
+.    rm pdf-img*caption-space
 .    rm pdf-img:file
-.    rm pdf-img:ind
-.    rm pdf-img:top
+.    rm pdf-img*label
+.    rm pdf-img*label-space
+.    rm pdf-img:pos
+.    rm short
+.    rr ind-pre-div
 .    rr pdf-img:depth
+.    rr pdf-img:float
+.    rr pdf-img:frame
+.    rr pdf-img:frame-inset
+.    if !\\n[defer] .rr pdf-img*have-caption
+.    rr pdf-img:ind
+.    rr pdf-img:no-shim
 .    rr pdf-img:scale
 .    rr pdf-img:width
+.    if '\\*[pdf-img*label-sffx-tmp]'.' .ds pdf-img*label-sffx .
 .END
 \#
 .de pdfmomclean
