@@ -3,7 +3,7 @@
 This file is part of groff, the GNU roff type-setting system.
 
 Copyright (C) 2004, 2005, 2006, 2009, 2010,
-2011, 2012, 2013 Free Software Foundation, Inc.
+2011, 2012, 2013, 2014 Free Software Foundation, Inc.
 Written by Peter Schaffter (peter@schaffter.ca).
 
 Permission is granted to copy, distribute and/or modify this document
@@ -35,7 +35,7 @@ FDL in the main directory of the groff source package.
 <table style="width: 100%;">
 <tr>
   <td><a href="toc.html">Back to Table of Contents</a></td>
-  <td style="text-align: right;"><a href="images.html#top">Next: Inserting images</a></td>
+  <td style="text-align: right;"><a href="images.html#top">Next: Graphics, floats, preprocessor support</a></td>
 </tr>
 </table>
 
@@ -796,8 +796,8 @@ For example, assuming you have defined the colour, blue,
   .PP
   .COLOR blue
   &lt;first paragraph&gt;
-  .HEAD "Monty Python"
-  .SUBHEAD "The Origins of Spam"
+  .HEADING 1 "Monty Python"
+  .HEADING 2 "The Origins of Spam"
   .PP
   &lt;second paragraph&gt;
 </span>
@@ -1288,18 +1288,25 @@ HEADING_STYLE takes any or all of the following arguments,
 which may be given in any order:
 <br/>
 <span class="pre defaults">
-  FAMILY &lt;family&gt;
-  FONT   &lt;font&gt;
-  SIZE   &lt;+|-size&gt;
-  QUAD   &lt;direction&gt;
-  COLOR  &lt;colour&gt;
-  UNDERSCORE  &lt;weight&gt; &lt;gap&gt; | NO_UNDERSCORE
-  UNDERSCORE2 &lt;weight&gt; &lt;gap1&gt; &lt;gap2&gt; | NO_UNDERSCORE2
-  CAPS | NO_CAPS
-  BASELINE_ADJUST &lt;amount to raise heading from the baseline&gt;
-  SPACE_AFTER | NO_SPACE_AFTER
+  FAMILY &lt;family&gt; \
+  FONT   &lt;font&gt; \
+  SIZE   &lt;+|-size&gt; \
+  QUAD   &lt;direction&gt; \
+  COLOR  &lt;colour&gt; \
+  UNDERSCORE  &lt;weight&gt; &lt;gap&gt; | NO_UNDERSCORE \
+  UNDERSCORE2 &lt;weight&gt; &lt;gap1&gt; &lt;gap2&gt; | NO_UNDERSCORE2 \
+  CAPS | NO_CAPS \
+  BASELINE_ADJUST &lt;amount to raise heading from the baseline&gt; \
+  SPACE_AFTER | NO_SPACE_AFTER \
   NUMBER | NO_NUMBER
 </span>
+</p>
+
+<p>
+You may enter your entire argument list on a single line, or, if it
+is very long, break it into shorter lines with the
+&#8220;line-continued&#8221; backslash {<kbd>\</kbd>), as shown
+above.
 </p>
 
 <p class="defaults" style="margin-bottom: 1em">
@@ -1361,7 +1368,7 @@ entries is controlled separately with
 <a href="tables-of-contents.html#toc-entry-numbers">TOC_ENTRY_NUMBERS</a>.
 Mom also has a special macro to toggle whether to prefix a chapter
 number to numbered headings and Table of Contents entries,
-<a href="prefix-chapter-number">PREFIX_CHAPTER_NUMBER</a>.
+<a href="#prefix-chapter-number">PREFIX_CHAPTER_NUMBER</a>.
 </p>
 
 <p class="defaults" style="padding-bottom: .5em">
@@ -2317,7 +2324,7 @@ This macro also sets mom&#8217;s spacing policy for
 
 <!-- ==================================================================== -->
 
-<h2 id="code-intro" class="macro-group">Inserting code snippets</h2>
+<h2 id="code-intro" class="macro-group">Inserting code into a document</h2>
 
 <ul style="margin-left: -.5em;">
   <li><a href="#code">Tag: CODE</a></li>
@@ -2325,7 +2332,7 @@ This macro also sets mom&#8217;s spacing policy for
 </ul>
 
 <p>
-CODE is a convenience macro that facilitates entering code snippets
+CODE is a convenience macro that facilitates entering code blocks
 into documents.  Its use is not restricted to documents created
 using mom&#8217;s document processing macros; it can be used for
 &#8220;manually&#8221; typeset documents as well.
@@ -2344,35 +2351,16 @@ Inline escape: <b><kbd>\*[CODE]</kbd></b>
 </p>
 
 <p>
-When you invoke <kbd>.CODE</kbd> without an argument, or use the
-<a href="definitions.html#inlines">inline escape</a>,
-<kbd>\*[CODE]</kbd>,
-mom changes the font to a
+When you invoke the macro, <kbd>.CODE</kbd>, or insert <kbd>\*[CODE]</kbd> into
+running text, mom switches to a
 <a href="definitions.html#fixedwidthfont">fixed-width font</a>
 (Courier, by default) and turns
 <a href="goodies.html#smartquotes">SMARTQUOTES</a>
-off.  Additionally, if you invoke <kbd>.CODE</kbd> inside
-<a href="#quote">QUOTE</a>
-while in
-<a href="docprocessing.html#printstyle">PRINTSTYLE <kbd>TYPEWRITE</kbd></a>
-with the default underlining of quotes turned on, it disables the
-underlining for the duration of CODE.
+off.
 </p>
 
 <p>
-Passing any argument other than <kbd>BR</kbd>, <kbd>BREAK</kbd>
-or <kbd>SPREAD</kbd> to CODE (eg <kbd>OFF, QUIT, END, X,</kbd>
-etc.) turns CODE off and returns the family, font, smartquotes
-and (if applicable) underlining of quotes to their former state.
-If you&#8217;ve used the inline escape, <kbd>\*[CODE]</kbd>, to
-initiate a section of code, <kbd>\*[CODE OFF]</kbd> equally returns
-things to their former state.
-</p>
-
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-If your code snippet includes the backslash character, which is
+If your code includes the backslash character, which is
 groff&#8217;s escape character, you will have to change the
 escape character temporarily to something else with the macro,
 <a href="goodies.html#esc-char">ESC_CHAR</a>.
@@ -2380,11 +2368,27 @@ Mom has no way of knowing what special characters you&#8217;re going
 to use in code snippets, therefore she cannot automatically replace
 the escape character with something else.
 </p>
-</div>
 
-<div class="box-important">
+<p>
+The correct order for changing the escape character inside
+<kbd>CODE</kbd> is
+<span class="pre-in-pp">
+  .CODE
+  .ESC_CHAR character
+  &lt;code&gt;
+  .ESC_CHAR .
+  .CODE OFF
+</span>
+</p>
+
+<p>
+Alternatively, you can enter the backslash character as
+<kbd>\e</kbd>, which tells groff to print a literal backslash.
+</p>
+
+<div class="box-tip">
 <p class="tip-top">
-<span class="important">Important:</span>
+<span class="tip">Note:</span>
 <kbd>.CODE</kbd> does not cause a line break when
 you&#8217;re in a
 <a href="definitions.html#filled">fill mode</a>
@@ -2407,7 +2411,7 @@ a break (eg
 <a href="#pp">PP</a>).
 </p>
 
-<p>
+<p class="tip-bottom">
 In all likelihood, if you want the situation described above (ie a
 break before and after CODE), what you probably want is to use
 <a href="quote">QUOTE</a>
@@ -2425,15 +2429,66 @@ indenting the code and offsetting it from
 <a href="definitions.html#running">running text</a>
 with vertical whitespace.
 </p>
-
-<p class="tip-bottom">
-<span class="note">Note:</span>
-<kbd>BR</kbd>, <kbd>BREAK</kbd> and <kbd>SPREAD</kbd> have no
-effect when used with the inline escape, <kbd>\*[CODE]</kbd>.  The
-assumption behind <kbd>\*[CODE]</kbd> is that you&#8217;re inserting
-a bit of code into a line, not creating a distinct code block.
-</p>
 </div>
+
+<p>
+Passing any argument other than <kbd>BR</kbd>, <kbd>BREAK</kbd> or
+<kbd>SPREAD</kbd> to CODE (eg <kbd>OFF, QUIT, END, X,</kbd> etc.)
+turns CODE off and returns the family, font, and smartquotes back to
+their former state.
+</p>
+
+<h4 class="docs" style="font-size: 102%">Using <kbd>\*[CODE]</kbd> inline</h4>
+
+<p>
+<kbd>\*[CODE]</kbd> invokes <kbd>.CODE</kbd>, allowing you to
+bracket code snippets inline.  It does not accept the <kbd>BR</kbd>,
+<kbd>BREAK</kbd>, or <kbd>SPREAD</kbd> arguments.  It is most useful
+for short snippets, as in the following example.
+<br/>
+<span class="pre-in-pp">
+  \*[CODE]apropos\*[CODE OFF] and \*[CODE]man&nbsp;-k\*[CODE] are identical.
+</span>
+</p>
+
+<p>
+<kbd>\*[CODE]</kbd> does not permit changing the escape character,
+so <kbd>\e</kbd> must be used.  Furthermore, if your code starts
+with a period, you must enter it as &#8220;<kbd>\&.</kbd>&#8221;.
+<br/>
+<span class="pre-in-pp">
+  Registers are created with the \*[CODE]\&.nr\*[CODE OFF] request.
+</span>
+</p>
+
+<h4 class="docs" style="font-size: 102%; margin-top: -1em">CODE and punctuation</h4>
+
+<p>
+<kbd>.CODE&nbsp;OFF</kbd> automatically inserts a word space into
+running text.  If your CODE block is to be followed by punctuation
+with the parameters of
+<a href="definitions.html#running">running text</a>,
+you must terminate the block with &#8220;<kbd>\c</kbd>&#8221; and
+enter the punctuation at the beginning of the next input line.  If
+the punctuation mark is a period, you must precede it with
+&#8220;<kbd>\&amp;</kbd>&#8221;.
+<br/>
+<span class="pre-in-pp">
+  ...for example,
+  .CODE
+   echo "Hello, world" | sed -e 's/Hello,/Goodbye, cruel/'\c
+  .CODE OFF
+  \&.  As this demonstrates...
+</span>
+Use of <kbd>\*[CODE]</kbd> inline does not require the
+<kbd>\c</kbd>, however periods after <kbd>\*[CODE&nbsp;OFF]</kbd>
+still need to be introduced with <kbd>\&</kbd>, as in this example:
+<br/>
+<span class="pre-in-pp">
+  ...append the unit of measure \*[CODE]p\*[CODE&nbsp;OFF]\&. New sentence...
+</span>
+</p>
+
 
 <div class="defaults-container" style="background-color: #ded4bd; border: none;">
 <h3 id="code-control" class="docs defaults">CODE control macros and defaults</h3>
@@ -4452,7 +4507,7 @@ by superscript numbers.  The text of the endnotes themselves is
 indented to the right of the numbers.
 </p>
 
-<div class="box-tip" style="margin-top: -1.25em;">
+<div class="box-tip">
 <p class="tip">
 <span class="note">Note:</span>
 The one-half linespace between section identifiers and the endnotes
@@ -4471,7 +4526,6 @@ macros.  This is because endnotes are like a mini-document unto
 themselves, and therefore need not be bound by the style parameters
 of the body of the document.
 </p>
-
 
 <h3 id="endnote-columns" class="docs">Endnotes and columnar documents</h3>
 
@@ -6264,7 +6318,7 @@ new colour; the em-dashes will be in the default document colour
 <tr>
   <td style="width: 33%;"><a href="toc.html">Back to Table of Contents</a></td>
   <td style="width: 33%; text-align: center;"><a href="#top">Top</a></td>
-  <td style="width: 33%; text-align: right;"><a href="images.html#top">Next: Inserting images</a></td>
+  <td style="width: 33%; text-align: right;"><a href="images.html#top">Next: Graphics, floats, and preprocessor support</a></td>
 </tr>
 </table>
 

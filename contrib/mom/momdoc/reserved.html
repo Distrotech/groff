@@ -3,7 +3,7 @@
 This file is part of groff, the GNU roff type-setting system.
 
 Copyright (C) 2004, 2005, 2006, 2009, 2010,
-2011, 2012, 2013 Free Software Foundation, Inc.
+2011, 2012, 2013, 2014 Free Software Foundation, Inc.
 Written by Peter Schaffter (peter@schaffter.ca).
 
 Permission is granted to copy, distribute and/or modify this document
@@ -57,8 +57,9 @@ mom uses, along with brief descriptions of their functions.
 </p>
 
 <p>
-Please note that PDF-related macros, strings, and registers are not
-included.
+The list is not exhaustive.  PDF-related macros, strings, registers,
+and diversions, as well as those associated with preprocessor
+support and &#8220;Lists of&#8221; are not included.
 </p>
 
 <div class="rule-medium"><hr/></div>
@@ -618,7 +619,10 @@ included.
   ENDNOTE_REFS            Send REFs to endnotes
   ENDNOTES                Output endnotes
   EPIGRAPH                Epigraph before 1st para 
+  EQ/EN                   eqn block
   FINIS                   Prints --END--
+  FLOAT                   Keep material together as a block; defer output
+                            to following page if not enough room to print
   FOOTNOTE                Collects footnotes in text for printing at bottom
                             of page
   FOOTNOTE_REFS           Send REFs to footnotes
@@ -653,6 +657,8 @@ included.
                             with doc info macros
   SUBHEAD                 Subheads
   SUBSUBHEAD              Subsubheads
+  TH                      Running tbl header
+  TS/TE                   Begin/end a tbl block
 
 <span style="display: block; margin-top: -.75em; margin-bottom: -1em;">*Headers/footers</span>
   BREAK_QUOTE          Manually break a footnoted quote that crosses
@@ -714,6 +720,9 @@ included.
                              block epigraphs
   FINIS_STRING             What to print when FINIS is invoked
   FINIS_STRING_CAPS        Whether to capitalize the finis string
+
+-eqn-
+  EQ_INDENT                Indent value if 'EQ I'
 
 -Footnotes-
   FOOTNOTE_AUTOLEAD             Autolead to use in footnotes
@@ -1033,10 +1042,10 @@ included.
                          to fill page to #B_MARGIN
   TYPEWRITER           Sets family (C), font (R) and point size (12)
                          for PRINTSTYLE TYPEWRITE
-  VFP_CHECK            Trap-sprung macro 1 valid baseline higher than
+  VFP_CHECK            Trap-sprung macro, 1 valid baseline higher than
                          where FOOTER will be sprung; checks whether
                          there is, in fact, just enough room for
-                           another line of running text to be added to
+                         another line of running text to be added to
                          the page without jamming footnotes too close
                          to running text.
 
@@ -1186,9 +1195,7 @@ included.
   #DATE_FIRST                Was .DATE invoked as first letter
                                header after .START? (boolean)
   dc                         "mark" register for document columns
-  #DIVER_FN                  Register that tells FOOTNOTE whether to
-                               "move" or "defer" a footnote collected
-                               inside a diversion
+  DD                         Vert. space before and after eqn blocks
   defer / new-defer          Appended to FLOAT*DIV: if float deferred
   #DEFER_BIB_SPACING         Tells DEFAULTS to do BIBLIOGRAPHY_SPACING
                                if it was called before START
@@ -1206,6 +1213,10 @@ included.
   #DEPTH_TO_B_MARGIN         Page length minus #B_MARGIN
   D-float                    Depth of float containing/ending with
                                DRH, DRV, DBX, or DCL
+  DI                         eqn indent if EQ I
+  #DIVER_FN                  Register that tells FOOTNOTE whether to
+                               "move" or "defer" a footnote collected
+                               inside a diversion
   #DIVERSIONS_HY_MARGIN      A reasonable value for .hym applied to
                                QUOTE, BLOCKQUOTE and EPIGRAPH to
                                avoid excessive hyphenation if these are
@@ -1533,6 +1544,7 @@ included.
                                with EPIGRAPH when columns are on
   #L_MARGIN_DIFF             Difference between DOC_L_MARGIN and
                                L_MARGIN
+  #LB_CHAR_ITERATIONS        Number of linebreak character iterations
   #LEFT_CAP_HEIGHT           Cap height of left string in headers/footers
   #VALID_BASELINE            Calculates vert. position of next valid
                                baseline in SHIM
@@ -2357,6 +2369,7 @@ included.
   $RL_WEIGHT                       Rule weight (DRH/DRV)
   $SAVED_COPYRIGHT                 Temporarily holds string in $COPYRIGHT
   $SAVED_RULE_GAP                  Temporarily holds string in $RULE_GAP
+  $SAVED_DOC_FAM                   Document family in effect before COLLATE
   $SAVED_PP_FT                     $PP_FT in effect at start of
                                      .COLLATE; tested for and removed
                                      in .PP
