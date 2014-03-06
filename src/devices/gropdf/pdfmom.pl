@@ -122,7 +122,7 @@ if ($readstdin)
 
 if ($dev eq 'pdf')
 {
-    system("groff -Tpdf -dPDF.EXPORT=1 -mom -z $cmdstring 2>&1 | grep '^.ds' | groff -Tpdf -mom - $preconv $cmdstring");
+    system("groff -Tpdf -dPDF.EXPORT=1 -mom -z $cmdstring 2>&1 | grep '^\.ds' | groff -Tpdf -mom - $preconv $cmdstring");
 }
 elsif ($dev eq 'ps')
 {
