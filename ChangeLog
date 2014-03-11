@@ -1,5 +1,18 @@
 2014-03-11  Ingo Schwarze  <schwarze@openbsd.org> (tiny change)
 
+	* src/roff/groff/Makefile.sub: POSIX conformance.
+
+	 - POSIX says that the meaning of the make(1) `$<' macro shall be
+	   unspecified except in inference rules.  Consequently, use `$?'
+	   for portability.
+
+	   That's safe because the rules have only one prerequisite and are
+	   not `.PHONY', so `$?' will always expand to one item.
+
+	 - While here, clean up two instances of superfluous use of cat(1).
+
+2014-03-11  Ingo Schwarze  <schwarze@openbsd.org> (tiny change)
+
 	* Makefile.in (dist): Improve.
 
 	 - Bugfix: Do not error out if one of the DISTDIRS

@@ -44,22 +44,20 @@ RM=rm -f
 all: $(srcdir)/groff.cpp groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
 groff_opts.tmp: $(srcdir)/groff.cpp
-	@$(GREP) -e ':.*:.*:' $< \
+	@$(GREP) -e ':.*:.*:' $? \
 		| sed -e 's/[ \t",]//g' > $@
 	@echo -n 'groff options: '
 	@cat $@
 
 groff_opts_no_arg.txt: groff_opts.tmp
 	@$(RM) $@
-	@cat $< \
-		| sed -e 's/[a-zA-Z]://g' > $@
+	@sed -e 's/[a-zA-Z]://g' $? > $@
 	@echo -n 'no arg: '
 	@cat $@
 
 groff_opts_with_arg.txt: groff_opts_no_arg.txt
 	@$(RM) $@
-	@cat groff_opts.tmp \
-		| sed "s/[`cat $<`:]//g" > $@
+	@sed "s/[`cat $?`:]//g" groff_opts.tmp > $@
 	@echo -n 'with arg: '
 	@cat $@
 
