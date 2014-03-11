@@ -836,25 +836,24 @@ dist:
 	for d in $(DISTDIRS); do \
 	  $(mkinstalldirs) tmp/$$d; \
 	done
-	cd tmp; \
-	cp ../Makefile .; \
-	cp $(top_srcdir)/* . 2>/dev/null || true; \
-	for d in $(DISTDIRS); do \
-	  (cd $$d; \
+	cp Makefile tmp
+	-cp * tmp 2>/dev/null
+	-for d in $(DISTDIRS); do \
+	  (cd tmp/$$d; \
 	   cp $(top_srcdir)/$$d/* . 2>/dev/null;); \
-	done; \
-	$(MAKE) srcdir=. VPATH=. distfiles; \
-	$(MAKE) srcdir=. VPATH=. extraclean; \
+	done
+	cd tmp; $(MAKE) srcdir=. VPATH=. distfiles
+	cd tmp; $(MAKE) srcdir=. VPATH=. extraclean
 	for d in $(EXTRADIRS); do \
-	  (cd $$d; \
+	  (cd tmp/$$d; \
 	   if test -f Makefile; then \
 	     $(MAKE) extraclean; \
 	   else \
 	     $(MAKE) -f $(top_builddir)/$$d/Makefile extraclean; \
 	   fi); \
-	done; \
-	rm -f Makefile; \
-	cp $(top_srcdir)/Makefile.init Makefile
+	done
+	rm -f tmp/Makefile
+	cp Makefile.init tmp/Makefile
 	mv tmp groff-$(version)$(revision)
 	tar cfh - groff-$(version)$(revision) | \
 	  gzip -c >groff-$(version)$(revision).tar.gz
