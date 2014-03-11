@@ -1,5 +1,14 @@
 2014-03-11  Ingo Schwarze  <schwarze@openbsd.org> (tiny change)
 
+	* Makefile.in: Do not forget to install gropdf manuals.
+
+	This got broken in 290eaaac6cfc33856cd683838accc72ccf3e5a84:
+	src/devices/gropdf was split out of OTHERDIRS into SHPROGDIRS, and
+	consequently, Makefile.man was no longer used there.  Note that
+	Makefile.dev is *not* needed, even though it's below /devices/.
+
+2014-03-11  Ingo Schwarze  <schwarze@openbsd.org> (tiny change)
+
 	* src/roff/groff/Makefile.sub: POSIX conformance.
 
 	 - POSIX says that the meaning of the make(1) `$<' macro shall be
