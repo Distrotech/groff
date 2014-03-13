@@ -122,7 +122,11 @@
 .\}
 .
 .de set-an-margin
+.  nr an-level 1
 .  nr an-margin \\n[IN]
+.  nr an-saved-margin1 \\n[IN]
+.  nr an-prevailing-indent \\n[IN]
+.  nr an-saved-prevailing-indent1 \\n[IN]
 ..
 .
 .ds an-extra1
@@ -198,9 +202,7 @@
 .  PD
 .  if !r SN \
 .    nr SN 3n \" the indentation of sub-sub-headings relative to sub-headings
-.  nr an-level 1
 .  set-an-margin
-.  nr an-prevailing-indent \\n[IN]
 .  nr an-tag-sep 1n
 .
 .  nr an-no-space-flag 0
@@ -342,9 +344,7 @@
 .
 .de1 SH
 .  sp \\n[PD]u
-.  nr an-level 1
 .  set-an-margin
-.  nr an-prevailing-indent \\n[IN]
 .  fi
 .  in \\n[an-margin]u
 .  ti 0
@@ -361,9 +361,7 @@
 .
 .de1 SS
 .  sp \\n[PD]u
-.  nr an-level 1
 .  set-an-margin
-.  nr an-prevailing-indent \\n[IN]
 .  fi
 .  in \\n[IN]u
 .  ti \\n[SN]u

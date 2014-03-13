@@ -1,3 +1,20 @@
+2014-03-13  Ingo Schwarze  <schwarze@openbsd.org> (tiny change)
+
+	man: Correctly reset margins.
+
+	See
+
+	  http://lists.gnu.org/archive/html/groff/2013-11/msg00026.html
+
+	for more.
+
+	* tmac/an-old.tmac (set-an-margin): Whenever (re)setting
+	`\n[an-level]' to 1 (which happens when encountering `.TH', `.SH',
+	and `.SS') make sure to also (re)set `\n[an-saved-margin1]' and
+	`\n[an-saved-prevailing-indent1]' to a sane value such that an
+	immediate `.RE' cannot wreak havoc.
+	(TH, SH, SS): Updated.
+
 2014-03-11  Ingo Schwarze  <schwarze@openbsd.org> (tiny change)
 
 	* Makefile.in: Do not forget to install gropdf manuals.
