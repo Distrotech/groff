@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2007, 2009, 2011, 2013
+# Copyright (C) 2002-2007, 2009, 2011, 2013, 2014
 #   Free Software Foundation, Inc.
 #      Written by Werner Lemberg <wl@gnu.org>
 # 
@@ -47,11 +47,13 @@ GROFF=\
 DOCFILES=\
   meref.me \
   meintro.me \
+  meintro_fr.me \
   pic.ms
 
 PROCESSEDDOCFILES=\
   meref.ps \
   meintro.ps \
+  meintro_fr.ps \
   pic.ps
 
 HTMLDOCFILES=\
@@ -108,9 +110,9 @@ MOSTLYCLEANNOTSRCDIRADD=\
 
 .SUFFIXES: .me .ms .ps .html
 
-# For simplicity, we always call grn and eqn.
+# For simplicity, we always call preconv, grn, and eqn.
 .me.ps:
-	$(GROFF) -Tps -ge -me >$@
+	$(GROFF) -k -Tps -ge -me >$@
 
 .ms.html:
 	$(GROFF) -P-p -P-b -P-I`basename $< | sed -e 's|.ms$$||'` \
