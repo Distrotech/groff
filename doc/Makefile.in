@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2007, 2009-2011
+# Copyright (C) 2002-2007, 2009-2011, 2014
 #   Free Software Foundation, Inc.
 #      Written by Werner Lemberg <wl@gnu.org>
 # 
@@ -50,6 +50,7 @@ TEXI2DVI=texi2dvi
 groff_bin_dirs=\
   $(top_builddir)/src/roff/groff \
   $(top_builddir)/src/roff/troff \
+  $(top_builddir)/src/preproc/preconv \
   $(top_builddir)/src/preproc/pic \
   $(top_builddir)/src/preproc/eqn \
   $(top_builddir)/src/preproc/tbl \
@@ -84,11 +85,11 @@ imagedir=img
 .SUFFIXES: .me .ms .ps .html .txt .texinfo .dvi .pdf .xhtml
 .PHONY: all prepare_examples clean distclean realclean extraclean
 
-# For simplicity, we always call grn and eqn.
+# For simplicity, we always call preconv, grn, and eqn.
 .me.txt:
-	$(GROFF) -Tascii -ge -me >$@
+	$(GROFF) -k -Tutf8 -ge -me >$@
 .me.ps:
-	$(GROFF) -Tps -ge -me >$@
+	$(GROFF) -k -Tps -ge -me >$@
 
 .ms.html:
 	$(GROFF) -P-p -P-b -P-I`basename $< | sed -e 's|.ms$$||'` \
