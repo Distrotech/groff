@@ -5497,7 +5497,7 @@ y\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#ENDNOTES]     .nr #DOC_PT_SIZE \\n[#EN_PS]
 .    if \\n[#BIBLIOGRAPHY] .nr #DOC_PT_SIZE \\n[#BIB_PS]
 .\"
-.    nr #DOC_LEAD     \\n[#LEAD]
+.    nr #DOC_LEAD     \\n[.v]
 .    nr #DOC@LEAD     \\n[#DOC_LEAD]
 .    if \\n[#AUTO_LEAD] .nr #DOC_AUTOLEAD \\n[#AUTOLEAD_VALUE]
 .\" #SAVED_DOC_LEAD is set in COLLATE
@@ -7201,7 +7201,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          if !\\n[#COVERS_COUNT]=1 .nr #PAGE_NUM_ADJ -1
 .       rr #COVER_END
 .    \}
-.    ev
+.    if !'\\n[.ev]'0' .ev
 .    if \\n[#PAGINATION_WAS_ON] \{\
 .       rr #PAGINATION_WAS_ON
 .       PAGINATE
@@ -9528,10 +9528,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   FINAL respects PAGENUMBER.
 \#
 .MAC FOOTER END
-.    ev PAGE_TRANSITION
 .    rr #LB_4_HD
 .    rr #QUOTE_4_HD
 .    nr #SAVED_LEAD \\n[.v]
+.    ev PAGE_TRANSITION
 .    pdfmarksuspend
 .    ie !n .nop \X'ps: exec decornone'
 .    el .ul 0
@@ -9557,6 +9557,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          rr #OVERFLOW_RIGHT
 .       \}
 .    \}
+\# Table bottom hook, draws the table borders in
+\# multipage boxed tables.
+.    tbl@bottom-hook
 .    ch MN_OVERFLOW_TRAP
 .    nr #L_MARGIN_DIFF \\n[#L_MARGIN]-\\n[#DOC_L_MARGIN]
 .    if !\\n[#FN_DEFER] \{\
@@ -9578,7 +9581,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          rm FOOTNOTES
 .          if d RUNON_FOOTNOTES    .rm RUNON_FOOTNOTES
 .          if \\n[#PRINT_STYLE]=1 .vs \\n[#SAVED_LEAD]u
-.          if \\n[#PRINT_STYLE]=2 .vs \\n[#SAVED_LEAD]u
+.          if \\n[#PRINT_STYLE]=2 .LS \\n[#SAVED_LEAD]u
 .          if '\\n[.z]'FN_OVERFLOW' \{\
 .              di
 .              nr #FN_OVERFLOW_DEPTH \\n[#DIVER_DEPTH]
@@ -9604,16 +9607,15 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          po \\n[#COL_\\n+[#COL_NUM]_L_MARGIN]u
 .          nr #L_MARGIN \\n[.o]
 .          if \\n[#FN_DEPTH] .PROCESS_FN_LEFTOVER
-.          vs \\n[#SAVED_LEAD]u
-.          if \\n[#PREV_FN_DEFERRED] \
-.             nr #PREV_FN_DEFERRED 2
+.          LS \\n[#SAVED_LEAD]u
+.          if \\n[#PREV_FN_DEFERRED] .nr #PREV_FN_DEFERRED 2
 .          rr #RULED
 .          if !\\n[#EPIGRAPH] .rr #COL_NEXT
 .          if !\\n[#QUOTE] .rr #COL_NEXT
 .          if \\n[#RESET_FN_COUNTERS]=1 \{\
 .             rr #RESET_FN_COUNTERS
 .             PROCESS_FN_IN_DIVER
-.             vs \\n[#SAVED_LEAD]u
+.             LS \\n[#SAVED_LEAD]u
 .             nr #FN_COUNT \\n[#FN_COUNT] 1
 .             nr #FN_COUNT_FOR_COLS \\n[#FN_COUNT_FOR_COLS] 1
 .             rm FN_IN_DIVER
@@ -9685,7 +9687,6 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       rr tbl*interrupted
 .    \}
 .    el .DO_FOOTER
-.    if !'\\n[.ev]'0' .ev
 .    pdfmarkrestart
 .END
 \#
@@ -9708,9 +9709,13 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    \}
 .    PRINT_FOOTER
 .    if !\\n[ref*last] \{\
-.       if \\n[defer]>0 \c
+.       ie \\n[defer]>0 \{\
+\c
 '       bp
+.       \}
+.       el 'bp
 .    \}
+.    if !'\\n[.ev]'0' .ev
 .    rr ref*last
 .END
 \#
@@ -9724,7 +9729,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    el \{\
 .       ev FOOTER
 .       vpt 0
-.       sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u-\\n[#FOOTER_ADJ]u
+.       ie n \
+.          sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u
+.       el \
+.          sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u-\\n[#FOOTER_ADJ]u
 .       mk y
 .    \}
 .    UNDERLINE OFF
@@ -18174,7 +18182,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       br
 .       if !'\\*[tbl*caption-space]'' .sp \\*[tbl*caption-space]
 .    \}
-.    ev
+.    if !'\\n[.ev]'0' .ev
 .    if \\n[#MLA] \
 .       if \\n[tbl*have-label]+\\n[tbl*have-caption]=0 \
 .          sp .5v
