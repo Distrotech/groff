@@ -9528,6 +9528,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   FINAL respects PAGENUMBER.
 \#
 .MAC FOOTER END
+.    vpt 0
 .    rr #LB_4_HD
 .    rr #QUOTE_4_HD
 .    nr #SAVED_LEAD \\n[.v]
@@ -9603,11 +9604,14 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             if \\n[#ENDNOTES] .sp |\\n[ec]u-\\n[#EN_LEAD]u
 .             if \\n[#BIBLIOGRAPHY] .sp |\\n[bc]u-\\n[#BIB_LEAD]u
 .          \}
-.          el .sp |\\n[dc]u
+.          el \{\
+.            vs \\n[#SAVED_LEAD]u
+.            sp |\\n[dc]u
+.          \}
 .          po \\n[#COL_\\n+[#COL_NUM]_L_MARGIN]u
 .          nr #L_MARGIN \\n[.o]
 .          if \\n[#FN_DEPTH] .PROCESS_FN_LEFTOVER
-.          LS \\n[#SAVED_LEAD]u
+.          vs \\n[#SAVED_LEAD]u
 .          if \\n[#PREV_FN_DEFERRED] .nr #PREV_FN_DEFERRED 2
 .          rr #RULED
 .          if !\\n[#EPIGRAPH] .rr #COL_NEXT
@@ -9720,6 +9724,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .END
 \#
 .MAC PRINT_FOOTER END
+.   br
 .\" Have to change position of FN_OVERFLOW_TRAP or it screws up the
 .\" placement of page numbers (or footers).  It's reset to its original
 .\" position at the end of the macro.
