@@ -10274,8 +10274,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    if \\n[#QUOTE_4_HD] .rr #QUOTE_4_HD
 .    if \\n[@TOP] \{\
 .       ch RR_@TOP
-.       wh \\n[nl]u+1u RR_@TOP
-.       ns
+.       rr @TOP
+.       rs
+.       nop \&
+.       sp -1
 .    \}
 .    vpt
 .END
@@ -10813,8 +10815,16 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   PRINTSTYLE TYPEWRITE without SINGLESPACE.
 \#
 .MAC PARA_SPACE END
-.    ie '\\$1'' .nr #PP_SPACE 1
-.    el .rr #PP_SPACE
+.    ie '\\$1'' \{\
+.       nr #PP_SPACE 1
+.    \}
+.    el \{\
+.       ie \B'\\$1' \{\
+.          nr #PP_SPACE 1
+.          ds $PP_SPACE_AMOUNT \\$1
+.       \}
+.       el .rr #PP_SPACE
+.    \}
 .END
 \#
 \# PARAGRAPH
@@ -10921,7 +10931,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          br
 .          if \\n[#PP_SPACE] \{\
 .             ie \\n[#END_QUOTE] \{\
-.                ALD \\n[#DOC_LEAD]u
+.                ie !'\\*[$PP_SPACE_AMOUNT]'' .ALD \\*[$PP_SPACE_AMOUNT]
+.                el .sp
 .                rr #END_QUOTE
 .                nr #NO_SPACE 1
 .                nr #BASELINE_MARK \\n[nl]
@@ -10929,7 +10940,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             el \{\
 .                if \\n[#NO_SPACE]=1 .rr #NO_SPACE
 .                if !\\n[nl]=\\n[#BASELINE_MARK] \{\
-.                   ALD \\n[#DOC_LEAD]u
+.                ie !'\\*[$PP_SPACE_AMOUNT]'' .ALD \\*[$PP_SPACE_AMOUNT]
+.                el .sp
 .                   rr #BASELINE_MARK
 .                \}
 .             \}
@@ -10976,7 +10988,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       \}
 .       el \{\
 .          ti \\n[#PP_INDENT]u/2u
-.          if \\n[#PP_SPACE]=1 .ALD \\n[#DOC_LEAD]u
+.          if \\n[#PP_SPACE]=1 \{\
+.             ie !'\\*[$PP_SPACE_AMOUNT]'' .ALD \\*[$PP_SPACE_AMOUNT]
+.             el .sp
+.          \}
 .       \}
 .       if \\n[#CONDENSE] \{\
 \E*[COND]\c
@@ -11493,7 +11508,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          ie \\n[#HEAD] .
 .          el \{\
 .             ie \\n[#START] .
-.             el .ALD \\n[#DOC_LEAD]u/2u
+.             el \{\
+.                ie \\n[#FULLSPACE_QUOTES] .ALD \\n[#DOC_LEAD]u
+.                el .ALD \\n[#DOC_LEAD]u/2u
+.             \}
 .          \}
 .       \}
 .       el \{\
@@ -11566,38 +11584,35 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          \}
 .       \}
 .       el \{\
-.          ie \\n[#PP_SPACE] .
+.          ie \\n[#HEAD]=1 \{\
+.             ALD \\n[#DOC_LEAD]u
+.             SHIM
+.          \}
 .          el \{\
-.             ie \\n[#HEAD]=1 \{\
-.                ALD \\n[#DOC_LEAD]u
-.                SHIM
+.             ie \\n[#FULLSPACE_QUOTES] \{\
+.                ie \\n[#ENDNOTE] .ALD \\n[#EN_LEAD]u
+.                el .ALD \\n[#DOC_LEAD]u
+.             \}
+.             el .ALD (\\n[#DOC_LEAD]/2)u
+.             ie \\n[#Q_FITS] \{\
+.                ie (\\n[#Q_TOP]=\\n[#PAGE_TOP]):(\\n[@TOP]=1) \{\
+.                   nr #Q_AT_TOP 1
+.                   nr #DELAY_SHIM 1
+.                \}
+.                el \
+.                   if !\\n[.v]=\\n[#Q_LEAD_REAL] .SHIM
 .             \}
 .             el \{\
-.                ie \\n[#FULLSPACE_QUOTES] \{\
-.                   ie \\n[#ENDNOTE] .ALD \\n[#EN_LEAD]u
-.                   el .ALD \\n[#DOC_LEAD]u
-.                \}
-.                el .ALD (\\n[#DOC_LEAD]/2)u
-.                ie \\n[#Q_FITS] \{\
-.                   ie (\\n[#Q_TOP]=\\n[#PAGE_TOP]):(\\n[@TOP]=1) \{\
-.                      nr #Q_AT_TOP 1
-.                      nr #DELAY_SHIM 1
-.                   \}
-.                   el \
-.                      if !\\n[.v]=\\n[#Q_LEAD_REAL] .SHIM
-.                \}
-.                el \{\
-.                   SHIM
+.                SHIM
 .\" Make sure that Q_LEAD_DIFF is not added to the first line of
 .\" normal text at the top of any page following output of a quote
 .\" whose last line falls on B_MARGIN of the previous page.
-.                   if \\n[#Q_LEAD_DIFF] \{\
-.                      if \\n[nl]=(\\n[#T_MARGIN]-\\n[#DOC_LEAD]+\\n[#Q_LEAD_DIFF]) \{\
-.                         PRINT \&
-.                         br
-.                         sp -1v-\\n[#Q_LEAD_DIFF]u
-.                         nr #Q_LEAD_DIFF_CHECK 1
-.                      \}
+.                if \\n[#Q_LEAD_DIFF] \{\
+.                   if \\n[nl]=(\\n[#T_MARGIN]-\\n[#DOC_LEAD]+\\n[#Q_LEAD_DIFF]) \{\
+.                      PRINT \&
+.                      br
+.                      sp -1v-\\n[#Q_LEAD_DIFF]u
+.                      nr #Q_LEAD_DIFF_CHECK 1
 .                   \}
 .                \}
 .             \}
