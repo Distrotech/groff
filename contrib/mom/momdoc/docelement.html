@@ -579,15 +579,10 @@ her to do so, use the control macro
 <div class="box-tip">
 <p class="tip">
 <span class="tip">Tip:</span>
-If you'd like to add a small amount of space between paragraphs,
-less than the full linespace provided by PARA_SPACE, 
-you can create a macro that adds it automatically, like this:
-<br/>
-<span class="pre-in-pp">
-  .MAC PP2 END
-  .    ALD .25v
-  .    PP
-  .END
+If you want to add less than a full linespace between
+paragraphs, you may give the amount of space you&#8217;d like as an
+argument to
+<kbd>.PARA_SPACE</kbd>. 
 </span>
 Introducing a paragraph with <kbd>.PP2</kbd> will add a space equal
 to one-quarter of the prevailing linespace before the start of the
@@ -981,6 +976,23 @@ paragraphs will once again not be separated by a blank line.
 </p>
 
 <p>
+If you would like to space paragraphs by less than a full linespace,
+invoke PARA_SPACE with the amount of space you want as a numeric
+argument.  A
+<a href="definitions.html#unitofmeasure">unit of measure</a>
+is required.  For example, to space paragraphs by one-quarter
+linespace
+<span class="pre-in-pp">
+  .PARA_SPACE .25v
+</span>
+is how you&#8217;d do it, or, if you want six points between
+paragraphs
+<span class="pre-in-pp">
+  .PARA_SPACE 6p
+</span>
+</p>
+
+<p>
 PARA_SPACE is not recommended for use with PRINTSTYLE TYPEWRITE
 unless you give PRINTSTYLE the <kbd>SINGLESPACE</kbd> option.
 </p>
@@ -1010,43 +1022,6 @@ is to invoke <kbd>.PP</kbd> twice (in succession) at the point you
 expect the blank line to appear.
 </p>
 </div>
-
-<p>
-If you would like to space paragraphs by less than a full linespace,
-the way to do it is by creating a wrapper macro around PP that adds
-space before each paragraph, like this,
-<br/>
-<span class="pre-in-pp">
-  .MAC PP2 END
-  .  ALD 6p
-  .  PP
-  .END
-</span>
-which inserts 6
-<a href="definitions.html#picaspoints">points</a>
-of space before each paragraph.  Initial paragraphs, as described
-above, should still be introduced with <kbd>PP</kbd>; only subsequent
-ones require <kbd>.PP2</kbd>.
-</p>
-
-<p>
-If you would like the extra space to be a fraction of the current
-<a href="definitions.html#leading">leading</a>,
-use the groff number register, <kbd>\n[.v]</kbd> and divide it by
-the fraction you want.  For example, <kbd>.ALD \n[.v]/4</kbd> inserts
-1/4 linespacing between paragraphs.
-</p>
-
-<p>
-You may write the macro, above, in low-level groff if you wish:
-<br/>
-<span class="pre-in-pp">
-  .de PP2
-  . sp 6p
-  . PP
-  ..
-</span>
-</p>
 
 <div class="rule-short"><hr/></div>
 
