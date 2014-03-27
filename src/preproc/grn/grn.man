@@ -1,6 +1,6 @@
 '\" t
 .ig
-Copyright (C) 2000, 2001, 2002, 2003, 2004, 2006, 2009
+Copyright (C) 2000-2004, 2006, 2009, 2014
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -353,7 +353,7 @@ figure by including in the
 .I gremlin
 file
 .I eqn
-expressions enclosed by previously defined delimiters (e.g.
+expressions enclosed by previously defined delimiters (e.g.\&
 .IR $$ ).
 .PP
 When using
@@ -378,7 +378,7 @@ placement.
 .PP
 .I @g@grn
 uses
-.IR @g@troff 's 
+.IR @g@troff 's
 number registers
 .B g1
 through
@@ -393,7 +393,7 @@ figure (in device units) before entering the
 .B .GS
 request (this is for those who want to rewrite these macros).
 .SH GREMLIN FILE FORMAT
-There exist two distinct 
+There exist two distinct
 .I gremlin
 file formats, the original format from the
 .I AED
@@ -409,7 +409,7 @@ version allowing reference points with negative coordinates is
 compatible with the
 .I AED
 version.
-As long as a 
+As long as a
 .I gremlin
 file does not contain negative coordinates, either format will be read
 correctly by either version of
@@ -432,21 +432,21 @@ CENTCENT@@2
 185.00 120.00@@185.00 120.00
 240.00 120.00@@240.00 120.00
 296.00 120.00@@296.00 120.00
-*@@-1.00 -1.00
+*@@\-1.00 \-1.00
 2 3@@2 3
 10 A Triangle@@10 A Triangle
 POLYGON@@6
 224.00 416.00@@224.00 416.00
 96.00 160.00@@96.00 160.00
 384.00 160.00@@384.00 160.00
-*@@-1.00 -1.00
+*@@\-1.00 \-1.00
 5 1@@5 1
 0@@0
--1@@-1
+\-1@@\-1
 .T&
 css.
 .sp
-Table 1. File examples
+Table 1.  File examples
 .TE
 .sp
 .IP \(bu
@@ -490,7 +490,7 @@ The stuff on this line really isn't all that important; a value of ``1 0.00
 0.00'' is suggested.
 .IP \(bu
 The rest of the file consists of zero or more element specifications.
-After the last element specification is a line containing the string ``-1''.
+After the last element specification is a line containing the string ``\-1''.
 .IP \(bu
 Lines longer than 127 characters are chopped to this limit.
 .SH ELEMENT SPECIFICATIONS
@@ -510,7 +510,7 @@ ccc
 nll.
 \fIgremlin\fP File Format \(mi Object Type Specification
 .sp
-\fIAED\fP Number@\fISUN\fP/\fIX11\fP Name@Description
+\fIAED\fP Number@\fISUN\/\fP/\,\fIX11\fP Name@Description
 0@BOTLEFT@bottom-left-justified text
 1@BOTRIGHT@bottom-right-justified text
 2@CENTCENT@center-justified text
@@ -538,8 +538,8 @@ After the object type comes a variable number of lines, each specifying a
 point used to display the element.
 Each line contains an x-coordinate and a y-coordinate in floating point
 format, separated by spaces.
-The list of points is terminated by a line containing the string ``-1.0
--1.0''
+The list of points is terminated by a line containing the string ``\-1.0
+\-1.0''
 .RI ( AED
 version) or a single asterisk, ``*''
 .RI ( SUN / X11
@@ -611,7 +611,7 @@ For horizontal pictures, x-values range from 0 to 511 and y-values range
 from 0 to 367.
 Although you needn't absolutely stick to this range, you'll get best results
 if you at least stay in this vicinity.
-Also, point lists are terminated by a point of (-1, -1), so you shouldn't
+Also, point lists are terminated by a point of (\-1, \-1), so you shouldn't
 ever use negative coordinates.
 .I gremlin
 writes out coordinates using format ``%f1.2''; it's probably a good idea to
