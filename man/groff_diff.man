@@ -6,7 +6,7 @@ groff_diff.man
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
 
-Copyright (C) 1989, 2001-2004, 2006-2010, 2012
+Copyright (C) 1989, 2001-2004, 2006-2010, 2012, 2014
   Free Software Foundation, Inc.
 written by James Clark
 
@@ -39,6 +39,8 @@ FDL in the main directory of the groff source package.
 .el \
 .  ds ic \^
 .
+.\" ellipsis
+.ds ellipsis \&.\|.\|.\&
 .
 .\" --------------------------------------------------------------------
 .\" Title
@@ -99,7 +101,7 @@ special characters (glyphs), and colors can be of any length.
 .
 In escape sequences, additionally to the classical `\fB(\fP\fIxx\fP'
 construction for a two-character glyph name, you can use
-`\fB[\fP\fIxxx\fP\fB]\fP' for a name of arbitrary length.
+`\fB[\fP\,\fIxxx\/\fP\fB]\fP' for a name of arbitrary length.
 .
 .TP
 .BI \[rs][ xxx ]
@@ -107,7 +109,7 @@ Print the special character (glyph) called
 .IR xxx .
 .
 .TP
-.BI \[rs][ "comp1 comp2 .\|.\|." ]
+.BI \[rs][ "comp1 comp2 \*[ellipsis]" ]
 Print composite glyph consisting of multiple components.
 .
 Example: `\[rs][A\~ho]' is capital letter A with ogonek which finally maps
@@ -131,13 +133,13 @@ is a new syntax form equal to
 i.e., to return to the previous font.
 .
 .TP
-.BI \[rs]*[ "xxx arg1 arg2 .\|.\|." ]
+.BI \[rs]*[ "xxx arg1 arg2 \*[ellipsis]" ]
 Interpolate string
 .IR xxx ,
 taking
 .IR arg1 ,
 .IR arg2 ,
-.IR .\|.\|. ,
+.IR \*[ellipsis] ,
 as arguments.
 .
 .TP
@@ -391,7 +393,7 @@ switches back to the previous color.
 .TQ
 .BI \[rs]M[ xxx ]
 Set background color for filled objects drawn with the
-.BI \[rs]D' .\|.\|. '
+.BI \[rs]D' \*[ellipsis] '
 commands.
 .B \[rs]M[]
 switches back to the previous color.
@@ -749,7 +751,7 @@ request to be transparent for the purposes of end-of-sentence
 recognition.
 .
 .TP
-.B \[rs]~
+.B \[rs]\[ti]
 This produces an unbreakable space that stretches like a normal
 inter-word space when a line is adjusted.
 .
@@ -823,7 +825,7 @@ request; normally they modify the value of an existing object.
 .TP
 .BI .am1\  xx\ yy
 Similar to
-.BR .am , 
+.BR .am ,
 but compatibility mode is switched off during execution.
 .
 To be more precise, a `compatibility save' token is inserted at the
@@ -859,7 +861,7 @@ request but compatibility mode is switched off during execution.
 .TP
 .BI .as1\  xx\ yy
 Similar to
-.BR .as , 
+.BR .as ,
 but compatibility mode is switched off during expansion.
 .
 To be more precise, a `compatibility save' token is inserted at the
@@ -964,11 +966,11 @@ This is the same as
 .BR \[rs]p .
 .
 .TP
-.BI .cflags\  "n c1 c2 .\|.\|."
+.BI .cflags\  "n c1 c2 \*[ellipsis]"
 Characters
 .IR c1 ,
 .IR c2 ,
-.IR .\|.\|. ,
+.IR \*[ellipsis] ,
 have properties determined by
 .IR n ,
 which is ORed from the following:
@@ -1117,17 +1119,17 @@ This is useful for removing the newline from the end of diversions
 that are to be interpolated as strings.
 .
 .TP
-.BI .class\  "name c1 c2 .\|.\|."
+.BI .class\  "name c1 c2 \*[ellipsis]"
 Assign
 .I name
 to a set of characters
 .IR c1 ,
 .IR c2 ,
-.IR .\|.\|. ,
+.IR \*[ellipsis] ,
 so that they can be referred to from other requests easily (currently
 .B .cflags
 only).
-Character ranges (indicated by an intermediate `-') and nested classes
+Character ranges (indicated by an intermediate `\-') and nested classes
 are possible also.
 This is useful to assign properties to a large set of characters.
 .
@@ -1151,7 +1153,7 @@ Map glyph name
 to glyph name
 .I glyph2
 if it is used in
-.BI \[rs][ .\|.\|. ]
+.BI \[rs][ \*[ellipsis] ]
 with more than one component.
 .
 .TP
@@ -1254,7 +1256,7 @@ is not the same.
 .TP
 .BI .de1\  xx\ yy
 Similar to
-.BR .de , 
+.BR .de ,
 but compatibility mode is switched off during execution.
 .
 On entry, the current compatibility mode is saved and restored at exit.
@@ -1344,7 +1346,7 @@ are interpreted.
 .TP
 .BI .ds1\  xx\ yy
 Similar to
-.BR .ds , 
+.BR .ds ,
 but compatibility mode is switched off during expansion.
 .
 To be more precise, a `compatibility save' token is inserted at the
@@ -1433,13 +1435,13 @@ request but before the list of fonts declared with
 .BR .special .
 .
 .TP
-.BI .fspecial\  "f s1 s2 .\|.\|."
+.BI .fspecial\  "f s1 s2 \*[ellipsis]"
 When the current font is\~\c
 .IR f ,
 fonts
 .IR s1 ,
 .IR s2 ,
-.IR .\|.\|. ,
+.IR \*[ellipsis] ,
 are special, that is, they are searched for glyphs not in
 the current font.
 .
@@ -1510,7 +1512,7 @@ is missing,
 switch to the previous glyph color.
 .
 .TP
-.BI .hcode\  "c1 code1 c2 code2 .\|.\|."
+.BI .hcode\  "c1 code1 c2 code2 \*[ellipsis]"
 Set the hyphenation code of character
 .I c1
 to
@@ -1523,8 +1525,8 @@ and so on.
 A hyphenation code must be a single input character (not a special
 character) other than a digit or a space.
 .
-Initially each lower-case letter \%a-z has a hyphenation code, which is
-itself, and each upper-case letter \%A-Z has a hyphenation code which is
+Initially each lower-case letter \%a\[en]z has a hyphenation code, which is
+itself, and each upper-case letter \%A\[en]Z has a hyphenation code which is
 the lower-case version of itself.
 .
 See also the
@@ -1606,7 +1608,7 @@ No macro expansion.
 .IP \[bu]
 .B hpf
 checks for the expression
-.BR \[rs]patterns{ .\|.\|. }
+.BR \[rs]patterns{ \*[ellipsis] }
 (possibly with whitespace before and after the braces).
 .
 Everything between the braces is taken as hyphenation patterns.
@@ -1619,7 +1621,7 @@ are not allowed in patterns.
 .
 .IP \[bu]
 Similarly,
-.BR \[rs]hyphenation{ .\|.\|. }
+.BR \[rs]hyphenation{ \*[ellipsis] }
 gives a list of hyphenation exceptions.
 .
 .IP \[bu]
@@ -1666,7 +1668,7 @@ except that the hyphenation patterns from
 are appended to the patterns already loaded in the current language.
 .
 .TP
-.BI .hpfcode\  "a b c d .\|.\|."
+.BI .hpfcode\  "a b c d \*[ellipsis]"
 After reading a hyphenation patterns file with the
 .B hpf
 or
@@ -1881,7 +1883,7 @@ and
 .B write
 requests.
 .
-.TP 
+.TP
 .BI .opena\  stream\ filename
 Like
 .BR open ,
@@ -1971,11 +1973,11 @@ and
 with a positive value which are applied after the line is output.
 .
 .TP
-.BI .rchar\  "c1 c2 .\|.\|."
+.BI .rchar\  "c1 c2 \*[ellipsis]"
 Remove the definitions of glyphs
 .IR c1 ,
 .IR c2 ,
-.I .\|.\|.
+.I \*[ellipsis]
 This undoes the effect of a
 .B char
 request.
@@ -1990,11 +1992,11 @@ from the macro one level higher.
 No effect otherwise.
 .
 .TP
-.BI .rfschar\  "c1 c2 .\|.\|."
+.BI .rfschar\  "c1 c2 \*[ellipsis]"
 Remove the font-specific definitions of glyphs
 .IR c1 ,
 .IR c2 ,
-.I .\|.\|.
+.I \*[ellipsis]
 This undoes the effect of a
 .B fschar
 request.
@@ -2082,7 +2084,7 @@ is missing, arguments are shifted by\~1.
 Shifting by negative amounts is currently undefined.
 .
 .TP
-.BI .sizes\  s1\ s2\ .\|.\|.\ sn\  [0]
+.BI .sizes\  s1\ s2\ \*[ellipsis]\ sn\  [0]
 This command is similar to the
 .B sizes
 command of a
@@ -2092,7 +2094,7 @@ file.
 It sets the available font sizes for the current font to
 .IR s1 ,
 .IR s2 ,
-.IR .\|.\|.\| ,\~ sn
+.IR \*[ellipsis]\| ,\~ sn
 scaled points.
 .
 The list of sizes can be terminated by an optional\~\c
@@ -2107,11 +2109,11 @@ Contrary to the font file command, the list can't extend over more
 than a single line.
 .
 .TP
-.BI .special\  "s1 s2 .\|.\|."
+.BI .special\  "s1 s2 \*[ellipsis]"
 Fonts
 .IR s1 ,
 .IR s2 ,
-.IR .\|.\|. ,
+.IR \*[ellipsis] ,
 are special and are searched for glyphs not in the current
 font.
 .
@@ -2517,7 +2519,7 @@ is read in copy mode.
 .\" --------------------------------------------------------------------
 .
 .TP
-.BR \[rs]D' .\|.\|. '
+.BR \[rs]D' \*[ellipsis] '
 All drawing commands of groff's intermediate output are accepted.
 .
 See subsection
@@ -2608,21 +2610,21 @@ In GNU troff, as in UNIX troff, you should always follow a sentence
 with either a newline or two spaces.
 .
 .TP
-.BI .ta\  "n1 n2 .\|.\|. nn " "T " "r1 r2 .\|.\|. rn"
+.BI .ta\  "n1 n2 \*[ellipsis] nn " "T " "r1 r2 \*[ellipsis] rn"
 Set tabs at positions
 .IR n1 ,
 .IR n2 ,
-.IR .\|.\|. ,
+.IR \*[ellipsis] ,
 .I nn
 and then set tabs at
 .IR nn \|+\| r1 ,
 .IR nn \|+\| r2 ,
-.IR .\|.\|. ,
+.IR \*[ellipsis] ,
 .IR nn \|+\| rn
 and then at
 .IR nn \|+\| rn \|+\| r1 ,
 .IR nn \|+\| rn \|+\| r2 ,
-.IR .\|.\|. ,
+.IR \*[ellipsis] ,
 .IR nn \|+\| rn \|+\| rn ,
 and so on.
 For example,
@@ -3131,7 +3133,7 @@ Thus in a macro, a more efficient way of doing
 is
 .
 .IP
-.BI \[rs]\[rs]*[ xx ]\[rs]\[rs]  
+.BI \[rs]\[rs]*[ xx ]\[rs]\[rs]
 .
 .P
 If the font description file contains pairwise kerning information,
@@ -3248,7 +3250,7 @@ Font translation is applied.
 The
 .B tr
 request can now map characters onto
-.BR \[rs]~ .
+.BR \[rs]\[ti] .
 .
 .P
 The space width emitted by the
@@ -3420,7 +3422,7 @@ These extensions are not used by GNU pic if the
 option is given.
 .
 .TP
-\f[B]Df \f[I]n\f[R]\*[ic]\[rs]n
+\f[B]Df \f[I]n\/\f[R]\*[ic]\[rs]n
 Set the shade of gray to be used for filling solid objects to
 .IR n ;
 .I n
@@ -3445,19 +3447,19 @@ changing this.
 .
 .IP
 The corresponding
-.BI \[rs]D'f .\|.\|. '
+.BI \[rs]D'f \*[ellipsis] '
 command shouldn't be used since its argument is always rounded to an
 integer multiple of the horizontal resolution which can lead to
 surprising results.
 .
 .TP
-\f[B]DC \f[I]d\f[R]\*[ic]\[rs]n
+\f[B]DC \f[I]\/d\f[R]\*[ic]\[rs]n
 Draw a solid circle with a diameter of
 .I d
 with the leftmost point at the current position.
 .
 .TP
-\f[B]DE \f[I]dx dy\f[R]\*[ic]\[rs]n
+\f[B]DE \f[I]dx dy\/\f[R]\*[ic]\[rs]n
 Draw a solid ellipse with a horizontal diameter of
 .I dx
 and a vertical diameter of
@@ -3471,7 +3473,7 @@ delim $$
 \f[B]Dp\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub n$\[rs]n
 Draw a polygon with, for $i = 1 ,..., n+1$, the
 .IR i -th
-vertex at the current position 
+vertex at the current position
 .
 $+ sum from j=1 to i-1 ( dx sub j , dy sub j )$.
 .
@@ -3486,7 +3488,7 @@ Like
 but draw a solid rather than outlined polygon.
 .
 .TP
-\f[B]Dt \f[I]n\f[R]\*[ic]\[rs]n
+\f[B]Dt \f[I]n\/\f[R]\*[ic]\[rs]n
 Set the current line thickness to
 .IR n \~\c
 machine units.
@@ -3522,7 +3524,7 @@ is not one of
 .BR l ,
 .BR a ,
 or\~\c
-.BR ~ ,
+.BR \[ti] ,
 Unix troff treats each of the $x sub i$ as a horizontal quantity,
 and each of the $y sub i$ as a vertical quantity and assumes that
 the width of the drawn object is $sum from i=1 to n x sub i$,
@@ -3569,7 +3571,7 @@ Another set of extensions is
 .TQ
 \f[B]DFd\f[R]\*[ic]\[rs]n
 .TQ
-\f[B]DFg \f[I]gray\f[R]\*[ic]\[rs]n
+\f[B]DFg \f[I]gray\/\f[R]\*[ic]\[rs]n
 .TQ
 \f[B]DFk \f[I]cyan magenta yellow black\f[R]\*[ic]\[rs]n
 .TQ
@@ -3873,7 +3875,7 @@ classical `device-independent' troff did.
 .SH AUTHORS
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 1989, 2001\-2004, 2006\-2010, 2012
+Copyright (C) 1989, 2001\-2004, 2006\-2010, 2012, 2014
 Free Software Foundation, Inc.
 .
 .P
