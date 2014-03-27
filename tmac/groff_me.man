@@ -46,7 +46,7 @@ Many
 .I troff
 requests are unsafe in conjunction with
 this package, however, these requests may be used with
-impunity after the first .pp:
+impunity after the first \&.pp:
 .TS
 l l.
 \&.bp	begin new page
@@ -54,7 +54,7 @@ l l.
 \&.sp n	insert n spacing lines
 \&.ls n	(line spacing) n=1 single, n=2 double space
 \&.na	no alignment of right margin
-\&.ce n		center next n lines
+\&.ce n	center next n lines
 \&.ul n	underline next n lines
 .TE
 .PP
@@ -74,36 +74,55 @@ is acceptable as input.
 .BR groff (1),
 .BR troff (1)
 .br
-\-me Reference Manual, Eric P. Allman
+\-me Reference Manual, Eric P.\& Allman
 .br
 Writing Papers with Groff Using \-me
-.tr &.
 .SH REQUESTS
 This list is incomplete;
 see
 .I "The \-me Reference Manual"
 for interesting details.
 .PP
+.na
 .TS
-expand;
-l l l l.
+l l l lx.
 Request	Initial	Causes	Explanation
 	Value	Break
 _
-\&.(c	\-	yes	Begin centered block
-\&.(d	\-	no	Begin delayed text
+\&.(c	\-	yes	T{
+Begin centered block
+T}
+\&.(d	\-	no	T{
+Begin delayed text
+T}
 \&.(f	\-	no	Begin footnote
 \&.(l	\-	yes	Begin list
-\&.(q	\-	yes	Begin major quote
-\&.(x \fIx\fR	\-	no	Begin indexed item in index
-\&.(z	\-	no	Begin floating keep
-\&.)c	\-	yes	End centered block
-\&.)d	\-	yes	End delayed text
+\&.(q	\-	yes	T{
+Begin major quote
+T}
+\&.(x \fIx\fR	\-	no	T{
+Begin indexed item in index
+T}
+\&.(z	\-	no	T{
+Begin floating keep
+T}
+\&.)c	\-	yes	T{
+End centered block
+T}
+\&.)d	\-	yes	T{
+End delayed text
+T}
 \&.)f	\-	yes	End footnote
 \&.)l	\-	yes	End list
-\&.)q	\-	yes	End major quote
-\&.)x	\-	yes	End index item
-\&.)z	\-	yes	End floating keep
+\&.)q	\-	yes	T{
+End major quote
+T}
+\&.)x	\-	yes	T{
+End index item
+T}
+\&.)z	\-	yes	T{
+End floating keep
+T}
 \&.++ \fIm H\fR	\-	no	T{
 Define paper section.
 .I m
@@ -124,12 +143,16 @@ or
 T}
 \&.+c \fIT\fR	\-	yes	T{
 Begin chapter (or appendix, etc., as
-set by .++).
+set by \&.++).
 .I T
 is the chapter title.
 T}
-\&.1c	1	yes	One column format on a new page.
-\&.2c	1	yes	Two column format.
+\&.1c	1	yes	T{
+One column format on a new page.
+T}
+\&.2c	1	yes	T{
+Two column format.
+T}
 \&.EN	\-	yes	T{
 Space after equation
 produced by
@@ -151,12 +174,22 @@ to left-adjust the equation, or
 .I C
 to center the equation.
 T}
-\&.GE	\-	yes	End \fIgremlin\fP picture.
-\&.GS	\-	yes	Begin \fIgremlin\fP picture.
-\&.PE	\-	yes	End \fIpic\fP picture.
-\&.PS	\-	yes	Begin \fIpic\fP picture.
+\&.GE	\-	yes	T{
+End \fIgremlin\fP picture.
+T}
+\&.GS	\-	yes	T{
+Begin \fIgremlin\fP picture.
+T}
+\&.PE	\-	yes	T{
+End \fIpic\fP picture.
+T}
+\&.PS	\-	yes	T{
+Begin \fIpic\fP picture.
+T}
 \&.TE	\-	yes	End table.
-\&.TH	\-	yes	End heading section of table.
+\&.TH	\-	yes	T{
+End heading section of table.
+T}
 \&.TS \fIx\fR	\-	yes	T{
 Begin table; if \fIx\fR is
 .I H
@@ -173,20 +206,38 @@ Augments the base indent by
 This indent is used to set the indent on regular text
 (like paragraphs).
 T}
-\&.bc	no	yes	Begin new column
+\&.bc	no	yes	T{
+Begin new column
+T}
 \&.bi \fIx\fR	no	no	T{
 Print
 .I x
 in bold italics (nofill only)
 T}
-\&.bu	\-	yes	Begin bulleted paragraph
-\&.bx \fIx\fR	no	no	Print \fIx\fR in a box (nofill only).
-\&.ef \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set even footer to x  y  z
-\&.eh \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set even header to x  y  z
-\&.fo \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set footer to x  y  z
-\&.hx	\-	no	Suppress headers and footers on next page.
-\&.he \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set header to x  y  z
-\&.hl	\-	yes	Draw a horizontal line
+\&.bu	\-	yes	T{
+Begin bulleted paragraph
+T}
+\&.bx \fIx\fR	no	no	T{
+Print \fIx\fR in a box (nofill only).
+T}
+\&.ef \fI\'x\'y\'z\'\fR	\'\'\'\'	no	T{
+Set even footer to x  y  z
+T}
+\&.eh \fI\'x\'y\'z\'\fR	\'\'\'\'	no	T{
+Set even header to x  y  z
+T}
+\&.fo \fI\'x\'y\'z\'\fR	\'\'\'\'	no	T{
+Set footer to x  y  z
+T}
+\&.hx	\-	no	T{
+Suppress headers and footers on next page.
+T}
+\&.he \fI\'x\'y\'z\'\fR	\'\'\'\'	no	T{
+Set header to x  y  z
+T}
+\&.hl	\-	yes	T{
+Draw a horizontal line
+T}
 \&.i \fIx\fR	no	no	T{
 Italicize
 .I x;
@@ -202,17 +253,31 @@ Indentation is
 .I y
 ens (default 5).
 T}
-\&.lp	yes	yes	Start left-blocked paragraph.
-\&.np	1	yes	Start numbered paragraph.
-\&.of \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set odd footer to x  y  z
-\&.oh \fI\'x\'y\'z\'\fR	\'\'\'\'	no	Set odd header to x  y  z
-\&.pd	\-	yes	Print delayed text.
+\&.lp	yes	yes	T{
+Start left-blocked paragraph.
+T}
+\&.np	1	yes	T{
+Start numbered paragraph.
+T}
+\&.of \fI\'x\'y\'z\'\fR	\'\'\'\'	no	T{
+Set odd footer to x  y  z
+T}
+\&.oh \fI\'x\'y\'z\'\fR	\'\'\'\'	no	T{
+Set odd header to x  y  z
+T}
+\&.pd	\-	yes	T{
+Print delayed text.
+T}
 \&.pp	no	yes	T{
 Begin paragraph.
 First line indented.
 T}
-\&.r	yes	no	Roman text follows.
-\&.re	\-	no	Reset tabs to default values.
+\&.r	yes	no	T{
+Roman text follows.
+T}
+\&.re	\-	no	T{
+Reset tabs to default values.
+T}
 \&.sh \fIn x\fR	\-	yes	T{
 Section head follows,
 font automatically bold.
@@ -235,14 +300,19 @@ Augment the point size by
 .I n
 points.
 T}
-\&.tp	no	yes	Begin title page.
+\&.tp	no	yes	T{
+Begin title page.
+T}
 \&.u \fIx\fR	\-	no	T{
 Underline argument (even in \fItroff\fR).
 (Nofill only).
 T}
-\&.uh	\-	yes	Like .sh but unnumbered.
+\&.uh	\-	yes	T{
+Like .sh but unnumbered.
+T}
 \&.xp \fIx\fR	\-	no	Print index.
 .TE
+.ad
 
 .
 .\" Local Variables:
