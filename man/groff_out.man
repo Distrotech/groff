@@ -5,7 +5,7 @@ groff_out.5
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 1989, 2001-2009, 2011
+Copyright (C) 1989, 2001-2009, 2011, 2014
 Free Software Foundation, Inc.
 rewritten from scrach 2001 by Bernd Warken
 <groff-bernd.warken-72@web.de>
@@ -50,7 +50,7 @@ after these commands, otherwise the position is not changed.
 .RI ( \,\\$1\/ ,\  \,\\$2\/ )\\$3
 ..
 .de indexed_offset
-.offset \fI\\$1\fP\d\s-3\\$2\s+3\u \fI\\$3\fP\d\s-3\\$4\s+3\u \\$5
+.offset \fI\\$1\/\fP\d\s-3\\$2\s+3\u\x'\n[.v]/4' \fI\\$3\/\fP\d\s-3\\$4\s+3\u\x'\n[.v]/4' \\$5\x'\n[.v]/4'
 ..
 .\" format: .command <name> "<arguments>" <punctuation>
 .de command
@@ -61,12 +61,12 @@ after these commands, otherwise the position is not changed.
 \fBD\\$1\fP\ \fI\,\\$2\/\fP\|\*[@linebreak]
 ..
 .
-.\" We set these as troff micromotions rather than eqn because \d and \u 
+.\" We set these as troff micromotions rather than eqn because \d and \u
 .\" can be lifted to XML subscript/superscript tags.  Don't change
 .\" these to a parameterized string, man2html won't handle that.
-.ds hv1 \fIh\d\s-3\&1\s+3\u\~v\d\s-3\&1\s+3\u\fP 
-.ds hv2 \fIh\d\s-3\&2\s+3\u\~v\d\s-3\&2\s+3\u\fP
-.ds hvn \fIh\d\s-3\&n\s+3\u\~v\d\s-3\&n\s+3\u\fP
+.ds hv1 \fIh\d\s-3\&1\s+3\u\~v\d\s-3\&1\s+3\u\fP\x'\n[.v]/4'
+.ds hv2 \fIh\d\s-3\&2\s+3\u\~v\d\s-3\&2\s+3\u\fP\x'\n[.v]/4'
+.ds hvn \fIh\d\s-3\&n\s+3\u\~v\d\s-3\&n\s+3\u\fP\x'\n[.v]/4'
 .
 .de Da-command
 \fBDa\fP\ \*[hv1] \*[hv2]\|\*[@linebreak]
@@ -84,7 +84,7 @@ after these commands, otherwise the position is not changed.
 .RI "(" "\\$1" " control command)"
 .br
 ..
-.\" End of macro definitions 
+.\" End of macro definitions
 .
 .
 .\" --------------------------------------------------------------------
@@ -135,7 +135,7 @@ within the
 The
 .B groff
 program provides the option
-.B -Z
+.B \-Z
 to inhibit postprocessing, such that the produced
 .I intermediate output
 is sent to standard output just like calling
@@ -202,7 +202,7 @@ still supported, but not used any longer by
 .\" --------------------------------------------------------------------
 .
 During the run of
-.BR @g@troff , 
+.BR @g@troff ,
 the
 .I roff
 input is cracked down to the information on what has to be printed at
@@ -335,7 +335,7 @@ for more on this topic.
 Most commands assume the scale indicator\~\c
 .BR u ,
 the basic unit of the device, some use\~\c
-.BR z , 
+.BR z ,
 the
 .I scaled point unit
 of the device, while others, such as the color commands expect plain
@@ -586,7 +586,7 @@ doesn't use this.
 .TP
 .command m "color-scheme \fR[\fPcomponent .\|.\|.\fR]\fP"
 Set the color for text (glyphs), line drawing, and the outline of
-graphic objects using different color schemes; the analoguous command
+graphic objects using different color schemes; the analogous command
 for the filling color of graphic objects is
 .BR DF .
 .
@@ -860,13 +860,13 @@ In this case, they are integers representing a size measured in basic
 units\~\c
 .BR u .
 .
-The 
+The
 .I h
 arguments
 stand for horizontal distances where positive means right, negative
 left.
 .
-The 
+The
 .I v
 arguments
 stand for vertical distances where positive means down, negative up.
@@ -902,7 +902,7 @@ as defined in section
 .
 .
 .TP
-.D-multiarg ~
+.D-multiarg \[ti]
 Draw B-spline from current position to offset
 .indexed_offset h 1 v 1 ,
 then to offset
@@ -984,7 +984,7 @@ rightmost point of the ellipse.
 .TP
 .D-command F "color-scheme \fR[\fPcomponent .\|.\|.\fR]\fP"
 Set fill color for solid drawing objects using different color
-schemes; the analoguous command for setting the color of text, line
+schemes; the analogous command for setting the color of text, line
 graphics, and the outline of graphic objects is
 .BR m .
 .
@@ -1048,7 +1048,7 @@ having the 3\~color components red, green, and blue.
 .D-command f n
 The argument
 .I n
-must be an integer in the range -32767 to 32767.
+must be an integer in the range \-32767 to 32767.
 .
 .RS
 .TP
@@ -1070,7 +1070,7 @@ For example, the command sequence
 .IP
 .EX
 mg 0 0 \n[@maxcolor]
-Df -1
+Df \-1
 .EE
 .RE
 .
@@ -1519,7 +1519,7 @@ fed into
 on the command line.
 .
 .
-.IP \[bu] 2m 
+.IP \[bu] 2m
 High-resolution device
 .I ps
 .
@@ -1527,7 +1527,7 @@ High-resolution device
 .RS
 .P
 .EX
-\fBshell>\fP echo "hell world" | groff -Z -T ps
+\fBshell>\fP echo "hell world" | groff \-Z \-T ps
 .EE
 .
 .
@@ -1565,7 +1565,7 @@ to get its representation as a PostScript file, or
 to output directly to PDF.
 .
 .
-.IP \[bu] 2m 
+.IP \[bu] 2m
 Low-resolution device
 .I latin1
 .
@@ -1583,7 +1583,7 @@ formatter.
 .
 .P
 .EX
-\fBshell>\fP "hell world" | groff -Z -T latin1
+\fBshell>\fP "hell world" | groff \-Z \-T latin1
 .EE
 .
 .
@@ -1634,7 +1634,7 @@ This output can be fed into the postprocessor
 to get a formatted text document.
 .
 .
-.IP \[bu] 2m 
+.IP \[bu] 2m
 Classical style output
 .
 .
@@ -1649,7 +1649,7 @@ displacements.
 .
 .P
 .EX
-\fBshell>\fP "hell world" | groff -Z -T X100
+\fBshell>\fP "hell world" | groff \-Z \-T X100
 .EE
 .
 .
@@ -1696,7 +1696,7 @@ classical output are almost unreadable.
 .
 The
 .I intermediate output
-language of the 
+language of the
 .I classical troff
 was first documented in
 .IR [CSTR\~#97] .
@@ -1707,11 +1707,11 @@ format is compatible with this specification except for the following
 features.
 .
 .
-.IP \[bu] 2m 
+.IP \[bu] 2m
 The classical quasi device independence is not yet implemented.
 .
 .
-.IP \[bu] 2m 
+.IP \[bu] 2m
 The old hardware was very different from what we use today.
 .
 So the
@@ -1734,16 +1734,16 @@ modern
 .IR groff .
 .
 .
-.IP \[bu] 2m 
+.IP \[bu] 2m
 The B-spline command
-.B D~
+.B D\[ti]
 is correctly handled by the
 .I intermediate output
 parser, but the drawing routines aren't implemented in some of the
 postprocessor programs.
 .
 .
-.IP \[bu] 2m 
+.IP \[bu] 2m
 The argument of the commands
 .B s
 and
@@ -1773,7 +1773,7 @@ So conflicts with classical devices are very unlikely.
 .
 .
 .ie \n[@STUPID_DRAWING_POSITIONING]=1 \{\
-.IP \[bu] 2m 
+.IP \[bu] 2m
 The position changing after the commands
 .BR Dp ,
 .BR DP ,
@@ -1873,7 +1873,7 @@ For more details, see
 .TP
 .BR groff (@MAN1EXT@)
 option
-.B -Z
+.B \-Z
 and further readings on groff.
 .
 .
