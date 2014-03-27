@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 1989-2004, 2007, 2009, 2011
+Copyright (C) 1989-2004, 2007, 2009, 2011, 2014
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -295,7 +295,7 @@ Lines beginning with a period are not given any special treatment.
 .
 .TP
 \fBfor\fR \fIvariable\fR \fB=\fR \fIexpr1\fR \fBto\fR \fIexpr2\fR \
-[\fBby\fR [\fB*\fR]\fIexpr3\fR] \fBdo\fR \fIX\fR \fIbody\fR \fIX\fR
+[\fBby\fR [\fB*\fR]\,\fIexpr3\/\fR] \fBdo\fR \fIX\fR \fIbody\fR \fIX\fR
 Set
 .I variable
 to
@@ -403,18 +403,18 @@ can be any character not occurring in
 .IR command .
 .
 .TP
-\fBcopy\fR \fB"\fIfilename\fB"\fR
+\fBcopy\fR \fB"\,\fIfilename\/\fB"\fR
 Include
 .I filename
 at this point in the file.
 .
 .TP
-\fBcopy\fR [\fB"\fIfilename\fB"\fR] \fBthru\fR \fIX\fR \fIbody\fR \fIX\fR \
-[\fBuntil\fR \fB"\fIword\*(ic\fB"\fR]
+\fBcopy\fR [\fB"\,\fIfilename\/\fB"\fR] \fBthru\fR \fIX\fR \fIbody\fR \fIX\fR \
+[\fBuntil\fR \fB"\,\fIword\*(ic\fB"\fR]
 .ns
 .TP
-\fBcopy\fR [\fB"\fIfilename\fB"\fR] \fBthru\fR \fImacro\fR \
-[\fBuntil\fR \fB"\fIword\*(ic\fB"\fR]
+\fBcopy\fR [\fB"\,\fIfilename\/\fB"\fR] \fBthru\fR \fImacro\fR \
+[\fBuntil\fR \fB"\,\fIword\*(ic\fB"\fR]
 This construct does
 .I body
 once for each line of
@@ -485,7 +485,7 @@ as the argument to
 .br
 .ns
 .TP
-\fBreset\fI variable1\fR[\fB,\fR]\fI variable2 .\^.\^.
+\fBreset\fI variable1\/\fR[\fB,\fR]\fI variable2 .\^.\^.
 Reset pre-defined variables
 .IR variable1 ,
 .I variable2
@@ -498,7 +498,7 @@ also causes all pre-defined variables that control dimensions
 to be reset to their default values times the new value of scale.
 .
 .TP
-\fBplot\fR \fIexpr\fR [\fB"\fItext\*(ic\fB"\fR]
+\fBplot\fR \fIexpr\fR [\fB"\,\fItext\*(ic\fB"\fR]
 This is a text object which is constructed by using
 .I text
 as a format string for sprintf
@@ -597,7 +597,7 @@ The syntax for expressions has been significantly extended:
 (base 10)
 .br
 .BI exp( x )
-(base 10, ie
+(base 10, i.e.\&
 .ie t 10\v'-.4m'\fIx\*(ic\fR\v'.4m')
 .el   10^\fIx\fR)
 .br
@@ -638,9 +638,9 @@ deprecated)
 .br
 \fIe1\fB < \fIe2\fR
 .br
-\fB"\fIstr1\*(ic\fB" == "\fIstr2\*(ic\fB"\fR
+\fB"\,\fIstr1\*(ic\fB" == "\,\fIstr2\*(ic\fB"\fR
 .br
-\fB"\fIstr1\*(ic\fB" != "\fIstr2\*(ic\fB"\fR
+\fB"\,\fIstr1\*(ic\fB" != "\,\fIstr2\*(ic\fB"\fR
 .br
 .
 .LP
@@ -803,7 +803,7 @@ This gives the thickness of lines in points.
 A negative value means use the default thickness:
 in \*(tx output mode, this means use a thickness of 8 milliinches;
 in \*(tx output mode with the
-.B -c
+.B \-c
 option, this means use the line thickness specified by
 .B .ps
 lines;
@@ -811,7 +811,7 @@ in troff output mode, this means use a thickness proportional
 to the pointsize.
 A zero value means draw the thinnest possible line supported by
 the output device.
-Initially it has a value of -1.
+Initially it has a value of \-1.
 There is also a
 .BR thick [ ness ]
 attribute.
@@ -987,7 +987,7 @@ annoying.
 At the moment, calling standard
 .B groff
 without any macro package works.
-Alternatively, you can define your own requests, e.g. to do nothing:
+Alternatively, you can define your own requests, e.g.\& to do nothing:
 .LP
 .RS
 .nf
@@ -1008,7 +1008,7 @@ But there are lots of possibilities if you first transform your picture
 into PostScript\*R format using the
 .B groff
 option
-.BR -Tps .
+.BR \-Tps .
 Since this
 .IR ps -file
 lacks BoundingBox information it is not very useful by itself, but it
@@ -1023,13 +1023,13 @@ Moreover, the PostScript interpreter
 has built-in graphics conversion devices that are called with the option
 .LP
 .RS
-.BI "gs -sDEVICE=" <devname>
+.BI "gs \-sDEVICE=" <devname>
 .RE
 .LP
 Call
 .LP
 .RS
-.B gs --help
+.B gs \-\-help
 .RE
 .LP
 for a list of the available devices.
@@ -1041,7 +1041,7 @@ option to convert your picture directly into
 .B PDF
 format.
 The MediaBox of the file produced can be controlled by passing a
-.B \-P-p
+.B \-P\-p
 papersize to groff.
 .
 .LP
@@ -1090,7 +1090,7 @@ macros.
 .BR ps2epsi (1),
 .BR pnm (5)
 .LP
-Eric S. Raymond,
+Eric S.\& Raymond,
 .I Making Pictures With GNU PIC.
 .br
 @DOCDIR@/pic.ps (this file, together with its source file, pic.ms, is part
@@ -1098,7 +1098,7 @@ of the groff documentation)
 .LP
 Tpic: Pic for \*(tx
 .LP
-Brian W. Kernighan,
+Brian W.\& Kernighan,
 .I PIC \(em A Graphics Language for Typesetting (User Manual).
 AT&T Bell Laboratories, Computing Science Technical Report No.\ 116
 .br
@@ -1106,16 +1106,16 @@ AT&T Bell Laboratories, Computing Science Technical Report No.\ 116
 (revised May, 1991).
 .LP
 .B ps2eps
-is available from CTAN mirrors, e.g.
+is available from CTAN mirrors, e.g.\&
 .br
 <ftp://ftp.dante.de/tex-archive/support/ps2eps/>
 .LP
-W. Richard Stevens,
+W.\& Richard Stevens,
 .I Turning PIC Into HTML
 .br
 <http://www.kohala.com/start/troff/pic2html.html>
 .LP
-W. Richard Stevens,
+W.\& Richard Stevens,
 .I Examples of picMacros
 .br
 <http://www.kohala.com/start/troff/pic.examples.ps>
