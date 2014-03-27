@@ -1,6 +1,5 @@
 .\" This documentation is released to the public domain.
 .TH PIC2GRAPH @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-.IX pic2graph
 .SH NAME
 pic2graph \- convert a PIC diagram into a cropped image
 .
@@ -11,10 +10,10 @@ pic2graph \- convert a PIC diagram into a cropped image
 .B \-unsafe
 ]
 [
-.BI \-format\  fmt
+.BI "\-format " fmt
 ]
 [
-.BI \-eqn\  delim
+.BI "\-eqn " delim
 ]
 .
 .
@@ -45,7 +44,7 @@ distribution.
 Your input PIC code should
 .I not
 be wrapped with the \&.PS and \&.PE macros that normally guard it within
-.BR groff (@MAN1EXT@) 
+.BR groff (@MAN1EXT@)
 macros.
 .P
 The output image will be clipped to the smallest possible bounding box
@@ -54,12 +53,12 @@ Older versions of
 .BR \%convert (1)
 will produce a black-on-white graphic; newer ones may produce a
 black-on-transparent graphic.
-By specifying command-line options to be passed to 
+By specifying command-line options to be passed to
 .BR \%convert (1)
 you can give it a border, force the background transparent, set the
 image's pixel density, or perform other useful transformations.
 .P
-This program uses 
+This program uses
 .BR @g@pic (@MAN1EXT@),
 .BR @g@eqn (@MAN1EXT@),
 .BR groff (@MAN1EXT@),
@@ -76,7 +75,7 @@ to work.
 .SH OPTIONS
 .TP
 .B \-unsafe
-Run 
+Run
 .BR @g@pic (@MAN1EXT@)
 and
 .BR groff (@MAN1EXT@)
@@ -85,14 +84,14 @@ in the `unsafe' mode enabling the PIC macro
 to execute arbitrary commands.
 The default is to forbid this.
 .TP
-.BI \-format\  fmt
+.BI "\-format " fmt
 Specify an output format; the default is PNG (Portable Network Graphics).
 Any format that
 .BR \%convert (1)
 can emit is supported.
 .TP
-.BI \-eqn\  delim
-Change the fencepost characters that delimit 
+.BI "\-eqn " delim
+Change the fencepost characters that delimit
 .BR @g@eqn (@MAN1EXT@)
 directives
 .RB ( $
@@ -111,7 +110,7 @@ Command-line switches and arguments not listed above are passed to
 .SH FILES
 .TP \w'\fB@MACRODIR@/eqnrc'u+2n
 .B @MACRODIR@/eqnrc
-The 
+The
 .BR @g@eqn (@MAN1EXT@)
 initialization file.
 .
@@ -138,16 +137,16 @@ Due to changes in the behavior of ImageMagick
 that are both forward and backward-incompatible,
 mismatches between your
 .B pic2graph
-and 
+and
 .BR \%convert (1)
 versions may produce zero-sized or untrimmed output images.
-For this version of 
+For this version of
 .B pic2graph
 you will need a version of
 .BR \%convert (1)
 that supports the
 .B \-trim
-option; older versions of 
+option; older versions of
 .B pic2graph
 used
 .BR \-crop\~0x0 ,
@@ -165,7 +164,7 @@ which no longer has trimming behavior.
 .
 .
 .SH AUTHOR
-Eric S. Raymond <esr@thyrsus.com>, based on a recipe by W. Richard Stevens.
+Eric S.\& Raymond <esr@thyrsus.com>, based on a recipe by W.\& Richard Stevens.
 .
 .\" Local Variables:
 .\" mode: nroff
