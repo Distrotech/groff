@@ -35,7 +35,6 @@ RM=rm -f
 
 all: glilypond
 
-
 # files going to lib directory `$(glilypond_dir)'
 
 GLILYPOND_LIB=$(srcdir)/subs.pl \
@@ -43,7 +42,6 @@ GLILYPOND_LIB=$(srcdir)/subs.pl \
 	$(srcdir)/args.pl
 
 GLILYPOND_LIB_=`echo $(GLILYPOND_LIB) | sed 's|$(srcdir)/||g'`
-
 
 # create perl executable `glilypond', being stored into `bindir'
 
@@ -56,7 +54,6 @@ glilypond: $(srcdir)/glilypond.pl
 		$(srcdir)/glilypond.pl >$@
 	chmod +x $@
 
-
 install_data: glilypond $(GLILYPOND_LIB)
 	-test -d $(DESTDIR)$(bindir) \
 		|| $(mkinstalldirs) $(DESTDIR)$(bindir)
@@ -68,7 +65,6 @@ install_data: glilypond $(GLILYPOND_LIB)
 		$(RM) $(DESTDIR)$(glilypond_dir)/$$f; \
 		$(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(glilypond_dir)/$$f; \
 	done
-
 
 uninstall_sub:
 	$(RM) $(DESTDIR)$(bindir)/glilypond;
