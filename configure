@@ -627,12 +627,20 @@ ac_func_list=
 ac_subst_vars='LTLIBOBJS
 GLIBC21
 pnmtops_nosetpage
+make_uninstall_pdfexamples
+make_install_pdfexamples
+make_pdfexamples
+make_uninstall_pdfdoc
 make_install_pdfdoc
 make_pdfdoc
 ac_ct_AWK
 ALT_AWK_PROGS
-make_install_html
-make_html
+make_uninstall_htmlexamples
+make_install_htmlexamples
+make_htmlexamples
+make_uninstall_htmldoc
+make_install_htmldoc
+make_htmldoc
 pnmtops
 psselect
 pnmtopng
@@ -669,7 +677,17 @@ INSTALL_SCRIPT
 INSTALL_PROGRAM
 INSTALL_INFO
 RANLIB
+make_uninstall_infodoc
+make_install_infodoc
+make_infodoc
 MAKEINFO
+make_uninstall_examples
+make_install_examples
+make_examples
+make_uninstall_otherdoc
+make_install_otherdoc
+make_otherdoc
+doc_dist_target_ok
 YACC
 DVIPRINT
 PSPRINT
@@ -752,6 +770,7 @@ enable_option_checking
 with_x
 with_appresdir
 with_grofferdir
+with_doc
 with_gnu_ld
 enable_rpath
 with_libiconv_prefix
@@ -1399,6 +1418,11 @@ Optional Packages:
   --with-x                use the X Window System
   --with-appresdir=DIR    X11 application resource files
   --with-grofferdir=DIR   groffer files location
+  --with-doc[=TYPE]       choose which manuals (beside man pages) are
+                          desirable. TYPE can be `yes' or `no', or a
+                          comma-separated list of one or multiple of `html',
+                          `info', `other', `pdf', and `examples', to restrict
+                          what is produced
   --with-gnu-ld           assume the C compiler uses GNU ld default=no
   --with-libiconv-prefix[=DIR]  search for libiconv in DIR/include and DIR/lib
   --without-libiconv-prefix     don't search for libiconv in includedir and libdir
@@ -6034,8 +6058,77 @@ fi
 done
 test -n "$YACC" || YACC="yacc"
 
-missing=
-   # Extract the first word of "makeinfo", so it can be a program name with args.
+
+# Check whether --with-doc was given.
+if test "${with_doc+set}" = set; then :
+  withval=$with_doc; doc="$withval"
+else
+  doc=yes
+fi
+
+  test "x$doc" = xno && doc=''
+  if test "x$doc" = xyes; then
+    doc_dist_target_ok=yes
+    docadd_html=yes
+    docadd_info=yes
+    docadd_other=yes
+    docadd_pdf=yes
+    docadd_examples=yes
+  else
+    # Don't use case/esac, verify input.
+    doc_dist_target_ok=no
+    docadd_html=no
+    docadd_info=no
+    docadd_other=no
+    docadd_pdf=no
+    docadd_examples=no
+    OFS=$IFS
+    IFS=','
+    set -- $doc
+    IFS=$OFS
+    for i
+    do
+      test "x$i" = xhtml     && { docadd_html=yes; continue; }
+      test "x$i" = xinfo     && { docadd_info=yes; continue; }
+      test "x$i" = xother    && { docadd_other=yes; continue; }
+      test "x$i" = xpdf      && { docadd_pdf=yes; continue; }
+      test "x$i" = xexamples && { docadd_examples=yes; continue; }
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Invalid \`--with-doc' argument: $i" >&5
+$as_echo "$as_me: WARNING: Invalid \`--with-doc' argument: $i" >&2;}
+    done
+  fi
+  if test $docadd_other = yes; then
+    make_otherdoc=otherdoc
+    make_install_otherdoc=install_otherdoc
+    make_uninstall_otherdoc=uninstall_otherdoc
+  else
+    make_otherdoc=
+    make_install_otherdoc=
+    make_uninstall_otherdoc=
+  fi
+  if test $docadd_examples = yes; then
+    make_examples=examples
+    make_install_examples=install_examples
+    make_uninstall_examples=uninstall_examples
+  else
+    make_examples=
+    make_install_examples=
+    make_uninstall_examples=
+  fi
+
+
+
+
+
+
+
+make_infodoc=
+   make_install_infodoc=
+   make_uninstall_infodoc=
+   MAKEINFO=
+   if test $docadd_info = yes; then
+     missing=
+     # Extract the first word of "makeinfo", so it can be a program name with args.
 set dummy makeinfo; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -6072,42 +6165,49 @@ $as_echo "no" >&6; }
 fi
 
 
-   if test -z "$MAKEINFO"; then
-     missing="\`makeinfo' is missing."
-   else
-     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for makeinfo version" >&5
-$as_echo_n "checking for makeinfo version... " >&6; }
-     # We need an additional level of quoting to make sed's regexps work.
-     makeinfo_version=`$MAKEINFO --version 2>&1 \
-       | sed -e 's/^.* \([^ ][^ ]*\)$/\1/' -e '1q'`
-     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $makeinfo_version" >&5
-$as_echo "$makeinfo_version" >&6; }
-     # Consider only the first two numbers in version number string.
-     makeinfo_version_major=`IFS=.; set x $makeinfo_version; echo 0${2}`
-     makeinfo_version_minor=`IFS=.; set x $makeinfo_version; echo 0${3}`
-     makeinfo_version_numeric=`
-       expr ${makeinfo_version_major}000 \+ ${makeinfo_version_minor}`
-     if test $makeinfo_version_numeric -lt 4008; then
-       missing="\`makeinfo' is too old."
-     fi
-   fi
-
-   if test -n "$missing"; then
-     infofile=doc/groff.info
-     test -f ${infofile} || infofile=${srcdir}/${infofile}
-     if test ! -f ${infofile} \
-	|| test ${srcdir}/doc/groff.texinfo -nt ${infofile}; then
-       as_fn_error $? "$missing
-Get the \`texinfo' package version 4.8 or newer." "$LINENO" 5
+     if test -z "$MAKEINFO"; then
+       missing="\`makeinfo' is missing."
      else
-       { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $missing
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for makeinfo version" >&5
+$as_echo_n "checking for makeinfo version... " >&6; }
+       # We need an additional level of quoting to make sed's regexps work.
+       makeinfo_version=`$MAKEINFO --version 2>&1 \
+        | sed -e 's/^.* \([^ ][^ ]*\)$/\1/' -e '1q'`
+       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $makeinfo_version" >&5
+$as_echo "$makeinfo_version" >&6; }
+       # Consider only the first two numbers in version number string.
+       makeinfo_version_major=`IFS=.; set x $makeinfo_version; echo 0${2}`
+       makeinfo_version_minor=`IFS=.; set x $makeinfo_version; echo 0${3}`
+       makeinfo_version_numeric=`
+         expr ${makeinfo_version_major}000 \+ ${makeinfo_version_minor}`
+       if test $makeinfo_version_numeric -lt 4008; then
+         missing="\`makeinfo' is too old."
+       fi
+     fi
+
+     if test -n "$missing"; then
+       infofile=doc/groff.info
+       test -f ${infofile} || infofile=${srcdir}/${infofile}
+       if test ! -f ${infofile} \
+	|| test ${srcdir}/doc/groff.texinfo -nt ${infofile}; then
+	 as_fn_error $? "$missing
+Get the \`texinfo' package version 4.8 or newer." "$LINENO" 5
+       else
+	 { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $missing
 Get the \`texinfo' package version 4.8 or newer if you want to convert
 \`groff.texinfo' into a PDF or HTML document." >&5
 $as_echo "$as_me: WARNING: $missing
 Get the \`texinfo' package version 4.8 or newer if you want to convert
 \`groff.texinfo' into a PDF or HTML document." >&2;}
+       fi
      fi
+     make_infodoc=infodoc
+     make_install_infodoc=install_infodoc
+     make_uninstall_infodoc=uninstall_infodoc
    fi
+
+
+
 
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
@@ -6233,7 +6333,8 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
    ac_dir=`cd $ac_aux_dir; pwd`
    ac_install_sh="$ac_dir/install-sh -c"
-for ac_prog in install-info
+if test $docadd_info = yes; then
+     for ac_prog in install-info
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -6276,6 +6377,7 @@ fi
 done
 test -n "$INSTALL_INFO" || INSTALL_INFO=":"
 
+   fi
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
 # incompatible versions:
@@ -10235,9 +10337,13 @@ fi
 fi
 
    test "$GHOSTSCRIPT" = "no" && GHOSTSCRIPT=missing
+make_htmldoc=
+   make_install_htmldoc=
+   make_uninstall_htmldoc=
+   make_htmlexamples=
+   make_install_htmlexamples=
+   make_uninstall_htmlexamples=
 
-   make_html=html
-   make_install_html=install_html
 
    missing=
    # Extract the first word of "pnmcut", so it can be a program name with args.
@@ -10444,7 +10550,18 @@ fi
 
    test "$GHOSTSCRIPT" = "missing" && missing="$missing \`gs'"
 
-   if test -n "$missing"; then
+   if test -z "$missing"; then
+     if test $docadd_html = yes; then
+       make_htmldoc=htmldoc
+       make_install_htmldoc=install_htmldoc
+       make_uninstall_htmldoc=uninstall_htmldoc
+       if test $docadd_examples = yes; then
+         make_htmlexamples=html_examples
+         make_install_htmlexamples=install_htmlexamples
+         make_uninstall_htmlexamples=uninstall_htmlexamples
+       fi
+     fi
+   else
      plural=`set $missing; test $# -gt 1 && echo s`
      missing=`set $missing
        missing=""
@@ -10459,28 +10576,30 @@ fi
 	 done
 	 echo $missing`
 
-     make_html=
-     make_install_html=
+     docnote=.
+     test $docadd_html = yes && docnote=';
+  therefore, it will neither be possible to prepare, nor to install,
+  documentation in HTML format.'
 
      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: missing program$plural:
 
   The program$plural
      $missing
   cannot be found in the PATH.
-  Consequently, groff's HTML backend (grohtml) will not work properly;
-  therefore, it will neither be possible to prepare, nor to install,
-  documentation in HTML format.
+  Consequently, groff's HTML backend (grohtml) will not work properly$docnote
      " >&5
 $as_echo "$as_me: WARNING: missing program$plural:
 
   The program$plural
      $missing
   cannot be found in the PATH.
-  Consequently, groff's HTML backend (grohtml) will not work properly;
-  therefore, it will neither be possible to prepare, nor to install,
-  documentation in HTML format.
+  Consequently, groff's HTML backend (grohtml) will not work properly$docnote
      " >&2;}
+     doc_dist_target_ok=no
    fi
+
+
+
 
 
 
@@ -10602,39 +10721,55 @@ fi
 fi
 
    test "$AWK" = "no" && AWK=missing
+make_pdfdoc=
+   make_install_pdfdoc=
+   make_uninstall_pdfdoc=
+   make_pdfexamples=
+   make_install_pdfexamples=
+   make_uninstall_pdfexamples=
 
 
-
-   make_pdfdoc=pdfdoc
-   make_install_pdfdoc=install_pdfdoc
 
    missing=""
    test "$AWK" = missing && missing="\`awk'"
    test "$GHOSTSCRIPT" = missing && missing="$missing \`gs'"
-   if test -n "$missing"; then
+   if test -z "$missing"; then
+     if test $docadd_pdf = yes; then
+       make_pdfdoc=pdfdoc
+       make_install_pdfdoc=install_pdfdoc
+       make_uninstall_pdfdoc=uninstall_pdfdoc
+       if test $docadd_examples = yes; then
+         make_pdfexamples=pdfexamples
+         make_install_pdfexamples=install_pdfexamples
+         make_uninstall_pdfexamples=uninstall_pdfexamples
+       fi
+     fi
+   else
      plural=`set $missing; test $# -eq 2 && echo s`
      test x$plural = xs \
        && missing=`set $missing; echo "$1 and $2"` \
        || missing=`echo $missing`
 
-     make_pdfdoc=
-     make_install_pdfdoc=
+     docnote=.
+     test $docadd_pdf = yes && docnote=';
+  therefore, it will neither be possible to prepare, nor to install,
+  documentation and most of the examples in PDF format.'
 
      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: missing program$plural:
 
   The program$plural $missing cannot be found in the PATH.
-  Consequently, groff's PDF formatter (pdfroff) will not work properly;
-  therefore, it will neither be possible to prepare, nor to install,
-  documentation in PDF format.
+  Consequently, groff's PDF formatter (pdfroff) will not work properly$docnote
      " >&5
 $as_echo "$as_me: WARNING: missing program$plural:
 
   The program$plural $missing cannot be found in the PATH.
-  Consequently, groff's PDF formatter (pdfroff) will not work properly;
-  therefore, it will neither be possible to prepare, nor to install,
-  documentation in PDF format.
+  Consequently, groff's PDF formatter (pdfroff) will not work properly$docnote
      " >&2;}
+     doc_dist_target_ok=no
    fi
+
+
+
 
 
 
