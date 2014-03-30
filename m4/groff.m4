@@ -1,8 +1,8 @@
 # Autoconf macros for groff.
-# Copyright (C) 1989-1995, 2001-2007, 2009, 2011, 2013
+# Copyright (C) 1989-1995, 2001-2007, 2009, 2011, 2013, 2014
 #   Free Software Foundation, Inc.
 #
-# Last update: 15 Apr 2013
+# Last update: 29 Mar 2014
 #
 # This file is part of groff.
 #
@@ -71,51 +71,135 @@ AC_DEFUN([GROFF_PERL],
      AC_MSG_ERROR([perl version is too old], 1))])
 
 
+# It is possible to fine-tune generation of documenation.
+
+AC_DEFUN([GROFF_DOC_CHECK],
+  [AC_ARG_WITH([doc],
+    [AS_HELP_STRING([--with-doc[[=TYPE]]],
+      [choose which manuals (beside man pages) are desirable. \
+       TYPE can be `yes' or `no', or a comma-separated list of \
+       one or multiple of `html', `info', `other', `pdf', and \
+       `examples', to restrict what is produced])],
+    [doc="$withval"],
+    [doc=yes])
+  test "x$doc" = xno && doc=''
+  if test "x$doc" = xyes; then
+    doc_dist_target_ok=yes
+    docadd_html=yes
+    docadd_info=yes
+    docadd_other=yes
+    docadd_pdf=yes
+    docadd_examples=yes
+  else
+    # Don't use case/esac, verify input.
+    doc_dist_target_ok=no
+    docadd_html=no
+    docadd_info=no
+    docadd_other=no
+    docadd_pdf=no
+    docadd_examples=no
+    OFS=$IFS
+    IFS=','
+    set -- $doc
+    IFS=$OFS
+    for i
+    do
+      test "x$i" = xhtml     && { docadd_html=yes; continue; }
+      test "x$i" = xinfo     && { docadd_info=yes; continue; }
+      test "x$i" = xother    && { docadd_other=yes; continue; }
+      test "x$i" = xpdf      && { docadd_pdf=yes; continue; }
+      test "x$i" = xexamples && { docadd_examples=yes; continue; }
+      AC_MSG_WARN([Invalid `--with-doc' argument:] $i)
+    done
+  fi
+  if test $docadd_other = yes; then
+    make_otherdoc=otherdoc
+    make_install_otherdoc=install_otherdoc
+    make_uninstall_otherdoc=uninstall_otherdoc
+  else
+    make_otherdoc=
+    make_install_otherdoc=
+    make_uninstall_otherdoc=
+  fi
+  if test $docadd_examples = yes; then
+    make_examples=examples
+    make_install_examples=install_examples
+    make_uninstall_examples=uninstall_examples
+  else
+    make_examples=
+    make_install_examples=
+    make_uninstall_examples=
+  fi
+  AC_SUBST([doc_dist_target_ok])
+  AC_SUBST([make_otherdoc])
+  AC_SUBST([make_install_otherdoc])
+  AC_SUBST([make_uninstall_otherdoc])
+  AC_SUBST([make_examples])
+  AC_SUBST([make_install_examples])
+  AC_SUBST([make_uninstall_examples])])
+
+
 # We need makeinfo 4.8 or newer.
 
 AC_DEFUN([GROFF_MAKEINFO],
-  [missing=
-   AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo])
-   if test -z "$MAKEINFO"; then
-     missing="\`makeinfo' is missing."
-   else
-     AC_MSG_CHECKING([for makeinfo version])
-     # We need an additional level of quoting to make sed's regexps work.
-     [makeinfo_version=`$MAKEINFO --version 2>&1 \
-       | sed -e 's/^.* \([^ ][^ ]*\)$/\1/' -e '1q'`]
-     AC_MSG_RESULT([$makeinfo_version])
-     # Consider only the first two numbers in version number string.
-     makeinfo_version_major=`IFS=.; set x $makeinfo_version; echo 0${2}`
-     makeinfo_version_minor=`IFS=.; set x $makeinfo_version; echo 0${3}`
-     makeinfo_version_numeric=`
-       expr ${makeinfo_version_major}000 \+ ${makeinfo_version_minor}`
-     if test $makeinfo_version_numeric -lt 4008; then
-       missing="\`makeinfo' is too old."
-     fi
-   fi
-
-   if test -n "$missing"; then
-     infofile=doc/groff.info
-     test -f ${infofile} || infofile=${srcdir}/${infofile}
-     if test ! -f ${infofile} \
-	|| test ${srcdir}/doc/groff.texinfo -nt ${infofile}; then
-       AC_MSG_ERROR($missing
-[Get the `texinfo' package version 4.8 or newer.])
+  [make_infodoc=
+   make_install_infodoc=
+   make_uninstall_infodoc=
+   MAKEINFO=
+   if test $docadd_info = yes; then
+     missing=
+     AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo])
+     if test -z "$MAKEINFO"; then
+       missing="\`makeinfo' is missing."
      else
-       AC_MSG_WARN($missing
+       AC_MSG_CHECKING([for makeinfo version])
+       # We need an additional level of quoting to make sed's regexps work.
+       [makeinfo_version=`$MAKEINFO --version 2>&1 \
+        | sed -e 's/^.* \([^ ][^ ]*\)$/\1/' -e '1q'`]
+       AC_MSG_RESULT([$makeinfo_version])
+       # Consider only the first two numbers in version number string.
+       makeinfo_version_major=`IFS=.; set x $makeinfo_version; echo 0${2}`
+       makeinfo_version_minor=`IFS=.; set x $makeinfo_version; echo 0${3}`
+       makeinfo_version_numeric=`
+         expr ${makeinfo_version_major}000 \+ ${makeinfo_version_minor}`
+       if test $makeinfo_version_numeric -lt 4008; then
+         missing="\`makeinfo' is too old."
+       fi
+     fi
+
+     if test -n "$missing"; then
+       infofile=doc/groff.info
+       test -f ${infofile} || infofile=${srcdir}/${infofile}
+       if test ! -f ${infofile} \
+	|| test ${srcdir}/doc/groff.texinfo -nt ${infofile}; then
+	 AC_MSG_ERROR($missing
+[Get the `texinfo' package version 4.8 or newer.])
+       else
+	 AC_MSG_WARN($missing
 [Get the `texinfo' package version 4.8 or newer if you want to convert
 `groff.texinfo' into a PDF or HTML document.])
+       fi
      fi
+     make_infodoc=infodoc
+     make_install_infodoc=install_infodoc
+     make_uninstall_infodoc=uninstall_infodoc
    fi
-   AC_SUBST([MAKEINFO])])
+   AC_SUBST([MAKEINFO])
+   AC_SUBST([make_infodoc])
+   AC_SUBST([make_install_infodoc])
+   AC_SUBST([make_uninstall_infodoc])])
 
 
 # The following programs are needed for grohtml.
 
 AC_DEFUN([GROFF_HTML_PROGRAMS],
-  [AC_REQUIRE([GROFF_GHOSTSCRIPT_PATH])
-   make_html=html
-   make_install_html=install_html
+  [make_htmldoc=
+   make_install_htmldoc=
+   make_uninstall_htmldoc=
+   make_htmlexamples=
+   make_install_htmlexamples=
+   make_uninstall_htmlexamples=
+   AC_REQUIRE([GROFF_GHOSTSCRIPT_PATH])
 
    missing=
    AC_FOREACH([groff_prog],
@@ -127,7 +211,18 @@ AC_DEFUN([GROFF_HTML_PROGRAMS],
 
    test "$GHOSTSCRIPT" = "missing" && missing="$missing \`gs'"
 
-   if test -n "$missing"; then
+   if test -z "$missing"; then
+     if test $docadd_html = yes; then
+       make_htmldoc=htmldoc
+       make_install_htmldoc=install_htmldoc
+       make_uninstall_htmldoc=uninstall_htmldoc
+       if test $docadd_examples = yes; then
+         make_htmlexamples=html_examples
+         make_install_htmlexamples=install_htmlexamples
+         make_uninstall_htmlexamples=uninstall_htmlexamples
+       fi
+     fi
+   else
      plural=`set $missing; test $[#] -gt 1 && echo s`
      missing=`set $missing
        missing=""
@@ -142,56 +237,78 @@ AC_DEFUN([GROFF_HTML_PROGRAMS],
 	 done
 	 echo $missing`
 
-     make_html=
-     make_install_html=
+     docnote=.
+     test $docadd_html = yes && docnote=';
+  therefore, it will neither be possible to prepare, nor to install,
+  documentation in HTML format.'
 
      AC_MSG_WARN([missing program$plural:
 
   The program$plural
      $missing
   cannot be found in the PATH.
-  Consequently, groff's HTML backend (grohtml) will not work properly;
-  therefore, it will neither be possible to prepare, nor to install,
-  documentation in HTML format.
+  Consequently, groff's HTML backend (grohtml) will not work properly$docnote
      ])
+     doc_dist_target_ok=no
    fi
-
-   AC_SUBST([make_html])
-   AC_SUBST([make_install_html])])
+   AC_SUBST([make_htmldoc])
+   AC_SUBST([make_install_htmldoc])
+   AC_SUBST([make_uninstall_htmldoc])
+   AC_SUBST([make_htmlexamples])
+   AC_SUBST([make_install_htmlexamples])
+   AC_SUBST([make_uninstall_htmlexamples])])
 
 
 # To produce PDF docs, we need both awk and ghostscript.
 
 AC_DEFUN([GROFF_PDFDOC_PROGRAMS],
-  [AC_REQUIRE([GROFF_AWK_PATH])
+  [make_pdfdoc=
+   make_install_pdfdoc=
+   make_uninstall_pdfdoc=
+   make_pdfexamples=
+   make_install_pdfexamples=
+   make_uninstall_pdfexamples=
+   AC_REQUIRE([GROFF_AWK_PATH])
    AC_REQUIRE([GROFF_GHOSTSCRIPT_PATH])
-
-   make_pdfdoc=pdfdoc
-   make_install_pdfdoc=install_pdfdoc
 
    missing=""
    test "$AWK" = missing && missing="\`awk'"
    test "$GHOSTSCRIPT" = missing && missing="$missing \`gs'"
-   if test -n "$missing"; then
+   if test -z "$missing"; then
+     if test $docadd_pdf = yes; then
+       make_pdfdoc=pdfdoc
+       make_install_pdfdoc=install_pdfdoc
+       make_uninstall_pdfdoc=uninstall_pdfdoc
+       if test $docadd_examples = yes; then
+         make_pdfexamples=pdfexamples
+         make_install_pdfexamples=install_pdfexamples
+         make_uninstall_pdfexamples=uninstall_pdfexamples
+       fi
+     fi
+   else
      plural=`set $missing; test $[#] -eq 2 && echo s`
      test x$plural = xs \
        && missing=`set $missing; echo "$[1] and $[2]"` \
        || missing=`echo $missing`
 
-     make_pdfdoc=
-     make_install_pdfdoc=
+     docnote=.
+     test $docadd_pdf = yes && docnote=';
+  therefore, it will neither be possible to prepare, nor to install,
+  documentation and most of the examples in PDF format.'
 
      AC_MSG_WARN([missing program$plural:
 
   The program$plural $missing cannot be found in the PATH.
-  Consequently, groff's PDF formatter (pdfroff) will not work properly;
-  therefore, it will neither be possible to prepare, nor to install,
-  documentation in PDF format.
+  Consequently, groff's PDF formatter (pdfroff) will not work properly$docnote
      ])
+     doc_dist_target_ok=no
    fi
-
    AC_SUBST([make_pdfdoc])
-   AC_SUBST([make_install_pdfdoc])])
+   AC_SUBST([make_install_pdfdoc])
+   AC_SUBST([make_uninstall_pdfdoc])
+   AC_SUBST([make_pdfexamples])
+   AC_SUBST([make_install_pdfexamples])
+   AC_SUBST([make_uninstall_pdfexamples])])
 
 
 # Check whether pnmtops can handle the -nosetpage option.
@@ -800,7 +917,9 @@ AC_DEFUN([GROFF_INSTALL_SH],
 # Test whether install-info is available.
 
 AC_DEFUN([GROFF_INSTALL_INFO],
-  [AC_CHECK_PROGS([INSTALL_INFO], [install-info], [:])])
+  [if test $docadd_info = yes; then
+     AC_CHECK_PROGS([INSTALL_INFO], [install-info], [:])
+   fi])
 
 
 # At least one UNIX system, Apple Macintosh Rhapsody 5.5,

@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2009, 2010, 2012 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2009, 2010, 2012, 2014 Free Software Foundation, Inc.
 #      Written by Werner Lemberg (wl@gnu.org)
 # 
 # This file is part of groff.
@@ -96,8 +96,10 @@ MOSTLYCLEANADD=\
 .in.roff:
 	sed -e "s|@fontdir@|$(fontdir)|" $< >$@
 
+all: $(make_examples) stamp-strip
 
-all: $(PROCESSEDEXAMPLEFILES) stamp-strip
+.PHONY: examples
+examples: $(PROCESSEDEXAMPLEFILES)
 
 $(PROCESSEDEXAMPLEFILES): gnu.eps examples/stamp examples/common.roff
 
@@ -112,7 +114,7 @@ gnu.eps:
 	fi
 
 examples/stamp:
-	test -d examples || $(mkinstalldirs) examples
+	-test -d examples || $(mkinstalldirs) examples
 	touch $@
 
 stamp-strip: $(STRIPFILES)
@@ -122,13 +124,16 @@ stamp-strip: $(STRIPFILES)
 	done
 	touch $@
 
-install_data: $(STRIPFILES) $(EXAMPLEFILES) $(GENFILES) \
-              $(PROCESSEDEXAMPLEFILES) gnu.eps stamp-strip
+install_data: install_always $(make_install_examples)
+install_always: $(STRIPFILES) $(GENFILES)
 	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
 	for f in $(STRIPFILES); do \
 	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $$f-s $(DESTDIR)$(tmacdir)/$$f; \
 	done
+
+install_examples: install_always $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES) \
+		  gnu.eps stamp-strip
 	-test -d $(DESTDIR)$(exampledir)/hdtbl \
 	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)/hdtbl
 	for f in $(EXAMPLEFILES_); do \
@@ -142,13 +147,15 @@ install_data: $(STRIPFILES) $(EXAMPLEFILES) $(GENFILES) \
 	done
 	$(INSTALL_DATA) gnu.eps $(DESTDIR)$(exampledir)/hdtbl/gnu.eps
 
-uninstall_sub:
+uninstall_sub: uninstall_always $(make_uninstall_examples)
+uninstall_always:
 	-for f in $(STRIPFILES); do \
 	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
 	done
-	-for f in $(EXAMPLEFILES_) $(PROCESSEDEXAMPLEFILES_) \
-                  $(GENFILES_); do \
+
+uninstall_examples: uninstall_always
+	-for f in $(EXAMPLEFILES_) $(PROCESSEDEXAMPLEFILES_) $(GENFILES_); do \
 	  rm -f $(DESTDIR)$(exampledir)/hdtbl/$$f; \
 	done
-	-rm $(DESTDIR)$(exampledir)/hdtbl/gnu.eps
+	rm -f $(DESTDIR)$(exampledir)/hdtbl/gnu.eps
 	-rmdir $(DESTDIR)$(exampledir)/hdtbl

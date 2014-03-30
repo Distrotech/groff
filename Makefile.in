@@ -1,8 +1,8 @@
-# Copyright (C) 1989-2006, 2009-2013
+# Copyright (C) 1989-2006, 2009-2014
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
-# Last update: 25 Feb 2014
+# Last update: 29 Mar 2014
 # 
 # This file is part of groff.
 # 
@@ -264,15 +264,46 @@ man5dir=$(manroot)/man$(man5ext)
 man7ext=7
 man7dir=$(manroot)/man$(man7ext)
 
+# `dist' target is disallowed in some `configure' combinations.
+doc_dist_target_ok=@doc_dist_target_ok@
+
+# The configure script checks whether the user wants the info documentation.
+# For the repo version this mechanism also suppresses building via `makeinfo'.
+make_infodoc=@make_infodoc@
+make_install_infodoc=@make_install_infodoc@
+make_uninstall_infodoc=@make_uninstall_infodoc@
+
 # The configure script checks whether all necessary utility programs for
 # grohtml are available -- only then we can build the HTML documentation.
-make_html=@make_html@
-make_install_html=@make_install_html@
+make_htmldoc=@make_htmldoc@
+make_install_htmldoc=@make_install_htmldoc@
+make_uninstall_htmldoc=@make_uninstall_htmldoc@
+
+make_htmlexamples=@make_htmlexamples@
+make_install_htmlexamples=@make_install_htmlexamples@
+make_uninstall_htmlexamples=@make_uninstall_htmlexamples@
 
 # The configure script also checks whether all necessary utility programs
 # for pdfroff are available -- only then we can build PDF documentation.
 make_pdfdoc=@make_pdfdoc@
 make_install_pdfdoc=@make_install_pdfdoc@
+make_uninstall_pdfdoc=@make_uninstall_pdfdoc@
+
+make_pdfexamples=@make_pdfexamples@
+make_install_pdfexamples=@make_install_pdfexamples@
+make_uninstall_pdfexamples=@make_uninstall_pdfexamples@
+
+# `other' documentation, e.g., `meref.me' and `pic.ms', as well as their
+# generated counterparts..
+make_otherdoc=@make_otherdoc@
+make_install_otherdoc=@make_install_otherdoc@
+make_uninstall_otherdoc=@make_uninstall_otherdoc@
+
+# `examples' -- a generic switch, but the generated examples are furtherly
+# subdivided to catch HTML and PDF production availability.
+make_examples=@make_examples@
+make_install_examples=@make_install_examples@
+make_uninstall_examples=@make_uninstall_examples@
 
 # All the previous installation directories, when used, are prefixed with
 # $(DESTDIR) during install and uninstall, to support staged installations.
@@ -534,10 +565,27 @@ MDEFINES=\
   "libprogramdir=$(libprogramdir)" \
   "localfontdir=$(localfontdir)" \
   "localtmacdir=$(localtmacdir)" \
-  "make_html=$(make_html)" \
-  "make_install_html=$(make_install_html)" \
+  "make_infodoc=$(make_infodoc)" \
+  "make_install_infodoc=$(make_install_infodoc)" \
+  "make_uninstall_infodoc=$(make_uninstall_infodoc)" \
+  "make_htmldoc=$(make_htmldoc)" \
+  "make_install_htmldoc=$(make_install_htmldoc)" \
+  "make_uninstall_htmldoc=$(make_uninstall_htmldoc)" \
+  "make_htmlexamples=$(make_htmlexamples)" \
+  "make_install_htmlexamples=$(make_install_htmlexamples)" \
+  "make_uninstall_htmlexamples=$(make_uninstall_htmlexamples)" \
   "make_pdfdoc=$(make_pdfdoc)" \
   "make_install_pdfdoc=$(make_install_pdfdoc)" \
+  "make_uninstall_pdfdoc=$(make_uninstall_pdfdoc)" \
+  "make_pdfexamples=$(make_pdfexamples)" \
+  "make_install_pdfexamples=$(make_install_pdfexamples)" \
+  "make_uninstall_pdfexamples=$(make_uninstall_pdfexamples)" \
+  "make_otherdoc=$(make_otherdoc)" \
+  "make_install_otherdoc=$(make_install_otherdoc)" \
+  "make_uninstall_otherdoc=$(make_uninstall_otherdoc)" \
+  "make_examples=$(make_examples)" \
+  "make_install_examples=$(make_install_examples)" \
+  "make_uninstall_examples=$(make_uninstall_examples)" \
   "man1dir=$(man1dir)" \
   "man1ext=$(man1ext)" \
   "man5dir=$(man5dir)" \
@@ -830,6 +878,10 @@ $(INCDIRS) $(PROGDEPDIRS) $(SHPROGDIRS) $(OTHERDIRS): FORCE
 
 .PHONY: dist
 dist:
+	if test "${doc_dist_target_ok}" != yes; then \
+	  echo "The \`dist' target is not applicable to this configuration"; \
+	  exit 1; \
+	fi
 	-rm -fr tmp
 	rm -f groff-$(version)$(revision).tar.gz
 	mkdir tmp

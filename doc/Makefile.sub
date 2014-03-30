@@ -122,12 +122,16 @@ MOSTLYCLEANNOTSRCDIRADD=\
 	$(GROFF) -Tps -ms -mwww >$@
 
 
-all: groff.info $(PROCESSEDDOCFILES) prepare_examples \
-     $(PROCESSEDEXAMPLEFILES) $(make_html)
+all: $(make_otherdoc) $(make_infodoc) $(make_htmldoc) \
+     $(make_examples) $(make_htmlexamples)
 
-html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
+otherdoc: $(PROCESSEDDOCFILES)
+infodoc: groff.info
+htmldoc: $(HTMLDOCFILES)
 
-prepare_examples: examples.stamp
+examples: examples.stamp $(PROCESSEDEXAMPLEFILES)
+
+html_examples: $(HTMLEXAMPLEFILES)
 
 examples.stamp: grnexmpl.g groff.css gnu.eps
 	test -f grnexmpl.g || cp $(srcdir)/grnexmpl.g .
@@ -164,21 +168,14 @@ grnexmpl.ps: grnexmpl.me grnexmpl.g
 
 distfiles: groff.info gnu.eps
 
-install_data: groff.info gnu.eps $(DOCFILES) $(PROCESSEDDOCFILES) \
-              $(make_install_html) $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
-# Prefer info files in builddir over srcdir; we test for
-# the existence of `groff.info'.
-	-test -d $(DESTDIR)$(infodir) || $(mkinstalldirs) $(DESTDIR)$(infodir)
-	d=.; \
-	  test -f "groff.info" || d=$(srcdir); \
-	  for p in $$d/groff.info `ls $$d/groff.info*`; do \
-	    f=`basename $$p`; \
-	    rm -f $(DESTDIR)$(infodir)/$$f; \
-	    $(INSTALL_DATA) $$p $(DESTDIR)$(infodir)/$$f; \
-	  done
-	$(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) \
-	  $(DESTDIR)$(infodir)/groff.info
+install_data: install_always $(make_install_otherdoc) \
+	      $(make_install_infodoc) $(make_install_htmldoc) \
+	      $(make_install_examples)
+
+install_always:
 	-test -d $(DESTDIR)$(docdir) || $(mkinstalldirs) $(DESTDIR)$(docdir)
+
+install_otherdoc: install_always $(DOCFILES) $(PROCESSEDDOCFILES)
 	for f in $(DOCFILES); do \
 	  rm -f $(DESTDIR)$(docdir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(docdir)/$$f; \
@@ -187,6 +184,37 @@ install_data: groff.info gnu.eps $(DOCFILES) $(PROCESSEDDOCFILES) \
 	  rm -f $(DESTDIR)$(docdir)/$$f; \
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(docdir)/$$f; \
 	done
+
+install_infodoc: install_always groff.info
+# Prefer info files in builddir over srcdir; we test for
+# the existence of `groff.info'.
+	-test -d $(DESTDIR)$(infodir) || $(mkinstalldirs) $(DESTDIR)$(infodir)
+	d=.; test -f "groff.info" || d=$(srcdir); \
+	  for p in $$d/groff.info `ls $$d/groff.info*`; do \
+	    f=`basename $$p`; \
+	    rm -f $(DESTDIR)$(infodir)/$$f; \
+	    $(INSTALL_DATA) $$p $(DESTDIR)$(infodir)/$$f; \
+	  done
+	$(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) \
+	  $(DESTDIR)$(infodir)/groff.info
+
+install_htmldoc: install_always $(HTMLDOCFILES)
+	-test -d $(DESTDIR)$(htmldocdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(htmldocdir)
+	for f in `ls $(HTMLDOCFILESALL)`; do \
+	  rm -f $(DESTDIR)$(htmldocdir)/$$f; \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(htmldocdir)/$$f; \
+	done
+	-test -d $(DESTDIR)$(htmldocimagedir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(htmldocimagedir)
+	rm -f $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
+	$(INSTALL_DATA) $(imagedir)/$(HTMLDOCIMAGEFILES) \
+	  $(DESTDIR)$(htmldocimagedir)
+
+install_examples: install_always install_examples_always \
+		  $(make_install_htmlexamples)
+
+install_examples_always: gnu.eps $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
 # Prefer gnu.eps in builddir over srcdir.
 	-test -d $(DESTDIR)$(exampledir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)
@@ -203,20 +231,7 @@ install_data: groff.info gnu.eps $(DOCFILES) $(PROCESSEDDOCFILES) \
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(exampledir)/$$f; \
 	done
 
-install_html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
-	-test -d $(DESTDIR)$(htmldocdir) \
-	  || $(mkinstalldirs) $(DESTDIR)$(htmldocdir)
-	for f in `ls $(HTMLDOCFILESALL)`; do \
-	  rm -f $(DESTDIR)$(htmldocdir)/$$f; \
-	  $(INSTALL_DATA) $$f $(DESTDIR)$(htmldocdir)/$$f; \
-	done
-	-test -d $(DESTDIR)$(htmldocimagedir) \
-	  || $(mkinstalldirs) $(DESTDIR)$(htmldocimagedir)
-	rm -f $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
-	$(INSTALL_DATA) $(imagedir)/$(HTMLDOCIMAGEFILES) \
-	  $(DESTDIR)$(htmldocimagedir)
-	-test -d $(DESTDIR)$(exampledir) \
-	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)
+install_htmlexamples: install_examples_always $(HTMLEXAMPLEFILES)
 	for f in `ls $(HTMLEXAMPLEFILESALL)`; do \
 	  rm -f $(DESTDIR)$(exampledir)/$$f; \
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(exampledir)/$$f; \
@@ -227,24 +242,42 @@ install_html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
 	$(INSTALL_DATA) $(imagedir)/$(HTMLEXAMPLEIMAGEFILES) \
 	  $(DESTDIR)$(exampleimagedir)
 
-uninstall_sub:
-	$(INSTALL_INFO) --remove --info-dir=$(DESTDIR)$(infodir) \
+uninstall_sub: uninstall_always \
+		$(make_uninstall_infodoc) $(make_uninstall_htmldoc) \
+		$(make_uninstall_examples)
+
+uninstall_always:
+	-for f in $(DOCFILES) $(PROCESSEDDOCFILES); do \
+	  rm -f $(DESTDIR)$(docdir)/$$f; \
+	done
+
+uninstall_infodoc: uninstall_always
+	-$(INSTALL_INFO) --remove --info-dir=$(DESTDIR)$(infodir) \
 	  $(DESTDIR)$(infodir)/groff.info
 	-for f in groff `ls groff.info*`; do \
 	  rm -f $(DESTDIR)$(infodir)/$$f; \
 	done
-	-for f in $(DOCFILES) $(PROCESSEDDOCFILES); do \
-	  rm -f $(DESTDIR)$(docdir)/$$f; \
-	done
+
+uninstall_htmldoc: uninstall_always
 	-for f in `ls $(HTMLDOCFILESALL)`; do \
 	  rm -f $(DESTDIR)$(htmldocdir)/$$f; \
 	done
-	-rm -f $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
+	rm -f $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
 	-rmdir $(DESTDIR)$(htmldocimagedir)
-	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES) \
-	          `ls $(HTMLEXAMPLEFILESALL)`; do \
+
+uninstall_examples: uninstall_always uninstall_examples_always \
+		    $(make_uninstall_htmlexamples)
+	-rmdir $(DESTDIR)$(exampledir)
+
+uninstall_examples_always:
+	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES); do \
 	  rm -f $(DESTDIR)$(exampledir)/$$f; \
 	done
-	-rm -f $(DESTDIR)$(exampledir)/gnu.eps
-	-rm -f $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
+	rm -f $(DESTDIR)$(exampledir)/gnu.eps
+
+uninstall_htmlexamples: uninstall_examples_always
+	-for f in `ls $(HTMLEXAMPLEFILESALL)`; do \
+	  rm -f $(DESTDIR)$(exampledir)/$$f; \
+	done
+	rm -f $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
 	-rmdir $(DESTDIR)$(exampleimagedir)

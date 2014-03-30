@@ -1,4 +1,5 @@
-# Copyright (C) 2005, 2006, 2009, 2011, 2012 Free Software Foundation, Inc.
+# Copyright (C) 2005, 2006, 2009, 2011, 2012, 2014
+# Free Software Foundation, Inc.
 #      Written by Keith Marshall (keith.d.marshall@ntlworld.com)
 # 
 # This file is part of groff.
@@ -90,7 +91,8 @@ pdfroff: pdfroff.sh $(SH_DEPS_SED_SCRIPT)
 	    -e "s|@GROFF_BIN_DIR@|$(bindir)|" $(srcdir)/pdfroff.sh >$@
 	chmod +x $@
 
-install_data: $(make_install_pdfdoc)
+install_data: install_always $(make_install_pdfdoc)
+install_always:
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	for f in $(CMDFILES); do \
 	  $(RM) $(DESTDIR)$(bindir)/$$f; \
@@ -102,7 +104,7 @@ install_data: $(make_install_pdfdoc)
 	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(tmacdir)/$$f; \
 	done
 
-install_pdfdoc:
+install_pdfdoc: install_always
 	-test -d $(DESTDIR)$(pdfdocdir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(pdfdocdir)
 	for f in $(PDFDOCFILES); do \
@@ -110,13 +112,16 @@ install_pdfdoc:
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(pdfdocdir)/$$f; \
 	done
 
-uninstall_sub:
+uninstall_sub: uninstall_always $(make_uninstall_pdfdoc)
+uninstall_always:
 	for f in $(CMDFILES); do \
 	  $(RM) $(DESTDIR)$(bindir)/$$f; \
 	done
 	for f in $(TMACFILES); do \
 	  $(RM) $(DESTDIR)$(tmacdir)/$$f; \
 	done
+
+uninstall_pdfdoc: uninstall_always
 	for f in $(PDFDOCFILES); do \
 	  $(RM) $(DESTDIR)$(pdfdocdir)/$$f; \
 	done

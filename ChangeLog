@@ -1,3 +1,25 @@
+2014-03-29  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	Add fine-tuning of doc generation to `configure'.
+
+	* m4/groff.m4 (GROFF_DOC_CHECK): New macro, handling option
+	`--with-doc' and its new arguments.  It sets
+	`docadd_{html,info,other,pdf,examples}' and exports
+	`make{_,_install_,_uninstall_}{otherdoc,examples}'.
+	(GROFF_MAKEINFO): Extended to export
+	`make{_,_install_,_uninstall_}infodoc'.
+	(GROFF_HTML_PROGRAMS): Extended to export
+	`make{_,_install_,_uninstall_}{htmldoc,htmlexamples}'.
+	(GROFF_PDFDOC_PROGRAMS): Extended to export
+	`make{_,_install_,_uninstall_}{pdfdoc,pdfexamples}'.
+	(GROFF_INSTALL_INFO): Guard test with `docadd_info'.
+
+	* configure.ac: Use GROFF_DOC_CHECK.
+	* Makefile.in: Updated.
+
+	* doc/Makefile.sub: Handle examples separately, controlled by
+	$(make{_,_install_,_uninstall_}examples).
+
 2014-03-27  Bjarni Ingi Gislason  <bjarniig@rhi.hi.is>
 
 	* tmac/www.tmac (TAG): Define register `PN'.
