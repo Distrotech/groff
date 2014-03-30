@@ -197,9 +197,9 @@ HBITC: $(srcdir)/tc.map
 clean:
 
 realclean:
-	-rm -f $(FONTS)
+	rm -f $(FONTS)
 
 extraclean: realclean
-	-rm -f core *~ "#*"
+	rm -f core *~ "#*"
 
 .PHONY: clean realclean extraclean all

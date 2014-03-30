@@ -1,4 +1,4 @@
-# Copyright (C) 1989-2000, 2002, 2003, 2006, 2009
+# Copyright (C) 1989-2000, 2002, 2003, 2006, 2009, 2014
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
@@ -219,17 +219,16 @@ symbol.afm: $(srcdir)/symbol.sed
 	sed -f $(srcdir)/symbol.sed `$(AFMNAME) $(afmdir)/Symbol.afm` >$@
 
 symbolsl.afm: $(srcdir)/symbolsl.awk $(srcdir)/../symbolsl.ps
-	-rm -f $@
-	-rm -f Fontmap
+	rm -f $@ Fontmap
 	echo "/Symbol-Slanted ($(srcdir)/../symbolsl.ps) ;"  > Fontmap
 	echo "/Symbol         ($(symbolfont)) ;" >> Fontmap
 	$(PRINTAFM) Symbol-Slanted > tmp.afm
 	awk -f $(srcdir)/symbolsl.awk -v SYMAFM=`$(AFMNAME) \
 	  $(afmdir)/Symbol.afm` tmp.afm >$@
-	-rm -f Fontmap tmp.afm
+	rm -f Fontmap tmp.afm
 
 zapfdr.afm: $(srcdir)/zapfdr.sed
-	-rm -f $@
+	rm -f $@
 	sed -f $(srcdir)/zapfdr.sed \
 	  `$(AFMNAME) $(afmdir)/ZapfDingbats.afm` >$@
 
@@ -247,13 +246,13 @@ symbolmap: $(TEXTMAP) $(srcdir)/symbolchars
 	cat $(TEXTMAP) $(srcdir)/symbolchars >>$@
 
 clean:
-	-rm -f symbolmap symbol.afm
+	rm -f symbolmap symbol.afm
 
 realclean: clean
-	-rm -f $(FONTS)
+	rm -f $(FONTS)
 
 extraclean: realclean
-	-rm -f core *~ "#*"
+	rm -f core *~ "#*"
 
 .PHONY: all clean realclean extraclean
 

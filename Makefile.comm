@@ -67,7 +67,7 @@ fonts:
 .PHONY: pure fonts
 
 mostlyclean:
-	-rm -f $(MOSTLYCLEANFILES)
+	rm -f $(MOSTLYCLEANFILES)
 	-rm -rf $(MOSTLYCLEANDIRADD)
 	-@if test `cd $(srcdir); pwd` = `pwd`; then \
 	  :; \
@@ -76,10 +76,10 @@ mostlyclean:
 	fi
 
 clean: mostlyclean
-	-rm -f $(CLEANFILES)
+	rm -f $(CLEANFILES)
 
 distclean: clean
-	-rm -f $(DISTCLEANFILES)
+	rm -f $(DISTCLEANFILES)
 	-@if test `cd $(srcdir); pwd` = `pwd`; then \
 	  :; \
 	else \
@@ -87,10 +87,10 @@ distclean: clean
 	fi
 
 realclean: distclean
-	-rm -f $(REALCLEANFILES)
+	rm -f $(REALCLEANFILES)
 
 extraclean: distclean
-	-rm -f \#* *~ =* core junk grot old temp tmp tem *.new *.old *.orig
+	rm -f \#* *~ =* core junk grot old temp tmp tem *.new *.old *.orig
 
 .SUFFIXES:
 .SUFFIXES: .o .obj .cpp .c .y .man .n
@@ -117,7 +117,7 @@ extraclean: distclean
 	-test -f y.tab.c && mv y.tab.c y_tab.c
 	sed "s/^#line \(.*\) \"y.tab.c\"/#line \1 \"$(YTABC)\"/" \
 	  < y_tab.c > $(YTABC)
-	-rm -f y_tab.c
+	rm -f y_tab.c
 	test -z "$(YTABH)" || mv y_tab.h $(YTABH)
 
 # The next rule is needed for make of Solaris 2.5.1 to override its
@@ -136,7 +136,7 @@ extraclean: distclean
 
 .man.n:
 	@echo Making $@ from $<
-	@-rm -f $@
+	@rm -f $@
 	@LC_ALL=C sed -e "s|@APPRESDIR@|$(appresdir)|g" \
 	-e "s|@BINDIR@|$(bindir)|g" \
 	-e "s|@BROKEN_SPOOLER_FLAGS@|$(BROKEN_SPOOLER_FLAGS)|g" \
@@ -228,7 +228,7 @@ install_prog:
 
 .PHONY: uninstall_prog
 uninstall_prog:
-	-rm -f $(DESTDIR)$(bindir)/$(NAMEPREFIX)$(PROG)
+	rm -f $(DESTDIR)$(bindir)/$(NAMEPREFIX)$(PROG)
 
 .PHONY: install_dev
 install_dev:
@@ -337,7 +337,7 @@ TAGS_src:
 
 # This rule is only considered for the subdir_Makefile target.
 Makefile:
-	-rm -f Makefile
+	rm -f Makefile
 	echo srcdir=$(srcdir) >>Makefile
 	echo VPATH=$(VPATH) >>Makefile
 	cat $(MAKEFILEPARTS) /dev/null >>Makefile

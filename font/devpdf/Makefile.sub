@@ -54,14 +54,14 @@ RM=rm -f
 all: DESC
 
 DESC: DESC.in
-	-rm -f DESC
+	rm -f DESC
 	cat $(srcdir)/DESC.in >$(top_builddir)/font/devpdf/DESC
 	if test "$(PAGE)" = A4; then \
 	  echo "papersize a4" >>$(top_builddir)/font/devpdf/DESC; \
 	else \
 	  echo "papersize letter" >>$(top_builddir)/font/devpdf/DESC; \
 	fi
-	-rm -f Foundry
+	rm -f Foundry
 	cat $(srcdir)/Foundry.in >$(top_builddir)/font/devpdf/Foundry
 	-test -d $(top_builddir)/font/devpdf/enc \
 	  || $(mkinstalldirs) $(top_builddir)/font/devpdf/enc
@@ -120,7 +120,7 @@ install_data:
 	done
 
 uninstall_sub:
-	for f in $(MOSTLYCLEANADD); do \
+	-for f in $(MOSTLYCLEANADD); do \
 	  $(RM) $(DESTDIR)$(fontsubdir)/$$f; \
 	done
 	-d="$(DESTDIR)$(fontsubdir)/enc"; \

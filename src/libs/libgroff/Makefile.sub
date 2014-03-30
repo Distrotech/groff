@@ -153,7 +153,7 @@ MKINSTALLDIRS = $(SHELL) $(top_srcdir)/mkinstalldirs
 
 install_data: install_charset_data
 install_charset_data:
-	test $(GLIBC21) != no || $(MKINSTALLDIRS) $(DESTDIR)$(libdir)
+	-test $(GLIBC21) != no || $(MKINSTALLDIRS) $(DESTDIR)$(libdir)
 	if test -f $(DESTDIR)$(libdir)/charset.alias; then \
 	  sed -f ref-add.sed $(DESTDIR)$(libdir)/charset.alias \
 	      > $(DESTDIR)$(libdir)/t-charset.alias; \

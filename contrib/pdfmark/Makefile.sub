@@ -114,14 +114,8 @@ install_pdfdoc: install_always
 
 uninstall_sub: uninstall_always $(make_uninstall_pdfdoc)
 uninstall_always:
-	for f in $(CMDFILES); do \
-	  $(RM) $(DESTDIR)$(bindir)/$$f; \
-	done
-	for f in $(TMACFILES); do \
-	  $(RM) $(DESTDIR)$(tmacdir)/$$f; \
-	done
+	-for f in $(CMDFILES); do $(RM) $(DESTDIR)$(bindir)/$$f; done
+	-for f in $(TMACFILES); do $(RM) $(DESTDIR)$(tmacdir)/$$f; done
 
 uninstall_pdfdoc: uninstall_always
-	for f in $(PDFDOCFILES); do \
-	  $(RM) $(DESTDIR)$(pdfdocdir)/$$f; \
-	done
+	-for f in $(PDFDOCFILES); do $(RM) $(DESTDIR)$(pdfdocdir)/$$f; done
