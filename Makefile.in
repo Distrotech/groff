@@ -2,7 +2,7 @@
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
-# Last update: 29 Mar 2014
+# Last update: 30 Mar 2014
 # 
 # This file is part of groff.
 # 
@@ -948,14 +948,31 @@ uninstall: uninstall_sub uninstall_dirs
 .PHONY: uninstall_dirs
 # Use `rmdir' here so that the directories are only removed if they are empty.
 uninstall_dirs:
-	-rm -f $(dataprogramdir)/current
-	-rmdir $(man1dir) $(man5dir) $(man7dir) $(manroot) \
-	  $(tmacdir) $(systemtmacdir) $(localtmacdir) \
-	  $(fontdir) $(localfontdir) $(oldfontdir) $(bindir) \
-	  $(datasubdir) $(dataprogramdir) $(infodir) \
-	  $(exampledir) $(htmldocdir) $(pdfdocdir) $(docdir) \
-	  $(libprogramdir) $(libdir) \
-	  $(datadir)/doc/groff $(datadir)/doc $(datadir) 2>/dev/null || :
+	-rm -f $(DESTDIR)$(dataprogramdir)/current
+	-rmdir \
+	  $(DESTDIR)$(man1dir) \
+	  $(DESTDIR)$(man5dir) \
+	  $(DESTDIR)$(man7dir) \
+	  $(DESTDIR)$(manroot) \
+	  $(DESTDIR)$(tmacdir) \
+	  $(DESTDIR)$(systemtmacdir) \
+	  $(DESTDIR)$(localtmacdir) \
+	  $(DESTDIR)$(fontdir) \
+	  $(DESTDIR)$(localfontdir) \
+	  $(DESTDIR)$(oldfontdir) \
+	  $(DESTDIR)$(bindir) \
+	  $(DESTDIR)$(datasubdir) \
+	  $(DESTDIR)$(dataprogramdir) \
+	  $(DESTDIR)$(libprogramdir) \
+	  $(DESTDIR)$(libdir) \
+	  $(DESTDIR)$(infodir) \
+	  $(DESTDIR)$(exampledir) \
+	  $(DESTDIR)$(htmldocdir) \
+	  $(DESTDIR)$(pdfdocdir) \
+	  $(DESTDIR)$(docdir) \
+	  $(DESTDIR)$(datadir)/doc/groff \
+	  $(DESTDIR)$(datadir)/doc \
+	  $(DESTDIR)$(datadir) 2>/dev/null || :
 
 .PHONY: check
 check:

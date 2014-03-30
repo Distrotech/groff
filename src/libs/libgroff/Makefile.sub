@@ -172,7 +172,7 @@ install_charset_data:
 
 uninstall_sub: uninstall_charset_data
 uninstall_charset_data:
-	if test -f $(DESTDIR)$(libdir)/charset.alias; then \
+	-if test -f $(DESTDIR)$(libdir)/charset.alias; then \
 	  sed -f ref-del.sed $(DESTDIR)$(libdir)/charset.alias \
 	      > $(DESTDIR)$(libdir)/t-charset.alias; \
 	  if grep '^# Packages using this file: $$' \

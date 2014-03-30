@@ -69,13 +69,12 @@ install_data: grog
 
 .PHONY: uninstall_data
 uninstall_sub:
-	-$(RM) "$(DESTDIR)$(bindir)/grog";
+	rm -f "$(DESTDIR)$(bindir)/grog"
 	for f in $(GROG_); do \
-		-$(RM) "$(DESTDIR)$(grog_dir)/$$f"; \
-	done;
-	-test -d "$(DESTDIR)$(grog_dir)" || \
-		-rmdir "$(DESTDIR)$(grog_dir)";
-
+		$(RM) "$(DESTDIR)$(grog_dir)/$$f"; \
+	done
+	-d="$(DESTDIR)$(grog_dir)";\
+	  if test -d "$$d"; then rmdir "$$d"; fi
 
 ########################################################################
 # Emacs settings
