@@ -117,13 +117,15 @@ MOSTLYCLEANNOTSRCDIRADD=\
 
 .ms.html:
 	$(GROFF) -P-p -P-b -P-I`basename $< | sed -e 's|.ms$$||'` \
-		 -P-D$(imagedir) -P-V -Thtml -ms >$@
+	         -P-D$(imagedir) -P-V -Thtml -ms >$@
 .ms.ps:
 	$(GROFF) -Tps -ms -mwww >$@
 
-
-all: $(make_otherdoc) $(make_infodoc) $(make_htmldoc) \
-     $(make_examples) $(make_htmlexamples)
+all: $(make_otherdoc) \
+     $(make_infodoc) \
+     $(make_htmldoc) \
+     $(make_examples) \
+     $(make_htmlexamples)
 
 otherdoc: $(PROCESSEDDOCFILES)
 infodoc: groff.info
@@ -149,18 +151,18 @@ groff.info: groff.texinfo
 	$(MAKEINFO) --enable-encoding -I$(srcdir) $(srcdir)/groff.texinfo
 
 gnu.eps: gnu.xpm
-	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 | \
-          $(pnmtops_nosetpage) -noturn -rle >$@
+	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 \
+	  | $(pnmtops_nosetpage) -noturn -rle >$@
 
 pic.html: pic.ms
 	$(GROFF) -P-p -P-I`basename $< | sed -e 's|.ms$$||'` \
-                 -P-D$(imagedir) -P-j`basename $< | sed -e 's|.ms$$||'` \
-                 -Thtml -P-V -ms >$@
+	         -P-D$(imagedir) -P-j`basename $< | sed -e 's|.ms$$||'` \
+	         -Thtml -P-V -ms >$@
 
 webpage.html: webpage.ms gnu.eps groff.css
 	$(GROFF) -P-j`basename $< | sed -e 's|.ms$$||'` \
-                 -P-nrpb -P-I`basename $< | sed -e 's|.ms$$||'` \
-                 -P-D$(imagedir) -Thtml -ms >$@
+	         -P-nrpb -P-I`basename $< | sed -e 's|.ms$$||'` \
+	         -P-D$(imagedir) -Thtml -ms >$@
 
 webpage.ps: gnu.eps
 
@@ -218,8 +220,7 @@ install_examples_always: gnu.eps $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
 # Prefer gnu.eps in builddir over srcdir.
 	-test -d $(DESTDIR)$(exampledir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)
-	d=.; \
-	  test -f "gnu.eps" || d=$(srcdir); \
+	d=.; test -f "gnu.eps" || d=$(srcdir); \
 	  rm -f $(DESTDIR)$(exampledir)/gnu.eps; \
 	  $(INSTALL_DATA) $$d/gnu.eps $(DESTDIR)$(exampledir)/gnu.eps
 	for f in $(EXAMPLEFILES); do \

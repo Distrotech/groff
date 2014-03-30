@@ -24,10 +24,9 @@ MOSTLYCLEANADD=eqn2graph
 all: eqn2graph
 
 eqn2graph: eqn2graph.sh
-	rm -f $@; \
 	sed -e "s|@g@|$(g)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
-	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/eqn2graph.sh >$@; \
+	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/eqn2graph.sh >$@
 	chmod +x $@
 
 install_data: eqn2graph

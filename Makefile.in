@@ -770,7 +770,6 @@ dodirs=$(ALLDIRS) $(OTHERDIRS) dot
 # Default target for subdir_Makefile
 subdir=src/roff/troff
 
-
 $(TARGETS):
 	@$(ENVSETUP); $(MAKE) $(MAKE_K_FLAG) do=$@ $(ALLDIRS)
 	@$(ENVSETUP); $(MAKE) $(MAKE_K_FLAG) do=$@ $(OTHERDIRS) dot
@@ -829,7 +828,8 @@ $(CCPROGDIRS): FORCE $(LIBDIRS)
 	  -f $(top_srcdir)/Makefile.ccpg \
 	  -f Makefile.dep $(do)
 
-$(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE $(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
+$(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE \
+		$(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
@@ -856,7 +856,7 @@ $(GNULIBDIRS): FORCE
 	  cd $@; \
 	  args=`$(top_builddir)/config.status --config`; \
 	  test -f Makefile \
-	  || eval $$srcdir/configure "$$args" --srcdir=$$srcdir; \
+	    || eval $$srcdir/configure "$$args" --srcdir=$$srcdir; \
 	  $(MAKE) ACLOCAL=: AUTOCONF=: AUTOHEADER=: AUTOMAKE=: $(do) ;; \
 	esac
 

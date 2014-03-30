@@ -46,11 +46,6 @@ DISTFILES=\
   $(DEVFILES) \
   $(DEVSCRIPTS)
 
-
-# Some `makes' don't predefine RM...
-RM=rm -f
-
-
 all: DESC
 
 DESC: DESC.in
@@ -78,28 +73,28 @@ DESC: DESC.in
 	cp -f $(top_srcdir)/font/devps/generate/symbolchars \
 	  $(top_builddir)/font/devpdf/map
 	-test -d util || $(mkinstalldirs) util
-	$(RM) util/BuildFoundries
+	rm -f util/BuildFoundries
 	if test -n "$(PERL)"; then \
 	  sed -f $(SH_DEPS_SED_SCRIPT) \
-	    -e "s|/usr/bin/perl|$(PERL)|" \
-	    -e "s|@GROFF_GHOSTSCRIPT_INTERPRETERS@|$(GHOSTSCRIPT)|" \
-	    -e "s|@VERSION@|$(version)$(revision)|" \
-	    -e "s|@GROFF_FONT_DIR@|$(fontdir)|" \
-	    $(srcdir)/util/BuildFoundries.pl \
-	    >$(top_builddir)/font/devpdf/util/BuildFoundries ;\
+	      -e "s|/usr/bin/perl|$(PERL)|" \
+	      -e "s|@GROFF_GHOSTSCRIPT_INTERPRETERS@|$(GHOSTSCRIPT)|" \
+	      -e "s|@VERSION@|$(version)$(revision)|" \
+	      -e "s|@GROFF_FONT_DIR@|$(fontdir)|" \
+	      $(srcdir)/util/BuildFoundries.pl \
+	  >$(top_builddir)/font/devpdf/util/BuildFoundries ;\
 	else \
-	sed -f $(SH_DEPS_SED_SCRIPT) \
-	    -e "s|@VERSION@|$(version)$(revision)|" \
-	    -e "s|@GROFF_FONT_DIR@|$(fontdir)|" \
-	    $(srcdir)/util/BuildFoundries.pl \
-	    >$(top_builddir)/font/devpdf/util/BuildFoundries ;\
+	  sed -f $(SH_DEPS_SED_SCRIPT) \
+	      -e "s|@VERSION@|$(version)$(revision)|" \
+	      -e "s|@GROFF_FONT_DIR@|$(fontdir)|" \
+	      $(srcdir)/util/BuildFoundries.pl \
+	  >$(top_builddir)/font/devpdf/util/BuildFoundries ;\
 	fi
 	chmod +x util/BuildFoundries
 	echo "# foundry	ps name	psfile" > $(top_builddir)/font/devpdf/download
-	PATH="$(top_builddir)/src/utils/afmtodit:${GROFF_PATH_SEPARATOR}${PATH}" \
+	PATH="$(top_builddir)/src/utils/afmtodit:$(GROFF_PATH_SEPARATOR)$(PATH)" \
 	  util/BuildFoundries $(top_builddir)/font/devpdf \
 	    '$(top_srcdir)/font/devps : $(top_builddir)/font/devps' \
-	  >> $(top_builddir)/font/devpdf/download
+	   >> $(top_builddir)/font/devpdf/download
 
 install_data:
 	-test -d $(DESTDIR)$(fontsubdir) \
@@ -111,7 +106,7 @@ install_data:
 	-test -d $(DESTDIR)$(fontsubdir)/util \
 	  || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/util
 	for f in $(MOSTLYCLEANADD); do \
-	  $(RM) $(DESTDIR)$(fontsubdir)/$$f; \
+	  rm -f $(DESTDIR)$(fontsubdir)/$$f; \
 	  if test -f $$f; then \
 	    $(INSTALL_DATA) $$f $(DESTDIR)$(fontsubdir)/$$f; \
 	  else \
@@ -121,7 +116,7 @@ install_data:
 
 uninstall_sub:
 	-for f in $(MOSTLYCLEANADD); do \
-	  $(RM) $(DESTDIR)$(fontsubdir)/$$f; \
+	  rm -f $(DESTDIR)$(fontsubdir)/$$f; \
 	done
 	-d="$(DESTDIR)$(fontsubdir)/enc"; \
 	  if test -d "$$d"; then rmdir "$$d"; fi

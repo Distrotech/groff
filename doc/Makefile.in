@@ -93,7 +93,7 @@ imagedir=img
 
 .ms.html:
 	$(GROFF) -P-p -P-b -P-I`basename $< | sed -e 's|.ms$$||'` \
-		 -P-D$(imagedir) -P-V -Thtml -ms >$@
+	         -P-D$(imagedir) -P-V -Thtml -ms >$@
 .ms.txt:
 	$(GROFF) -Tascii -ms -mwww >$@
 .ms.ps:
@@ -107,8 +107,7 @@ imagedir=img
 	MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e --pdf $<
 .texinfo.html:
 	LANG= $(MAKEINFO) --enable-encoding -I$(srcdir) --html --no-split $< \
-	&& $(SHELL) $(srcdir)/fixinfo.sh $@
-
+	  && $(SHELL) $(srcdir)/fixinfo.sh $@
 
 all: prepare_examples
 
@@ -124,13 +123,13 @@ gnu.eps: gnu.xpm
 
 pic.html: pic.ms
 	$(GROFF) -P-p -P-I`basename $< | sed -e 's|.ms$$||'` \
-                 -P-D$(imagedir) -P-j`basename $< | sed -e 's|.ms$$||'` \
-                 -Thtml -P-V -ms >$@
+	         -P-D$(imagedir) -P-j`basename $< | sed -e 's|.ms$$||'` \
+	         -Thtml -P-V -ms >$@
 
 webpage.html: webpage.ms gnu.eps groff.css
 	$(GROFF) -P-j`basename $< | sed -e 's|.ms$$||'` \
-                 -P-nrpb -P-I`basename $< | sed -e 's|.ms$$||'` \
-                 -P-D$(imagedir) -Thtml -ms >$@
+	         -P-nrpb -P-I`basename $< | sed -e 's|.ms$$||'` \
+	         -P-D$(imagedir) -Thtml -ms >$@
 
 webpage.ps: gnu.eps
 
@@ -138,10 +137,7 @@ grnexmpl.ps: grnexmpl.me grnexmpl.g
 
 split-html:
 	LANG= $(MAKEINFO) --enable-encoding -I$(srcdir) --html groff.texinfo \
-	&& for f in groff/*; do \
-             $(SHELL) $(srcdir)/fixinfo.sh $$f; \
-           done
-
+	  && for f in groff/*; do $(SHELL) $(srcdir)/fixinfo.sh $$f; done
 
 clean:
 	rm -f *.ps *.html *.txt core

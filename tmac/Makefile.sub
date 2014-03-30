@@ -114,11 +114,11 @@ install_data: $(NORMALFILES) $(SPECIALFILES) man.local \
 	  rm -f $(DESTDIR)$(mdocdir)/$$f; \
 	  $(INSTALL_DATA) $$f-s $(DESTDIR)$(mdocdir)/$$f; \
 	done
-	-test -f $(DESTDIR)$(localtmacdir)/man.local || \
-	  $(INSTALL_DATA) $(srcdir)/man.local \
-	    $(DESTDIR)$(localtmacdir)/man.local
-	-test -f $(DESTDIR)$(localtmacdir)/mdoc.local || \
-	  $(INSTALL_DATA) mdoc.local-s $(DESTDIR)$(localtmacdir)/mdoc.local
+	-test -f $(DESTDIR)$(localtmacdir)/man.local \
+	  || $(INSTALL_DATA) $(srcdir)/man.local \
+	       $(DESTDIR)$(localtmacdir)/man.local
+	-test -f $(DESTDIR)$(localtmacdir)/mdoc.local \
+	  || $(INSTALL_DATA) mdoc.local-s $(DESTDIR)$(localtmacdir)/mdoc.local
 
 stamp-strip: $(STRIPFILES) $(MDOCFILES) mdoc.local
 	for f in $(STRIPFILES) $(MDOCFILES) mdoc.local; do \
@@ -141,9 +141,8 @@ stamp-wrap:
 	touch $@
 
 stamp-sed: www.tmac
-	rm -f www.tmac-sed; \
 	sed -e "s;@PNMTOPS_NOSETPAGE@;$(pnmtops_nosetpage);g" \
-	  $(srcdir)/www.tmac > www.tmac-sed;
+	  $(srcdir)/www.tmac > www.tmac-sed
 	touch $@
 
 uninstall_sub:

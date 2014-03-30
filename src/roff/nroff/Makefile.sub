@@ -7,8 +7,8 @@ all: nroff
 nroff: nroff.sh $(SH_DEPS_SED_SCRIPT)
 	rm -f $@
 	sed -f $(SH_DEPS_SED_SCRIPT) \
-	-e $(SH_SCRIPT_SED_CMD) \
-	-e "s|@VERSION@|$(version)$(revision)|" $(srcdir)/nroff.sh >$@
+	    -e $(SH_SCRIPT_SED_CMD) \
+	    -e "s|@VERSION@|$(version)$(revision)|" $(srcdir)/nroff.sh >$@
 	chmod +x $@
 
 install_data: nroff

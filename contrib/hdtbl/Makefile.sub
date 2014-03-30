@@ -91,7 +91,7 @@ MOSTLYCLEANADD=\
 
 .roff.ps:
 	$(GROFF) -Tps -dfontpath=$(top_srcdir)/font -dsopath=$(srcdir)/ \
-		 -mhdtbl $< >$@
+	         -mhdtbl $< >$@
 
 .in.roff:
 	sed -e "s|@fontdir@|$(fontdir)|" $< >$@
@@ -149,9 +149,7 @@ install_examples: install_always $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES) \
 
 uninstall_sub: uninstall_always $(make_uninstall_examples)
 uninstall_always:
-	-for f in $(STRIPFILES); do \
-	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
-	done
+	-for f in $(STRIPFILES); do rm -f $(DESTDIR)$(tmacdir)/$$f; done
 
 uninstall_examples: uninstall_always
 	-for f in $(EXAMPLEFILES_) $(PROCESSEDEXAMPLEFILES_) $(GENFILES_); do \

@@ -32,9 +32,6 @@ MOSTLYCLEANADD=\
   examples/README \
   examples/122/README
 
-# not all make programs have $(RM) predefined.
-RM=rm -f
-
 all: README chem $(MAN1) $(make_examples)
 
 README: $(srcdir)/README.txt
@@ -53,24 +50,25 @@ examples/122/README: $(srcdir)/examples/122/README.txt
 	sed -e "s|@g@|$(g)|g" $? >$@
 
 chem: $(srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
+	rm -f $@
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
-	  -e "s|@g@|$(g)|g" \
-	  -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
-	  -e "s|@MACRODIR@|$(DESTDIR)$(tmacdir)|g" \
-	  -e "s|@PICDIR@|$(DESTDIR)$(datasubdir)/pic|g" \
-	  -e "s|@VERSION@|$(version)$(revision)|g" \
-	  -e "$(SH_SCRIPT_SED_CMD)" \
-	  $(srcdir)/chem.pl >$@
+	    -e "s|@g@|$(g)|g" \
+	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
+	    -e "s|@MACRODIR@|$(DESTDIR)$(tmacdir)|g" \
+	    -e "s|@PICDIR@|$(DESTDIR)$(datasubdir)/pic|g" \
+	    -e "s|@VERSION@|$(version)$(revision)|g" \
+	    -e "$(SH_SCRIPT_SED_CMD)" \
+	    $(srcdir)/chem.pl >$@
 	chmod +x $@
 
 install_data: install_always $(make_install_examples)
 install_always: chem README $(srcdir)/chem.pic
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(RM) $(DESTDIR)$(bindir)/$(g)chem
+	rm -f $(DESTDIR)$(bindir)/$(g)chem
 	$(INSTALL_SCRIPT) chem $(DESTDIR)$(bindir)/$(g)chem
 	-test -d $(DESTDIR)$(datasubdir)/pic \
           || $(mkinstalldirs) $(DESTDIR)$(datasubdir)/pic
-	$(RM) $(DESTDIR)$(datasubdir)/pic/chem.pic
+	rm -f $(DESTDIR)$(datasubdir)/pic/chem.pic
 	$(INSTALL_DATA) $(srcdir)/chem.pic \
 	  $(DESTDIR)$(datasubdir)/pic/chem.pic
 
@@ -82,32 +80,24 @@ install_examples: install_always examples
 	-find $(DESTDIR)$(exampledir)/chem -type f -exec rm -f '{}' ';'
 	$(INSTALL_DATA) examples/README $(DESTDIR)$(exampledir)/chem/README
 	for i in $(srcdir)/examples/*.chem; do \
-          n=`echo $$i | sed 's|$(srcdir)/examples/||g'`; \
-          $(INSTALL_DATA) $$i $(DESTDIR)$(exampledir)/chem/$$n; \
+	  n=`echo $$i | sed 's|$(srcdir)/examples/||g'`; \
+	  $(INSTALL_DATA) $$i $(DESTDIR)$(exampledir)/chem/$$n; \
 	done
 	$(INSTALL_DATA) examples/122/README \
 	  $(DESTDIR)$(exampledir)/chem/122/README
 	for i in $(srcdir)/examples/122/*.chem; do \
-          n=`echo $$i | sed 's|$(srcdir)/examples/122/||g'`; \
-          $(INSTALL_DATA) $$i $(DESTDIR)$(exampledir)/chem/122/$$n; \
+	  n=`echo $$i | sed 's|$(srcdir)/examples/122/||g'`; \
+	  $(INSTALL_DATA) $$i $(DESTDIR)$(exampledir)/chem/122/$$n; \
 	done
 
 uninstall_sub: uninstall_always $(make_uninstall_examples)
 uninstall_always:
-	$(RM) $(DESTDIR)$(bindir)/chem
-	$(RM) $(DESTDIR)$(datasubdir)/pic/chem.pic
+	rm -f $(DESTDIR)$(bindir)/chem
+	rm -f $(DESTDIR)$(datasubdir)/pic/chem.pic
 	-rmdir $(DESTDIR)$(datasubdir)/pic
 
 uninstall_examples: uninstall_always
-	$(RM) $(DESTDIR)$(exampledir)/chem/122/*
+	rm -f $(DESTDIR)$(exampledir)/chem/122/*
 	-rmdir $(DESTDIR)$(exampledir)/chem/122
-	$(RM) $(DESTDIR)$(exampledir)/chem/*
+	rm -f $(DESTDIR)$(exampledir)/chem/*
 	-rmdir $(DESTDIR)$(exampledir)/chem
-
-########################################################################
-# Emacs settings
-########################################################################
-#
-# Local Variables:
-# mode: makefile
-# End:

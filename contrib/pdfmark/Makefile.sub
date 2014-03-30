@@ -39,9 +39,6 @@ MOSTLYCLEANADD=\
   $(CMDFILES) \
   pdf[0-9]*
 
-# Some `makes' don't predefine RM...
-RM=rm -f
-
 GROFF_BIN_DIR=$(top_builddir)/src/roff/groff
 GROFF_OTHER_BIN_DIRS=\
   $(top_builddir)/src/roff/troff \
@@ -62,7 +59,6 @@ PDFROFF=\
 
 .SUFFIXES: .ms .pdf
 .ms.pdf:
-	$(RM) $@
 	$(PDFROFF) -mspdf --stylesheet=$(srcdir)/cover.ms $< >$@
 
 all: pdfroff $(make_pdfdoc)
@@ -83,7 +79,6 @@ gnu.eps:
 	fi
 
 pdfroff: pdfroff.sh $(SH_DEPS_SED_SCRIPT)
-	$(RM) $@
 	sed -f $(SH_DEPS_SED_SCRIPT) \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
 	    -e "s|@GROFF_AWK_INTERPRETERS@|$(ALT_AWK_PROGS)|" \
@@ -95,12 +90,12 @@ install_data: install_always $(make_install_pdfdoc)
 install_always:
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	for f in $(CMDFILES); do \
-	  $(RM) $(DESTDIR)$(bindir)/$$f; \
+	  rm -f $(DESTDIR)$(bindir)/$$f; \
 	  $(INSTALL_SCRIPT) $$f $(DESTDIR)$(bindir)/$$f; \
 	done
 	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
 	for f in $(TMACFILES); do \
-	  $(RM) $(DESTDIR)$(tmacdir)/$$f; \
+	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(tmacdir)/$$f; \
 	done
 
@@ -108,14 +103,14 @@ install_pdfdoc: install_always
 	-test -d $(DESTDIR)$(pdfdocdir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(pdfdocdir)
 	for f in $(PDFDOCFILES); do \
-	  $(RM) $(DESTDIR)$(pdfdocdir)/$$f; \
+	  rm -f $(DESTDIR)$(pdfdocdir)/$$f; \
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(pdfdocdir)/$$f; \
 	done
 
 uninstall_sub: uninstall_always $(make_uninstall_pdfdoc)
 uninstall_always:
-	-for f in $(CMDFILES); do $(RM) $(DESTDIR)$(bindir)/$$f; done
-	-for f in $(TMACFILES); do $(RM) $(DESTDIR)$(tmacdir)/$$f; done
+	-for f in $(CMDFILES); do rm -f $(DESTDIR)$(bindir)/$$f; done
+	-for f in $(TMACFILES); do rm -f $(DESTDIR)$(tmacdir)/$$f; done
 
 uninstall_pdfdoc: uninstall_always
-	-for f in $(PDFDOCFILES); do $(RM) $(DESTDIR)$(pdfdocdir)/$$f; done
+	-for f in $(PDFDOCFILES); do rm -f $(DESTDIR)$(pdfdocdir)/$$f; done

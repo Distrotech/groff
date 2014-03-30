@@ -24,10 +24,9 @@ MOSTLYCLEANADD=pic2graph
 all: pic2graph
 
 pic2graph: pic2graph.sh
-	rm -f $@; \
 	sed -e "s|@g@|$(g)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
-	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/pic2graph.sh >$@; \
+	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/pic2graph.sh >$@
 	chmod +x $@
 
 install_data: pic2graph

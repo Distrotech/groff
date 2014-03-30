@@ -30,15 +30,11 @@ MOSTLYCLEANADD=\
   pdfmom \
   $(MAN1)
 
-# Some `makes' don't predefine RM...
-RM=rm -f
-
-
 all: gropdf pdfmom
 
 
 gropdf: gropdf.pl $(SH_DEPS_SED_SCRIPT)
-	$(RM) $@
+	rm -f $@
 	sed -f $(SH_DEPS_SED_SCRIPT) \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
 	    -e "s|@PERL@|$(PERL)|" \
@@ -47,7 +43,7 @@ gropdf: gropdf.pl $(SH_DEPS_SED_SCRIPT)
 	chmod +x $@
 
 pdfmom: pdfmom.pl $(SH_DEPS_SED_SCRIPT)
-	$(RM) $@
+	rm -f $@
 	sed -f $(SH_DEPS_SED_SCRIPT) \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
 	    -e "s|@PERL@|$(PERL)|" $(srcdir)/pdfmom.pl >$@
@@ -56,9 +52,9 @@ pdfmom: pdfmom.pl $(SH_DEPS_SED_SCRIPT)
 install_data:
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	for f in $(CMDFILES); do \
-	  $(RM) $(DESTDIR)$(bindir)/$$f; \
+	  rm -f $(DESTDIR)$(bindir)/$$f; \
 	  $(INSTALL_SCRIPT) $$f $(DESTDIR)$(bindir)/$$f; \
 	done
 
 uninstall_sub:
-	-for f in $(CMDFILES); do $(RM) $(DESTDIR)$(bindir)/$$f; done
+	-for f in $(CMDFILES); do rm -f $(DESTDIR)$(bindir)/$$f; done

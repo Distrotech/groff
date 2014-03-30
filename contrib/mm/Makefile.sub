@@ -47,7 +47,8 @@ install_data: install_m
 	  test -f $(DESTDIR)$(tmacdir)/mm/$$f \
 	    || touch $(DESTDIR)$(tmacdir)/mm/$$f; \
 	done
-	$(INSTALL_DATA) $(srcdir)/refer-mm.tmac $(DESTDIR)$(tmacdir)/refer-mm.tmac
+	$(INSTALL_DATA) $(srcdir)/refer-mm.tmac \
+	  $(DESTDIR)$(tmacdir)/refer-mm.tmac
 
 install_m:
 	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
@@ -68,17 +69,14 @@ install_mmroff: mmroff
 	$(INSTALL_SCRIPT) mmroff $(DESTDIR)$(bindir)/mmroff
 
 mmroff: mmroff.pl
-	-rm -f $@
-	-sed -e 's;/usr/bin/perl;$(PERL);' $(srcdir)/mmroff.pl >$@
-	-chmod +x $@
+	sed -e 's;/usr/bin/perl;$(PERL);' $(srcdir)/mmroff.pl >$@
+	chmod +x $@
 
 uninstall_sub:
-	-for f in $(FILES); do \
-		rm -f $(DESTDIR)$(tmacdir)/mm/$$f; \
-	done
+	-for f in $(FILES); do rm -f $(DESTDIR)$(tmacdir)/mm/$$f; done
 	-for f in $(LOCALE); do \
-		test -s $(DESTDIR)$(tmacdir)/mm/$$f \
-		  || rm -f $(DESTDIR)$(tmacdir)/mm/$$f; \
+	  test -s $(DESTDIR)$(tmacdir)/mm/$$f \
+	    || rm -f $(DESTDIR)$(tmacdir)/mm/$$f; \
 	done
 	rm -f $(DESTDIR)$(tmacdir)/tmac.$(tmac_m_prefix)m
 	rm -f $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)m.tmac
