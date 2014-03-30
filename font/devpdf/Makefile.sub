@@ -1,8 +1,8 @@
-# Copyright (C) 2011, 2013 Free Software Foundation, Inc.
+# Copyright (C) 2011, 2013, 2014 Free Software Foundation, Inc.
 #      Free Software Foundation, Inc.
 #      Written by Deri James <deri@chuzzlewit.demon.co.uk>
 #
-# Last update: 15 Apr 2013
+# Last update: 30 Mar 2014
 #
 # This file is part of groff.
 #
@@ -118,17 +118,16 @@ install_data:
 	    $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(fontsubdir)/$$f; \
 	  fi; \
 	done
-	$(RM) $@
 
 uninstall_sub:
 	for f in $(MOSTLYCLEANADD); do \
 	  $(RM) $(DESTDIR)$(fontsubdir)/$$f; \
 	done
-	-test -d $(DESTDIR)$(fontsubdir)/enc \
-	  && rmdir $(DESTDIR)$(fontsubdir)/enc
-	-test -d $(DESTDIR)$(fontsubdir)/map \
-	  && rmdir $(DESTDIR)$(fontsubdir)/map
-	-test -d $(DESTDIR)$(fontsubdir)/util \
-	  && rmdir $(DESTDIR)$(fontsubdir)/util
-	-test -d $(DESTDIR)$(fontsubdir) \
-	  && rmdir $(DESTDIR)$(fontsubdir)
+	-d="$(DESTDIR)$(fontsubdir)/enc"; \
+	  if test -d "$$d"; then rmdir "$$d"; fi
+	-d="$(DESTDIR)$(fontsubdir)/map"; \
+	  if test -d "$$d"; then rmdir "$$d"; fi
+	-d="$(DESTDIR)$(fontsubdir)/util"; \
+	  if test -d "$$d"; then rmdir "$$d"; fi
+	-d="$(DESTDIR)$(fontsubdir)"; \
+	  if test -d "$$d"; then rmdir "$$d"; fi

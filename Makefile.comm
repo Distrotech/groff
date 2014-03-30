@@ -1,4 +1,4 @@
-# Copyright (C) 1989-2000, 2002-2004, 2006-2011, 2013
+# Copyright (C) 1989-2000, 2002-2004, 2006-2011, 2013, 2014
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
@@ -298,16 +298,17 @@ uninstall_dev:
 	  || for f in ""$(OLDDEVFILES); do \
 	       rm -f $(DESTDIR)$(oldfontsubdir)/$$f; \
 	     done
-	-test -d $(DESTDIR)$(fontsubdir)/generate \
-	  && rmdir $(DESTDIR)$(fontsubdir)/generate
-	-test -d $(DESTDIR)$(fontsubdir)/enc \
-	  && rmdir $(DESTDIR)$(fontsubdir)/enc
-	-test -d $(DESTDIR)$(fontsubdir)/map \
-	  && rmdir $(DESTDIR)$(fontsubdir)/map
-	-test -d $(DESTDIR)$(fontsubdir)/util \
-	  && rmdir $(DESTDIR)$(fontsubdir)/util
+	-d="$(DESTDIR)$(fontsubdir)/generate";\
+	  if test -d "$$d"; then rmdir "$$d"; fi
+	-d="$(DESTDIR)$(fontsubdir)/enc";\
+	  if test -d "$$d"; then rmdir "$$d"; fi
+	-d="$(DESTDIR)$(fontsubdir)/map";\
+	  if test -d "$$d"; then rmdir "$$d"; fi
+	-d="$(DESTDIR)$(fontsubdir)/util";\
+	  if test -d "$$d"; then rmdir "$$d"; fi
 	-rmdir $(DESTDIR)$(fontsubdir)
-	-rmdir $(DESTDIR)$(oldfontsubdir)
+	-d="$(DESTDIR)$(oldfontsubdir)";\
+	  if test -d "$$d"; then rmdir "$$d"; fi
 
 .PHONY: depend_src
 depend_src: depend.temp

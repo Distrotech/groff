@@ -73,9 +73,10 @@ uninstall_sub:
 	for f in $(GROFF_OPTS_OUTPUT); do \
 		$(RM) $(DESTDIR)$(libprogramdir)/$$f; \
 	done
-	-test -d $(DESTDIR)$(libprogramdir) \
-	  && rmdir $(DESTDIR)$(libprogramdir)
-
+# XXX This will be removed by `uninstall_dirs' in `$(top_srcdir)/Makefile.in'
+# XXX (And only from there it is successful on an empty directory)
+#	-d="$(DESTDIR)$(libprogramdir)";\
+#	  if test -d "$$d"; then rmdir "$$d"; fi
 
 ########################################################################
 # Emacs settings
