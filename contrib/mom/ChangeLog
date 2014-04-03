@@ -1,3 +1,15 @@
+* Thu Apr 3 2014
+
+o contrib/mom/Makefile.sub: Set LC_ALL=C when calling $(PDFMOM).
+
+  Doing so in an UTF-8 locale with $PERL5OPT=-C set avoids warnings like
+
+    utf8 "\xF5" does not map to Unicode at\
+      [.]src/devices/gropdf/gropdf line 1359, <PD> line 63.
+    Malformed UTF-8 character (unexpected end of string)\
+      in substitution (s///) at\
+      [.]src/devices/gropdf/gropdf line 1315, <PD> line 63.
+
 * Sat Mar 29 2014
 
 o Makefile.sub: Handle examples separately, controlled by
