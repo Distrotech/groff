@@ -2,7 +2,7 @@
 
 # File position: <groff-source>/src/roff/grog/Makefile.sub
 
-# Copyright (C) 1993, 2006, 2009, 2013, 2014
+# Copyright (C) 1993, 2006, 2009, 2013-2014
 #   Free Software Foundation, Inc.
 
 # Last update: 30 Mar 2014
@@ -47,9 +47,8 @@ grog: grog.pl $(GROG) $(SH_DEPS_SED_SCRIPT)
 	    -e "s|@EGREP@|$(EGREP)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
-	    $(srcdir)/grog.pl >$@;
-	chmod +x $@;
-
+	    $(srcdir)/grog.pl >$@
+	chmod +x $@
 
 .PHONY: install_data
 install_data: grog
@@ -58,23 +57,15 @@ install_data: grog
 	$(INSTALL_SCRIPT) grog $(DESTDIR)$(bindir)/grog
 	-test -d $(DESTDIR)$(grog_dir) || $(mkinstalldirs) $(DESTDIR)$(grog_dir)
 	for f in $(GROG_); do \
-	  rm -f "$(DESTDIR)$(grog_dir)/$$f"; \
+	  rm -f $(DESTDIR)$(grog_dir)/$$f; \
 	  $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(grog_dir)/$$f; \
-	done;
+	done
 
 .PHONY: uninstall_data
 uninstall_sub:
-	rm -f "$(DESTDIR)$(bindir)/grog"
+	rm -f $(DESTDIR)$(bindir)/grog
 	-for f in $(GROG_); do \
-	  rm -f "$(DESTDIR)$(grog_dir)/$$f"; \
+	  rm -f $(DESTDIR)$(grog_dir)/$$f; \
 	done
-	-d="$(DESTDIR)$(grog_dir)";\
-	  if test -d "$$d"; then rmdir $$d; fi
-
-########################################################################
-# Emacs settings
-########################################################################
-#
-# Local Variables:
-# mode: makefile
-# End:
+	-d=$(DESTDIR)$(grog_dir);\
+	  if test -d $$d; then rmdir $$d; fi

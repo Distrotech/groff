@@ -1,4 +1,4 @@
-# Copyright (C) 2011, 2013, 2014 Free Software Foundation, Inc.
+# Copyright (C) 2011, 2013-2014 Free Software Foundation, Inc.
 #      Free Software Foundation, Inc.
 #      Written by Deri James <deri@chuzzlewit.demon.co.uk>
 #
@@ -118,11 +118,11 @@ uninstall_sub:
 	-for f in $(MOSTLYCLEANADD); do \
 	  rm -f $(DESTDIR)$(fontsubdir)/$$f; \
 	done
-	-d="$(DESTDIR)$(fontsubdir)/enc"; \
-	  if test -d "$$d"; then rmdir "$$d"; fi
-	-d="$(DESTDIR)$(fontsubdir)/map"; \
-	  if test -d "$$d"; then rmdir "$$d"; fi
-	-d="$(DESTDIR)$(fontsubdir)/util"; \
-	  if test -d "$$d"; then rmdir "$$d"; fi
-	-d="$(DESTDIR)$(fontsubdir)"; \
-	  if test -d "$$d"; then rmdir "$$d"; fi
+	-d=$(DESTDIR)$(fontsubdir)/enc; \
+	  if test -d $$d; then rmdir $$d; fi
+	-d=$(DESTDIR)$(fontsubdir)/map; \
+	  if test -d $$d; then rmdir $$d; fi
+	-d=$(DESTDIR)$(fontsubdir)/util; \
+	  if test -d $$d; then rmdir $$d; fi
+	-d=$(DESTDIR)$(fontsubdir); \
+	  if test -d $$d; then rmdir $$d; fi

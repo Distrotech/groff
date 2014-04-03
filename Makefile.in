@@ -3,19 +3,19 @@
 #      Written by James Clark (jjc@jclark.com)
 #
 # Last update: 30 Mar 2014
-# 
+#
 # This file is part of groff.
-# 
+#
 # groff is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # groff is distributed in the hope that it will be useful, but WITHOUT ANY
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
@@ -384,7 +384,7 @@ make_uninstall_examples=@make_uninstall_examples@
 #				<stdio.h>
 # -DICONV_CONST=const		if declaration of iconv() needs const
 # -DLONG_FOR_TIME_T		if localtime() takes a long * not a time_t *
-# -DRETSIGTYPE=int		if signal handlers return int not void	
+# -DRETSIGTYPE=int		if signal handlers return int not void
 # -DRET_TYPE_SRAND_IS_VOID	if srand() returns void not int
 #
 # -DWCOREFLAG=0200		if the 0200 bit of the status returned by
@@ -616,7 +616,6 @@ MAKE_K_FLAG=`for f in x $(MAKEFLAGS); do \
                  *k*) echo ' -k ';; \
                esac; \
              done`
-
 
 INCDIRS=\
   src/include
@@ -907,8 +906,8 @@ dist:
 	rm -f tmp/Makefile
 	cp Makefile.init tmp/Makefile
 	mv tmp groff-$(version)$(revision)
-	tar cfh - groff-$(version)$(revision) | \
-	  gzip -c >groff-$(version)$(revision).tar.gz
+	tar cfh - groff-$(version)$(revision) \
+	  | gzip -c >groff-$(version)$(revision).tar.gz
 	rm -fr groff-$(version)$(revision)
 
 # $(PROGDIRS): libgroff
@@ -939,8 +938,8 @@ install:
 	@$(ENVSETUP); $(MAKE) $(MAKE_K_FLAG) $(MDEFINES) \
 	  do=do_install $(dodirs)
 	cd $(DESTDIR)$(dataprogramdir); \
-	rm -f current; \
-	$(LN_S) $(version)$(revision) current
+	  rm -f current; \
+	  $(LN_S) $(version)$(revision) current
 
 .PHONY: uninstall
 uninstall: uninstall_sub uninstall_dirs

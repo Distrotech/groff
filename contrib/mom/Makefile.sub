@@ -1,19 +1,19 @@
 # Copyright (C) 2002-2006, 2009, 2012-2014
 #   Free Software Foundation, Inc.
 #      Written by Werner Lemberg (wl@gnu.org)
-# 
+#
 # This file is part of groff.
-# 
+#
 # groff is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # groff is distributed in the hope that it will be useful, but WITHOUT ANY
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
@@ -134,6 +134,7 @@ examples/stamp:
 install_data: install_always \
 	      $(make_install_pdfdoc) $(make_install_htmldoc) \
 	      $(make_install_examples)
+
 install_always: stamp-strip $(NORMALFILES)
 	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
 	for f in $(NORMALFILES); do \
@@ -158,6 +159,7 @@ install_htmldoc: install_always $(HTMLDOCFILES)
 	done
 
 install_examples: install_examples_always $(make_install_pdfexamples)
+
 install_examples_always: $(EXAMPLEFILES)
 	-test -d $(DESTDIR)$(exampledir)/mom \
 	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)/mom
@@ -189,6 +191,7 @@ stamp-strip: $(STRIPFILES)
 uninstall_sub: uninstall_always \
 		$(make_uninstall_pdfdoc) $(make_uninstall_htmldoc) \
 		$(make_uninstall_examples)
+
 uninstall_always:
 	-for f in $(NORMALFILES) $(STRIPFILES); do \
 	  rm -f $(DESTDIR)$(tmacdir)/$$f; \

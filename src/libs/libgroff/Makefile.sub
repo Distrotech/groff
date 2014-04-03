@@ -158,14 +158,14 @@ install_charset_data:
 	  sed -f ref-add.sed $(DESTDIR)$(libdir)/charset.alias \
 	    > $(DESTDIR)$(libdir)/t-charset.alias; \
 	  $(INSTALL_DATA) $(DESTDIR)$(libdir)/t-charset.alias \
-	                  $(DESTDIR)$(libdir)/charset.alias; \
+	    $(DESTDIR)$(libdir)/charset.alias; \
 	  rm -f $(DESTDIR)$(libdir)/t-charset.alias; \
 	else \
 	  if test $(GLIBC21) = no; then \
 	    sed -f ref-add.sed charset.alias \
 	      > $(DESTDIR)$(libdir)/t-charset.alias; \
 	    $(INSTALL_DATA) $(DESTDIR)$(libdir)/t-charset.alias \
-	                    $(DESTDIR)$(libdir)/charset.alias; \
+	      $(DESTDIR)$(libdir)/charset.alias; \
 	    rm -f $(DESTDIR)$(libdir)/t-charset.alias; \
 	  fi; \
 	fi
@@ -180,7 +180,7 @@ uninstall_charset_data:
 	    rm -f $(DESTDIR)$(libdir)/charset.alias; \
 	  else \
 	    $(INSTALL_DATA) $(DESTDIR)$(libdir)/t-charset.alias \
-	                    $(DESTDIR)$(libdir)/charset.alias; \
+	      $(DESTDIR)$(libdir)/charset.alias; \
 	  fi; \
 	  rm -f $(DESTDIR)$(libdir)/t-charset.alias; \
 	fi
