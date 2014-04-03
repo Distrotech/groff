@@ -4,7 +4,7 @@
 #	Deri James	: Friday 16 Mar 2012
 #
 
-# Copyright (C) 2012,2013
+# Copyright (C) 2012-2014
 #      Free Software Foundation, Inc.
 #      Written by Deri James <deri@chuzzlewit.demon.co.uk>
 #
@@ -82,7 +82,7 @@ while (my $c=shift)
 	if (length($c) > 1)
 	{
 	    push(@cmd,"\"$c\"");
-	    push(@cmd,"'".shift."'") if length($c)==2 and index('dDfFIKLmMnoPrwW',substr($c,-1)) >= 0;
+	    push(@cmd,"'".(shift)."'") if length($c)==2 and index('dDfFIKLmMnoPrwW',substr($c,-1)) >= 0;
 	}
 	else
 	{
