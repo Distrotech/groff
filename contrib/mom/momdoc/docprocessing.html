@@ -119,6 +119,10 @@ class="header-link" href="#setup">Preliminary document setup</a></h3>
   <li><a href="#columns-intro"><b>Setting documents in columns</b></a>
   <ul class="toc-docproc">
     <li><a href="#columns">COLUMNS</a></li>
+    <li><a href="#marking-col-start">Marking the first page column start position</a>
+    <ul class="toc-docproc">
+      <li><a href="#col-mark">COL_MARK</a></li>
+    </ul></li>
     <li><a href="#breaking-columns">Breaking columns manually</a>
     <ul class="toc-docproc">
       <li><a href="#col-next">COL_NEXT</a> and <a href="#col-break">COL_BREAK</a></li>
@@ -3070,11 +3074,48 @@ always be the last document setup macro prior to
 <div class="box-tip">
 <p class="tip">
 <span class="note">Note:</span>
-Mom ignores columns completely
-when the
+Mom ignores columns completely when the
 <a href="#printstyle">PRINTSTYLE</a>
 is <kbd>TYPEWRITE</kbd>.  The notion of typewriter-style
 output in columns is just too ghastly for her to bear.
+</p>
+</div>
+
+<h3 class="docs" id="marking-col-start">Marking the first page column start position</h3>
+
+<p>
+If you insert or remove space after the docheader, i.e. immediately after
+<a href="#start">START</a>
+in your input file, mom needs to know where your first column begins
+in order to align subsequent columns on the first page.
+</p>
+
+<div id="col-mark" class="box-macro-args">
+Macro: <b>COL_MARK</b>
+</div>
+
+<p>
+<kbd>COL_MARK</kbd> tells mom where the first column after the
+docheader begins, in order for the top of subsequent columns on the
+first page to be aligned.  Note that if you do not manually add
+or remove space after the docheader, there is no need to invoke
+<kbd>COL_MARK</kbd>.
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+If you add or subtract space after the docheader, e.g. with
+<a href="typesetting.html#ald">ALD</a>
+or
+<a href="typesetting.html#SP">SP</a>,
+and your
+<a href="definitions.html#unitofmeasure">unit of measure</a>
+is something other than &#8220;<kbd>v</kbd>&#8221;, be sure to follow the spacing
+command with
+<a href="docprocessing.html#shim"><kbd>.SHIM</kbd></a>
+unless shimming has been disabled with
+<a href="#disable-shim">NO_SHIM</a>.
 </p>
 </div>
 
