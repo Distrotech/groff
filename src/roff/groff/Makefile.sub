@@ -2,13 +2,13 @@
 
 # File position: <groff-source>/src/roff/groff/Makefile.sub
 
-# Copyright (C) 1993-2013
+# Copyright (C) 1993-2014
 #   Free Software Foundation, Inc.
 
 #   Rewritten by Bernd Warken <groff-bernd.warken-72@web.de> and
 #   Werner LEMBERG  <wl@gnu.org>
 
-# Last update: 06 May 2013
+# Last update: 30 Mar 2014
 
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -34,53 +34,43 @@ CCSRCS=$(srcdir)/groff.cpp
 CSRCS=$(srcdir)/pipeline.c
 HDRS=$(srcdir)/pipeline.h
 
-GROFF_OPTS_OUTPUT=groff_opts_no_arg.txt \
-	groff_opts_with_arg.txt
+GROFF_OPTS_OUTPUT=\
+  groff_opts_no_arg.txt \
+  groff_opts_with_arg.txt
 
 MOSTLYCLEANADD=groff_opts.tmp $(GROFF_OPTS_OUTPUT)
-
-RM=rm -f
 
 all: $(srcdir)/groff.cpp groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
 groff_opts.tmp: $(srcdir)/groff.cpp
-	@$(GREP) -e ':.*:.*:' $? \
-		| sed -e 's/[ \t",]//g' > $@
+	@$(GREP) -e ':.*:.*:' $? | sed -e 's/[ \t",]//g' > $@
 	@echo -n 'groff options: '
 	@cat $@
 
 groff_opts_no_arg.txt: groff_opts.tmp
-	@$(RM) $@
 	@sed -e 's/[a-zA-Z]://g' $? > $@
 	@echo -n 'no arg: '
 	@cat $@
 
 groff_opts_with_arg.txt: groff_opts_no_arg.txt
-	@$(RM) $@
+	@rm -f $@
 	@sed "s/[`cat $?`:]//g" groff_opts.tmp > $@
 	@echo -n 'with arg: '
 	@cat $@
 
 install_data: $(GROFF_OPTS_OUTPUT)
 	-test -d $(DESTDIR)$(libprogramdir) \
-		|| $(mkinstalldirs) $(DESTDIR)$(libprogramdir)
+	  || $(mkinstalldirs) $(DESTDIR)$(libprogramdir)
 	for f in  $(GROFF_OPTS_OUTPUT); do \
-		$(RM) $(DESTDIR)$(libprogramdir)/$$f; \
-		$(INSTALL_SCRIPT) $$f $(DESTDIR)$(libprogramdir); \
+	  rm -f $(DESTDIR)$(libprogramdir)/$$f; \
+	  $(INSTALL_SCRIPT) $$f $(DESTDIR)$(libprogramdir); \
 	done
 
 uninstall_sub:
-	for f in $(GROFF_OPTS_OUTPUT); do \
-		$(RM) $(DESTDIR)$(libprogramdir)/$$f; \
+	-for f in $(GROFF_OPTS_OUTPUT); do \
+	  rm -f $(DESTDIR)$(libprogramdir)/$$f;\
 	done
-	-test -d $(DESTDIR)$(libprogramdir) \
-                && -rmdir $(DESTDIR)$(libprogramdir)
-
-
-########################################################################
-# Emacs settings
-########################################################################
-#
-# Local Variables:
-# mode: makefile
-# End:
+# XXX This will be removed by `uninstall_dirs' in `$(top_srcdir)/Makefile.in'
+# XXX (And only from there it is successful on an empty directory)
+#	-d=$(DESTDIR)$(libprogramdir);\
+#	  if test -d $$d; then rmdir $$d; fi

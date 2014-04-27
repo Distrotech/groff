@@ -1,19 +1,19 @@
-# Copyright (C) 1989-2007, 2009-2012
+# Copyright (C) 1989-2007, 2009-2012, 2014
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
-# 
+#
 # This file is part of groff.
-# 
+#
 # groff is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # groff is distributed in the hope that it will be useful, but WITHOUT ANY
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
@@ -97,13 +97,13 @@ install_data: $(NORMALFILES) $(SPECIALFILES) man.local \
 	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(tmacdir)/$$f; \
 	done
-	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac
+	rm -f $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac
 	$(INSTALL_DATA) $(srcdir)/s.tmac \
 	  $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac
-	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac
+	rm -f $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac
 	$(INSTALL_DATA) $(srcdir)/an.tmac \
 	  $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac
-	-rm -f $(DESTDIR)$(tmacdir)/www.tmac
+	rm -f $(DESTDIR)$(tmacdir)/www.tmac
 	$(INSTALL_DATA) www.tmac-sed $(DESTDIR)$(tmacdir)/www.tmac
 	for f in $(STRIPFILES); do \
 	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
@@ -114,11 +114,11 @@ install_data: $(NORMALFILES) $(SPECIALFILES) man.local \
 	  rm -f $(DESTDIR)$(mdocdir)/$$f; \
 	  $(INSTALL_DATA) $$f-s $(DESTDIR)$(mdocdir)/$$f; \
 	done
-	-test -f $(DESTDIR)$(localtmacdir)/man.local || \
-	  $(INSTALL_DATA) $(srcdir)/man.local \
-	    $(DESTDIR)$(localtmacdir)/man.local
-	-test -f $(DESTDIR)$(localtmacdir)/mdoc.local || \
-	  $(INSTALL_DATA) mdoc.local-s $(DESTDIR)$(localtmacdir)/mdoc.local
+	-test -f $(DESTDIR)$(localtmacdir)/man.local \
+	  || $(INSTALL_DATA) $(srcdir)/man.local \
+	       $(DESTDIR)$(localtmacdir)/man.local
+	-test -f $(DESTDIR)$(localtmacdir)/mdoc.local \
+	  || $(INSTALL_DATA) mdoc.local-s $(DESTDIR)$(localtmacdir)/mdoc.local
 
 stamp-strip: $(STRIPFILES) $(MDOCFILES) mdoc.local
 	for f in $(STRIPFILES) $(MDOCFILES) mdoc.local; do \
@@ -141,9 +141,8 @@ stamp-wrap:
 	touch $@
 
 stamp-sed: www.tmac
-	rm -f www.tmac-sed; \
 	sed -e "s;@PNMTOPS_NOSETPAGE@;$(pnmtops_nosetpage);g" \
-	  $(srcdir)/www.tmac > www.tmac-sed;
+	  $(srcdir)/www.tmac > www.tmac-sed
 	touch $@
 
 uninstall_sub:
@@ -155,9 +154,9 @@ uninstall_sub:
 	-for f in $(NORMALFILES) $(STRIPFILES); do \
 	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
 	done
-	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac
-	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac
-	-rm -f $(DESTDIR)$(tmacdir)/www.tmac
+	rm -f $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac
+	rm -f $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac
+	rm -f $(DESTDIR)$(tmacdir)/www.tmac
 	-if cmp -s $(DESTDIR)$(localtmacdir)/man.local \
 	           $(srcdir)/man.local; then \
 	  rm -f $(DESTDIR)$(localtmacdir)/man.local; \

@@ -10,7 +10,7 @@ Installed position: groff's main macro directory.
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009, 2010
+Copyright (C) 2001-2006, 2008-2010, 2014
   Free Software Foundation, Inc.
 written by Gaius Mulley <gaius@glam.ac.uk>, with additions by
 Werner Lemberg <wl@gnu.org> and
@@ -520,10 +520,13 @@ HTML always denotes XHTML also.
 .\"
 .\"   Generate an HTML name NAME.
 .\"   Define string TAG_NAME to TEXT, if present, otherwise to \n[PN].
+.\"   Register PN is the current page number.
 .\"
 .de TAG
 .  HTML <a "name=""\\$1""></a>"
 .  ie '\\$2'' \
+.    if !rPN \
+.      nr PN \\n%
 .    ds TAG_\\$1 \\n[PN]\"
 .  el \
 .    ds TAG_\\$1 \\$2\"

@@ -5,7 +5,7 @@ File position: <groff-source>/man/groff_tmac.man
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2000-2004, 2006-2009, 2013
+Copyright (C) 2000-2004, 2006-2009, 2013, 2014
   Free Software Foundation, Inc.
 written by Bernd Warken <groff-bernd.warken-72@web.de> and
 Werner Lemberg <wl@gnu.org>
@@ -212,7 +212,7 @@ Example:
 .RS
 .IP
 .EX
-\fIsh#\fP groff -ms -mfr foo.ms > foo.ps
+\fIsh#\fP groff \-ms \-mfr foo.ms > foo.ps
 .EE
 .RE
 .
@@ -276,7 +276,7 @@ For example, saying
 .
 .P
 .EX
-groff -Tlatin1 -mlatin9 ...
+groff \-Tlatin1 \-mlatin9 ...
 .EE
 .
 .P
@@ -311,7 +311,7 @@ Switch to the EC and TC font families.
 .
 To be used with
 .BR \%grodvi (@MAN1EXT@)
-\[en] this man page also gives more details of how to use it.	
+\[en] this man page also gives more details of how to use it.
 .
 .
 .TP
@@ -321,7 +321,7 @@ This macro file is already loaded at start-up by
 so it isn't necessary to call it explicitly.
 .
 It provides an interface to set the paper size on the command line with
-the option \f[B]\%\-dpaper=\f[]\f[I]size\f[].
+the option \f[B]\%\-dpaper=\f[]\,\f[I]size\f[].
 .
 Possible values for
 .I size
@@ -330,7 +330,7 @@ are the same as the predefined
 values in the DESC file (only lowercase; see
 .BR groff_font (@MAN5EXT@)
 for more) except
-.BR a7 - d7 .
+.BR a7 \[en] d7 .
 .
 An appended
 .B l
@@ -403,7 +403,7 @@ Syntax:
 |\|\fB\-R\fP\|\
 |\|\fB\-C\fP\|\
 |\|\fB\-I\fP\ \fIn\fP] \
-\fI\|file\fP [\fIwidth\fP [\fIheight\fP]]
+\fI\|file\fP [\fIwidth\fP [\,\fIheight\/\fP]]
 .RE
 .
 .IP
@@ -469,7 +469,7 @@ covers the image's width.
 \&.am PSPIC
 \&.\ \ vpt 0
 \&\[rs]h'(\[rs]\[rs]n[ps-offset]u + \[rs]\[rs]n[ps-deswid]u)'
-\&.\ \ sp -1
+\&.\ \ sp \-1
 \&.\ \ vpt 1
 \&..
 .EE
@@ -520,10 +520,10 @@ addresses; see
 .\" --------------------------------------------------------------------
 .
 Classical roff systems were designed before the conventions of the
-modern C 
+modern C
 .BR getopt (3)
 call evolved, and used a naming scheme for macro packages that looks
-odd to modern eyes. Macro packages were always included with the option
+odd to modern eyes.  Macro packages were always included with the option
 .BR \-m ;
 when this option was directly followed by its argument without an
 intervening space, this looked like a long option preceded by a single
@@ -608,7 +608,7 @@ would not make much sense.
 .
 .P
 A second strange feature of classical troff was to name macro files
-in the form \f[B]tmac.\f[]\f[I]name\f[].
+in the form \f[B]tmac.\f[]\,\f[I]name\f[].
 In modern operating systems, the type of a file is specified as a
 postfix, the file name extension.
 .
@@ -775,7 +775,7 @@ abbreviations for those preprocessor commands that should be run
 when formatting the document.
 .
 Mostly, only the letters corresponding to the options for the
-preprocessors are recognized, 
+preprocessors are recognized,
 `e'
 (for
 .BR eqn ),
@@ -929,28 +929,28 @@ Let's analyze each backslash in the macro definition.
 As the positional parameters and the number of arguments change
 with each call of the macro their leading backslash must be doubled,
 which results in
-.I \[rs]\[rs]$*
+.RI \[rs]\[rs] $*
 and
-.IR \[rs]\[rs][.$] .
+.RI \[rs]\[rs] [.$] .
 The same applies to the macro name because it could be called with an
 alias name, so
-.IR \[rs]\[rs]$0 .
+.RI \[rs]\[rs] $0 .
 .
 .
 .P
 On the other hand,
 .I midpart
 is a constant string, it does not change, so no doubling for
-.IR \[rs]*[midpart] .
+.RI \[rs] *[midpart] .
 The
-.I \[rs]f
+.RI \[rs] f
 escape sequences are predefined groff elements for setting the font
 within the text.
 .
 Of course, this behavior does not change, so no doubling with
-.I \[rs]f[I]
+.RI \[rs] f[I]
 and
-.IR \[rs]f[] .
+.RI \[rs] f[] .
 .
 .
 .\" --------------------------------------------------------------------
@@ -1197,7 +1197,7 @@ See the previous section for a detailed description.
 .SH AUTHOR
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009
+Copyright (C) 2000\(en2004, 2006\(en2009, 2013, 2014
 Free Software Foundation, Inc.
 .
 .P
@@ -1221,7 +1221,7 @@ Bernd Warken
 .ME ;
 it is maintained by
 .MT wl@gnu.org
-Werner Lemberg 
+Werner Lemberg
 .ME .
 .
 .

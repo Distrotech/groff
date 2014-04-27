@@ -1,5 +1,5 @@
 .TH GROFF_WWW @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
-.\" Copyright (C) 2000-2006, 2008, 2009, 2011
+.\" Copyright (C) 2000-2006, 2008, 2009, 2011, 2014
 .\" Free Software Foundation, Inc.
 .\"      Written by Gaius Mulley (gaius@glam.ac.uk)
 .\"
@@ -115,7 +115,7 @@ preprocessors is acceptable as input.
 .TP
 .B .JOBNAME filename
 Split output into multiple HTML files.
-A file is split whenever a .SH or .NH\ 1 is encountered.
+A file is split whenever a \&.SH or \&.NH\ 1 is encountered.
 Its argument is the file stem name for future output files.
 This option is equivalent to
 .BR \%grohtml 's
@@ -184,7 +184,7 @@ Here is how to encode
 .B .URL http://\[rs]:foo.\[rs]:org/ "foo" :
 .RE
 .IP
-If this is processed by a device other than 
+If this is processed by a device other than
 .B \-Thtml
 or
 .B \-Txhtml
@@ -195,7 +195,7 @@ foo \[la]\f[C]http://foo.org\f[]\[ra]:
 .RE
 .IP
 The URL macro can be of any type; for example we can reference
-.URL pic.html "Eric Raymond's pic guide" 
+.URL pic.html "Eric Raymond's pic guide"
 by:
 .RS
 .IP
@@ -212,7 +212,7 @@ If an empty argument is given,
 is used instead.
 An optional third argument is stuff printed immediately afterwards.
 Hyphenation is disabled while printing the actual email address.
-For example, 
+For example,
 .MTO joe@user.org "Joe User"
 was achieved by the following macro:
 .RS
@@ -273,14 +273,14 @@ a URL using either two or three arguments.
 .RE
 .
 .TP
-.B .IMG [-R|-L|-C] filename [width] [height]
+.B .IMG [\-R|\-L|\-C] filename [width] [height]
 Include a picture into the document.
 The first argument is the horizontal location: right, left, or center
 .RB ( \-R ,
 .BR \-L ,
 or
 .BR \-C ).
-Alignment is centered by default (-C).
+Alignment is centered by default (\-C).
 The second argument is the filename.
 The optional third and fourth arguments are the width and height.
 If the width is absent it defaults to 1\~inch.
@@ -291,7 +291,7 @@ If you are including a png image then it is advisable to use the
 macro.
 .
 .TP
-.B .PIMG [-R|-L|-C] filename [width [height]]
+.B .PIMG [\-R|\-L|\-C] filename [width [height]]
 Include an image in PNG format.
 This macro takes exactly the same parameters as the
 .B IMG
@@ -314,7 +314,7 @@ it is necessary to use the
 option of groff.
 .
 .TP
-.B .MPIMG [-R|-L] [-G gap] filename [width [height]]
+.B .MPIMG [\-R|\-L] [\-G gap] filename [width [height]]
 Place a PNG image on the margin and wrap text around it.
 The first parameters are optional.
 The alignment: left or right
@@ -323,7 +323,7 @@ or
 .BR \-R )
 specifies the margin where the picture is placed at.
 The default alignment is left
-.RB ( -L ).
+.RB ( \-L ).
 Optionally,
 .BI \-G \~gap
 can be used to arrange a gap between the picture
@@ -339,22 +339,22 @@ Example:
 .IP
 .nf
 .ft B
-\&.MPIMG -L -G 2c foo.png 3c 1.5c
+\&.MPIMG \-L \-G 2c foo.png 3c 1.5c
 .ft P
 .fi
 .RE
 .IP
-The height and width may also be given as percentages. The PostScript
+The height and width may also be given as percentages.  The PostScript
 device calculates the width from the
 .B .l
 register and the height from the
 .B .p
-register. For example:
+register.  For example:
 .RS
 .IP
 .nf
 .ft B
-\&.MPIMG -L -G 2c foo.png 15%
+\&.MPIMG \-L \-G 2c foo.png 15%
 .ft P
 .fi
 .RE
@@ -374,7 +374,7 @@ Example:
 \&.HnS 1
 \&.HR
 GNU Troff
-\&.URL http://groff.ffii.org (Groff) 
+\&.URL http://groff.ffii.org (Groff)
 \&\(em a
 \&.URL http://www.gnu.org/ GNU
 \&project.
@@ -426,14 +426,14 @@ by default.
 .TP
 .B .HTL
 Generate an HTML title only.
-This differs from the 
+This differs from the
 .B TL
 macro of the
 .B ms
 macro package which generates both an HTML title and an <H1> heading.
 Use it to provide an HTML title as search engine fodder but a graphic title
 in the document.
-The macro terminates when a space or break is seen (.sp, .br).
+The macro terminates when a space or break is seen (.sp, \&.br).
 .
 .TP
 .B .HEAD
@@ -485,7 +485,7 @@ Produce a drop capital.
 The first parameter is the letter to be dropped and enlarged, the second
 parameter
 .B text
-is the ajoining text whose height the first letter should not exceed.
+is the adjoining text whose height the first letter should not exceed.
 The optional third parameter is the color of the dropped letter.
 It defaults to black.
 .
@@ -513,7 +513,7 @@ of the links in the left and the section text on the right.
 .TP
 .B ".LNS"
 Start a new two-column table with links in the left column.
-This can be called if the document has text before the first .SH and if .ALN
+This can be called if the document has text before the first \&.SH and if \&.ALN
 is used.
 Typically this is called just before the first paragraph and after the main
 title as it indicates that text after this point should be positioned to the
@@ -522,7 +522,7 @@ right of the left-hand navigational links.
 .TP
 .B ".LNE"
 End a two-column table.
-This should be called at the end of the document if .ALN was used.
+This should be called at the end of the document if \&.ALN was used.
 .
 .TP
 .B ".LINKSTYLE color [ fontstyle [ openglyph closeglyph ] ]"
@@ -544,7 +544,7 @@ but these values will be superseded by a user call to LINKSTYLE.
 By default
 .B \%grohtml
 generates links to all section headings and places these at the top of the
-html document. (See
+html document.  (See
 .URL #LK LINKS
 for details of how to switch this off or alter the position).
 .

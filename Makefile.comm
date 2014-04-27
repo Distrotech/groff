@@ -1,19 +1,19 @@
-# Copyright (C) 1989-2000, 2002-2004, 2006-2011, 2013
+# Copyright (C) 1989-2000, 2002-2004, 2006-2011, 2013-2014
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
-# 
+#
 # This file is part of groff.
-# 
+#
 # groff is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # groff is distributed in the hope that it will be useful, but WITHOUT ANY
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
@@ -67,30 +67,26 @@ fonts:
 .PHONY: pure fonts
 
 mostlyclean:
-	-rm -f $(MOSTLYCLEANFILES)
+	rm -f $(MOSTLYCLEANFILES)
 	-rm -rf $(MOSTLYCLEANDIRADD)
-	-@if test `cd $(srcdir); pwd` = `pwd`; then \
-	  :; \
-	else \
+	-@if test "`cd $(srcdir); pwd`" != "`pwd`"; then \
 	  rm -f $(MOSTLYCLEANNOTSRCDIRADD); \
 	fi
 
 clean: mostlyclean
-	-rm -f $(CLEANFILES)
+	rm -f $(CLEANFILES)
 
 distclean: clean
-	-rm -f $(DISTCLEANFILES)
-	-@if test `cd $(srcdir); pwd` = `pwd`; then \
-	  :; \
-	else \
+	rm -f $(DISTCLEANFILES)
+	-@if test "`cd $(srcdir); pwd`" != "`pwd`"; then \
 	  rm -f $(YTABC) $(YTABH); \
 	fi
 
 realclean: distclean
-	-rm -f $(REALCLEANFILES)
+	rm -f $(REALCLEANFILES)
 
 extraclean: distclean
-	-rm -f \#* *~ =* core junk grot old temp tmp tem *.new *.old *.orig
+	rm -f \#* *~ =* core junk grot temp tmp tem *.new *.old *.orig
 
 .SUFFIXES:
 .SUFFIXES: .o .obj .cpp .c .y .man .n
@@ -117,7 +113,7 @@ extraclean: distclean
 	-test -f y.tab.c && mv y.tab.c y_tab.c
 	sed "s/^#line \(.*\) \"y.tab.c\"/#line \1 \"$(YTABC)\"/" \
 	  < y_tab.c > $(YTABC)
-	-rm -f y_tab.c
+	rm -f y_tab.c
 	test -z "$(YTABH)" || mv y_tab.h $(YTABH)
 
 # The next rule is needed for make of Solaris 2.5.1 to override its
@@ -136,88 +132,90 @@ extraclean: distclean
 
 .man.n:
 	@echo Making $@ from $<
-	@-rm -f $@
-	@LC_ALL=C sed -e "s|@APPRESDIR@|$(appresdir)|g" \
-	-e "s|@BINDIR@|$(bindir)|g" \
-	-e "s|@BROKEN_SPOOLER_FLAGS@|$(BROKEN_SPOOLER_FLAGS)|g" \
-	-e "s|@COMMON_WORDS_FILE@|$(common_words_file)|g" \
-	-e "s|@DATASUBDIR@|$(datasubdir)|g" \
-	-e "s|@DEFAULT_INDEX@|$(indexdir)/$(indexname)|g" \
-	-e "s|@DEFAULT_INDEX_NAME@|$(indexname)|g" \
-	-e "s|@DEVICE@|$(DEVICE)|g" \
-	-e "s|@DOCDIR@|$(docdir)|g" \
-	-e "s|@EXAMPLEDIR@|$(exampledir)|g" \
-	-e "s|@FONTDIR@|$(fontdir)|g" \
-	-e "s|@g@|$(g)|g" \
-	-e "s!@G@!`echo $(g) | tr [a-z] [A-Z]`!g" \
-	-e "s|@HTMLDOCDIR@|$(htmldocdir)|g" \
-	-e "s|@INDEX_SUFFIX@|$(indexext)|g" \
-	-e "s|@LEGACYFONTDIR@|$(legacyfontdir)|g" \
-	-e "s|@LOCALFONTDIR@|$(localfontdir)|g" \
-	-e "s|@LOCALMACRODIR@|$(localtmacdir)|g" \
-	-e "s|@MACRODIR@|$(tmacdir)|g" \
-	-e "s|@MAN1EXT@|$(man1ext)|g" \
-	-e "s|@MAN5EXT@|$(man5ext)|g" \
-	-e "s|@MAN7EXT@|$(man7ext)|g" \
-	-e "s|@MDATE@|`$(SHELL) $(top_srcdir)/mdate.sh $<`|g" \
-	-e "s|@OLDFONTDIR@|$(oldfontdir)|g" \
-	-e "s|@PDFDOCDIR@|$(pdfdocdir)|g" \
-	-e "s|@SYSTEMMACRODIR@|$(systemtmacdir)|g" \
-	-e "s|@TMAC_AN_PREFIX@|$(tmac_an_prefix)|g" \
-	-e "s|@TMAC_M_PREFIX@|$(tmac_m_prefix)|g" \
-	-e "s|@TMAC_MDIR@|$(tmacdir)/mm|g" \
-	-e "s|@TMAC_S_PREFIX@|$(tmac_s_prefix)|g" \
-	-e "s|@VERSION@|$(version)$(revision)|g" \
-	$< >$@
+	@rm -f $@
+	@LC_ALL=C \
+	 sed -e "s|@APPRESDIR@|$(appresdir)|g" \
+	     -e "s|@BINDIR@|$(bindir)|g" \
+	     -e "s|@BROKEN_SPOOLER_FLAGS@|$(BROKEN_SPOOLER_FLAGS)|g" \
+	     -e "s|@COMMON_WORDS_FILE@|$(common_words_file)|g" \
+	     -e "s|@DATASUBDIR@|$(datasubdir)|g" \
+	     -e "s|@DEFAULT_INDEX@|$(indexdir)/$(indexname)|g" \
+	     -e "s|@DEFAULT_INDEX_NAME@|$(indexname)|g" \
+	     -e "s|@DEVICE@|$(DEVICE)|g" \
+	     -e "s|@DOCDIR@|$(docdir)|g" \
+	     -e "s|@EXAMPLEDIR@|$(exampledir)|g" \
+	     -e "s|@FONTDIR@|$(fontdir)|g" \
+	     -e "s|@g@|$(g)|g" \
+	     -e "s!@G@!`echo $(g) | tr [a-z] [A-Z]`!g" \
+	     -e "s|@HTMLDOCDIR@|$(htmldocdir)|g" \
+	     -e "s|@INDEX_SUFFIX@|$(indexext)|g" \
+	     -e "s|@LEGACYFONTDIR@|$(legacyfontdir)|g" \
+	     -e "s|@LOCALFONTDIR@|$(localfontdir)|g" \
+	     -e "s|@LOCALMACRODIR@|$(localtmacdir)|g" \
+	     -e "s|@MACRODIR@|$(tmacdir)|g" \
+	     -e "s|@MAN1EXT@|$(man1ext)|g" \
+	     -e "s|@MAN5EXT@|$(man5ext)|g" \
+	     -e "s|@MAN7EXT@|$(man7ext)|g" \
+	     -e "s|@MDATE@|`$(SHELL) $(top_srcdir)/mdate.sh $<`|g" \
+	     -e "s|@OLDFONTDIR@|$(oldfontdir)|g" \
+	     -e "s|@PDFDOCDIR@|$(pdfdocdir)|g" \
+	     -e "s|@SYSTEMMACRODIR@|$(systemtmacdir)|g" \
+	     -e "s|@TMAC_AN_PREFIX@|$(tmac_an_prefix)|g" \
+	     -e "s|@TMAC_M_PREFIX@|$(tmac_m_prefix)|g" \
+	     -e "s|@TMAC_MDIR@|$(tmacdir)/mm|g" \
+	     -e "s|@TMAC_S_PREFIX@|$(tmac_s_prefix)|g" \
+	     -e "s|@VERSION@|$(version)$(revision)|g" \
+	 $< >$@
 
 .PHONY: install_man
 install_man:
 	-test -d $(DESTDIR)$(manroot) || $(mkinstalldirs) $(DESTDIR)$(manroot)
 	-test -d $(DESTDIR)$(man1dir) || $(mkinstalldirs) $(DESTDIR)$(man1dir)
 	@-pages="$(MAN1)"; \
-	for p in $$pages; do \
-	 prog=`basename $$p .n`; \
-	 target=$(DESTDIR)$(man1dir)/$(NAMEPREFIX)$$prog.$(man1ext); \
-	 rm -f $$target; \
-	 echo $(INSTALL_DATA) $$p $$target; \
-	 $(INSTALL_DATA) $$p $$target; \
+	 for p in $$pages; do \
+	   prog=`basename $$p .n`; \
+	   target=$(DESTDIR)$(man1dir)/$(NAMEPREFIX)$$prog.$(man1ext); \
+	   rm -f $$target; \
+	   echo $(INSTALL_DATA) $$p $$target; \
+	   $(INSTALL_DATA) $$p $$target; \
 	done
 	-test -d $(DESTDIR)$(man5dir) || $(mkinstalldirs) $(DESTDIR)$(man5dir)
 	@-pages="$(MAN5)"; \
-	for p in $$pages; do \
-	 target=$(DESTDIR)$(man5dir)/`basename $$p .n`.$(man5ext); \
-	 rm -f $$target; \
-	 echo $(INSTALL_DATA) $$p $$target; \
-	 $(INSTALL_DATA) $$p $$target; \
+	 for p in $$pages; do \
+	   target=$(DESTDIR)$(man5dir)/`basename $$p .n`.$(man5ext); \
+	   rm -f $$target; \
+	   echo $(INSTALL_DATA) $$p $$target; \
+	   $(INSTALL_DATA) $$p $$target; \
 	done
 	-test -d $(DESTDIR)$(man7dir) || $(mkinstalldirs) $(DESTDIR)$(man7dir)
 	@-pages="$(MAN7)"; \
-	for p in $$pages; do \
-	 target=$(DESTDIR)$(man7dir)/`basename $$p .n`.$(man7ext); \
-	 rm -f $$target; \
-	 echo $(INSTALL_DATA) $$p $$target; \
-	 $(INSTALL_DATA) $$p $$target; \
+	 for p in $$pages; do \
+	   target=$(DESTDIR)$(man7dir)/`basename $$p .n`.$(man7ext); \
+	   rm -f $$target; \
+	   echo $(INSTALL_DATA) $$p $$target; \
+	   $(INSTALL_DATA) $$p $$target; \
 	done
 
 .PHONY: uninstall_man
 uninstall_man:
 	@-pages="$(MAN1)"; \
-	for p in $$pages; do \
-	 target=$(DESTDIR)$(man1dir)/$(NAMEPREFIX)`basename $$p .n`.$(man1ext); \
-	 echo rm -f $$target; \
-	 rm -f $$target; \
-	done
+	 for p in $$pages; do \
+	   target=$(DESTDIR)$(man1dir)/$(NAMEPREFIX); \
+	   target=$$target`basename $$p .n`.$(man1ext); \
+	   echo rm -f $$target; \
+	   rm -f $$target; \
+	 done
 	@-pages="$(MAN5)"; \
-	for p in $$pages; do \
-	 target=$(DESTDIR)$(man5dir)/`basename $$p .n`.$(man5ext); \
-	 echo rm -f $$target; \
-	 rm -f $$target; \
-	done
+	 for p in $$pages; do \
+	   target=$(DESTDIR)$(man5dir)/`basename $$p .n`.$(man5ext); \
+	   echo rm -f $$target; \
+	   rm -f $$target; \
+	 done
 	@-pages="$(MAN7)"; \
-	for p in $$pages; do \
-	 target=$(DESTDIR)$(man7dir)/`basename $$p .n`.$(man7ext); \
-	 echo rm -f $$target; \
-	 rm -f $$target; \
+	 for p in $$pages; do \
+	   target=$(DESTDIR)$(man7dir)/`basename $$p .n`.$(man7ext); \
+	   echo rm -f $$target; \
+	   rm -f $$target; \
 	done
 
 .PHONY: install_prog
@@ -228,7 +226,7 @@ install_prog:
 
 .PHONY: uninstall_prog
 uninstall_prog:
-	-rm -f $(DESTDIR)$(bindir)/$(NAMEPREFIX)$(PROG)	
+	rm -f $(DESTDIR)$(bindir)/$(NAMEPREFIX)$(PROG)
 
 .PHONY: install_dev
 install_dev:
@@ -268,23 +266,24 @@ install_dev:
 	  || for f in ""$(DEVFILES); do \
 	       rm -f $(DESTDIR)$(fontsubdir)/$$f; \
 	       if test -f $$f; then \
-		 $(INSTALL_DATA) $$f $(DESTDIR)$(fontsubdir)/$$f; \
+	         $(INSTALL_DATA) $$f $(DESTDIR)$(fontsubdir)/$$f; \
 	       else \
-		 $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(fontsubdir)/$$f; \
+	         $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(fontsubdir)/$$f; \
 	       fi; \
 	     done
 	-test -z "$(OLDDEVFILES)" \
 	  || for f in ""$(OLDDEVFILES); do \
 	       rm -f $(DESTDIR)$(oldfontsubdir)/$$f; \
-	       $(INSTALL_DATA) $(srcdir)/old/$$f $(DESTDIR)$(oldfontsubdir)/$$f; \
+	       $(INSTALL_DATA) $(srcdir)/old/$$f \
+	         $(DESTDIR)$(oldfontsubdir)/$$f; \
 	     done
 	-test -z "$(DEVSCRIPTS)" \
 	  || for f in ""$(DEVSCRIPTS); do \
 	       rm -f $(DESTDIR)$(fontsubdir)/$$f; \
 	       if test -f $$f; then \
-		 $(INSTALL_SCRIPT) $$f $(DESTDIR)$(fontsubdir)/$$f; \
+	         $(INSTALL_SCRIPT) $$f $(DESTDIR)$(fontsubdir)/$$f; \
 	       else \
-		 $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(fontsubdir)/$$f; \
+	         $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(fontsubdir)/$$f; \
 	       fi; \
 	     done
 
@@ -298,30 +297,32 @@ uninstall_dev:
 	  || for f in ""$(OLDDEVFILES); do \
 	       rm -f $(DESTDIR)$(oldfontsubdir)/$$f; \
 	     done
-	-test -d $(DESTDIR)$(fontsubdir)/generate \
-	  && rmdir $(DESTDIR)$(fontsubdir)/generate
-	-test -d $(DESTDIR)$(fontsubdir)/enc \
-	  && rmdir $(DESTDIR)$(fontsubdir)/enc
-	-test -d $(DESTDIR)$(fontsubdir)/map \
-	  && rmdir $(DESTDIR)$(fontsubdir)/map
-	-test -d $(DESTDIR)$(fontsubdir)/util \
-	  && rmdir $(DESTDIR)$(fontsubdir)/util
+	-d=$(DESTDIR)$(fontsubdir)/generate;\
+	  if test -d $$d; then rmdir $$d; fi
+	-d=$(DESTDIR)$(fontsubdir)/enc;\
+	  if test -d $$d; then rmdir $$d; fi
+	-d=$(DESTDIR)$(fontsubdir)/map;\
+	  if test -d $$d; then rmdir $$d; fi
+	-d=$(DESTDIR)$(fontsubdir)/util;\
+	  if test -d $$d; then rmdir $$d; fi
 	-rmdir $(DESTDIR)$(fontsubdir)
-	-rmdir $(DESTDIR)$(oldfontsubdir)
+	-d=$(DESTDIR)$(oldfontsubdir);\
+	  if test -d $$d; then rmdir $$d; fi
 
 .PHONY: depend_src
 depend_src: depend.temp
 	mv depend.temp Makefile.dep
 
 depend.temp: FORCE
-	> depend.temp;
+	> depend.temp
 	if test -f "$(srcdir)/$(YTABC)"; then \
 	  ytabc="$(srcdir)/$(YTABC)"; \
 	else \
 	  ytabc="$(YTABC)"; \
 	fi; \
 	test -z "$(CCSRCS)$(YTABC)" \
-	  || $(CCC) $(ALL_CCFLAGS) $(EXTRA_CCFLAGS) -MM $(CCSRCS) $$ytabc >>depend.temp
+	  || $(CCC) $(ALL_CCFLAGS) $(EXTRA_CCFLAGS) -MM $(CCSRCS) $$ytabc \
+	     >>depend.temp
 	test -z "$(CSRCS)" \
 	  || $(CC) $(ALL_CFLAGS) $(EXTRA_CFLAGS) -MM $(CSRCS) >>depend.temp
 	test -z "$(YTABH)" \
@@ -336,8 +337,7 @@ TAGS_src:
 
 # This rule is only considered for the subdir_Makefile target.
 Makefile:
-	-rm -f Makefile
-	echo srcdir=$(srcdir) >>Makefile
+	echo srcdir=$(srcdir) >Makefile
 	echo VPATH=$(VPATH) >>Makefile
 	cat $(MAKEFILEPARTS) /dev/null >>Makefile
 

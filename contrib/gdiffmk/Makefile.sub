@@ -30,16 +30,15 @@ MOSTLYCLEANADD=gdiffmk tests/runtests
 all: gdiffmk
 
 gdiffmk: gdiffmk.sh
-	rm -f $@;						\
-	sed -e "s|@BINDIR@|$(bindir)|g"				\
-	    -e "s|@VERSION@|$(version)$(revision)|g"		\
-	    -e $(SH_SCRIPT_SED_CMD)  $(srcdir)/gdiffmk.sh  >$@;	\
+	sed -e "s|@BINDIR@|$(bindir)|g" \
+	    -e "s|@VERSION@|$(version)$(revision)|g" \
+	    -e $(SH_SCRIPT_SED_CMD)  $(srcdir)/gdiffmk.sh >$@
 	chmod +x $@
 
 install_data: gdiffmk
-	-test -d $(DESTDIR)$(bindir)  ||  $(mkinstalldirs) $(DESTDIR)$(bindir)
-	-rm -f $(DESTDIR)$(bindir)/gdiffmk
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	rm -f $(DESTDIR)$(bindir)/gdiffmk
 	$(INSTALL_SCRIPT) gdiffmk $(DESTDIR)$(bindir)/gdiffmk
 
 uninstall_sub:
-	-rm -f $(DESTDIR)$(bindir)/gdiffmk
+	rm -f $(DESTDIR)$(bindir)/gdiffmk

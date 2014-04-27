@@ -40,9 +40,10 @@ NAMEPREFIX=$(g)
 
 majorminor.cpp: $(top_srcdir)/VERSION $(top_srcdir)/REVISION
 	@echo Making $@
-	@-rm -f $@
+	@rm -f $@
 	@echo const char \*major_version = \
-	\"`sed -e 's/^\([^.]*\)\..*$$/\1/' $(top_srcdir)/VERSION`\"\; >$@
+	  \"`sed -e 's/^\([^.]*\)\..*$$/\1/' $(top_srcdir)/VERSION`\"\; >$@
 	@echo const char \*minor_version = \
-	\"`sed -e 's/^[^.]*\.\([0-9]*\).*$$/\1/' $(top_srcdir)/VERSION`\"\; >>$@
+	   \"`sed -e 's/^[^.]*\.\([0-9]*\).*$$/\1/' $(top_srcdir)/VERSION`\"\; \
+	   >>$@
 	@echo const char \*revision = \"`cat $(top_srcdir)/REVISION`\"\; >>$@

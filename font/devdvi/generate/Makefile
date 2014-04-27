@@ -36,7 +36,6 @@ SPECIALFLAG=-s
 
 all: $(FONTS)
 
-
 #### CM fonts ####
 
 # TR is special because it contains \(pl \(eq
@@ -109,7 +108,6 @@ SB: $(srcdir)/msbm.map
 	$(TFMTODIT) $(SPECIALFLAG) \
 	  $(tfmdir)/msbm10.tfm $(srcdir)/msbm.map $@
 
-
 #### EC fonts ####
 
 TREC: $(srcdir)/ec.map
@@ -149,7 +147,6 @@ HIEC: $(srcdir)/ec.map
 HBIEC: $(srcdir)/ec.map
 	$(TFMTODIT) -g $(gfdir)/ecso1000.300gf \
 	  $(tfmdir)/ecso1000.tfm $(srcdir)/ec.map $@
-
 
 #### TC fonts ####
 
@@ -193,13 +190,12 @@ HBITC: $(srcdir)/tc.map
 	$(TFMTODIT) $(SPECIALFLAG) -g $(gfdir)/tcso1000.300gf \
 	  $(tfmdir)/tcso1000.tfm $(srcdir)/tc.map $@
 
-
 clean:
 
 realclean:
-	-rm -f $(FONTS)
+	rm -f $(FONTS)
 
 extraclean: realclean
-	-rm -f core *~ "#*"
+	rm -f core *~ "#*"
 
 .PHONY: clean realclean extraclean all

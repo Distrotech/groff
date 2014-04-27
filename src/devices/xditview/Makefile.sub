@@ -33,8 +33,7 @@ all depend: $(GENHDRS)
 
 GXditview-ad.h: $(srcdir)/GXditview.ad
 	@echo Making $@
-	@-rm -f $@
-	$(SHELL) $(srcdir)/ad2c $(srcdir)/GXditview.ad >GXditview-ad.h
+	$(SHELL) $(srcdir)/ad2c $(srcdir)/GXditview.ad > $@
 
 install_data: $(srcdir)/GXditview.ad $(srcdir)/GXditview-color.ad
 	-test -d $(DESTDIR)$(appresdir) \
@@ -53,5 +52,5 @@ install_data: $(srcdir)/GXditview.ad $(srcdir)/GXditview-color.ad
 	  $(DESTDIR)$(appresdir)/GXditview-color
 
 uninstall_sub:
-	-rm -f $(DESTDIR)$(appresdir)/GXditview
-	-rm -f $(DESTDIR)$(appresdir)/GXditview-color
+	rm -f $(DESTDIR)$(appresdir)/GXditview
+	rm -f $(DESTDIR)$(appresdir)/GXditview-color

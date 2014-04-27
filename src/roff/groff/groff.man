@@ -1,7 +1,7 @@
 .ig
 groff.man
 
-Copyright (C) 1989, 2002-2009, 2011
+Copyright (C) 1989, 2002-2009, 2011, 2014
 Free Software Foundation, Inc.
 Rewritten in 2002 by Bernd Warken <groff-bernd.warken-72@web.de>
 
@@ -82,7 +82,7 @@ groff \- front-end for the groff document formatting system
 .
 This document describes the
 .B groff
-program, the main front-end for the 
+program, the main front-end for the
 .I groff
 document formatting system.
 .
@@ -278,13 +278,13 @@ Pass
 .I arg
 to the spooler program.
 Several arguments should be passed with a separate
--L
+\-L
 option each.
 .
 Note that
 .B groff
 does not prepend
-`-'
+`\-'
 (a minus sign) to
 .I arg
 before passing it to the spooler program.
@@ -320,9 +320,9 @@ to the postprocessor.
 .
 The option must be specified with the necessary preceding minus
 sign(s)
-.Quoted -
+.Quoted \-
 or
-.Quoted --
+.Quoted \-\-
 because
 .B groff
 does not prepend any dashes before passing it to the postprocessor.
@@ -334,7 +334,7 @@ postprocessor, the shell command
 .RS
 .IP
 .EX
-groff -X -P -title -P 'groff it' \f[I]foo\f[]
+groff \-X \-P \-title \-P 'groff it' \f[I]foo\f[]
 .EE
 .RE
 .
@@ -344,8 +344,8 @@ is equivalent to
 .RS
 .IP
 .EX
-groff -X -Z \f[I]foo\f[] | \
-gxditview -title 'groff it' -
+groff \-X \-Z \f[I]foo\f[] | \
+gxditview \-title 'groff it' \-
 .EE
 .RE
 .
@@ -355,7 +355,7 @@ gxditview -title 'groff it' -
 Preprocess with
 .BR @g@refer .
 .
-No mechanism is provided for passing arguments to 
+No mechanism is provided for passing arguments to
 .B @g@refer
 because most
 .B @g@refer
@@ -557,8 +557,8 @@ instead of using the usual postprocessor to (pre)view a document.
 The printing spooler behavior as outlined with options
 .B \-l
 and
-.B \-L 
-is carried over to 
+.B \-L
+is carried over to
 .BR \%gxditview (@MAN1EXT@)
 by determining an argument for the
 .B \-printCommand
@@ -589,7 +589,7 @@ for example
 .RS
 .IP
 .EX
-groff -X -P-resolution -P100 -man foo.1
+groff \-X \-P-resolution \-P100 \-man foo.1
 .EE
 .RE
 .
@@ -843,7 +843,7 @@ package are
 .
 .TP
 .BR @g@eqn (@MAN1EXT@)
-for mathematical formul\(ae,
+for mathematical formulae,
 .
 .TP
 .BR @g@grn (@MAN1EXT@)
@@ -1101,7 +1101,7 @@ Text output using the ISO \%Latin-1 (ISO \%8859-1) character set; see
 .B lbp
 Output for Canon CAPSL printers (\%LBP-4 and \%LBP-8 series laser printers).
 .
-.TP 
+.TP
 .B lj4
 HP LaserJet4-compatible (or other PCL5-compatible) printers.
 .
@@ -1114,7 +1114,7 @@ PostScript output; suitable for printers and previewers like
 .B pdf
 PDF files; suitable for viewing with tools such as
 .BR evince (1)
-and 
+and
 .BR okular (1).
 .
 .TP
@@ -1154,7 +1154,7 @@ command in the device description file; see
 .BR \%groff_font (@MAN5EXT@).
 .
 This can be overridden with the
-.B -X
+.B \-X
 option.
 .
 .P
@@ -1294,7 +1294,7 @@ Create PDF documents using
 .
 .TP
 .BR \%pfbtops (@MAN1EXT@)
-Translate a PostScript font in .pfb format to \f[CR]ASCII\f[].
+Translate a PostScript font in \&.pfb format to \f[CR]ASCII\f[].
 .
 .TP
 .BR \%pic2graph (@MAN1EXT@)
@@ -1422,7 +1422,7 @@ without arguments.
 .
 An explicit
 .B \-K
-command line option overrides the value of 
+command line option overrides the value of
 .EnvVar GROFF_ENCODING .
 .
 See
@@ -1613,7 +1613,7 @@ had to be called by
 .
 .IP
 .EX
-pic foo.me | tbl | troff -me -Tlatin1 | grotty
+pic foo.me | tbl | troff \-me \-Tlatin1 | grotty
 .EE
 .
 .P
@@ -1623,7 +1623,7 @@ this pipe can be shortened to the equivalent command
 .
 .IP
 .EX
-groff -p -t -me -T latin1 foo.me
+groff \-p \-t \-me \-T latin1 foo.me
 .EE
 .
 .P
@@ -1634,7 +1634,7 @@ command (by using backquotes to specify shell command substitution)
 .
 .IP
 .EX
-\`grog -Tlatin1 foo.me\`
+\`grog \-Tlatin1 foo.me\`
 .EE
 .
 .P
@@ -1666,7 +1666,7 @@ is not available on \f[CR]ASCII\f[] based operating systems.
 .P
 Report bugs to
 .MT bug-groff@gnu.org
-the groff maling list
+the groff mailing list
 .ME .
 .
 Include a complete, self-contained example that allows the bug to
@@ -1730,7 +1730,7 @@ Ted Faber
 .
 The actual version can be found at the
 .
-.UR http://\:www.lunabase.org/\:~faber/\:Vault/\:software/\:grap/
+.UR http://\:www.lunabase.org/\:\|\s+2~\s0faber/\:Vault/\:software/\:grap/
 grap website
 .UE .
 This is the only grap version supported by
@@ -1741,7 +1741,7 @@ This is the only grap version supported by
 .SH AUTHORS
 .\" --------------------------------------------------------------------
 .
-Copyright \(co 2011
+Copyright \(co 2014
 Free Software Foundation, Inc.
 .
 .P
@@ -1766,7 +1766,7 @@ It was rewritten, enhanced, and put under the FDL license by
 Bernd Warken <groff-bernd.warken-72@web.de>.
 .
 It is maintained by
-.MT wl@gnu.org 
+.MT wl@gnu.org
 Werner Lemberg
 .ME .
 .
@@ -1787,6 +1787,7 @@ files mostly use the \f[CR]GNU Free Documentation License\f[]
 .\" --------------------------------------------------------------------
 .SH "SEE ALSO"
 .\" --------------------------------------------------------------------
+.ad l
 .
 The
 .I groff info file

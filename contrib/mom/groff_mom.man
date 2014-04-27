@@ -1,6 +1,6 @@
 .TH GROFF_MOM @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
 .SH NAME
-groff_mom \- groff `mom' macros , `mom' is a `roff' language, part of `groff'
+groff_mom \- groff `mom' macros, `mom' is a `roff' language, part of `groff'
 .
 .SH "SYNOPSIS"
 .\" The .SH was moved to this place in order to appease `apropos'.
@@ -39,12 +39,12 @@ or directly to the authors.
 ..
 .de copyleft
 .nh
-Copyright (C) 2002, 2003, 2005, 2008, 2009, 2011, 2012, 2013
+Copyright (C) 2002, 2003, 2005, 2008, 2009, 2011-2014
   Free Software Foundation, Inc.
 written by Werner Lemberg <wl@gnu.org>
 revised 2012 by Peter Schaffter <peter@schaffter.ca>
 
-Last update: 20 August 2013
+Last update: 27 March 2014
 
 This file is part of groff, a free software project.
 
@@ -57,8 +57,9 @@ You should have received a copy of the GNU General Public License
 along with groff, see the files COPYING and LICENSE in the top
 directory of the groff Text source package.
 
-Or read the man-page gpl (1).  You can also visit
-<http://www.gnu.org/licenses/>.
+Or read the man-page
+.BR gpl (1).
+You can also visit <http://www.gnu.org/licenses/>.
 .hy
 ..
 .
@@ -66,7 +67,9 @@ Or read the man-page gpl (1).  You can also visit
 .\" Setup
 .\" --------------------------------------------------------------------
 .
-.ds Ellipsis \&.\|.\|.\&\
+.ds Ellipsis \&.\|.\|.\&\"
+.
+.hw line-space
 .
 .
 .\" --------------------------------------------------------------------
@@ -82,7 +85,7 @@ Or read the man-page gpl (1).  You can also visit
 .  ds result \&
 .  while (\\n[.$] >= 2) \{\
 .	as result \,\f[\\$1]\\$2
-.	if !"\\$1"P .as result \f[P]
+.	if !"\\$1"P" .as result \f[P]
 .	shift 2
 .  \}
 .  if (\\n[.$] = 1) .as result \,\f[\\$1]
@@ -109,12 +112,12 @@ Or read the man-page gpl (1).  You can also visit
 .SY pdfmom
 .OP \-Tps "\fR[pdfroff options]"
 [groff options]
-.I files .\|.\|.
+.I files \*[Ellipsis]
 .YS
 .
 .SY groff
 .OP \-mom
-.I files .\|.\|.
+.I files \*[Ellipsis]
 .YS
 .
 .SY groff
@@ -142,8 +145,8 @@ output.
 provides two categories of macros: macros for typesetting, and
 macros for document processing.
 .
-The typesetting macros provide access to groff\[aa]s typesetting
-capabilities in ways that are simpler to master than groff\[aa]s
+The typesetting macros provide access to groff\[aq]s typesetting
+capabilities in ways that are simpler to master than groff\[aq]s
 primitives.
 .
 The document processing macros provide highly customizable markup
@@ -155,7 +158,7 @@ documents with a minimum of typesetting intervention.
 Files processed with
 .BR pdfmom (@MAN1EXT@)
 with or without the
-.RI -T ps
+.RI \-T ps
 option, produce
 .I PDF
 documents.
@@ -168,9 +171,9 @@ viewers, and may contain clickable internal and external links.
 .
 .P
 When
-.RI -T ps
+.RI \-T ps
 is absent,
-.B groff\[aa]s
+.B groff\[aq]s
 native
 .I PDF
 driver,
@@ -182,13 +185,13 @@ When given, the output is still
 but processing is passed over to
 .BR pdfroff ,
 which uses
-.B groff\[aa]s
+.B groff\[aq]s
 PostScript driver,
 .BR grops \&.
 Not all
 .I PDF
 features are available when
-.RI -T ps
+.RI \-T ps
 is given; its primary use is to allow processing of files with
 embedded
 .I PostScript
@@ -197,9 +200,9 @@ images.
 .
 .P
 Files processed with
-.B groff -mom
+.B groff \-mom
 (or
-.BI "-m " mom
+.BI "\-m " mom\c
 ) produce
 .I PostScript
 output by default.
@@ -368,7 +371,7 @@ off pseudo condensing inline (related to macro
 .
 .TP
 .FONT B \[rs]*[EXTSUP] R \*[Ellipsis] B \[rs]*[EXTSUPX]
-pseudo extrended superscript
+pseudo extended superscript
 .
 .
 .TP
@@ -422,7 +425,7 @@ superscript
 .
 .TP
 .B \[rs]*[TB+]
-Inline escape for
+inline escape for
 .B .TN
 .RI ( "Tab Next" )
 .
@@ -488,7 +491,7 @@ alias to
 .
 .
 .TP
-.BI .FAMILY <family>
+.BI ".FAMILY " <family>
 set the
 .I family type
 .
@@ -549,7 +552,7 @@ exit indent right
 .
 .
 .TP
-.BI JUSTIFY
+.BI .JUSTIFY
 justify text to both margins
 .
 .
@@ -698,7 +701,7 @@ lines, but rather be embedded in text lines, like this:
 .RE
 .
 .P
-Alternatively, if you wanted the whole line emboldened, you should do 
+Alternatively, if you wanted the whole line emboldened, you should do
 .RS
 .EX
 .FONT B \[rs]*[BOLDER] R "Not everything is as it seems." B \[rs]*[BOLDERX]
@@ -710,9 +713,8 @@ Once
 is invoked, it remains in effect until turned off.
 .
 .P
-Note: If you’re using the document processing macros with
-.B PRINTSTYLE
-.BR TYPEWRITE ,
+Note: If you\[aq]re using the document processing macros with
+.BR "\%.PRINTSTYLE \%TYPEWRITE" ,
 .B mom
 ignores
 .B \[rs]*[BOLDER]
@@ -779,9 +781,8 @@ must be turned off before changing the condense percentage with
 .BR \%.CONDENSE .
 .
 .P
-Note: If you’re using the document processing macros with
-.B \%PRINTSTYLE
-.BR \%TYPEWRITE ,
+Note: If you\[aq]re using the document processing macros with
+.BR "\%.PRINTSTYLE \%TYPEWRITE" ,
 .B mom
 ignores
 .B \%\[rs]*[COND]
@@ -867,8 +868,7 @@ must be turned off before changing the extend percentage with
 .
 .P
 Note: If you are using the document processing macros with
-.B \%.PRINTSTYLE
-.BR \%TYPEWRITE ,
+.BR "\%.PRINTSTYLE \%TYPEWRITE" ,
 .B mom
 ignores
 .B \%\[rs]*[EXT]
@@ -882,7 +882,7 @@ requests.
 .\" ======================================================================
 .TP
 .FONT B \[rs]*[EXTSUP] R \*[Ellipsis] B \[rs]*[EXTSUPX]
-pseudo extrended superscript
+pseudo extended superscript
 .
 .
 .\" ======================================================================
@@ -961,7 +961,7 @@ embedded in text lines, like this:
 .P
 Alternatively, if you wanted the whole line
 .IR pseudo-italicized ,
-you\[aa]d do
+you\[aq]d do
 .RS
 .EX
 .FONT B \[rs]*[SLANT] R "Not everything is as it seems." B \[rs]*[SLANTX]
@@ -974,9 +974,8 @@ Once
 is invoked, it remains in effect until turned off.
 .
 .P
-Note: If you’re using the document processing macros with
-.B .PRINTSTYLE
-.BR TYPEWRITE ,
+Note: If you\[aq]re using the document processing macros with
+.BR "\%.PRINTSTYLE \%TYPEWRITE" ,
 .B mom
 underlines pseudo-italics by default.
 .
@@ -1027,7 +1026,7 @@ Any input line may contain string tab markers.
 above, means the numeric identifier of the tab.
 .
 .P
-The following shows a sample input line with string tab markers. 
+The following shows a sample input line with string tab markers.
 .RS
 .EX
 .FONT B \[rs]*[ST1] R "Now is the time" B \[rs]*[ST1X] R " for all " B \[rs]*[ST2] R "good men" B \[rs]*ST2X] R " to come to the aid of the party."
@@ -1078,7 +1077,7 @@ after which they may be called, by number, with
 .
 .P
 Note: Lines with string tabs marked off in them are normal input
-lines, i.e. they get printed, just like any input line.
+lines, i.e.\& they get printed, just like any input line.
 .
 If you want to set up string tabs without the line printing, use the
 .B \%.SILENT
@@ -1143,17 +1142,17 @@ Rather than this,
 .B .TQ
 .EE
 .RE
-you should do: 
+you should do:
 .RS
 .EX
 .B .QUAD CENTER
-.B .PAD \[rq]#\[rs]*[ST1]A line of text\[rs]*[ST1X]#\[rq]
+.B .PAD """#\[rs]*[ST1]A line of text\[rs]*[ST1X]#"""
 .B .EL
 .B .ST 1
 .B .TAB 1
 .B .PT_SIZE 24
 .B .ALD 3p
-.B \[rs]*[RULE] \[rs]\[rq] Note that you can\[aa]t use \[rs]*[UP] or \[rs]*[DOWN] with \[rs]*[RULE]
+.B \[rs]*[RULE] \[rs]" Note that you can\[aq]t use \[rs]*[UP] or \[rs]*[DOWN] with \[rs]*[RULE]
 .B .RLD 3p
 .B .TQ
 .EE
@@ -1223,7 +1222,7 @@ Requires a unit of measure
 .P
 .B .B_MARGIN
 sets a nominal position at the bottom of the page beyond which you
-don’t want your type to go.
+don\[aq]t want your type to go.
 .
 When the bottom margin is reached,
 .B mom
@@ -1233,15 +1232,15 @@ starts a new page.
 .
 Decimal fractions are allowed.
 .
-To set a nominal bottom margin of 3/4 inch, enter 
+To set a nominal bottom margin of 3/4 inch, enter
 .RS
 .EX
-.B .B_MARGIN .75i
+.B \&.B_MARGIN \&.75i
 .EE
 .RE
 .
 .P
-Obviously, if you haven’t spaced the type on your pages so that the
+Obviously, if you haven\[aq]t spaced the type on your pages so that the
 last lines fall perfectly at the bottom margin, the margin will vary
 from page to page.
 .
@@ -1253,14 +1252,14 @@ Occasionally, owing to a peculiarity in
 .IR groff ,
 an extra line will fall below the nominal bottom margin.
 .
-If you’re using the document processing macros, this is unlikely to
+If you\[aq]re using the document processing macros, this is unlikely to
 happen; the document processing macros are very hard-nosed about
 aligning bottom margins.
 .
 .P
 Note: The meaning of
 .B .B_MARGIN
-is slightly different when you’re using the document processing
+is slightly different when you\[aq]re using the document processing
 macros.
 .
 .RE
@@ -1278,7 +1277,7 @@ Fallback Font
 .P
 In the event that you pass an invalid argument to
 .B \%.FAMILY
-(i.e. a non-existent
+(i.e.\& a non-existent
 .IR family ),
 .BR mom ,
 by default, uses the
@@ -1288,7 +1287,7 @@ by default, uses the
 in order to continue processing your file.
 .
 .P
-If you\[aa]d prefer another
+If you\[aq]d prefer another
 .IR "fallback font" ,
 pass
 .B \%.FALLBACK_FONT
@@ -1296,12 +1295,12 @@ the full
 .I family+font name
 of the
 .I font
-you\[aa]d like.
+you\[aq]d like.
 .
-For example, if you\[aa]d rather the
+For example, if you\[aq]d rather the
 .I fallback font
 were
-.BR "Times Roman Medium Roman" , 
+.BR "Times Roman Medium Roman" ,
 .RS
 .EX
 .B .FALLBACK_FONT TR
@@ -1315,7 +1314,7 @@ issues a warning whenever a
 .I font style set
 with
 .B .FT
-does not exist, either because you haven\[aa]t registered the style
+does not exist, either because you haven\[aq]t registered the style
 or because the
 .I font style
 does not exist in the current
@@ -1328,7 +1327,7 @@ By default,
 then aborts, which allows you to correct the problem.
 .
 .P
-If you\[aa]d prefer that
+If you\[aq]d prefer that
 .B \%mom
 not abort on non-existent
 .IR fonts ,
@@ -1373,7 +1372,7 @@ whenever you try to access a
 that does not exist.
 .
 .TP
-.B .FALLBACK_FONT TR ABORT 
+.B .FALLBACK_FONT TR ABORT
 .B \%mom
 will abort whenever you try to access a non-existent
 .BR font ,
@@ -1421,19 +1420,19 @@ you want.
 .
 .I Groff
 comes with a small set of basic families, each identified by a 1-,
-2-or 3-letter mnemonic.
+2- or 3-letter mnemonic.
 .
 The standard families are:
 .RS
 .EX
-.B A   = Avant Garde
-.B BM  = Bookman
-.B H   = Helvetica
-.B HN  = Helvetica Narrow
-.B N   = New Century Schoolbook
-.B P   = Palatino
-.B T   = Times Roman
-.B ZCM = Zapf Chancery
+.B "A   = Avant Garde"
+.B "BM  = Bookman"
+.B "H   = Helvetica"
+.B "HN  = Helvetica Narrow"
+.B "N   = New Century Schoolbook"
+.B "P   = Palatino"
+.B "T   = Times Roman"
+.B "ZCM = Zapf Chancery"
 .EE
 .RE
 .
@@ -1444,7 +1443,7 @@ is the identifier at left, above.
 .
 For example, if you want
 .BR Helvetica ,
-enter 
+enter
 .RS
 .EX
 .B .FAMILY H
@@ -1512,16 +1511,16 @@ the font style
 .BR ( Roman ,
 .BR Italic ,
 etc) currently in use (if the font style exists in the new
-.IR family ) and will continue to use the same font style in the new
-.IR family .
+.IR family )
+and will continue to use the same font style in the new family.
 For example:
 .RS
 .EX
-.BI ".FAMILY BM " "\[rs]\[rq] Bookman family"
-.BI ".FT I " "\[rs]\[rq] Medium Italic"
-.I <some text> \[rs]\[rq] Bookman Medium Italic
-.BI ".FAMILY H " "\[rs]\[rq] Helvetica family"
-.I <more text> \[rs]\[rq] Helvetica Medium Italic
+.BI ".FAMILY BM " "\[rs]"" Bookman family"
+.BI ".FT I " "\[rs]"" Medium Italic"
+.I <some text> \[rs]" Bookman Medium Italic
+.BI ".FAMILY H " "\[rs]"" Helvetica family"
+.I <more text> \[rs]" Helvetica Medium Italic
 .EE
 .RE
 .
@@ -1533,11 +1532,11 @@ will set all subsequent type in the fallback font (by default,
 .BR Roman )
 until she encounters a
 .B .FT
-request that\[aa]s valid for the
+request that\[aq]s valid for the
 .IR family .
 .
 .P
-For example, assuming you don\[aa]t have the font
+For example, assuming you don\[aq]t have the font
 .B Medium Condensed Roman
 .RB  ( mom
 extension
@@ -1547,11 +1546,11 @@ in the
 .IR family :
 .RS
 .EX
-.BI ".FAMILY UN " "\[rs]\[rq]Univers family"
-.BI ".FT CD " "\[rs]\[rq] Medium Condensed"
-.I <some text> \[rs]\[rq] Univers Medium Condensed
-.BI ".FAMILY H " "\[rs]\[rq] Helvetica family"
-.I <more text> \[rs]\[rq] Courier Medium Roman!
+.BI ".FAMILY UN " "\[rs]"" Univers family"
+.BI ".FT CD " "\[rs]"" Medium Condensed"
+.I <some text> \[rs]" Univers Medium Condensed
+.BI ".FAMILY H " "\[rs]"" Helvetica family"
+.I <more text> \[rs]" Courier Medium Roman!
 .EE
 .RE
 .
@@ -1560,7 +1559,7 @@ In the above example, you must follow
 .B .FAMILY H
 with a
 .B .FT
-request that’s valid for
+request that\[aq]s valid for
 .BR Helvetica .
 .
 .P
@@ -1571,7 +1570,7 @@ for information on adding fonts and families to groff, as well as to
 see a list of the extensions
 .B mom
 provides to
-.IR groff \[aa]s
+.IR groff \[aq]s
 basic
 .BR R ,
 .BR I ,
@@ -1631,7 +1630,7 @@ fonts respectively.
 .\" FONT
 .\" ======================================================================
 .TP
-.BI .FONT R " | " B " | " BI " | " <any other valid font style>"
+.BI ".FONT R | B | BI | " "<any other valid font style>"
 Alias to
 .B .FT
 .
@@ -1640,7 +1639,7 @@ Alias to
 .\" FT
 .\" ======================================================================
 .TP
-.BI .FT R " | " B " | " BI " | " <any other valid font style>"
+.BI ".FT R | B | BI | " "<any other valid font style>"
 Set font
 .
 .RS
@@ -1650,7 +1649,7 @@ By default,
 .I groff
 permits
 .B .FT
-to take one of four possible arguments specifying the desired font: 
+to take one of four possible arguments specifying the desired font:
 .RS
 .EX
 .B R = (Medium) Roman
@@ -1665,7 +1664,7 @@ For example, if your
 .I family
 is
 .BR Helvetica ,
-entering 
+entering
 .RS
 .EX
 .B .FT B
@@ -1679,7 +1678,7 @@ If your
 .I family
 were
 .BR \%Palatino ,
-you\[aa]d get the
+you\[aq]d get the
 .I \%Palatino bold
 .IR font .
 .
@@ -1713,15 +1712,15 @@ How
 .B mom
 reacts to an invalid argument to
 .B .FT
-depends on which version of groff you\[aa]re using.
+depends on which version of groff you\[aq]re using.
 .
 If your
 .I groff version
 is greater than or equal to 1.19.2,
 .B mom
-will issue a warning and, depending on how you’ve set up the fallback
+will issue a warning and, depending on how you\[aq]ve set up the fallback
 font, either continue processing using the fallback font, or abort
-(allowing you to correct the problem). If your
+(allowing you to correct the problem).  If your
 .I groff version
 is less than 1.19.2,
 .B mom
@@ -1739,7 +1738,7 @@ and
 .IR name .
 .
 .P
-For example, 
+For example,
 .RS
 .EX
 .B .FT HB
@@ -1777,14 +1776,14 @@ Hanging indent \[em] the optional argument requires a unit of measure.
 .RS
 .
 .P
-A hanging indent looks like this: 
+A hanging indent looks like this:
 .RS
 .EX
 \fB  The thousand injuries of Fortunato I had borne as best I
     could, but when he ventured upon insult, I vowed
     revenge.  You who so well know the nature of my soul
     will not suppose, however, that I gave utterance to a
-    threat, at length I would be avenged...
+    threat, at length I would be avenged\*[Ellipsis]
 .EE
 .RE
 .
@@ -1823,11 +1822,11 @@ If you want the first line of a paragraph to
 .IR "hang by" ,
 say,
 .IR "1 pica" ,
-do 
+do
 .RS
 .EX
-.B .IL 1P
-.B .HI 1P
+.B ".IL 1P"
+.B ".HI 1P"
 .EE
 .RE
 .
@@ -1841,12 +1840,12 @@ keeps track of the last measure you gave it.
 .P
 Generally speaking, you should invoke
 .B .HI
-immediately prior to the line you want hung (i.e. without any
+immediately prior to the line you want hung (i.e.\& without any
 intervening control lines).
 .
 And because
 .I hanging indents
-affect only one line, there\[aa]s no need to turn them off.
+affect only one line, there\[aq]s no need to turn them off.
 .
 .P
 .I IMPORTANT:
@@ -1878,25 +1877,25 @@ This recipe exists to demonstrate the use of
 only.
 .RS
 .EX
-.B .PAGE 8.5i 11i 1i 1i 1i 1i
-.B .FAMILY  T
-.B .FT      R
-.B .PT_SIZE 12
-.B .LS      14
-.B .JUSTIFY
-.B .KERN
-.B .SS 0
-.B .IL \[rs]w'\[rs]0\[rs]0.'
-.B .HI \[rs]w'\[rs]0\[rs]0.'
+.B ".PAGE 8.5i 11i 1i 1i 1i 1i"
+.B ".FAMILY  T"
+.B ".FT      R"
+.B ".PT_SIZE 12"
+.B ".LS      14"
+.B ".JUSTIFY"
+.B ".KERN"
+.B ".SS 0"
+.B ".IL \[rs]w'\[rs]0\[rs]0.'"
+.B ".HI \[rs]w'\[rs]0\[rs]0.'"
 \fB1.\[rs]0The most important point to be considered is whether the
 answer to the meaning of Life, the Universe, and Everything
-really is 42.  We have no-one’s word on the subject except
-Mr. Adams’.
+really is 42.  We have no-one\[aq]s word on the subject except
+Mr. Adams\[aq].
 .B .HI
 2.\[rs]0If the answer to the meaning of Life, the Universe,
 and Everything is indeed 42, what impact does this have on
 the politics of representation?  42 is, after all not a
-prime number.  Are we to infer that prime numbers don’t
+prime number.  Are we to infer that prime numbers don\[aq]t
 deserve equal rights and equal access in the universe?
 .B .HI
 3.\[rs]0If 42 is deemed non-exclusionary, how do we present it
@@ -1913,27 +1912,27 @@ At this point, the left indent is active; text afterwards would
 normally be indented.
 .
 However, we invoke a hanging indent of exactly the same width, which
-hangs the first line (and first line only!) to the left of the indent
-by the same distance (in this case, that means “out to the left
-margin”).
+hangs the first line (and first line only!\&) to the left of the indent
+by the same distance (in this case, that means \[lq]out to the left
+margin\[rq]).
 .
 Because we begin the first line with a number, a period, and a figure
 space, the actual text
-.RI ( "The most important point..." )
+.RI ( "The most important point\*[Ellipsis]" )
 starts at exactly the same spot as the indented lines that follow.
 .
 .P
 Notice that subsequent invocations of
 .B .HI
-don’t require a
+don\[aq]t require a
 .I measure
 to be given.
 .
 .P
-Paste the example above into a file and preview it with 
+Paste the example above into a file and preview it with
 .RS
 .EX
-.B pdfmom filename.mom | ps2pdf - filename.pdf
+.B pdfmom filename.mom | ps2pdf \- filename.pdf
 .EE
 .RE
 to see hanging indents in action.
@@ -1979,7 +1978,7 @@ and
 instead of
 .BR .IB .
 .
-You’ll save yourself a lot of grief.
+You\[aq]ll save yourself a lot of grief.
 .
 .P
 A
@@ -1993,7 +1992,7 @@ measures, in which case no unit of measure is required.
 For example,
 .RS
 .EX
-.B .IB \[rs]w\[aa]margarine\[aa] \[rs]w\[aa]jello\[aa]
+.B .IB \[rs]w\[aq]margarine\[aq] \[rs]w\[aq]jello\[aq]
 .EE
 .RE
 left indents text by the width of the word
@@ -2042,7 +2041,7 @@ Indent left \[em] the optional argument requires a unit of measure
 .
 .P
 .B .IL
-indents text from the left margin of the page, or if you’re in a
+indents text from the left margin of the page, or if you\[aq]re in a
 .IR tab ,
 from the left edge of the
 .IR tab
@@ -2161,7 +2160,7 @@ a measure again.
 .
 .P
 .BR ".IQ CLEAR" ,
-as you\[aa]d suspect, quits and clears the values for all indent
+as you\[aq]d suspect, quits and clears the values for all indent
 styles at once.
 .
 .RE
@@ -2180,7 +2179,7 @@ Indent right \[em] the optional argument requires a unit of measure
 .B .IR
 indents text from the
 .I right margin
-of the page, or if you’re in a
+of the page, or if you\[aq]re in a
 .IR tab ,
 from the end of the
 .IR tab .
@@ -2257,14 +2256,14 @@ It may be used any time, and remains in effect until you enter a new value.
 .P
 Left indents and tabs are calculated from the value you pass to
 .BR .L_MARGIN ,
-hence it’s always a good idea to invoke it before starting any serious
+hence it\[aq]s always a good idea to invoke it before starting any serious
 typesetting.
 .
 A unit of measure is required.
 .
 Decimal fractions are allowed.
 .
-Therefore, to set the left margin at 3 picas (1/2 inch), you’d enter either 
+Therefore, to set the left margin at 3 picas (1/2 inch), you\[aq]d enter either
 .RS
 .EX
 .B .L_MARGIN 3P
@@ -2295,7 +2294,7 @@ to
 .P
 Note:
 .B .L_MARGIN
-behaves in a special way when you’re using the document processing
+behaves in a special way when you\[aq]re using the document processing
 macros.
 .
 .RE
@@ -2341,7 +2340,7 @@ macro in the document processing macros.
 .\" ======================================================================
 .TP
 .B \%.MCR
-Once you\[aa]ve turned
+Once you\[aq]ve turned
 .I multi-columns
 on (with
 .BR \%.MCO ),
@@ -2393,7 +2392,7 @@ the distance specified by the argument.
 The argument requires a unit of measure; therefore, to advance an
 extra 6 points below where
 .B \%.MCX
-would normally place you, you’d enter
+would normally place you, you\[aq]d enter
 .RS
 .EX
 .B .MCX 6p
@@ -2451,7 +2450,8 @@ a new one (subject to the top margin set with
 .\" Page
 .\" ======================================================================
 .TP
-.B .PAGE " <width> [ <length> [ <lm> [ <rm> [ <tm> [ <bm> ] ] ] ] ]"
+.BI ".PAGE " <width> " [ " <length> " [ " <lm> " [ " <rm> " [ " \
+             <tm> " [ " <bm> " ] ] ] ] ]"
 .
 .RS
 .
@@ -2460,16 +2460,16 @@ All arguments require a unit of measure
 .
 .P
 .I IMPORTANT:
-If you\[aa]re using the document processing macros,
+If you\[aq]re using the document processing macros,
 .B .PAGE
 must come after
 .BR .START .
 .
 Otherwise, it should go at the top of a document, prior to any text.
 .
-And remember, when you\[aa]re using the document processing macros, top
+And remember, when you\[aq]re using the document processing macros, top
 margin and bottom margin mean something slightly different than when
-you\[aa]re using just the typesetting macros (see Top and bottom margins
+you\[aq]re using just the typesetting macros (see Top and bottom margins
 in document processing).
 .
 .P
@@ -2480,7 +2480,7 @@ macro.
 The only required argument is page width.
 .
 The rest are
-optional, but they must appear in order and you can’t skip over
+optional, but they must appear in order and you can\[aq]t skip over
 any.
 .
 .IR <lm> ,
@@ -2491,7 +2491,7 @@ and
 refer to the left, right, top and bottom margins respectively.
 .
 .P
-Assuming your page dimensions are 11 inches by 17 inches, and that’s
+Assuming your page dimensions are 11 inches by 17 inches, and that\[aq]s
 all you want to set, enter
 .RS
 .EX
@@ -2501,7 +2501,7 @@ all you want to set, enter
 .
 If you want to set the left margin as well, say, at 1 inch,
 .B PAGE
-would look like this: 
+would look like this:
 .RS
 .EX
 .B .PAGE 11i 17i 1i
@@ -2509,20 +2509,20 @@ would look like this:
 .RE
 .
 .P
-Now suppose you also want to set the top margin, say, at 1-1/2 inches.
+Now suppose you also want to set the top margin, say, at 1\(en1/2 inches.
 .
 .I <tm>
 comes after
 .I <rm>
-in the optional arguments, but you can’t skip over any arguments,
+in the optional arguments, but you can\[aq]t skip over any arguments,
 therefore to set the top margin, you must also give a right margin.
 .
 The
 .B .PAGE
-macro would look like this: 
+macro would look like this:
 .RS
 .EX
-\f[B].PAGE 11i 17i 1i 1i 1.5i
+\f[CB].PAGE 11i 17i 1i 1i 1.5i
                  |   |
 required right---+   +---top margin
         margin\f[R]
@@ -2543,7 +2543,7 @@ margins), for example
 .EE
 .RE
 .
-This sets up an 8-1/2 by 11 inch page with margins of 45 points
+This sets up an 8\(12 by 11 inch page with margins of 45 points
 (5/8-inch) all around.
 .
 .P
@@ -2554,13 +2554,13 @@ with a top margin argument, any macros you invoke after
 will almost certainly move the baseline of the first line of text down
 by one linespace.
 .
-To compensate, do 
+To compensate, do
 .RS
 .EX
 .B .RLD 1v
 .EE
 .RE
-immediately before entering any text, or, if it’s feasible, make
+immediately before entering any text, or, if it\[aq]s feasible, make
 .B .PAGE
 the last macro you invoke prior to entering text.
 .
@@ -2579,7 +2579,7 @@ dimensions and margins.
 .\" Page Length
 .\" ======================================================================
 .TP
-.BI .PAGELENGTH " <length_of_printer_sheet>"
+.BI .PAGELENGTH " <length of printer sheet>"
 tells
 .B mom
 how long your printer sheet is.
@@ -2592,7 +2592,7 @@ It works just like
 .P
 Therefore, to tell
 .B mom
-your printer sheet is 11 inches long, you enter 
+your printer sheet is 11 inches long, you enter
 .RS
 .EX
 .B .PAGELENGTH 11i
@@ -2610,7 +2610,7 @@ information on ensuring groff respects your
 .\" Page Width
 .\" ======================================================================
 .TP
-.BI .PAGEWIDTH " <width_of_printer_sheet>"
+.BI .PAGEWIDTH " <width of printer sheet>"
 .
 .RS
 .
@@ -2627,10 +2627,10 @@ Decimal fractions are allowed.
 .
 Hence, to tell
 .B mom
-that the width of your printer sheet is 8-1/2 inches, you enter
+that the width of your printer sheet is 8\(12 inches, you enter
 .RS
 .EX
-.PAGEWIDTH 8.5i
+\&.PAGEWIDTH 8.5i
 .EE
 .RE
 .
@@ -2646,7 +2646,7 @@ information on ensuring groff respects your
 .\" Paper
 .\" ======================================================================
 .TP
-.BI .PAPER " <paper_type>"
+.BI .PAPER " <paper type>"
 provides a convenient way to set the page dimensions for some common
 printer sheet sizes.
 .
@@ -2677,7 +2677,7 @@ can be one of:
 .\" PT_SIZE - POINT SIZE OF TYPE
 .\" ======================================================================
 .TP
-.BR .PT_SIZE " <size of type in points>"
+.BI .PT_SIZE " <size of type in points>"
 Point size of type, does not require a
 .IR "unit of measure" .
 .
@@ -2699,7 +2699,7 @@ of something,
 .B \%.PT_SIZE
 does not require that you supply a
 .I unit of measure
-since it\[aa]s a near universal convention that
+since it\[aq]s a near universal convention that
 .I type size
 is measured in
 .IR points .
@@ -2718,7 +2718,7 @@ enter
 .I Point sizes
 may be
 .I fractional
-(eg
+(e.g.\&
 .I 10.25
 or
 .IR 12.5 ).
@@ -2735,7 +2735,7 @@ in which case the
 will be changed by
 .I +
 or
-.I -
+.I \-
 the original value.
 .
 For example, if the
@@ -2755,7 +2755,7 @@ then later reset it to
 with
 .RS
 .EX
-.B .PT_SIZE -2
+.B .PT_SIZE \-2
 .EE
 .RE
 .
@@ -2768,18 +2768,18 @@ can also be changed inline.
 It is unfortunate that the
 .B \%pic
 preprocessor has already taken the name, PS, and thus
-.IR mom \[aa]s
+.IR mom \[aq]s
 macro for setting
 .I point sizes
-can’t use it.
+can\[aq]t use it.
 .
-However, if you aren\[aa]t using
+However, if you aren\[aq]t using
 .BR pic ,
 you might want to alias
 .B \%.PT_SIZE
 as
 .BR .PS ,
-since there\[aa]d be no conflict.
+since there\[aq]d be no conflict.
 .
 For example
 .RS
@@ -2799,7 +2799,7 @@ with
 .\" Right Margin
 .\" ======================================================================
 .TP
-.BR .R_MARGIN " <right margin>"
+.BI .R_MARGIN " <right margin>"
 Right Margin
 .
 .RS
@@ -2816,14 +2816,14 @@ if used, must come after
 .BR .L_MARGIN ,
 and/or
 .B .PAGE
-(if a right margin isn’t given to PAGE).
+(if a right margin isn\[aq]t given to PAGE).
 .
 The reason is that
 .B .R_MARGIN
 calculates line length from the overall page dimensions and the left margin.
 .
 .P
-Obviously, it can’t make the calculation if it doesn’t know the page
+Obviously, it can\[aq]t make the calculation if it doesn\[aq]t know the page
 width and the left margin.
 .
 .P
@@ -2851,7 +2851,7 @@ type as having a right margin.
 In others, giving a line length may make more sense.
 .
 .P
-For example, if you’re setting a page of type you know should have
+For example, if you\[aq]re setting a page of type you know should have
 6-pica margins left and right, it makes sense to enter a left and
 right margin, like this:
 .RS
@@ -2862,12 +2862,12 @@ right margin, like this:
 .RE
 .
 .P
-That way, you don’t have to worry about calculating the line
+That way, you don\[aq]t have to worry about calculating the line
 length.
 .
 On the other hand, if you know the line length for a patch of type
 should be 17 picas and 3 points, entering the line length with LL is
-much easier than calculating the right margin, eg
+much easier than calculating the right margin, e.g.\&
 .RS
 .EX
 .B .LL 17P+3p
@@ -2898,7 +2898,7 @@ is, of course, overridden.
 .P
 Note:
 .B .R_MARGIN
-behaves in a special way when you’re using the document processing
+behaves in a special way when you\[aq]re using the document processing
 macros.
 .
 .RE
@@ -2927,11 +2927,11 @@ In this respect,
 .B .ST
 is like
 .B \%.TAB_SET
-except that you don\[aa]t have to give
+except that you don\[aq]t have to give
 .B .ST
-an indent or a line length (that\[aa]s already taken care of, inline,
+an indent or a line length (that\[aq]s already taken care of, inline,
 by
-.BR \[rs]*[ST]...\[rs]*[STX] ).
+.BR \[rs]*[ST]\*[Ellipsis]\[rs]*[STX] ).
 .
 .P
 If you want string
@@ -2949,14 +2949,14 @@ If you want it to be
 .I \%left
 and
 .IR \%filled ,
-enter 
+enter
 .RS
 .EX
 .B .ST 1 L \%QUAD
 .EE
 .RE
 .
-If you want it to be justified, enter 
+If you want it to be justified, enter
 .RS
 .EX
 .B .ST 1 J
@@ -2977,7 +2977,7 @@ have been defined (either with
 .B \%.TAB_SET
 or
 .BR .ST ),
-.B \%TAB
+.B \%.TAB
 moves to whatever
 .I tab number
 you pass it as an argument.
@@ -2992,14 +2992,14 @@ For example,
 .EE
 .RE
 moves you to
-.I "\%tab 3" .
+.IR "\%tab 3" .
 .
 .P
 Note:
 .B \%.TAB
 breaks the line preceding it and advances 1 linespace.
 .
-Hence, 
+Hence,
 .RS
 .EX
 .B .TAB 1
@@ -3008,7 +3008,7 @@ Hence,
 .B  A line of text in tab 2.
 .EE
 .RE
-produces, on output 
+produces, on output
 .RS
 .EX
 .B "A line of text in tab 1."
@@ -3020,7 +3020,7 @@ produces, on output
 If you want the tabs to line up, use
 .B .TN
 .RI ( "Tab Next" )
-or, more conveniently, the inline escape \[rs]*[TB+]: 
+or, more conveniently, the inline escape \[rs]*[TB+]:
 .RS
 .EX
 \fB.TAB 1
@@ -3028,7 +3028,7 @@ A line of text in tab 1.\[rs]*[TB+]
 A line of text in tab 2.
 .EE
 .RE
-which produces 
+which produces
 .RS
 .EX
 .B "A line of text in tab 1.   A line of text in tab 2."
@@ -3071,17 +3071,17 @@ does not automatically move to the baseline of the first line in the
 To demonstrate:
 .RS
 .EX
-\f[BTAB 1
+\f[B]TAB 1
 Carrots
 Potatoes
 Broccoli
-.TAB 2
+\&.TAB 2
 $1.99/5 lbs
 $0.25/lb
 $0.99/bunch
 .EE
 .RE
-produces, on output 
+produces, on output
 .RS
 .EX
 \fBCarrots
@@ -3119,7 +3119,7 @@ A temporary indent is one that applies only to the first line of text
 that comes after it.
 .
 Its chief use is indenting the first line of paragraphs.
-.RB ( Mom\[aa]s
+.RB ( Mom\[aq]s
 .B .PP
 macro, for example, uses a
 .IR "temporary indent" .)
@@ -3131,7 +3131,7 @@ you must give it a measure.
 .
 If you want to
 .I indent
-the first line of a paragraph by, say, 2 ems, do 
+the first line of a paragraph by, say, 2 ems, do
 .RS
 .EX
 .B .TI 2m
@@ -3148,7 +3148,7 @@ keeps track of the last measure you gave it.
 .P
 Because
 .I temporary indents
-are temporary, there’s no need to turn them off.
+are temporary, there\[aq]s no need to turn them off.
 .
 .P
 .I IMPORTANT:
@@ -3164,13 +3164,13 @@ are NOT additive.
 In the following example, the second
 .B \%".TI 2P"
 is exactly
-.IR "2 picas" . 
+.IR "2 picas" .
 .RS
 .EX
 .B .TI 1P
-.B The beginning of a paragraph...
+.B The beginning of a paragraph\*[Ellipsis]
 .B .TI 2P
-.B The beginning of another paragraph...
+.B The beginning of another paragraph\*[Ellipsis]
 .EE
 .RE
 .
@@ -3209,9 +3209,9 @@ works.
 .P
 In
 .I \%tabs
-that aren\[aa]t given the
+that aren\[aq]t given the
 .B QUAD
-argument when they\[aa]re set up with
+argument when they\[aq]re set up with
 .B \%.TAB_SET
 or
 .BR ST ,
@@ -3245,18 +3245,18 @@ You must put text in the input line immediately after
 .BR .TN .
 .
 Stacking of
-.BR .TN \[aa]s
+.BR .TN \[aq]s
 is not allowed.
 .
-In other words, you cannot do 
+In other words, you cannot do
 .RS
 .EX
 \fB.TAB 1
 Some text\[rs]c
-.TN
+\&.TN
 Some more text\[rs]c
-.TN
-.TN
+\&.TN
+\&.TN
 Yet more text\fR
 .EE
 .RE
@@ -3267,16 +3267,16 @@ numbered from
 .I 1
 to
 .IR 4 ,
-should be entered 
+should be entered
 .RS
 .EX
 \fB.TAB 1
 Some text\[rs]c
-.TN
+\&.TN
 Some more text\[rs]c
-.TN
+\&.TN
 \[rs]&\[rs]c
-.TN
+\&.TN
 Yet more text
 .EE
 .RE
@@ -3314,7 +3314,7 @@ that were in effect prior to invoking any
 .\" Top Margin
 .\" ======================================================================
 .TP
-.B .T_MARGIN " <top margin>"
+.BI .T_MARGIN " <top margin>"
 Top margin
 .
 .RS
@@ -3329,7 +3329,7 @@ you want your type to start.
 .
 It requires a unit of measure, and decimal fractions are allowed.
 .
-To set a top margin of 2-1/2 centimetres, you’d enter 
+To set a top margin of 2\(12 centimetres, you\[aq]d enter
 .RS
 .EX
 .B .T_MARGIN 2.5c
@@ -3339,19 +3339,19 @@ To set a top margin of 2-1/2 centimetres, you’d enter
 .B .T_MARGIN
 calculates the vertical position of the first line of type on a page
 by treating the top edge of the printer sheet as a baseline.
-Therefore, 
+Therefore,
 .RS
 .EX
 .B .T_MARGIN 1.5i
 .EE
 .RE
-puts the baseline of the first line of type 1-1/2 inches beneath the
+puts the baseline of the first line of type 1\(12 inches beneath the
 top of the page.
 .
 .P
 Note:
 .B .T_MARGIN
-means something slightly different when you’re using the document
+means something slightly different when you\[aq]re using the document
 processing macros.
 .
 See Top and bottom margins in document processing for an explanation.

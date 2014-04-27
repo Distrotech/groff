@@ -1,4 +1,98 @@
-2014-03-17  Werner Lemberg  <wl@gnu.org>
+2014-04-03  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	* */Makefile.*: Path quoting fixes, whitespace, formatting.
+
+	Remove many quotes (and introduce a few as additional guards) since
+	groff's build system is generally not set up to properly handle
+	paths that need quoting.
+
+2014-04-03  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	* Makefile.comm (extraclean): Don't delete `old'.
+
+	The rule calling `rm -f' was originally thought to remove private,
+	temporary files.  However, we now have a subdirectory called `old'
+	in `fonts/devps' that may not be removed, and trying so now causes
+	an error because we no longer ignore the returned error code of
+	`rm'.
+
+2014-04-03  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	* Makefile.in (OTHERDIRS): Fix directory order.
+
+	This has been accidentally broken in commit 51476bee from
+	2014-02-25.
+
+2014-04-03  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	* src/devices/gropdf/pdfmom.pl: Fix perl(1) warning.
+
+2014-03-30  Werner LEMBERG  <wl@gnu.org>
+
+	* configure: Regenerated.
+
+2014-03-30  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	* */Makefile.*: Put straight error-prevention prefixes for `rm'.
+
+2014-03-30  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	`uninstall' target: Avoid spurious and misleading error messages.
+
+	* Makefile.comm (uninstall_dev): Improve.
+
+	* font/devpdf/Makefile.sub (install_data): Remove superfluous `rm'.
+	(uninstall_sub): Improve.
+
+	* src/roff/groff/Makefile.sub (uninstall_sub): Fix.
+
+2014-03-30  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	Fixes for `uninstall' target.
+
+	* Makefile.in (uninstall_dirs): Use `DESTDIR'.
+
+	* src/libs/libgroff/Makefile.sub (uninstall_charset_data): Typo.
+
+	* src/roff/groff/Makefile.sub (uninstall_sub): Typo.
+
+	* src/roff/grog/Makefile.sub (uninstall_sub): Minor.
+
+2014-03-30  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	* src/roff/grog/Makefile.sub (install_data): Typo.
+
+2014-03-29  Steffen Nurpmeso  <sdaoden@yandex.com>
+
+	Add fine-tuning of doc generation to `configure'.
+
+	* m4/groff.m4 (GROFF_DOC_CHECK): New macro, handling option
+	`--with-doc' and its new arguments.  It sets
+	`docadd_{html,info,other,pdf,examples}' and exports
+	`make{_,_install_,_uninstall_}{otherdoc,examples}'.
+	(GROFF_MAKEINFO): Extended to export
+	`make{_,_install_,_uninstall_}infodoc'.
+	(GROFF_HTML_PROGRAMS): Extended to export
+	`make{_,_install_,_uninstall_}{htmldoc,htmlexamples}'.
+	(GROFF_PDFDOC_PROGRAMS): Extended to export
+	`make{_,_install_,_uninstall_}{pdfdoc,pdfexamples}'.
+	(GROFF_INSTALL_INFO): Guard test with `docadd_info'.
+
+	* configure.ac: Use GROFF_DOC_CHECK.
+	* Makefile.in: Updated.
+
+	* doc/Makefile.sub: Handle examples separately, controlled by
+	$(make{_,_install_,_uninstall_}examples).
+
+2014-03-27  Bjarni Ingi Gislason  <bjarniig@rhi.hi.is>
+
+	* tmac/www.tmac (TAG): Define register `PN'.
+
+2014-03-27  Bjarni Ingi Gislason  <bjarniig@rhi.hi.is>
+
+	* tmac/an-ext.tmac (EX, EE): Preserve font family.
+
+2014-03-17  Werner LEMBERG  <wl@gnu.org>
 
 	* src/preproc/eqn/box.cpp (set_script_size): Fix minimum test.
 
@@ -7,7 +101,7 @@
 
 	  http://lists.gnu.org/archive/html/groff/2014-03/msg00181.html
 
-2014-03-16  Werner Lemberg  <wl@gnu.org>
+2014-03-16  Werner LEMBERG  <wl@gnu.org>
 
 	Fix previous commit.
 
@@ -20,7 +114,7 @@
 	(.me.txt): Call preconv.  Use UTF8 as output encoding.
 	(.me.ps): Call preconv.
 
-2014-03-14  Werner Lemberg  <wl@gnu.org>
+2014-03-14  Werner LEMBERG  <wl@gnu.org>
 
 	[me] Add translation of `meintro.me' to French.
 
@@ -81,9 +175,9 @@
 2014-03-06  Deri James  <deri@chuzzlewit.myzen.co.uk>
 
 	Missing RE escape in grep.
-	
+
 	* src/devices/gropdf/pdfmom.pl: Escape '\' dot in grep RE.
-	
+
 2014-02-26  Bernd Warken  <groff-bernd.warken-72@web.de>
 
 	* src/roff/grog/grog.pl: Add detection of `gperl' to `grog'.
@@ -106,7 +200,7 @@
 	   existed, it does not seem common nowadays, and in any case, using
 	   the now well-established EXIT STATUS section seems preferable to
 	   me.
-	 - Mention the possibility to use ERRORS for section 4 manuals. 
+	 - Mention the possibility to use ERRORS for section 4 manuals.
 	   While most section 4 manuals have a DIAGNOSTICS section, only
 	   some will need an ERRORS section, but these cases aren't exactly
 	   rare, either.  Quite some device driver manuals explain how to
@@ -181,7 +275,7 @@
 	* groff/tmac/an-ext.tmac (.FONT): Remove.  This doesn't belong into
 	this file.
 
-	* groff/tmac/groff_man.man: Reset to state previous to 2014-01-04. 
+	* groff/tmac/groff_man.man: Reset to state previous to 2014-01-04.
 	Useful changes will be re-committed in smaller, logical chunks.
 
 2014-01-05  Bernd Warken  <groff-bernd.warken-72@web.de>
@@ -201,7 +295,7 @@
 	* src/devices/gropdf/gropdf.pl: gropdf use to fail when handling
 	output from preconv, now works.
 
-	* src/devices/gropdf/pdfmom.pl: can now be used as a pipeline, and 
+	* src/devices/gropdf/pdfmom.pl: can now be used as a pipeline, and
 	improvements made to its switch handling and use with preconv.
 
 	* tmac/pdf.tmac: changes to support preconv.

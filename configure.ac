@@ -1,8 +1,8 @@
 # Autoconf configuration file for groff.
-# Copyright (C) 1989-1995, 2001-2007, 2009, 2011-2013
+# Copyright (C) 1989-1995, 2001-2007, 2009, 2011-2014
 #   Free Software Foundation, Inc.
 #
-# Last update: 28 Mar 2013
+# Last update: 29 Mar 2014
 #
 # This file is part of groff.
 #
@@ -69,6 +69,7 @@ GROFF_PERL
 GROFF_PRINT
 AC_PROG_EGREP
 GROFF_PROG_YACC
+GROFF_DOC_CHECK
 GROFF_MAKEINFO
 AC_PROG_RANLIB
 GROFF_INSTALL_SH

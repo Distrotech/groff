@@ -30,14 +30,12 @@ MAN1=gperl.n
 
 MOSTLYCLEANADD=gperl $(MAN1)
 
-# not all make programs have $(RM) predefined.
-RM=rm -f
-
 all: gperl
 
 gperl: gperl.pl
+	rm -f $@
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
-            -e "s|@g@|$(g)|g" \
+	    -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
@@ -47,18 +45,9 @@ gperl: gperl.pl
 .PHONY: install_data
 install_data: gperl
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(RM) $(DESTDIR)$(bindir)/gperl
+	rm -f $(DESTDIR)$(bindir)/gperl
 	$(INSTALL_SCRIPT) gperl $(DESTDIR)$(bindir)/gperl
 
 .PHONY: uninstall_sub
 uninstall_sub:
-	$(RM) $(DESTDIR)$(bindir)/gperl
-
-
-########################################################################
-# Emacs settings
-########################################################################
-#
-# Local Variables:
-# mode: makefile
-# End:
+	rm -f $(DESTDIR)$(bindir)/gperl

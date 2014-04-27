@@ -2,12 +2,12 @@
 
 # File position: <groff-source>/contrib/groffer/Makefile.sub
 
-# Copyright (C) 2001, 2002, 2005, 2006, 2009, 2011, 2013-14
+# Copyright (C) 2001, 2002, 2005, 2006, 2009, 2011, 2013-2014
 #   Free Software Foundation, Inc.
 # Written by Werner Lemberg <wl@gnu.org> and
 # Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 26 Feb 2014
+# Last update: 30 Mar 2014
 
 # This file is part of `groffer' which is part of `groff'.
 
@@ -42,34 +42,31 @@ MAN1=groffer.n \
 
 MOSTLYCLEANADD=groffer HAVE_PERL $(MAN1) $(ROFF2MAN) $(ROFF2PROGS)
 
-# not all make programs have $(RM) predefined.
-RM=rm -f
-
 all: groffer
 
-GROFFER_PERL=$(srcdir)/func.pl \
-             $(srcdir)/man.pl \
-             $(srcdir)/perl_test.pl \
-             $(srcdir)/split_env.sh
-GROFFER_REST=$(srcdir)/roff2.man \
-             $(srcdir)/version.sh \
-             $(srcdir)/groffer.man \
-             $(srcdir)/groffer.pl \
-             $(srcdir)/roff2.pl
+GROFFER_PERL=func.pl \
+             man.pl \
+             perl_test.pl \
+             split_env.sh
+GROFFER_REST=roff2.man \
+             version.sh \
+             groffer.man \
+             groffer.pl \
+             roff2.pl
 
 groffer: $(GROFFER_PERL) \
-         $(GROFFER_REST) $(SH_DEPS_SED_SCRIPT)
+		$(GROFFER_REST) $(SH_DEPS_SED_SCRIPT)
 	if perl $(srcdir)/perl_test.pl 2>&1 >/dev/null; then \
 	  : >HAVE_PERL; \
 	  echo "Using perl version of groffer."; \
 	  sed -f "$(SH_DEPS_SED_SCRIPT)" \
-            -e "s|@g@|$(g)|g" \
-	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
-	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
-	    -e "s|@groffer_dir@|$(DESTDIR)$(groffer_dir)|g" \
-	    -e "s|@VERSION@|$(version)$(revision)|g" \
-	    -e "$(SH_SCRIPT_SED_CMD)" \
-	    $(srcdir)/groffer.pl >$@; \
+	      -e "s|@g@|$(g)|g" \
+	      -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
+	      -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
+	      -e "s|@groffer_dir@|$(DESTDIR)$(groffer_dir)|g" \
+	      -e "s|@VERSION@|$(version)$(revision)|g" \
+	      -e "$(SH_SCRIPT_SED_CMD)" \
+	      $(srcdir)/groffer.pl >$@; \
 	  for f in $(ROFF2PROGS); do \
 	    cp $(srcdir)/roff2.pl $$f; \
 	  done; \
@@ -77,44 +74,34 @@ groffer: $(GROFFER_PERL) \
 	chmod +x $@
 	for m in $(ROFF2MODES); do \
 	  cat $(srcdir)/roff2.man \
-	  | sed 's/@ROFF2MODE@/'"$$m"'/g' > roff2$${m}.man; \
+	    | sed 's/@ROFF2MODE@/'"$$m"'/g' > roff2$${m}.man; \
 	done
 
 install_data: groffer
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(RM) $(DESTDIR)$(bindir)/groffer
+	rm -f $(DESTDIR)$(bindir)/groffer
 	$(INSTALL_SCRIPT) groffer $(DESTDIR)$(bindir)/groffer
 	for f in $(ROFF2PROGS); do \
-	  $(RM) $(DESTDIR)$(bindir)/$$f; \
+	  rm -f $(DESTDIR)$(bindir)/$$f; \
 	  $(INSTALL_SCRIPT) $$f $(DESTDIR)$(bindir)/$$f; \
 	done
 	-test -d $(DESTDIR)$(groffer_dir) \
-          || $(mkinstalldirs) $(DESTDIR)$(groffer_dir)
-	$(RM) $(DESTDIR)$(groffer_dir)/version.sh
-	$(INSTALL_DATA) $(srcdir)/version.sh \
-          $(DESTDIR)$(groffer_dir)/version.sh
+	  || $(mkinstalldirs) $(DESTDIR)$(groffer_dir)
+	rm -f $(DESTDIR)$(groffer_dir)/version.sh
+	$(INSTALL_DATA) $(srcdir)/version.sh $(DESTDIR)$(groffer_dir)/version.sh
 	for f in $(GROFFER_PERL); do \
-          $(RM) $(DESTDIR)$(groffer_dir)/$$f; \
-        done
+	  rm -f $(DESTDIR)$(groffer_dir)/$$f; \
+	done
 	if test -f HAVE_PERL; then \
-          for f in $(GROFFER_PERL); do \
-            $(INSTALL_SCRIPT) $(srcdir)/$$f \
-              $(DESTDIR)$(groffer_dir)/$$f; \
-          done; \
-        fi;
+	  for f in $(GROFFER_PERL); do \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(groffer_dir)/$$f; \
+	  done; \
+	fi
 
 uninstall_sub:
-	$(RM) $(DESTDIR)$(bindir)/groffer
-	for f in $(ROFF2PROGS); do $(RM) $(DESTDIR)$(bindir)/$$f; done
-	for f in $(GROFFER_PERL_) version.sh; do \
-          $(RM) $(DESTDIR)$(groffer_dir)/$$f; \
-        done
+	rm -f $(DESTDIR)$(bindir)/groffer
+	-for f in $(ROFF2PROGS); do rm -f $(DESTDIR)$(bindir)/$$f; done
+	-for f in $(GROFFER_PERL) version.sh; do \
+	  rm -f $(DESTDIR)$(groffer_dir)/$$f;\
+	done
 	-rmdir $(DESTDIR)$(libdir)/groff/groffer
-
-########################################################################
-# Emacs settings
-########################################################################
-#
-# Local Variables:
-# mode: makefile
-# End:

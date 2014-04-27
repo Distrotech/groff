@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 1989-2006, 2008-2011
+Copyright (C) 1989-2006, 2008-2011, 2014
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -1117,11 +1117,10 @@ produces an encapsulated PS file.
 .nf
 .ft B
 #! /bin/sh
-groff \-P\-b16 $1 >$1.ps
-gs \-dNOPAUSE \-sDEVICE=bbox \-\- $1.ps 2>$1.bbox
-cat $1.ps \[rs]
-| sed \-e "/\[ha]%%Orientation/r$1.bbox" \[rs]
-      \-e "/\[ha]%!PS-Adobe-3.0/s/$/ EPSF-3.0/" >$1.eps
+groff \-P\-b16 $1 > $1.ps
+gs \-dNOPAUSE \-sDEVICE=bbox \-\- $1.ps 2> $1.bbox
+sed \-e "/\[ha]%%Orientation/r $1.bbox" \[rs]
+    \-e "/\[ha]%!PS-Adobe-3.0/s/$/ EPSF-3.0/" $1.ps > $1.eps
 rm $1.ps $1.bbox
 .ft R
 .fi

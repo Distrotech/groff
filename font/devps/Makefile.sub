@@ -36,7 +36,6 @@ DEVSCRIPTS=$(DEVGENSCRIPTS)
 MOSTLYCLEANADD=DESC $(PSFILES)
 
 DESC: DESC.in
-	-rm -f DESC
 	cat $(srcdir)/DESC.in >DESC
 	echo broken $(BROKEN_SPOOLER_FLAGS) >>DESC
 	if test "$(PAGE)" = A4; then \
@@ -55,5 +54,5 @@ zapfdr.pfa: zapfdr.ps
 symbolsl.pfa: symbolsl.ps
 
 $(PSFILES):
-	-rm -f $@
+	rm -f $@
 	sed -f $(srcdir)/psstrip.sed $? >$@
