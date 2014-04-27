@@ -745,17 +745,20 @@ end
 \#
 \# Inline kerning provides a simple way to adjust the amount of
 \# space between any two letters.  It's predicated on a unit of
-\# measure "U", which is 1/36 of the current point size as returned
-\# by \n[.ps].  E.g., if the current point size is 18, \n[.ps]
-\# returns 18000u, therefore U=500u.  Since U remains proportional
-\# relative to the current point size, the amount of kerning
-\# between two letters as expressed in Us remains visually similar
-\# regardless of changes in point size.
+\# measure "U", which, by default, is 1/36 of the current point
+\# size as returned by \n[.ps]; e.g., if the current point size is
+\# 18, \n[.ps] returns 18000u, therefore U=500u.  Since U remains
+\# proportional relative to the current point size, the amount of
+\# kerning between two letters as expressed in Us remains visually
+\# similar regardless of changes in point size.
 \#
-\# N.B.--the amount of inline kerning supplied by \*[BU<n>] or
-\# \*[FU<n>] is added to or subtracted from any kerning that already
-\# takes place between two characters when automatic kerning is
-\# turned on.
+\# The default value for U may be changed or reset with the
+\# KERN_UNIT macro.
+\#
+.MAC KERN_UNIT END
+.    ie '\\$1'DEFAULT' .nr #KERN_UNIT 36
+.    el .nr #KERN_UNIT \\$1
+.END
 \#
 .nr #KERN_UNIT 36
 .ds BU   \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*\\$1u)'
@@ -3737,72 +3740,73 @@ end
 .MAC CAPS END
 .    ie '\\$1'' \{\
 .       tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
-.       tr à\[`A]
-.       tr â\[^A]
-.       tr á\['A]
-.       tr ä\[:A]
-.       tr å\[oA]
-.       tr ã\[~A]
-.       tr æ\[AE]
-.       tr è\[`E]
-.       tr ê\[^E]
-.       tr é\['E]
-.       tr ë\[:E]
-.       tr ì\[`I]
-.       tr î\[^I]
-.       tr í\['I]
-.       tr ï\[:I]
-.       tr ò\[`O]
-.       tr ô\[^O]
-.       tr ó\['O]
-.       tr ö\[:O]
-.       tr õ\[~O]
-.       tr ø\[/O]
-.       tr ù\[`U]
-.       tr û\[^U]
-.       tr ú\['U]
-.       tr ü\[:U]
-.       tr ç\[,C]
-.       tr ð\[-D]
-.       tr ñ\[~N]
-.       tr þ\[TP]
-.       tr ý\['Y]
-.       tr ÿ\[:Y]
+.       tr \[`a]\[`A]
+.       tr \[^a]\[^A]
+.       tr \['a]\['A]
+.       tr \[:a]\[:A]
+.       tr \[oa]\[oA]
+.       tr \[~a]\[~A]
+.       tr \[ae]\[AE]
+.       tr \[`e]\[`E]
+.       tr \[^e]\[^E]
+.       tr \['e]\['E]
+.       tr \[:e]\[:E]
+.       tr \[`i]\[`I]
+.       tr \[^i]\[^I]
+.       tr \['i]\['I]
+.       tr \[:i]\[:I]
+.       tr \[`o]\[`O]
+.       tr \[^o]\[^O]
+.       tr \['o]\['O]
+.       tr \[:o]\[:O]
+.       tr \[~o]\[~O]
+.       tr \[/o]\[/O]
+.       tr \[`u]\[`U]
+.       tr \[^u]\[^U]
+.       tr \['u]\['U]
+.       tr \[:u]\[:U]
+.       tr \[,c]\[,C]
+.       tr \[-d]\[-D]
+.       tr \[~n]\[~N]
+.       tr \[Sd]\[-D]
+.       tr \[Tp]\[TP]
+.       tr \['y]\['Y]
+.       tr \[:y]\[:Y]
 .       nr #CAPS_ON 1
 .    \}
 .    el \{\
 .       tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
-.       tr à\[`a]
-.       tr â\[^a]
-.       tr á\['a]
-.       tr ä\[:a]
-.       tr å\[oa]
-.       tr ã\[~a]
-.       tr æ\[ae]
-.       tr è\[`e]
-.       tr ê\[^e]
-.       tr é\['e]
-.       tr ë\[:e]
-.       tr ì\[`i]
-.       tr î\[^i]
-.       tr í\['i]
-.       tr ï\[:i]
-.       tr ò\[`o]
-.       tr ô\[^o]
-.       tr ó\['o]
-.       tr ö\[:o]
-.       tr õ\[~o]
-.       tr ø\[/o]
-.       tr ù\[`u]
-.       tr û\[^u]
-.       tr ú\['u]
-.       tr ü\[:u]
-.       tr ç\[,c]
-.       tr ð\[Sd]
-.       tr ñ\[~n]
-.       tr þ\[Tp]
-.       tr ý\['y]
-.       tr ÿ\[:y]
+.       tr \[`a]\[`a]
+.       tr \[^a]\[^a]
+.       tr \['a]\['a]
+.       tr \[:a]\[:a]
+.       tr \[oa]\[oa]
+.       tr \[~a]\[~a]
+.       tr \[ae]\[ae]
+.       tr \[`e]\[`e]
+.       tr \[^e]\[^e]
+.       tr \['e]\['e]
+.       tr \[:e]\[:e]
+.       tr \[`i]\[`i]
+.       tr \[^i]\[^i]
+.       tr \['i]\['i]
+.       tr \[:i]\[:i]
+.       tr \[`o]\[`o]
+.       tr \[^o]\[^o]
+.       tr \['o]\['o]
+.       tr \[:o]\[:o]
+.       tr \[~o]\[~o]
+.       tr \[/o]\[/o]
+.       tr \[`u]\[`u]
+.       tr \[^u]\[^u]
+.       tr \['u]\['u]
+.       tr \[:u]\[:u]
+.       tr \[,c]\[,c]
+.       tr \[Sd]\[Sd]
+.       tr \[~n]\[~n]
+.       tr \[Tp]\[Tp]
+.       tr \['y]\['y]
+.       tr \[:y]\[:y]
 .       rr #CAPS_ON
 .    \}
 .END
@@ -3810,74 +3814,74 @@ end
 .MAC UC END
 \c
 .    tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
-.    tr à\[`A]
-.    tr â\[^A]
-.    tr á\['A]
-.    tr ä\[:A]
-.    tr å\[oA]
-.    tr ã\[~A]
-.    tr æ\[AE]
-.    tr è\[`E]
-.    tr ê\[^E]
-.    tr é\['E]
-.    tr ë\[:E]
-.    tr ì\[`I]
-.    tr î\[^I]
-.    tr í\['I]
-.    tr ï\[:I]
-.    tr ò\[`O]
-.    tr ô\[^O]
-.    tr ó\['O]
-.    tr ö\[:O]
-.    tr õ\[~O]
-.    tr ø\[/O]
-.    tr ù\[`U]
-.    tr û\[^U]
-.    tr ú\['U]
-.    tr ü\[:U]
-.    tr ç\[,C]
-.    tr ð\[-D]
-.    tr ñ\[~N]
-.    tr þ\[TP]
-.    tr ý\['Y]
-.    tr ÿ\[:Y]
+.    tr \[`a]\[`A]
+.    tr \[^a]\[^A]
+.    tr \['a]\['A]
+.    tr \[:a]\[:A]
+.    tr \[oa]\[oA]
+.    tr \[~a]\[~A]
+.    tr \[ae]\[AE]
+.    tr \[`e]\[`E]
+.    tr \[^e]\[^E]
+.    tr \['e]\['E]
+.    tr \[:e]\[:E]
+.    tr \[`i]\[`I]
+.    tr \[^i]\[^I]
+.    tr \['i]\['I]
+.    tr \[:i]\[:I]
+.    tr \[`o]\[`O]
+.    tr \[^o]\[^O]
+.    tr \['o]\['O]
+.    tr \[:o]\[:O]
+.    tr \[~o]\[~O]
+.    tr \[/o]\[/O]
+.    tr \[`u]\[`U]
+.    tr \[^u]\[^U]
+.    tr \['u]\['U]
+.    tr \[:u]\[:U]
+.    tr \[,c]\[,C]
+.    tr \[Sd]\[-D]
+.    tr \[~n]\[~N]
+.    tr \[Tp]\[TP]
+.    tr \['y]\['Y]
+.    tr \[:y]\[:Y]
 .    nr #CAPS_ON 1
 .END
 \#
 .MAC LC END
 \c
 .    tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
-.    tr à\[`a]
-.    tr â\[^a]
-.    tr á\['a]
-.    tr ä\[:a]
-.    tr å\[oa]
-.    tr ã\[~a]
-.    tr æ\[ae]
-.    tr è\[`e]
-.    tr ê\[^e]
-.    tr é\['e]
-.    tr ë\[:e]
-.    tr ì\[`i]
-.    tr î\[^i]
-.    tr í\['i]
-.    tr ï\[:i]
-.    tr ò\[`o]
-.    tr ô\[^o]
-.    tr ó\['o]
-.    tr ö\[:o]
-.    tr õ\[~o]
-.    tr ø\[/o]
-.    tr ù\[`u]
-.    tr û\[^u]
-.    tr ú\['u]
-.    tr ü\[:u]
-.    tr ç\[,c]
-.    tr ð\[Sd]
-.    tr ñ\[~n]
-.    tr þ\[Tp]
-.    tr ý\['y]
-.    tr ÿ\[:y]
+.    tr \[`a]\[`a]
+.    tr \[^a]\[^a]
+.    tr \['a]\['a]
+.    tr \[:a]\[:a]
+.    tr \[oa]\[oa]
+.    tr \[~a]\[~a]
+.    tr \[ae]\[ae]
+.    tr \[`e]\[`e]
+.    tr \[^e]\[^e]
+.    tr \['e]\['e]
+.    tr \[:e]\[:e]
+.    tr \[`i]\[`i]
+.    tr \[^i]\[^i]
+.    tr \['i]\['i]
+.    tr \[:i]\[:i]
+.    tr \[`o]\[`o]
+.    tr \[^o]\[^o]
+.    tr \['o]\['o]
+.    tr \[:o]\[:o]
+.    tr \[~o]\[~o]
+.    tr \[/o]\[/o]
+.    tr \[`u]\[`u]
+.    tr \[^u]\[^u]
+.    tr \['u]\['u]
+.    tr \[:u]\[:u]
+.    tr \[,c]\[,c]
+.    tr \[Sd]\[Sd]
+.    tr \[~n]\[~n]
+.    tr \[Tp]\[Tp]
+.    tr \['y]\['y]
+.    tr \[:y]\[:y]
 .    rr #CAPS_ON
 .END
 \#
@@ -7838,7 +7842,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    el \{\
 .       nr #VALID_BASELINE \\n[#T_MARGIN]-\\n[#DOC_LEAD] \\n[#DOC_LEAD]
 .       if !r#CURRENT_V_POS .nr #CURRENT_V_POS \\n[.d]
-.       ie r#ADVANCE_FROM_TOP \{\
+.       ie \\n[#ADVANCE_FROM_TOP] \{\
 .          ie \\n[#CURRENT_V_POS]<(\\n[#T_MARGIN]-1v) \{\
 .             while \\n-[#VALID_BASELINE]>\\n[#CURRENT_V_POS] .
 .             nr #VALID_BASELINE +\\n[#DOC_LEAD]
@@ -14822,6 +14826,20 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       if !\\n[#COLLATE]=1 .MN_INIT
 .    rr #COL_TOTAL
 .    rr #COL_NUM
+.END
+\#
+\# MARK COL V-POSITION AFTER DOCHEADER
+\# -----------------------------------
+\# *Arguments:
+\#   none
+\# *Function:
+\#   Sets 1st page dc register.
+\# *Notes:
+\#   Only required if manual spacing, positive or negative, precedes
+\#   start of columns on first page of doc.
+\#
+.MAC COL_MARK END
+.    mk dc
 .END
 \#
 \# NEXT COLUMN
