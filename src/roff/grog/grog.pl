@@ -159,7 +159,11 @@ sub process {
   while (<FILE>) {
     chomp;
 
-    if ( $first_line ) { # in first line test on e, p, r, t
+    s/^[']/./;
+
+    if ( $first_line ) {
+      # when first line, test on comment with character set for grog args
+
       $first_line = 0; # end of first line
 
       if ( /^\.\\"\s*(.+)$/ ) {
@@ -167,11 +171,23 @@ sub process {
 	if ( /e/ ) {
 	  $Groff{'eqn'}++;
 	}
+	if ( /g/ ) {
+	  $Groff{'grn'}++;
+	}
+	if ( /G/ ) {
+	  $Groff{'grap'}++;
+	}
+	if ( /j/ ) {
+	  $Groff{'chem'}++;
+	}
 	if ( /p/ ) {
 	  $Groff{'pic'}++;
 	}
-	if ( /r/ ) {
+	if ( /R/ ) {
 	  $Groff{'refer'}++;
+	}
+	if ( /s/ ) {
+	  $Groff{'soelim'}++;
 	}
 	if ( /t/ ) {
 	  $Groff{'tbl'}++;
@@ -396,14 +412,14 @@ sub version {
        $Groff{'grn'} || $Groff{'grap'} || $Groff{'refer'} ||
        $Groff{'chem'} ) {
     my $s = "-";
-    $s .= "s" if $Groff{'soelim'};
-    $s .= "R" if $Groff{'refer'};
+    $s .= "e" if $Groff{'eqn'};
+    $s .= "g" if $Groff{'grn'};
     $s .= "G" if $Groff{'grap'};
     $s .= "j" if $Groff{'chem'};
     $s .= "p" if $Groff{'pic'};
-    $s .= "g" if $Groff{'grn'};
+    $s .= "R" if $Groff{'refer'};
+    $s .= "s" if $Groff{'soelim'};
     $s .= "t" if $Groff{'tbl'};
-    $s .= "e" if $Groff{'eqn'};
     push(@Command, $s);
   }
 
