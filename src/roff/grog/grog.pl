@@ -14,8 +14,8 @@
 # This file is part of `grog', which is part of `groff'.
 
 # `groff' is free software; you can redistribute it and/or modify it
-# under the terms of the GNU General Public License (GPL) as published
-# by the Free Software Foundation, either version 2 of the License, or
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 
 # `groff' is distributed in the hope that it will be useful, but
@@ -24,10 +24,11 @@
 # General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+# along with this program. If not, see
+# <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-my $Last_Update = '27 Feb 2014';
+my $Last_Update = '26 May 2014';
 ########################################################################
 
 require v5.6;
@@ -45,7 +46,8 @@ my $Prog = $0;
 }
 
 #my $Sp = "[\\s\\n]";
-my $Sp = qr([\s\n]);
+#my $Sp = qr([\s\n]);
+my $Sp = '';
 
 my @Command;			# stores the final output
 my @Mparams;			# stores the options -m*
@@ -79,7 +81,7 @@ my %Groff = (
 	     'tbl' => 0,
 );
 
-{
+{ # command line arguments except file names
   my @filespec = ();
   my $double_minus = 0;
   my $was_minus = 0;
@@ -138,7 +140,7 @@ my %Groff = (
   @ARGV = @filespec;
 }
 
-foreach my $arg (@ARGV) {
+foreach my $arg (@ARGV) { # test for each file name in the arguments
   &process($arg, 0);
 }
 
@@ -146,14 +148,40 @@ sub process {
   my ($filename, $level) = @_;
   local(*FILE);
   my %macros;
+  my $first_line = 1; # we are now in reading the first line
 
   if (!open(FILE, $filename eq "-" ? $filename : "< $filename")) {
     print STDERR "$Prog: can't open \`$filename': $!";
     exit 1 unless $level;
     return;
   }
+
   while (<FILE>) {
     chomp;
+
+    if ( $first_line ) { # in first line test on e, p, r, t
+      $first_line = 0; # end of first line
+
+      if ( /^\.\\"\s*(.+)$/ ) {
+	my $_ = $1;
+	if ( /e/ ) {
+	  $Groff{'eqn'}++;
+	}
+	if ( /p/ ) {
+	  $Groff{'pic'}++;
+	}
+	if ( /r/ ) {
+	  $Groff{'refer'}++;
+	}
+	if ( /t/ ) {
+	  $Groff{'tbl'}++;
+	}
+	next;
+      }
+    }
+
+    # $first_line no longer needed in the following
+
     next unless ( /^[.']/ );
     next if ( /^[.']{2}/ );
 
