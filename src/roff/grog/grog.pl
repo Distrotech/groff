@@ -28,7 +28,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-my $Last_Update = '26 May 2014';
+my $Last_Update = '28 May 2014';
 ########################################################################
 
 require v5.6;
@@ -159,15 +159,46 @@ sub process {
   while (<FILE>) {
     chomp;
 
-    s/^[']/./;
-
     if ( $first_line ) {
-      # when first line, test on comment with character set for grog args
+      # As documented for the `man' program, the first line can be
+      # used as an groff option line.  This is done by:
+      # - start the line with '\" (apostrophe, backslash, double quote)
+      # - add a space character
+      # - a word using the following characters can be appended: `egGjpRst'.
+      #     Each of these characters means an option for the generated
+      #     `groff' command line, e.g. `-t'.
 
-      $first_line = 0; # end of first line
+      $first_line = 0; # for later necessary end of first line
 
-      if ( /^\.\\"\s*(.+)$/ ) {
-	my $_ = $1;
+      if ( /^\.\\"/ ) {
+	my $line = $_;
+	$line =~ s/^[.]\\"//g;
+	$line =~ s/\s//g;
+	if ( $line =~ /[egGjpRst]+$/ ) {
+	  # line is a groff options line with . instead of '
+	  print STDERR "First line must start with " .
+	    "apostrophe ' instead of period . for groff options line!";
+	  s/^\./'/; # line now starts with apostrophe '
+	} else {
+	  # line has non-option characters, so is a comment, i.e. ignore
+	  next;
+	}
+      }
+
+      if ( /^'\\"/ ) {
+	s/^'\\"//;
+	s/\W//g;
+	{
+	  my $chars = $_;
+	  $chars =~ s/[egGjpRst]//g;
+	  if ( $chars ) {
+	    print STDERR 'Wrong characters in first line: ' .
+	      $chars . '.';
+	    print STDERR
+	      "For an options line are only allowed: [egGjpRst].";
+	  }
+	}
+
 	if ( /e/ ) {
 	  $Groff{'eqn'}++;
 	}
