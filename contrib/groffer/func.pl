@@ -8,7 +8,7 @@
 # Copyright (C) 2006, 2009, 2014 Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 25 Feb 2014
+# Last update: 31 May 2014
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -554,12 +554,9 @@ The most important groffer long options are
 --default-modes=mode1,mode2,...
                   set sequence of automatically tried modes.
 --dvi             display in a viewer for TeX device independent format.
---dvi-viewer=prog choose the viewer program for dvi mode.
 --groff           process like groff, disable viewing features.
 --help            display this helping output.
 --html            display in a web browser.
---html-viewer=program
-                  choose the web browser for html mode.
 --man             check file parameters first whether they are man pages.
 --mode=auto|dvi|groff|html|pdf|ps|source|text|tty|www|x|X
                   choose display mode.
@@ -567,20 +564,16 @@ The most important groffer long options are
 --no-special      disable --all, --apropos*, and --whatis
 --pager=program   preset the paging program for tty mode.
 --pdf             display in a PDF viewer.
---pdf-viewer=prog choose the viewer program for pdf mode.
 --ps              display in a Postscript viewer.
---ps-viewer=prog  choose the viewer program for ps mode.
 --source          output as roff source.
 --text            output in a text device without a pager.
 --to-stdout       output the content of the mode file without display.
 --tty             display with a pager on text terminal even when in X.
---tty-viewer=prog select a pager for tty mode; same as --pager.
+--viewer          choose a viewer for the actual device mode
+--viewer-tty      choose a viewer for the actual text mode
 --whatis          display the file name and description of man pages
 --www             same as --html.
---www-viewer=prog same as --html-viewer
 --x --X           display with "gxditview" using an X* device.
---x-viewer=prog   choose viewer program for x mode (X mode).
---X-viewer=prog   same as "--xviewer".
 
 The usual X Windows toolkit options transformed into GNU long options:
 --background=color, --bd=size, --bg=color, --bordercolor=color,
@@ -598,6 +591,19 @@ Development options that are not useful for normal usage:
 --debug-tmpdir, --do-nothing, --print=text
 
 EOF
+
+# The following mode-viewer options were replaced by a single --viewer
+# option.  The old options are only ignored:
+# --dvi-viewer=prog choose the viewer program for dvi mode.
+# --html-viewer=program
+#                  choose the web browser for html mode.
+# --pdf-viewer=prog choose the viewer program for pdf mode.
+# --ps-viewer=prog  choose the viewer program for ps mode.
+# --tty-viewer=prog select a pager for tty mode; same as --pager.
+# --www-viewer=prog same as --html-viewer
+# --x-viewer=prog   choose viewer program for x mode (X mode).
+# --X-viewer=prog   same as "--xviewer".
+
 } # usage()
 
 

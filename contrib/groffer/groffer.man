@@ -11,6 +11,10 @@ groffer \- display groff files and man\~pages on X and tty
 .
 .de author
 This file was written by Bernd Warken <groff-bernd.warken-72@web.de>.
+.
+.
+.P
+Latest update: 31 May 2014
 ..
 .de co
 Copyright (C) 2001, 2002, 2004\[en]2006, 2009\[en]2012, 2014
@@ -43,7 +47,10 @@ The license text is available in the internet at
 .\" Setup
 .\" --------------------------------------------------------------------
 .
-.ds Ellipsis "\&.\|.\|.\&\"
+.char \[Ellipsis] \f[S]\N'188'\fP
+.
+.\" ds Ellipsis \[el]
+.\" ds Ellipsis "\&.\|.\|.\&\"
 .
 .\" --------------------------------------------------------------------
 .\" Macro definitions
@@ -150,9 +157,17 @@ The license text is available in the internet at
 .\" --------------------------------------------------------------------
 .
 .SY groffer
-.OP option \*[Ellipsis]
 .OP \-\-
-.OP \%filespec \*[Ellipsis]
+.OP \%filespec \[Ellipsis]
+.YS
+.
+.SY groffer
+.OP mode-option \[Ellipsis]
+.OP groff-options \[Ellipsis]
+.OP man-options \[Ellipsis]
+.OP X-options \[Ellipsis]
+.OP \-\-
+.OP \%filespec \[Ellipsis]
 .YS
 .
 .SY groffer
@@ -300,29 +315,36 @@ Long options can be abbreviated in several ways.
 .SY
 .OP \-\-auto
 .OP \-\-default
-.OP \-\-default\-modes mode1,mode2,\*[Ellipsis]
+.OP \-\-default\-modes mode1,mode2,\[Ellipsis]
 .OP \-\-dvi
-.OP \-\-dvi\-viewer prog
 .OP \-\-groff
 .OP \-\-html
-.OP \-\-html\-viewer prog
+.OP \-\-latin1
 .OP \-\-mode display_mode
 .OP \-\-pdf
 .OP \-\-pdf2
-.OP \-\-pdf\-viewer prog
 .OP \-\-ps
-.OP \-\-ps\-viewer prog
 .OP \-\-source
 .OP \-\-text
 .OP \-\-to\-stdout
 .OP \-\-tty
-.OP \-\-tty\-viewer prog
+.OP \-\-viewer prog
 .OP \-\-www
-.OP \-\-www\-viewer prog
 .OP \-\-x\~\fR|\fB\~\-\-X
-.OP \-\-x\-viewer\~\fR|\fB\~\-\-X\-viewer prog
 .YS
 .RE
+.
+.
+.ig
+Replace these options by --viewer
+.OP \-\-dvi\-viewer prog
+.OP \-\-html\-viewer prog
+.OP \-\-pdf\-viewer prog
+.OP \-\-ps\-viewer prog
+.OP \-\-tty\-viewer prog
+.OP \-\-www\-viewer prog
+.OP \-\-x\-viewer\~\fR|\fB\~\-\-X\-viewer prog
+..
 .
 .
 .TP
@@ -369,11 +391,11 @@ short options are accepted.
 .OP \-\-locale language
 .OP \-\-local\-file
 .OP \-\-location\~\fR|\fB\~\-\-where
-.OP \-\-manpath dir1:dir2:\*[Ellipsis]
+.OP \-\-manpath dir1:dir2:\[Ellipsis]
 .OP \-\-no\-location
 .OP \-\-pager program
-.OP \-\-sections sec1:sec2:\*[Ellipsis]
-.OP \-\-systems sys1,sys2,\*[Ellipsis]
+.OP \-\-sections sec1:sec2:\[Ellipsis]
+.OP \-\-systems sys1,sys2,\[Ellipsis]
 .OP \-\-troff\-device device
 .YS
 .P
@@ -617,8 +639,9 @@ default mode do not exist.
 .
 .
 .P
-In \%\f[CR]X\~Window\f[],
-many programs create their own window when called.
+In \%\f[CR]X\~Window\f[], many programs create their own window when
+called.
+.
 .B \%groffer
 can run these viewers as an independent program in the background.
 .
@@ -646,7 +669,8 @@ There is a chance to view the output source; for example, the
 combination of the options
 .B \-\-mode=ps
 and
-.B \-\-ps\-viewer=less
+.\# B \-\-ps\-viewer=less
+.B \-\-viewer=less
 shows the content of the
 .I Postscript
 output, the source code, with the pager
@@ -670,7 +694,7 @@ and restart option processing using only the rest of the command line.
 .
 .
 .TP
-.BI \-\-default\-modes \ mode1,mode2,\*[Ellipsis]
+.BI \-\-default\-modes \ mode1,mode2,\[Ellipsis]
 Set the sequence of modes for
 .I \%auto\~mode
 to the comma separated list given in the argument.
@@ -691,10 +715,8 @@ in this sequence.
 .B \-\-dvi
 Equivalent to
 .BR \-\-mode=\%dvi .
-.
-.
-.TP
-.BI \-\-dvi\-viewer \ prog
+.TQ
+.BI \-\-viewer \ prog
 Choose a viewer program for
 .IR \%dvi\~mode .
 .
@@ -721,10 +743,8 @@ Equivalent to
 .B \-\-html
 Equivalent to
 .BR \-\-mode=html .
-.
-.
-.TP
-.B \-\-html\-viewer
+.TQ
+.B \-\-viewer
 Choose a web browser program for viewing in
 .IR \%html\~mode .
 .
@@ -812,7 +832,7 @@ generator.
 The generated
 .I PDF file
 is displayed with suitable viewer programs, such as
-.BR ocular (1).
+.BR okular (1).
 .
 .
 .TP
@@ -886,7 +906,7 @@ program being distributed together with
 But the standard \%\f[CR]X\~Window\f[] tool
 .BR \%xditview (1)
 can also be chosen with the option
-.BR \-\-x\-viewer .
+.BR \-\-viewer .
 The default resolution is
 .BR 75dpi ,
 but
@@ -957,16 +977,12 @@ processing.
 .B \-\-pdf
 Equivalent to
 .BR \-\-mode=pdf .
-.
-.
-.TP
+.TQ
 .B \-\-pdf2
 Equivalent to
 .BR \-\-mode=pdf2 .
-.
-.
-.TP
-.BI \-\-pdf\-viewer \ prog
+.TQ
+.BI \-\-viewer \ prog
 Choose a viewer program for
 .IR \%pdf\~mode .
 .
@@ -979,10 +995,8 @@ arguments can be provided additionally.
 .B \-\-ps
 Equivalent to
 .BR \-\-mode=ps .
-.
-.
-.TP
-.BI \-\-ps\-viewer \ prog
+.TQ
+.BI \-\-viewer \ prog
 Choose a viewer program for
 .IR \%ps\~mode .
 .
@@ -990,6 +1004,8 @@ This can be a file name or a program to be searched in
 .Env_var $PATH .
 .
 Common Postscript viewers include
+.BR \%okular (1),
+.BR \%evince (1),
 .BR \%gv (1),
 .BR \%ghostview (1),
 and
@@ -1022,10 +1038,8 @@ It will not be displayed in graphical mode.
 .B \-\-tty
 Equivalent to
 .BR \-\-mode=tty .
-.
-.
-.TP
-.BI \-\-tty\-viewer \ prog
+.TQ
+.BI \-\-viewer \ prog
 Choose a text pager for mode
 .IR tty .
 The standard pager is
@@ -1043,22 +1057,17 @@ arguments can be provided additionally.
 .B \-\-www
 Equivalent to
 .BR \-\-mode=html .
-.
-.
-.TP
-.BI \-\-www\-viewer \ prog
-Equivalent to
-.BR \-\-html\-viewer .
+.TQ
+.B \-\-viewer
+.IR prog .
 .
 .
 .TP
 .B \-\-X\~\fR|\fB\~\-\-x
 Equivalent to
 .BR \-\-mode=x .
-.
-.
-.TP
-.BI \-\-X\-viewer\~\fR|\fB\~\-\-x\-viewer \ prog
+.TQ
+.BI \-\-viewer " prog"
 Choose a viewer program for
 .IR \%x\~mode .
 Suitable viewer programs are
@@ -1551,7 +1560,7 @@ This was added by
 .
 .
 .TP
-.BI \-\-manpath \ 'dir1:dir2:\*[Ellipsis]'
+.BI \-\-manpath \ 'dir1:dir2:\[Ellipsis]'
 Use the specified search path for retrieving
 .I \%man\~pages
 instead of the program defaults.
@@ -1567,12 +1576,13 @@ Set the pager program in
 .IR \%tty\~mode ;
 default is
 .BR \%less .
-This is equivalent to
-.BR \-\-tty\-viewer .
+.
+This can be set with
+.BR \-\-viewer .
 .
 .
 .TP
-.BI \-\-sections \ sec1:sec2:\*[Ellipsis]
+.BI \-\-sections \ sec1:sec2:\[Ellipsis]
 Restrict searching for
 .I \%man\~pages
 to the given
@@ -1581,7 +1591,7 @@ a colon-separated list.
 .
 .
 .TP
-.BI \-\-systems \ sys1,sys2,\*[Ellipsis]
+.BI \-\-systems \ sys1,sys2,\[Ellipsis]
 Search for
 .I \%man\~pages
 for the given operating systems; the argument
@@ -2103,9 +2113,9 @@ The modes are selected by option the arguments of
 Additionally, each of this argument can be specified as an option of
 its own, such as
 .BR anymode .
-Most of these modes have a viewer program, which can be chosen by an
-option that is constructed like
-.BR \-\-\,\fIanymode\/\fR\-viewer .
+Most of these modes have a viewer program, which can be chosen by the
+option
+.BR \-\-viewer .
 .
 .
 .P
@@ -2264,7 +2274,7 @@ or
 The pager to be used can be specified by one of the options
 .B \-\-pager
 and
-.BR \-\-tty\-viewer ,
+.BR \-\-viewer ,
 or by the environment variable
 .Env_var \%$PAGER .
 If all of this is not used the
@@ -3373,8 +3383,8 @@ or
 # groffer options that are used in each call of groffer
 \-\-foreground=DarkBlue
 \-\-resolution=100
-\-\-x\-viewer=gxditview \-geometry 900x1200
-\-\-pdf\-viewer xpdf \-Z 150
+\-\-viewer=gxditview \-geometry 900x1200
+\-\-viewer xpdf \-Z 150
 .fi
 .hy
 .ft
@@ -3558,7 +3568,7 @@ The formatted files are concatenated and displayed in one piece.
 .
 .sp
 .EX
-\fIsh#\fR\~LANG=de\~groffer\~\-\-man\~\-\-www\~\-\-www-viewer=galeon\~ls
+\fIsh#\fR\~LANG=de\~groffer\~\-\-man\~\-\-viewer=galeon\~ls
 .EE
 .sp
 Retrieve the German
@@ -3785,6 +3795,15 @@ all of them can be used with
 .
 .
 .TP
+.BR \%grog (@MAN1EXT@)
+This program tries to guess the necessary
+.B \%groff
+command line options from the input and the
+.B groffer
+options.
+.
+.
+.TP
 .BR \%groff (@MAN7EXT@)
 Documentation of the
 .I \%groff
@@ -3792,22 +3811,10 @@ language.
 .
 .
 .TP
-.BR \%grog (@MAN1EXT@)
-Internally,
-.B \%groffer
-tries to guess the
-.B \%groff
-command line options from the input using this program.
-.
-.
-.TP
-.BR groff_out (@MAN5EXT@)
+.BR groff_char (@MAN7EXT@)
 Documentation on the
-.I \%groff intermediate output
-.nh
-.RI ( ditroff
-output).
-.hy
+.I \%groff
+characters, special characters, and glyphs..
 .
 .
 .TP
@@ -3815,6 +3822,25 @@ output).
 Documentation on the
 .I \%groff
 macro files.
+.
+.
+.TP
+.BR groff_out (@MAN5EXT@)
+Documentation on the
+.I \%groff intermediate output
+before the run of a
+.IR postprocessor .
+.nh
+.RI ( ditroff
+output).
+.hy
+.
+This can be run by the
+.B groff
+or
+.B groffer
+option
+.BR -Z .
 .
 .
 .TP
@@ -3831,8 +3857,9 @@ supported by
 .BR \%groffer .
 .
 .
-.P
-.BR \%gxditview (@MAN1EXT@),
+.TP
+.BR \%gxditview (@MAN1EXT@)
+.TQ
 .BR \%xditview (1x)
 .RS
 Viewers for
@@ -3841,34 +3868,42 @@ Viewers for
 .RE
 .
 .
-.P
-.BR \%kpdf (1),
-.BR \%kghostview (1),
-.BR \%evince (1),
-.BR \%ggv (1),
-.BR \%gv (1),
-.BR \%ghostview (1),
+.TP
+.BR \%kpdf (1)
+.TQ
+.BR \%kghostview (1)
+.TQ
+.BR \%evince (1)
+.TQ
+.BR \%ggv (1)
+.TQ
+.BR \%gv (1)
+.TQ
+.BR \%ghostview (1)
+.TQ
 .BR \%gs (1)
-.RS
 Viewers for
 .BR \%groffer 's
 .IR \%ps\~mode .
-.RE
 .
 .
-.P
-.BR \%kpdf (1),
-.BR \%acroread (1),
-.BR \%evince (1),
-.BR \%xpdf (1),
-.BR \%gpdf (1),
-.BR \%kghostview (1),
+.TP
+.BR \%kpdf (1)
+.TQ
+.BR \%acroread (1)
+.TQ
+.BR \%evince (1)
+.TQ
+.BR \%xpdf (1)
+.TQ
+.BR \%gpdf (1)
+.TQ
+.BR \%kghostview (1)
+.TQ
 .BR \%ggv (1)
-.RS
 Viewers for
 .BR \%groffer 's
 .IR \%pdf\~mode .
-.RE
 .
 .
 .P
@@ -3882,35 +3917,41 @@ Viewers for
 .RE
 .
 .
-.P
-.BR \%konqueror (1),
-.BR \%epiphany (1),
-.BR \%firefox (1),
-.BR \%mozilla (1),
-.BR \%netscape (1),
+.TP
+.BR \%konqueror (1)
+.TQ
+.BR \%epiphany (1)
+.TQ
+.BR \%firefox (1)
+.TQ
+.BR \%mozilla (1)
+.TQ
+.BR \%netscape (1)
+.TQ
 .BR \%lynx (1)
-.RS
 Web-browsers for
 .BR \%groffer 's
 .I \%html
 or
 .IR \%www\~mode .
-.RE
 .
 .
 .TP
 .BR \%less (1)
+.TQ
+.BR more (1)
 Standard pager program for the
 .IR \%tty\~mode .
 .
 .
-.P
-.BR \%gzip (1),
+.TP
+.BR \%gzip (1)
+.TQ
 .BR \%bzip2 (1)
-.RS
+.TQ
+.BR \%xz (1)
 The decompression programs supported by
 .BR \%groffer .
-.RE
 .
 .
 .\" --------------------------------------------------------------------

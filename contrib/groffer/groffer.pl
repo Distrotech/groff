@@ -10,7 +10,7 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 25 Feb 2014
+# Last update: 31 May 2014
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -193,9 +193,9 @@ my %Viewer_X = ('DVI' => ['kdvi', 'xdvi', 'dvilx'],
 			  'xpdf -z 150', 'gpdf', 'xpdf', 'zathura'.
 			  'epdfview', 'qpdfview', 'apvlv', 'qpdfview',
 			  'kghostview --scale 1.45', 'gv', 'ggv'],
-		'PS' => ['gs', 'gs_x11', 'ghostscript', 'ghostview',
-			 'kghostview --scale 1.45',
-			 'gv', 'okular', 'kpdf', 'evince', 'ggv'],
+		'PS' => ['okular', 'evince', 'gv',
+			 'gs', 'gs_x11', 'ghostscript', 'ghostview',
+			 'kghostview --scale 1.45', 'ggv', 'kpdf'],
 		'TTY' => ['xless'],
 		'X' => ['gxditview', 'xditview'],
 	      );
@@ -250,19 +250,23 @@ sub main_set_options {
   'debug-filenames', 'debug-func', 'debug-grog', 'debug-not-func',
   'debug-keep', 'debug-lm', 'debug-params', 'debug-stacks',
   'debug-tmpdir', 'debug-user', 'default', 'do-nothing', 'dvi',
-  'groff', 'help', 'intermediate-output', 'html', 'man',
+  'groff', 'help', 'intermediate-output', 'html', 'latin1', 'man',
   'no-location', 'no-man', 'no-special', 'pdf', 'pdf2', 'ps', 'rv', 'source',
   'text', 'to-stdout', 'text-device', 'tty', 'tty-device', 'version',
   'whatis', 'where', 'www', 'x', 'X');
 
 ### main_set_options()
-  my @opts_groffer_long_arg = ('default-modes', 'device',
-  'dvi-viewer', 'dvi-viewer-tty', 'extension', 'fg', 'fn', 'font',
-  'foreground', 'html-viewer', 'html-viewer-tty', 'mode',
-  'pdf-viewer', 'pdf-viewer-tty', 'print', 'ps-viewer',
-  'ps-viewer-tty', 'title', 'tty-viewer', 'tty-viewer-tty',
-  'www-viewer', 'www-viewer-tty', 'x-viewer', 'x-viewer-tty',
-  'X-viewer', 'X-viewer-tty');
+  my @opts_groffer_long_arg =
+    ('default-modes', 'device', 'extension', 'fg', 'fn', 'font',
+     'foreground', 'mode', 'print', 'title', 'viewer',
+     # tty viewers are ignored
+     'dvi-viewer-tty', 'html-viewer-tty', 'pdf-viewer-tty',
+     'ps-viewer-tty', 'tty-viewer-tty', 'www-viewer-tty',
+     'X-viewer-tty', 'x-viewer-tty',
+     # viewers for modes are ignored
+     'dvi-viewer', 'html-viewer', 'pdf-viewer', 'ps-viewer', 'tty-viewer',
+     'www-viewer', 'X-viewer', 'x-viewer',
+    );
 
   ##### groffer options inhereted from groff
 
@@ -363,26 +367,28 @@ sub main_set_options {
 			  '--bw' => '--borderwidth',
 			  '--debug-all' => '--debug',
 			  '--ditroff' => '--intermediate-output',
-			  '--dvi-viewer-tty' => '--dvi-viewer',
 			  '--fg' => '--foreground',
 			  '--fn' => '--font',
 			  '--ft' => '--font',
-			  '--html-viewer-tty' => '--html-viewer',
-			  '--pdf-viewer-tty' => '--pdf-viewer',
-			  '--ps-viewer-tty' => '--ps-viewer',
+			  '--latin1' => '--tty',
 			  '--troff-device' => '--device',
 			  '--tty-device' => '--text-device',
-			  '--tty-viewer' => '--pager',
-			  '--tty-viewer-tty' => '--pager',
+			  '--viewer' => '--viewer',
 			  '--where' => '--location',
 			  '--www' => '--html',
-			  '--www-viewer' => '--html-viewer',
-			  '--www-viewer-tty' => '--html-viewer',
-			  '--x-viewer-tty' => '--x-viewer',
 			  '--X' => '--x',
-			  '--X-viewer' => '--x-viewer',
-			  '--X-viewer-tty' => '--x-viewer',
-			 );
+			  # '--dvi-viewer' => '--viewer',
+			  '--dvi-viewer-tty' => '--viewer',
+			  '--html-viewer-tty' => '--viewer',
+			  '--pdf-viewer-tty' => '--viewer',
+			  '--ps-viewer-tty' => '--viewer',
+			  '--tty-viewer' => '--pager',
+			  '--tty-viewer-tty' => '--pager',
+			  '--www-viewer' => '--viewer',
+			  '--www-viewer-tty' => '--pager',
+			  '--X-viewer' => '--viewer', '--X-viewer-tty'
+			  => '--pager', '--x-viewer' => '--viewer',
+			  '--x-viewer-tty' => '--pager', );
 
   # groff short options with leading minus
   foreach (@opts_groff_short_na) {
@@ -392,7 +398,7 @@ sub main_set_options {
     $Opts_Groff_Short{"-$_"} = 1;
   }
 
-}				# main_set_options()
+} # main_set_options()
 
 
 ########################################################################
@@ -403,7 +409,7 @@ sub main_set_options {
 my @Manopt;
 
 sub main_parse_MANOPT {
-  if ($ENV{'MANOPT'}) {
+  if ( $ENV{'MANOPT'} ) {
     @Manopt = `sh $File_split_env_sh MANOPT`;
     chomp @Manopt;
 
@@ -412,37 +418,37 @@ sub main_parse_MANOPT {
     # All options not in %opts are ignored.
     # Check options used with %Opts_Cmdline_Double.
     # 0: option used ('' for ignore), 1: has argument or not
-### main_parse_MANOPT()
+    ### main_parse_MANOPT()
     my %opts = ('-7' => ['--ascii', 0],
-		'--ascii' => ['--ascii', 0],
-		'-a' => ['--all', 0],
-		'--all' => ['--all', 0],
-		'-c' => ['', 1],
-		'--catman' => ['', 1],
-		'-e' => ['--extension', 1],
-		'--extension' => ['--extension', 1],
-		'-f' => ['--whatis', 1],
-		'--whatis' => ['--whatis', 1],
 		'-L' => ['--locale', 1],
-		'--locale' => ['--locale', 1],
-		'-m' => ['--systems', 1],
-		'--systems' => ['--systems', 1],
 		'-M' => ['--manpath', 1],
-		'-manpath' => ['--manpath', 1],
-		'--manpath' => ['--manpath', 1],
-		'-p' => ['', 1],
-		'--preprocessor' => ['', 1],
 		'-P' => ['--pager', 1],
-		'-pager' => ['--pager', 1],
-		'-r' => ['', 1],
-		'-prompt' => ['', 1],
 		'-S' => ['--sections', 1],
-		'-sections' => ['--sections', 1],
 		'-T' => ['-T', 1],
-		'--device' => ['-T', 1],
 		'-w' => ['--location', 0],
-		'--where' => ['--location', 0],
+		'-a' => ['--all', 0],
+		'-c' => ['', 1],
+		'-e' => ['--extension', 1],
+		'-f' => ['--whatis', 1],
+		'-m' => ['--systems', 1],
+		'-p' => ['', 1],
+		'-r' => ['', 1],
+		'-manpath' => ['--manpath', 1],
+		'-pager' => ['--pager', 1],
+		'-prompt' => ['', 1],
+		'-sections' => ['--sections', 1],
+		'--all' => ['--all', 0],
+		'--ascii' => ['--ascii', 0],
+		'--catman' => ['', 1],
+		'--device' => ['-T', 1],
+		'--extension' => ['--extension', 1],
+		'--locale' => ['--locale', 1],
 		'--location' => ['--location', 0],
+		'--manpath' => ['--manpath', 1],
+		'--preprocessor' => ['', 1],
+		'--systems' => ['--systems', 1],
+		'--whatis' => ['--whatis', 1],
+		'--where' => ['--location', 0],
 	       );
 
 ### main_parse_MANOPT()
@@ -494,7 +500,7 @@ my @Starting_ARGV = @ARGV;
 sub main_config_params {	# handle configuration files
   # options may not be abbreviated, but must be exact
   my @conf_args;
-  foreach my $f (@Conf_Files) {
+  foreach my $f ( @Conf_Files ) {
     if (-s $f) {
       my $fh;
       open $fh, "<$f" || next;
@@ -513,7 +519,7 @@ sub main_config_params {	# handle configuration files
 	  warn "Wrong option $line in configuration file $f.\n";
 	  next;
 	}
-	if ($line =~ /^--[ =]/) {
+	if ( $line =~ /^--[ =]/ ) {
 	  warn "No option name in `$line' in configuration " .
 	    "file $f.\n";
 	  next;
@@ -522,46 +528,42 @@ sub main_config_params {	# handle configuration files
 	# -- or -
 	if ($line =~ /^--?$/) {
 	  warn "`$line' is not allowed in configuration files.\n";
-	  next;
-	}
-	### main_config_params()
-	if ($line =~ /^--/) {	# line is long option
+	  next; }
+### main_config_params()
+	if ($line =~ /^--/) {		# line is long option
 	  my ($name, $arg);
-	  if ($line =~ /[ =]/) { # has arg on line
-	    $line =~ /^(--[^ =]+)[ =] ?(.*)$/;
+	  if ($line =~ /[ =]/) {	# has arg on line $line =~
+	    /^(--[^ =]+)[ =] ?(.*)$/;
 	    ($name, $arg) = ($1, $2);
 	    $arg =~ s/[\'\"]//g;
-	  } else {		# does not have an argument on line
+	  } else {			# does not have an argument on line
 	    $name = $line;
-	  }
-	  $name =~ s/[\'\"]//g;
+	  } $name =~ s/[\'\"]//g;
 	  unless (exists $Opts_Cmdline_Long{$name}) {
 	    # option does not exist
 	    warn "Option `$name' does not exist.\n";
 	    next LINE;
 	  }
 	  # option exists
-	  if ($Opts_Cmdline_Long{$name}) { # option has arg
+	  if ( $Opts_Cmdline_Long{$name} ) { # option has arg
 	    if (defined $arg) {
 	      push @conf_args, $name, $arg;
 	      next LINE;
-	    } else {
-	      warn "Option `$name' needs an argument in " .
-		"configuration file $f\n";
-	      next LINE;
-	    }
-	  } else {		# option has no arg
+	    } else { warn "Option `$name' needs an argument in " .
+		       "configuration file $f\n";
+		     next LINE;
+		   }
+	  } else { # option has no arg
 	    if (defined $arg) {
 	      warn "Option `$name' may not have an argument " .
 		"in configuration file $f\n";
 	      next LINE;
 	    } else {
-	      push @conf_args, $name;
-	      next LINE;
+	      push @conf_args, $name; next LINE;
 	    }
 	  }
-	  ### main_config_params()
-	} else {		# line is short option or cluster
+### main_config_params()
+	} else {			# line is short option or cluster
 	  $line =~ s/^-//;
 	  while ($line) {
 	    $line =~ s/^(.)//;
@@ -572,19 +574,19 @@ sub main_config_params {	# handle configuration files
 		"have an argument.\n";
 	      next LINE;
 	    }
-	    if (exists $Opts_Cmdline_Short{$opt}) {
+	    if ( exists $Opts_Cmdline_Short{$opt} ) {
 	      # short opt exists
 	      push @conf_args, $opt;
-	      if ($Opts_Cmdline_Short{$opt}) { # with arg
+	      if ( $Opts_Cmdline_Short{$opt} ) { # with arg
 		my $arg = $line;
 		$arg =~ s/^ //;
 		$arg =~ s/\'\"//g;
 		push @conf_args, "$arg";
 		next LINE;
-	      } else {		# no arg
+	      } else { # no arg
 		next;
 	      }
-	    } else {		# short option does not exist
+	    } else { # short option does not exist
 	      warn "Wrong short option `-$opt' from " .
 		"configuration.  Rest of line ignored.\n";
 	      next LINE;
@@ -597,9 +599,9 @@ sub main_config_params {	# handle configuration files
   }
 
 ### main_config_params()
-  # handle environment variable $GROFFER_OPT
+  #handle environment variable $GROFFER_OPT
   my @GROFFER_OPT;
-  if ($ENV{'GROFFER_OPT'}) {
+  if ( $ENV{'GROFFER_OPT'} ) {
     @GROFFER_OPT = `sh $File_split_env_sh GROFFER_OPT`;
     chomp @GROFFER_OPT;
   }
@@ -610,7 +612,7 @@ sub main_config_params {	# handle configuration files
     my @argv0 = (@GROFFER_OPT, @ARGV);
     my @argv;
     my $only_files = 0;
-    my $n = $#argv0;		  # last element
+    my $n = $#argv0;		# last element
     my $n1 = scalar @GROFFER_OPT; # first element of @ARGV
     my $i = 0;			# number of the element
     my @s = ('the environment variable $GROFFER_OPT', 'the command line');
@@ -630,27 +632,27 @@ sub main_config_params {	# handle configuration files
       }
 
 ### main_config_params()
-      if ($elt =~ /^-$/) {	# -
+      if ( $elt =~ /^-$/ ) { # -
 	push @Filespecs, $elt;
 	next ELT;
       }
-      if ($elt =~ /^--$/) {	# --
+      if ($elt =~ /^--$/) { # --
 	$only_files = 1;
 	next ELT;
       }
 
-      if ($elt =~ /^--[ =]/) {	# no option name
+      if ($elt =~ /^--[ =]/) { # no option name
 	warn "No option name in `$elt' at $s[$j].\n";
 	next ELT;
       }
-      if ($elt =~ /^---/) {	# wrong with three minus
+      if ($elt =~ /^---/) { # wrong with three minus
 	warn "Wrong option `$elt' at $s[$j].\n";
 	next ELT;
       }
 
-      if ($elt =~ /^--[^-]/) {	# long option
+      if ($elt =~ /^--[^-]/) { # long option
 	my ($name, $opt, $abbrev, $arg);
-	if ($elt =~ /[ =]/) {	# has arg on elt
+	if ($elt =~ /[ =]/) { # has arg on elt
 	  $elt =~ /^--([^ =]+)[ =] ?(.*)$/;
 	  ($name, $arg) = ($1, $2);
 	  $opt = "--$name";
@@ -666,25 +668,24 @@ sub main_config_params {	# handle configuration files
 	$name =~ s/[\'\"]//g;
 	my $match = $name;
 	$match =~ s/-/[^- ]*-/g;
-	### main_config_params()
-	if (exists $Opts_Cmdline_Long{$opt}) {
+	if ( exists $Opts_Cmdline_Long{$opt} ) {
 	  # option exists exactly
-	} elsif ($Opts_Cmdline_Long_Str =~ / (${match}[^- ]*?) /) {
+	} elsif	( $Opts_Cmdline_Long_Str =~ / (${match}[^- ]*?) / ) {
 	  # option is an abbreviation without further -
 	  my $n0 = $1;
-	  if ($Opts_Cmdline_Long_Str =~
-	      / (${match}[^- ]*) .* (${match}[^- ]*) /) {
+	  if ( $Opts_Cmdline_Long_Str =~
+	       /\s(${match}[^-\s]*)\s.*\s(${match}[^-\s]*) / ) {
 	    warn "Option name `--$abbrev' is not unique: " .
 	      "--$1 --$2 \n";
 	    next ELT;
 	  }
 	  $name = $n0;
 	  $opt = "--$n0";
-	} elsif ($Opts_Cmdline_Long_Str =~ / (${match}[^ ]*) /) {
+	} elsif ( $Opts_Cmdline_Long_Str =~ /\s(${match}[^\s]*)\s/ ) {
 	  # option is an abbreviation with further -
 	  my $n0 = $1;
-	  if ($Opts_Cmdline_Long_Str =~
-	      / (${match}[^ ]*) .* (${match}[^ ]*) /) {
+	  if ( $Opts_Cmdline_Long_Str =~
+	       /\s(${match}[^\s]*)\s.*\s(${match}[^\s]*)\s/ ) {
 	    warn "Option name `--$abbrev' is not unique: " .
 	      "--$1 --$2 \n";
 	    next ELT;
@@ -696,23 +697,21 @@ sub main_config_params {	# handle configuration files
 	  next ELT;
 	}
 ### main_config_params()
-	if ($Opts_Cmdline_Long{$opt}) { # option has arg
+	if ( $Opts_Cmdline_Long{$opt} ) { # option has arg
 	  if (defined $arg) {
 	    push @argv, "--$name", $arg;
 	    next ELT;
-	  } else {		# $arg not defined, argument at next element
+	  } else { # $arg not defined, argument at next	element
 	    if (($i == $n1) || ($i > $n)) {
 	      warn "No argument left for option " .
 		"`$elt' at $s[$j].\n";
-	      next ELT;
-	    }
-	    ### main_config_params()
+	      next ELT; }
 	    # add argument as next element
 	    push @argv, "--$name", $argv0[$i];
 	    ++$i;
 	    next ELT;
-	  }			# if (defined $arg)
-	} else {		# option has no arg
+	  }		# if (defined $arg)
+	} else {	# option has no arg
 	  if (defined $arg) {
 	    warn "Option `$abbrev' may not have an argument " .
 	      "at $s[$j].\n";
@@ -721,59 +720,56 @@ sub main_config_params {	# handle configuration files
 	    push @argv, "--$name";
 	    next ELT;
 	  }
-	}			# if ($Opts_Cmdline_Long{$opt})
+	}		# if ($Opts_Cmdline_Long{$opt})
 ### main_config_params()
-      } elsif ($elt =~ /^-[^-]/) { # short option or cluster
+      } elsif ( $elt =~ /^-[^-]/ ) { # short option or cluster
 	my $cluster = $elt;
 	$cluster =~ s/^-//;
 	while ($cluster) {
 	  $cluster =~ s/^(.)//;
 	  my $opt = "-$1";
-	  if (exists $Opts_Cmdline_Short{$opt}) { # opt exists
-	    if ($Opts_Cmdline_Short{$opt}) { # with arg
+	  if ( exists $Opts_Cmdline_Short{$opt} ) {	# opt exists
+	    if ( $Opts_Cmdline_Short{$opt} ) {		# with arg
 	      if ($cluster) {	# has argument in this element
-		$cluster =~ s/^ //;
+		$cluster =~ s/^\s//;
 		$cluster =~ s/\'\"//g;
-				# add argument as rest of this element
+		# add argument as rest of this element
 		push @argv, $opt, $cluster;
 		next ELT;
-	      } else {		# argument at next element
+	      } else { # argument at next element
 		if (($i == $n1) || ($i > $n)) {
 		  warn "No argument left for option " .
 		    "`$opt' at $s[$j].\n";
-		  next ELT;
-		}
-		### main_config_params()
-				# add argument as next element
+		  next ELT; }
+### main_config_params()
+		# add argument as next element
 		push @argv, $opt, $argv0[$i];
 		++$i;
 		next ELT;
 	      }
-	    } else {		# no arg
-	      push @argv, $opt;
-	      next;
+	    } else { # no arg
+	      push @argv, $opt; next;
 	    }
-	  } else {		# short option does not exist
+	  } else { # short option does not exist
 	    warn "Wrong short option `$opt' at $s[$j].\n";
 	    next ELT;
-	  }			# if (exists $Opts_Cmdline_Short{$opt})
-	}			# while ($cluster)
-      } else {			# not an option, file name
+	  }		# if (exists $Opts_Cmdline_Short{$opt})
+	}		# while ($cluster)
+      } else {		# not an option, file name
 	push @Filespecs, $elt;
 	next;
       }
     }
 ### main_config_params()
     @Options = (@Manopt, @conf_args, @argv);
-    foreach my $i (0..$#Options) {
-      if ( exists $Opts_Cmdline_Double{ $Options[$i] } ) {
+    foreach my $i ( 0..$#Options ) {
+      if ( exists $Opts_Cmdline_Double{$Options[$i]} ) {
 	$Options[$i] = $Opts_Cmdline_Double{ $Options[$i] };
       }
-    }
-    @Filespecs = ('-') unless (@Filespecs);
+    } @Filespecs = ('-') unless (@Filespecs);
     @ARGV = (@Options, '--', @Filespecs);
   }
-} # main_config_params()
+}
 
 if (0) {
   print STDERR "<$_>\n" foreach @ARGV;
@@ -784,8 +780,7 @@ if (0) {
 # main_parse_params()
 ########################################################################
 
-my $i;
-my $n;
+my $i; my $n;
 
 $Opt{'XRM'} = [];
 
@@ -796,10 +791,10 @@ sub main_parse_params {
   # options that are ignored in this part
   # shell version of groffer: --debug*, --shell
   # man options: --catman (only special in man),
-  #              --preprocessor (force groff preproc., handled by grog),
-  #              --prompt (prompt for less, ignored),
-  #              --troff (-mandoc, handled by grog),
-  #              --update (inode check, ignored)
+  #		 --preprocessor (force groff preproc., handled by grog),
+  #		 --prompt (prompt for less, ignored),
+  #		 --troff (-mandoc, handled by grog),
+  #		 --update (inode check, ignored)
   my %ignored_opts = (
 		      '--catman' => 0,
 		      '--debug-func' => 0,
@@ -828,19 +823,20 @@ sub main_parse_params {
      '--help' => sub { &usage(); $Opt{'DO_NOTHING'} = 1; },
      '--source' => sub { $Opt{'MODE'} = 'source'; },
      '--device' =>
-     sub {  $Opt{'DEVICE'} = &_get_arg();
-	    my %modes = ( 'dvi'=> 'dvi',
-			  'html' => 'html',
-			  'lbp' => 'groff',
-			  'lj4' => 'groff',
-			  'pdf' => 'pdf',
-			  'pdf2' => 'pdf',
-			  'ps' => 'ps',
-			  'ascii' => 'tty',
-			  'cp1047' => 'tty',
-			  'latin1' => 'tty',
-			  'utf8' => 'tty',
-			);
+     sub { $Opt{'DEVICE'} = &_get_arg();
+	   my %modes = (
+			'ascii' => 'tty',
+			'cp1047' => 'tty',
+			'dvi'=> 'dvi',
+			'html' => 'html',
+			'latin1' => 'tty',
+			'lbp' => 'groff',
+			'lj4' => 'groff',
+			'pdf' => 'pdf',
+			'pdf2' => 'pdf',
+			'ps' => 'ps',
+			'utf8' => 'tty',
+		       );
 	    if ($Opt{'DEVICE'} =~ /^X.*/) {
 	      $Opt{'MODE'} = 'x';
 	    } elsif ( exists $modes{ $Opt{'DEVICE'} } ) {
@@ -895,8 +891,6 @@ sub main_parse_params {
      sub { $Opt{'DISPLAY'} = &_get_arg(); },
      '--do-nothing' => sub { $Opt{'DO_NOTHING'} = 1; },
      '--dvi' => sub { $Opt{'MODE'} = 'dvi'; },
-     '--dvi-viewer' =>		# viewer program for dvi mode; arg
-     sub { $Opt{'VIEWER_DVI'} = &_get_arg(); },
      '--extension' =>		# the extension for man pages, arg
      sub { $Opt{'EXTENSION'} = &_get_arg(); },
      '--foreground' =>		# foreground color for viewers, arg
@@ -907,8 +901,6 @@ sub main_parse_params {
      sub { $Opt{'GEOMETRY'} = &_get_arg(); },
      '--groff' => sub { $Opt{'MODE'} = 'groff'; },
      '--html' => sub { $Opt{'MODE'} = 'html'; },
-     '--html-viewer' =>		# viewer program for html mode; arg
-     sub { $Opt{'VIEWER_HTML'} = &_get_arg(); },
      '--iconic' =>		# start viewers as icons
      sub { $Opt{'ICONIC'} = 1; },
      '--locale' =>		# set language for man pages, arg
@@ -964,13 +956,9 @@ sub main_parse_params {
      sub { $Opt{'PAGER'} = &_get_arg(); },
      '--pdf' => sub { $Opt{'MODE'} = 'pdf'; },
      '--pdf2' => sub { $Opt{'MODE'} = 'pdf2'; },
-     '--pdf-viewer' =>		# viewer program for pdf and pdf2 mode; arg
-     sub { $Opt{'VIEWER_PDF'} = &_get_arg(); },
      '--print' =>		# print argument, for argument test
      sub { my $arg = &_get_arg; print STDERR "$arg\n"; },
      '--ps' => sub { $Opt{'MODE'} = 'ps'; },
-     '--ps-viewer' =>		# viewer program for ps mode; arg
-     sub { $Opt{'VIEWER_PS'} = &_get_arg(); },
      '--resolution' =>		# set resolution for X devices, arg
      sub { my $arg = &_get_arg();
 	   my %res = ( '75' => 75,
@@ -1017,20 +1005,31 @@ sub main_parse_params {
 	     }
 	   }
 	 },
-     '--tty' =>			# tty mode, text with pager
-     sub { $Opt{'MODE'} = 'tty'; },
-     '--to-stdout' =>		# print mode file without display
-     sub { $Opt{'STDOUT'} = 1; },
      '--text-device' =>		# device for tty mode; arg
      sub { $Opt{'TEXT_DEVICE'} = &_get_arg(); },
+     '--to-stdout' =>		# print mode file without display
+     sub { $Opt{'STDOUT'} = 1; },
+     '--tty' =>			# tty mode, text with pager
+     sub { $Opt{'MODE'} = 'tty'; },
+     '--viewer' =>		# viewer for actiual mode
+     sub { $Opt{'VIEWER'} = &_get_arg(); },
      '--whatis' => sub { delete $Opt{'APROPOS'}; $Opt{'WHATIS'} = 1; },
      '--x' => sub { $Opt{'MODE'} = 'x'; },
 ### main_parse_params()
      '--xrm' =>			# pass X resource string, arg
      sub { my $arg = &_get_arg(); push @{$Opt{'XRM'}}, $arg if $arg; },
-     '--x-viewer' =>		# viewer program for x mode; arg
-     sub { $Opt{'VIEWER_X'} = &_get_arg(); },
     );
+
+#     '--dvi-viewer' =>		# viewer program for dvi mode; arg
+#     sub { $Opt{'VIEWER_DVI'} = &_get_arg(); },
+#     '--html-viewer' =>		# viewer program for html mode; arg
+#     sub { $Opt{'VIEWER_HTML'} = &_get_arg(); },
+#     '--pdf-viewer' =>		# viewer program for pdf and pdf2 mode; arg
+#     sub { $Opt{'VIEWER_PDF'} = &_get_arg(); },
+#     '--ps-viewer' =>		# viewer program for ps mode; arg
+#     sub { $Opt{'VIEWER_PS'} = &_get_arg(); },
+#     '--x-viewer' =>		# viewer program for x mode; arg
+#     sub { $Opt{'VIEWER_X'} = &_get_arg(); },
 
   my %short_opts = (
 		    '-V' => sub { $Opt{'V'} = 1; },
@@ -1040,7 +1039,7 @@ sub main_parse_params {
   if (0) {
     # check if all options are handled in parse parameters
 
-    #short options
+    # short options
     my %these_opts = (%ignored_opts, %short_opts, %Opts_Groff_Short,
 		      %Opts_Cmdline_Double);
     foreach my $key (keys %Opts_Cmdline_Short) {
@@ -1084,7 +1083,7 @@ sub main_parse_params {
 	}
       }				# if (exists $short_opts{$opt})
     }				# if ($opt =~ /^-([^-])$/)
-    # Now it is a long option
+    # now it is a long option
 
     # handle ignored options
     if ( exists $ignored_opts{ $opt } ) {
@@ -1232,7 +1231,7 @@ sub main_set_mode {
     } else {			# other modes
       &_get_prog_args($m) ? return 1 : next LOOP;
     }				# if $m
-  }				# LOOP: foreach
+  }				# loop: foreach
   die 'set mode: no suitable display mode found under ' .
     join(', ', @modes) . ';' unless $Display{'MODE'};
   die 'set mode: no viewer available for mode ' . $Display{'MODE'} . ';'
@@ -1251,9 +1250,12 @@ sub main_set_mode {
 # Simplification for loop in set mode.
 #
 # Globals in/out: $Viewer_Background
-# Globals in    : $Opt{VIEWER_<MODE>}, $Viewer_X{<MODE>},
+# globals in    : $Opt{VIEWER}, $VIEWER_X{<MODE>},
 #                 $Viewer_tty{<MODE>}
 #
+## globals in    : $Opt{VIEWER_<MODE>}, $VIEWER_X{<MODE>},
+##                 $Viewer_tty{<MODE>}
+##
 sub _get_prog_args {
   my $n = @_;
   die "_get_prog_args(): one argument is needed; you used $n;"
@@ -1265,11 +1267,12 @@ sub _get_prog_args {
   my $xlist = $Viewer_X{$MODE};
   my $ttylist = $Viewer_tty{$MODE};
 
-  my $vm = "VIEWER_${MODE}";
+#  my $vm = "VIEWER_${MODE";
+  my $vm = "VIEWER";
   my $opt = $Opt{$vm};
 
   if ($opt) {
-    my %prog = where_is_prog $opt;
+    my %prog = &where_is_prog($opt);
     my $prog_ref = \%prog;
     unless (%prog) {
       warn "_get_prog_args(): `$opt' is not an existing program;";
