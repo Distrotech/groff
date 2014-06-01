@@ -40,7 +40,6 @@ GROG_=`echo $(GROG) | sed 's|$(srcdir)/||g'`
 grog: grog.pl $(GROG) $(SH_DEPS_SED_SCRIPT)
 	rm -f $@
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
-	    -e "1s|^\(#! \).*perl|\\1$(PERL)|" \
 	    -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
 	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
@@ -48,6 +47,7 @@ grog: grog.pl $(GROG) $(SH_DEPS_SED_SCRIPT)
 	    -e "s|@VERSION@|$(version)$(revision)|" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
 	    $(srcdir)/grog.pl >$@
+#remove:    -e "1s|^\(#! \).*perl|\\1$(PERL)|" \
 	chmod +x $@
 
 .PHONY: install_data
