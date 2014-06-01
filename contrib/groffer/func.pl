@@ -8,7 +8,7 @@
 # Copyright (C) 2006, 2009, 2014 Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 31 May 2014
+# Last update: 01 Jun 2014
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -518,15 +518,15 @@ Window viewer or in several text modes.  All input is decompressed
 on-the-fly with all formats that gzip can handle.
 
 "filespec" is one of
-  "filename"       name of a readable file
-  "-"              for standard input
-  "man:name(n)"    man page "name" in section "n"
-  "man:name.n"     man page "name" in section "n"
-  "man:name"       man page "name" in first section found
-  "name(n)"        man page "name" in section "n"
-  "name.n"         man page "name" in section "n"
-  "n name"         man page "name" in section "n"
-  "name"           man page "name" in first section found
+  "filename"	name of a readable file
+  "-"		for standard input
+  "man:name(n)"	man page "name" in section "n"
+  "man:name.n"	man page "name" in section "n"
+  "man:name"	man page "name" in first section found
+  "name(n)"	man page "name" in section "n"
+  "name.n"	man page "name" in section "n"
+  "n name"	man page "name" in section "n"
+  "name"	man page "name" in first section found
 where `section' is a single character out of [1-9on], optionally followed
 by some more letters that are called the `extension'.
 
@@ -542,38 +542,37 @@ All other short options are interpreted as "groff" formatting options.
 
 The most important groffer long options are
 
---apropos=name    start man's "apropos" program for "name".
+--apropos=name	start man's "apropos" program for "name".
 --apropos-data=name
-                  "apropos" for "name" in man's data sections 4, 5, 7.
+		"apropos" for "name" in man's data sections 4, 5, 7.
 --apropos-devel=name
-                  "apropos" for "name" in development sections 2, 3, 9.
+		"apropos" for "name" in development sections 2, 3, 9.
 --apropos-progs=name
-                  "apropos" for "name" in man's program sections 1, 6, 8.
---auto            choose mode automatically from the default mode list.
---default         reset all options to the default value.
+		"apropos" for "name" in man's program sections 1, 6, 8.
+--auto		choose mode automatically from the default mode list.
+--default	reset all options to the default value.
 --default-modes=mode1,mode2,...
-                  set sequence of automatically tried modes.
---dvi             display in a viewer for TeX device independent format.
---groff           process like groff, disable viewing features.
---help            display this helping output.
---html            display in a web browser.
---man             check file parameters first whether they are man pages.
+		set sequence of automatically tried modes.
+--dvi		display in a viewer for TeX device independent format.
+--groff		process like groff, disable viewing features.
+--help		display this helping output.
+--html		display in a web browser.
+--man		check file parameters first whether they are man pages.
 --mode=auto|dvi|groff|html|pdf|ps|source|text|tty|www|x|X
-                  choose display mode.
---no-man          disable man-page facility.
---no-special      disable --all, --apropos*, and --whatis
---pager=program   preset the paging program for tty mode.
---pdf             display in a PDF viewer.
---ps              display in a Postscript viewer.
---source          output as roff source.
---text            output in a text device without a pager.
---to-stdout       output the content of the mode file without display.
---tty             display with a pager on text terminal even when in X.
---viewer          choose a viewer for the actual device mode
---viewer-tty      choose a viewer for the actual text mode
---whatis          display the file name and description of man pages
---www             same as --html.
---x --X           display with "gxditview" using an X* device.
+		choose display mode.
+--no-man	disable man-page facility.
+--no-special	disable --all, --apropos*, and --whatis
+--pager=program preset the paging program for tty mode.
+--pdf		display in a PDF viewer.
+--ps		display in a Postscript viewer.
+--source	output as roff source.
+--text		output in a text device without a pager.
+--to-stdout	output the content of the mode file without display.
+--tty		display with a pager on text terminal even when in X.
+--viewer	choose a viewer for the actual device mode
+--whatis	display the file name and description of man pages
+--www		same as --html.
+--x --X		display with "gxditview" using an X* device.
 
 The usual X Windows toolkit options transformed into GNU long options:
 --background=color, --bd=size, --bg=color, --bordercolor=color,
@@ -794,3 +793,8 @@ sub wait {
 }				# wait()
 
 1;
+########################################################################
+### Emacs settings
+# Local Variables:
+# mode: CPerl
+# End:

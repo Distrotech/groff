@@ -10,7 +10,7 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 31 May 2014
+# Last update: 01 Jun 2014
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -151,6 +151,7 @@ do "$file_perl_test_pl" or die "Perl test: $@";
 
 require 'func.pl';
 require 'man.pl';
+# require 'sub.pl';
 
 @Path = &path_uniq( File::Spec->path() );
 
@@ -171,7 +172,7 @@ my @Conf_Files = (File::Spec->catfile(File::Spec->rootdir(),
 				      'groffer.conf')
 		 );
 
-my @Default_Modes = ('pdf', 'html', 'ps', 'x', 'dvi', 'tty');
+my @Default_Modes = ('pdf', 'pdf2', 'html', 'ps', 'x', 'dvi', 'tty');
 my $Default_Resolution = 75;
 my $Default_tty_Device = 'latin1';
 
@@ -769,7 +770,7 @@ sub main_config_params {	# handle configuration files
     } @Filespecs = ('-') unless (@Filespecs);
     @ARGV = (@Options, '--', @Filespecs);
   }
-}
+} # main_config_params()
 
 if (0) {
   print STDERR "<$_>\n" foreach @ARGV;
@@ -833,7 +834,7 @@ sub main_parse_params {
 			'lbp' => 'groff',
 			'lj4' => 'groff',
 			'pdf' => 'pdf',
-			'pdf2' => 'pdf',
+			'pdf2' => 'pdf2',
 			'ps' => 'ps',
 			'utf8' => 'tty',
 		       );
@@ -925,7 +926,7 @@ sub main_parse_params {
 			 'www' => 'html',
 			 'dvi' => 'dvi',
 			 'pdf' => 'pdf',
-			 'pdf2' => 'pdf',
+			 'pdf2' => 'pdf2',
 			 'ps' => 'ps',
 			 'text' => 'text',
 			 'tty' => 'tty',
@@ -1263,6 +1264,7 @@ sub _get_prog_args {
 
   my $mode = lc($_[0]);
   my $MODE = uc($mode);
+  $MODE = 'PDF' if ( $MODE =~ /^PDF2$/ );
 
   my $xlist = $Viewer_X{$MODE};
   my $ttylist = $Viewer_tty{$MODE};
@@ -1997,13 +1999,14 @@ sub main_display {
 
     /^pdf$/ and do {
       $modefile .= '.pdf';
-      $groggy = `cat $tmp_cat | grog -Tpdf`;
+      $groggy = `cat $tmp_cat | grog -Tpdf -P-y -PU`;
       die "main_display(): grog error;" if $?;
       chomp $groggy;
       print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
       &_do_display();
       next SWITCH;
     };
+
 
     /^pdf2$/ and do {
       if ($Opt{'DEVICE'} && $Opt{'DEVICE'} ne 'ps') {
