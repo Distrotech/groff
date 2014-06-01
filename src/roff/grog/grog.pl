@@ -28,7 +28,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-my $Last_Update = '28 May 2014';
+my $Last_Update = '01 Jun 2014';
 ########################################################################
 
 require v5.6;
@@ -233,7 +233,8 @@ sub process {
     next if ( /^[.']{2}/ );
 
     s/^['.]\s*/./; # use only a dot as leading character
-    s/\s*$//;
+    s/\s+\\".*$//; # omit comment
+    s/\s+$//;
 
     if ( /^\.de1?\W?/ ) {
       # this line is a macro definition, add it to %macros
@@ -259,25 +260,25 @@ sub process {
     } elsif (/^(\.cstart)|(begin\s+chem)$/) {
       $Groff{'chem'}++;
       $Groff{'soelim'}++ if $level;
-    } elsif (/^\.TS$Sp/) {
+    } elsif (/^\.TS$/) {
       $_ = <FILE>;
       if (!/^\./ || /^\.so/) {
 	$Groff{'tbl'}++;
 	$Groff{'soelim'}++ if $level;
       }
-    } elsif (/^\.EQ$Sp/) {
+    } elsif (/^\.EQ$/) {
       $_ = <FILE>;
       if (!/^\./ || /^\.[0-9]/ || /^\.so/) {
 	$Groff{'eqn'}++;
 	$Groff{'soelim'}++ if $level;
       }
-    } elsif (/^\.GS$Sp/) {
+    } elsif (/^\.GS$/) {
       $_ = <FILE>;
       if (!/^\./ || /^\.so/) {
 	$Groff{'grn'}++;
 	$Groff{'soelim'}++ if $level;
       }
-    } elsif (/^\.G1$Sp/) {
+    } elsif (/^\.G1$/) {
       $_ = <FILE>;
       if (!/^\./ || /^\.so/) {
 	$Groff{'grap'}++;
@@ -295,13 +296,14 @@ sub process {
 #	  $Groff{'soelim'}++ if $level;
 #	}
 #      }
-    } elsif (/^\.PS[\s\n<]/) {
+#    } elsif (/^\.PS[\s\n<]/) {
+    } elsif (/^\.PS$/) {
       $Groff{'pic'}++;
       $Groff{'soelim'}++ if $level;
       if (/^\.PS\s*<\s*(\S+)/) {
 	&process($1, $level);
       }
-    } elsif (/^\.R1$Sp/) {
+    } elsif (/^\.R1$/) {
       $Groff{'refer'}++;
       $Groff{'soelim'}++ if $level;
     } elsif (/^\.\[/) {
@@ -310,27 +312,29 @@ sub process {
     } elsif (/^\.\]/) {
       $Groff{'refer_close'}++;
       $Groff{'soelim'}++ if $level;
-    } elsif (/^\.NH$Sp/) {
+    } elsif (/^\.NH/) {
       $Groff{'NH'}++;		# for ms
-    } elsif (/^\.TL$Sp/) {
+    } elsif (/^\.TL/) {
       $Groff{'TL'}++;		# for mm and ms
-    } elsif (/^\.PP$Sp/) {
+    } elsif (/^\.PP/) {
       $Groff{'PP'}++;		# for mom and ms
-    } elsif (/^\.[IL]P$Sp/) {
+    } elsif (/^\.[IL]P/) {
       $Groff{'ILP'}++;		# for man and ms
     } elsif (/^\.P$/) {
       $Groff{'P'}++;
-    } elsif (/^\.(PH|SA)$Sp/) {
+    } elsif (/^\.(PH|SA)/) {
       $Groff{'mm'}++;
-    } elsif (/^\.TH$Sp/) {
+    } elsif (/^\.TH\s/) {
       $Groff{'TH'}++;
-    } elsif (/^\.SH$Sp/) {
+    } elsif (/^\.SH\s$/) {
       $Groff{'SH'}++;
-    } elsif (/^\.([pnil]p|sh)$Sp/) {
+    } elsif (/^\.([il]p|sh)\s/) {
       $Groff{'me'}++;
-    } elsif (/^\.Dd$Sp/) {
+    } elsif (/^\.([pn]p)$/) {
+      $Groff{'me'}++;
+    } elsif (/^\.Dd\s/) {
       $Groff{'mdoc'}++;
-    } elsif (/^\.(Tp|Dp|De|Cx|Cl)$Sp/) {
+    } elsif (/^\.(Tp|Dp|De|Cx|Cl)/) {
       $Groff{'mdoc_old'} = 1;
     }
     # In the old version of -mdoc `Oo' is a toggle, in the new it's
@@ -364,10 +368,10 @@ sub process {
 	$Groff{'Oo'}--;
       }
       redo;
-    } elsif (/^\.(PRINTSTYLE|START)$Sp/) {
+    } elsif (/^\.(PRINTSTYLE|START)/) {
       $Groff{'mom'}++;
     }
-    if (/^\.so$Sp/) {
+    if (/^\.so$/) {
       chop;
       s/^.so *//;
       s/\\\".*//;
@@ -454,24 +458,29 @@ sub version {
     push(@Command, $s);
   }
 
-  if ( $Groff{'me'} ) {
-    push(@m, '-me');
-    push(@Command, '-me');
-  }
-  if ( $Groff{'SH'} && $Groff{'TH'} ) {
+  if ( $Groff{'TH'} && $Groff{'SH'} ) {
     push(@m, '-man');
     push(@Command, '-man');
     $is_man = 1;
   }
-  if ( $Groff{'mom'} ) {
-    push(@m, '-mom');
-    push(@Command, '-mom');
-    $is_mom = 1;
+  if ( $Groff{'me'} ) {
+    push(@m, '-me');
+    push(@Command, '-me');
   }
   if ( $Groff{'mm'} || ($Groff{'P'} && ! $is_man) ) {
     push(@m, '-mm');
     push(@Command, '-mm');
     $is_mm = 1;
+  }
+  if ( $Groff{'mdoc'} ) {
+    my $s = ( $Groff{'mdoc_old'} || $Groff{'Oo'} ) ? '-mdoc-old' : '-mdoc';
+    push(@m, $s);
+    push(@Command, $s);
+  }
+  if ( $Groff{'mom'} ) {
+    push(@m, '-mom');
+    push(@Command, '-mom');
+    $is_mom = 1;
   }
   if ( $Groff{'NH'} || ($Groff{'TL'} && ! $is_mm) ||
        ($Groff{'ILP'} && ! $is_man) ||
@@ -479,11 +488,6 @@ sub version {
     # .PP occurs in -mom, -man and -ms, .IP and .LP occur in -man and -ms
     push(@m, '-ms');
     push(@Command, '-ms');
-  }
-  if ( $Groff{'mdoc'} ) {
-    my $s = ( $Groff{'mdoc_old'} || $Groff{'Oo'} ) ? '-mdoc-old' : '-mdoc';
-    push(@m, $s);
-    push(@Command, $s);
   }
 
   unshift @Command, 'groff';
