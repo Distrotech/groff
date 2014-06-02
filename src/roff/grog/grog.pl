@@ -6,16 +6,15 @@
 # Source file position: <groff-source>/src/roff/grog/grog.pl
 # Installed position: <prefix>/bin/grog
 
-# Copyright (C) 1993, 2006, 2009, 2011-2012, 2014
-#               Free Software Foundation, Inc.
+# Copyright (C) 1993, 2006, 2009, 2011-2012 Free Software Foundation, Inc.
 # Written by James Clark, maintained by Werner Lemberg.
 # Rewritten and put under GPL by Bernd Warken <groff-bernd.warken-72@web.de>.
 
 # This file is part of `grog', which is part of `groff'.
 
 # `groff' is free software; you can redistribute it and/or modify it
-# under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
+# under the terms of the GNU General Public License (GPL) as published
+# by the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
 # `groff' is distributed in the hope that it will be useful, but
@@ -24,11 +23,10 @@
 # General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program. If not, see
-# <http://www.gnu.org/licenses/gpl-2.0.html>.
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################
-my $Last_Update = '01 Jun 2014';
+my $Last_Update = '24 May 2012';
 ########################################################################
 
 require v5.6;
@@ -37,8 +35,6 @@ use warnings;
 use strict;
 use File::Spec;
 
-$\ = "\n";
-
 my $Prog = $0;
 {
   my ($v, $d, $f) = File::Spec->splitpath($Prog);
@@ -46,42 +42,13 @@ my $Prog = $0;
 }
 
 #my $Sp = "[\\s\\n]";
-#my $Sp = qr([\s\n]);
-my $Sp = '';
+my $Sp = qr([\s\n]);
 
 my @Command;			# stores the final output
 my @Mparams;			# stores the options -m*
-my %Groff = (
-	     'chem' => 0,
-	     'eqn' => 0,
-	     'gperl' => 0,
-	     'grap' => 0,
-	     'grn' => 0,
-	     'lilypond' => 0,
-	     'mdoc' => 0,
-	     'mdoc_old' => 0,
-	     'me' => 0,
-	     'mm' => 0,
-	     'mom' => 0,
-	     'ILP' => 0,
-	     'LP' => 0,
-	     'NH' => 0,
-	     'Oo' => 0,
-	     'P' => 0,
-	     'PP' => 0,
-	     'SH' => 0,
-	     'TL' => 0,
-	     'TH' => 0,
-	     'TL' => 0,
-	     'pic' => 0,
-	     'refer' => 0,
-	     'refer_open' => 0,
-	     'refer_close' => 0,
-	     'soelim' => 0,
-	     'tbl' => 0,
-);
+my %Groff;
 
-{ # command line arguments except file names
+{
   my @filespec = ();
   my $double_minus = 0;
   my $was_minus = 0;
@@ -94,7 +61,7 @@ my %Groff = (
       if (-f $arg && -r $arg) {
 	push @filespec, $arg;
       } else {
-	print STDERR "grog: $arg is not a readable file.";
+	print STDERR "grog: $arg is not a readable file.\n";
       }
       next;
     }
@@ -114,7 +81,7 @@ my %Groff = (
 
     &version(0) if $arg eq '-v' || '--version' =~ /^$arg/;
     &help() if $arg eq '-h' || '--help' =~ /^$arg/;
-    print STDERR "grog: wrong option $arg." if $arg =~ /^--/;
+    print STDERR "grog: wrong option $arg.\n" if $arg =~ /^--/;
 
     if ($arg =~ /^-m/) {
       push @Mparams, $arg;
@@ -130,7 +97,7 @@ my %Groff = (
       if (-f $arg && -r $arg) {
 	push @filespec, $arg;
       } else {
-	print STDERR "grog: $arg is not a readable file.";
+	print STDERR "grog: $arg is not a readable file.\n";
       }
       next;
     }
@@ -140,145 +107,47 @@ my %Groff = (
   @ARGV = @filespec;
 }
 
-foreach my $arg (@ARGV) { # test for each file name in the arguments
+foreach my $arg (@ARGV) {
   &process($arg, 0);
 }
 
 sub process {
   my ($filename, $level) = @_;
   local(*FILE);
-  my %macros;
-  my $first_line = 1; # we are now in reading the first line
 
   if (!open(FILE, $filename eq "-" ? $filename : "< $filename")) {
-    print STDERR "$Prog: can't open \`$filename': $!";
+    print STDERR "$Prog: can't open \`$filename': $!\n";
     exit 1 unless $level;
     return;
   }
-
   while (<FILE>) {
     chomp;
+    s/^[.']\s*/./;
+    s/^\s+|\s+$//g;
+    s/$/\n/;
 
-    if ( $first_line ) {
-      # As documented for the `man' program, the first line can be
-      # used as an groff option line.  This is done by:
-      # - start the line with '\" (apostrophe, backslash, double quote)
-      # - add a space character
-      # - a word using the following characters can be appended: `egGjpRst'.
-      #     Each of these characters means an option for the generated
-      #     `groff' command line, e.g. `-t'.
-
-      $first_line = 0; # for later necessary end of first line
-
-      if ( /^\.\\"/ ) {
-	my $line = $_;
-	$line =~ s/^[.]\\"//g;
-	$line =~ s/\s//g;
-	if ( $line =~ /[egGjpRst]+$/ ) {
-	  # line is a groff options line with . instead of '
-	  print STDERR "First line must start with " .
-	    "apostrophe ' instead of period . for groff options line!";
-	  s/^\./'/; # line now starts with apostrophe '
-	} else {
-	  # line has non-option characters, so is a comment, i.e. ignore
-	  next;
-	}
-      }
-
-      if ( /^'\\"/ ) {
-	s/^'\\"//;
-	s/\W//g;
-	{
-	  my $chars = $_;
-	  $chars =~ s/[egGjpRst]//g;
-	  if ( $chars ) {
-	    print STDERR 'Wrong characters in first line: ' .
-	      $chars . '.';
-	    print STDERR
-	      "For an options line are only allowed: [egGjpRst].";
-	  }
-	}
-
-	if ( /e/ ) {
-	  $Groff{'eqn'}++;
-	}
-	if ( /g/ ) {
-	  $Groff{'grn'}++;
-	}
-	if ( /G/ ) {
-	  $Groff{'grap'}++;
-	}
-	if ( /j/ ) {
-	  $Groff{'chem'}++;
-	}
-	if ( /p/ ) {
-	  $Groff{'pic'}++;
-	}
-	if ( /R/ ) {
-	  $Groff{'refer'}++;
-	}
-	if ( /s/ ) {
-	  $Groff{'soelim'}++;
-	}
-	if ( /t/ ) {
-	  $Groff{'tbl'}++;
-	}
-	next;
-      }
-    }
-
-    # $first_line no longer needed in the following
-
-    next unless ( /^[.']/ );
-    next if ( /^[.']{2}/ );
-
-    s/^['.]\s*/./; # use only a dot as leading character
-    s/\s+\\".*$//; # omit comment
-    s/\s+$//;
-
-    if ( /^\.de1?\W?/ ) {
-      # this line is a macro definition, add it to %macros
-      my $macro = s/^\.de1?\s+(\w+)\W*/.$1/;
-      next if ( exists $macros{$macro} );
-      $macros{ $macro } = 1;
-      next;
-    }
-
-    {
-      # if line command is a defined macro, just ignore this line
-      my $macro = $_;
-      $macro =~ s/^(\.\w+)/$1/;
-      next if ( exists $macros{ $macro } );
-    }
-
-    if ( /^\.lilypond/ ) {
-      $Groff{'lilypond'}++;
-      $Groff{'soelim'}++ if $level;
-    } elsif ( /^\.Perl/ ) {
-      $Groff{'gperl'}++;
-      $Groff{'soelim'}++ if $level;
-    } elsif (/^(\.cstart)|(begin\s+chem)$/) {
+    if (/^(.cstart)|(begin\s+chem)$/) {
       $Groff{'chem'}++;
       $Groff{'soelim'}++ if $level;
-    } elsif (/^\.TS$/) {
+    } elsif (/^\.TS$Sp/) {
       $_ = <FILE>;
       if (!/^\./ || /^\.so/) {
 	$Groff{'tbl'}++;
 	$Groff{'soelim'}++ if $level;
       }
-    } elsif (/^\.EQ$/) {
+    } elsif (/^\.EQ$Sp/) {
       $_ = <FILE>;
       if (!/^\./ || /^\.[0-9]/ || /^\.so/) {
 	$Groff{'eqn'}++;
 	$Groff{'soelim'}++ if $level;
       }
-    } elsif (/^\.GS$/) {
+    } elsif (/^\.GS$Sp/) {
       $_ = <FILE>;
       if (!/^\./ || /^\.so/) {
 	$Groff{'grn'}++;
 	$Groff{'soelim'}++ if $level;
       }
-    } elsif (/^\.G1$/) {
+    } elsif (/^\.G1$Sp/) {
       $_ = <FILE>;
       if (!/^\./ || /^\.so/) {
 	$Groff{'grap'}++;
@@ -296,14 +165,13 @@ sub process {
 #	  $Groff{'soelim'}++ if $level;
 #	}
 #      }
-#    } elsif (/^\.PS[\s\n<]/) {
-    } elsif (/^\.PS$/) {
+    } elsif (/^\.PS[\s\n<]/) {
       $Groff{'pic'}++;
       $Groff{'soelim'}++ if $level;
       if (/^\.PS\s*<\s*(\S+)/) {
 	&process($1, $level);
       }
-    } elsif (/^\.R1$/) {
+    } elsif (/^\.R1$Sp/) {
       $Groff{'refer'}++;
       $Groff{'soelim'}++ if $level;
     } elsif (/^\.\[/) {
@@ -312,29 +180,27 @@ sub process {
     } elsif (/^\.\]/) {
       $Groff{'refer_close'}++;
       $Groff{'soelim'}++ if $level;
-    } elsif (/^\.NH/) {
+    } elsif (/^\.NH$Sp/) {
       $Groff{'NH'}++;		# for ms
-    } elsif (/^\.TL/) {
+    } elsif (/^\.TL$Sp/) {
       $Groff{'TL'}++;		# for mm and ms
-    } elsif (/^\.PP/) {
+    } elsif (/^\.PP$Sp/) {
       $Groff{'PP'}++;		# for mom and ms
-    } elsif (/^\.[IL]P/) {
+    } elsif (/^\.[IL]P$Sp/) {
       $Groff{'ILP'}++;		# for man and ms
     } elsif (/^\.P$/) {
       $Groff{'P'}++;
-    } elsif (/^\.(PH|SA)/) {
+    } elsif (/^\.(PH|SA)$Sp/) {
       $Groff{'mm'}++;
-    } elsif (/^\.TH\s/) {
+    } elsif (/^\.TH$Sp/) {
       $Groff{'TH'}++;
-    } elsif (/^\.SH\s$/) {
+    } elsif (/^\.SH$Sp/) {
       $Groff{'SH'}++;
-    } elsif (/^\.([il]p|sh)\s/) {
+    } elsif (/^\.([pnil]p|sh)$Sp/) {
       $Groff{'me'}++;
-    } elsif (/^\.([pn]p)$/) {
-      $Groff{'me'}++;
-    } elsif (/^\.Dd\s/) {
+    } elsif (/^\.Dd$Sp/) {
       $Groff{'mdoc'}++;
-    } elsif (/^\.(Tp|Dp|De|Cx|Cl)/) {
+    } elsif (/^\.(Tp|Dp|De|Cx|Cl)$Sp/) {
       $Groff{'mdoc_old'} = 1;
     }
     # In the old version of -mdoc `Oo' is a toggle, in the new it's
@@ -343,12 +209,13 @@ sub process {
       $Groff{'Oo'}++;
       s/^\.Oo/\. /;
       redo;
-    } elsif (/^\..* Oo( |$)/) {
-      # The test for `Oo' and `Oc' not starting a line (as allowed by the
-      # new implementation of -mdoc) is not complete; it assumes that
-      # macro arguments are well behaved, i.e., "" is used within "..." to
-      # indicate a doublequote as a string element, and weird features
-      # like `.foo a"b' are not used.
+    }
+    # The test for `Oo' and `Oc' not starting a line (as allowed by the
+    # new implementation of -mdoc) is not complete; it assumes that
+    # macro arguments are well behaved, i.e., "" is used within "..." to
+    # indicate a doublequote as a string element, and weird features
+    # like `.foo a"b' are not used.
+    elsif (/^\..* Oo( |$)/) {
       s/\\\".*//;
       s/\"[^\"]*\"//g;
       s/\".*//;
@@ -368,10 +235,10 @@ sub process {
 	$Groff{'Oo'}--;
       }
       redo;
-    } elsif (/^\.(PRINTSTYLE|START)/) {
+    } elsif (/^\.(PRINTSTYLE|START)$Sp/) {
       $Groff{'mom'}++;
     }
-    if (/^\.so$/) {
+    if (/^\.so$Sp/) {
       chop;
       s/^.so *//;
       s/\\\".*//;
@@ -387,7 +254,6 @@ sub process {
       # blocks like .EQ/.EN or .TS/.TE; but it doesn't harm if we call
       # soelim even if we don't need to.
       if ( $Groff{'pic'} || $Groff{'tbl'} || $Groff{'eqn'} ||
-	   $Groff{'gperl'} ||
 	   $Groff{'grn'} || $Groff{'grap'} || $Groff{'refer'} ||
 	   $Groff{'refer_open'} || $Groff{'refer_close'} ||
 	   $Groff{'chem'} ) {
@@ -422,7 +288,7 @@ EOF
 sub version {
   my ($exit_status) = @_;
   print "Perl version of GNU $Prog of $Last_Update " .
-    "in groff version " . '@VERSION@';
+    'in groff version @VERSION@' . "\n";
   exit $exit_status;
 }
 
@@ -431,15 +297,6 @@ sub version {
   my $is_man = 0;
   my $is_mm = 0;
   my $is_mom = 0;
-  my @preprograms = ();
-
-  if ( $Groff{'lilypond'} ) {
-    push @preprograms, 'glilypond';
-  }
-
-  if ( $Groff{'gperl'} ) {
-    push @preprograms, 'gperl';
-  }
 
   $Groff{'refer'} ||= $Groff{'refer_open'} && $Groff{'refer_close'};
 
@@ -447,40 +304,35 @@ sub version {
        $Groff{'grn'} || $Groff{'grap'} || $Groff{'refer'} ||
        $Groff{'chem'} ) {
     my $s = "-";
-    $s .= "e" if $Groff{'eqn'};
-    $s .= "g" if $Groff{'grn'};
+    $s .= "s" if $Groff{'soelim'};
+    $s .= "R" if $Groff{'refer'};
     $s .= "G" if $Groff{'grap'};
     $s .= "j" if $Groff{'chem'};
     $s .= "p" if $Groff{'pic'};
-    $s .= "R" if $Groff{'refer'};
-    $s .= "s" if $Groff{'soelim'};
+    $s .= "g" if $Groff{'grn'};
     $s .= "t" if $Groff{'tbl'};
+    $s .= "e" if $Groff{'eqn'};
     push(@Command, $s);
   }
 
-  if ( $Groff{'TH'} && $Groff{'SH'} ) {
-    push(@m, '-man');
-    push(@Command, '-man');
-    $is_man = 1;
-  }
   if ( $Groff{'me'} ) {
     push(@m, '-me');
     push(@Command, '-me');
   }
-  if ( $Groff{'mm'} || ($Groff{'P'} && ! $is_man) ) {
-    push(@m, '-mm');
-    push(@Command, '-mm');
-    $is_mm = 1;
-  }
-  if ( $Groff{'mdoc'} ) {
-    my $s = ( $Groff{'mdoc_old'} || $Groff{'Oo'} ) ? '-mdoc-old' : '-mdoc';
-    push(@m, $s);
-    push(@Command, $s);
+  if ( $Groff{'SH'} && $Groff{'TH'} ) {
+    push(@m, '-man');
+    push(@Command, '-man');
+    $is_man = 1;
   }
   if ( $Groff{'mom'} ) {
     push(@m, '-mom');
     push(@Command, '-mom');
     $is_mom = 1;
+  }
+  if ( $Groff{'mm'} || ($Groff{'P'} && ! $is_man) ) {
+    push(@m, '-mm');
+    push(@Command, '-mm');
+    $is_mm = 1;
   }
   if ( $Groff{'NH'} || ($Groff{'TL'} && ! $is_mm) ||
        ($Groff{'ILP'} && ! $is_man) ||
@@ -489,21 +341,14 @@ sub version {
     push(@m, '-ms');
     push(@Command, '-ms');
   }
+  if ( $Groff{'mdoc'} ) {
+    my $s = ( $Groff{'mdoc_old'} || $Groff{'Oo'} ) ? '-mdoc-old' : '-mdoc';
+    push(@m, $s);
+    push(@Command, $s);
+  }
 
   unshift @Command, 'groff';
-  if ( @preprograms ) {
-    my @progs;
-    $progs[0] = shift @preprograms;
-    push(@progs, @ARGV);
-    for ( @preprograms ) {
-      push @progs, '|';
-      push @progs, $_;
-    }
-    push @progs, '|';
-    unshift @Command, @progs;
-  } else {
-    push(@Command, @ARGV);
-  }
+  push(@Command, @ARGV);
 
   foreach (@Command) {
     next unless /\s/;
@@ -512,6 +357,12 @@ sub version {
 
   # We could implement an option to execute the command here.
 
+#  foreach (@Command) {
+#    next unless /[\$\\\"\';&()|<> \t\n]/;
+#    s/\'/\'\\\'\'/;
+#    $_ = "'" . $_ . "'";
+#  }
+
   my $n = scalar @m;
   my $np = scalar @Mparams;
   print STDERR "$Prog: more than 1 `-m' argument: @Mparams" if $np > 1;
@@ -519,14 +370,14 @@ sub version {
     unshift @Command, $Mparams[0] if $np == 1;
   } elsif ($n == 1) {
     if ($np == 1) {
-      print STDERR "$Prog: wrong `-m' argument: $Mparams[0]"
+      print STDERR "$Prog: wrong `-m' argument: $Mparams[0]\n"
 	if $m[0] ne $Mparams[0];
     }
   } else {
-    print STDERR "$Prog: error: there are several macro packages: @m";
+    print STDERR "$Prog: error: there are several macro packages: @m\n";
   }
 
-  print "@Command";
+  print "@Command\n";
 
   exit $n if $n > 1;
   exit 0;
