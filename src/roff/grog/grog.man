@@ -76,7 +76,7 @@ GPL2
 .\" --------------------------------------------------------------------
 .SH NAME
 .
-grog \- guess options for groff command
+grog \- guess options for a groff command
 .
 .
 .\" --------------------------------------------------------------------
@@ -84,6 +84,8 @@ grog \- guess options for groff command
 .
 .SY grog
 .OP \-C
+.OP \-\-run
+.OP \-\-with_ligatures
 .RI [ \%groff\-option\~ .\|.\|.\&]
 .OP \-\-
 .RI [ \%filespec\~ .\|.\|.]
@@ -106,41 +108,75 @@ grog \- guess options for groff command
 .B grog
 reads the input (file names or standard input) and guesses which of
 the
-.BR groff  (@MAN1EXT@)
+.BR groff (@MAN1EXT@)
 options are needed to perform the input with the
 .B groff
 program.
 .
+.
+.RS
+.P
 The corresponding
 .B groff
-command is output.
+command is usually displayed in standard output.
+.
+With the option
+.BR \-\-run ,
+the generated line is output into standard error and the generated
+.B groff
+command is run on the
+.IR "standard output" .
+.RE
 .
 .
 .\" --------------------------------------------------------------------
 .SH OPTIONS
 .
-The only
-.B grog
-options recognized are
-.B \-C
-(which is also passed on) to enable compatibility mode;
+The option
 .B \-v
-and
+or
 .B \-\-version
-print information on the version number; and
-.B \-h
-and
-.B \-\-help
-print usage information.
+prints information on the version number.
 .
-.BR \-v ,
-.BR \-\-version ,
-.BR \-h ,
-and
+Also
+.B \-h
+or
 .B \-\-help
-stop the program directly without printing a
+prints usage information.
+.
+Both of these options automatically end the
+.B grog
+program.
+.
+Other options are thenignored, and no
 .B groff
-command to standard output.
+command line is generated.
+.
+.
+The following 3 options are the only
+.B grog
+options,
+.
+.TP
+.B \-C
+this option means enabling the
+.I groff
+compatibility mode, which is also transfered to the generated
+.B groff
+command line.
+.
+.TP
+.B \-\-run
+with this option, the command line is output at standard error and
+then run on the computer.
+.
+.TP
+.B \-\-with_ligatures
+this option forces to include the arguments
+.B -P-y -PU
+within the generated
+.B groff
+command line.
 .
 .
 .P
@@ -318,8 +354,9 @@ grog.sh
 is used instead.
 .
 .
-.\" --------------------------------------------------------------------
+.\" ####################################################################
 .SH EXAMPLES
+.\" ####################################################################
 .
 .IP \(bu
 Calling

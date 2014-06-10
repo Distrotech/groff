@@ -5,7 +5,7 @@
 # Copyright (C) 1993, 2006, 2009, 2013-2014
 #   Free Software Foundation, Inc.
 
-# Last update: 30 Mar 2014
+# Last update: 04 Jun 2014
 
 # This file is part of `grog' which is part of `groff'.
 
@@ -30,8 +30,7 @@ MOSTLYCLEANADD=grog $(MAN1)
 all: grog $(MAN1)
 
 # lib .pl-files
-#GROG=$(srcdir)/subs.pl
-GROG=
+GROG=$(srcdir)/subs.pl
 GROG_=`echo $(GROG) | sed 's|$(srcdir)/||g'`
 
 
@@ -40,9 +39,10 @@ GROG_=`echo $(GROG) | sed 's|$(srcdir)/||g'`
 grog: grog.pl $(GROG) $(SH_DEPS_SED_SCRIPT)
 	rm -f $@
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	    -e "1s|^\(#! \).*perl|\\1$(PERL)|" \
 	    -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
-	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
+	    -e "s|@grog_dir@|$(DESTDIR)$(grog_dir)|g" \
 	    -e "s|@EGREP@|$(EGREP)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \

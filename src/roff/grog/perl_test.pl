@@ -5,11 +5,11 @@
 # Source file position: <groff-source>/roff/grog/perl_test.sh
 # Installed position: <prefix>/lib/groff/grog/perl_test.sh
 
-# Copyright (C) 2013
+# Copyright (C) 2013-14
 #   Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 12 Apr 2013
+# Last update: 04 Jun 2014
 
 # This file is part of `grog', which is part of `groff'.
 
@@ -29,7 +29,7 @@
 ########################################################################
 
 # This file tests whether perl has a suitable version.  It is used by
-# glilypond.pl and Makefile.sub.
+# grog.pl and Makefile.sub.
 
 require v5.6;
 
