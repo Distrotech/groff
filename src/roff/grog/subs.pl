@@ -8,8 +8,10 @@
 
 # Copyright (C) 1993, 2006, 2009, 2011-2012, 2014
 #               Free Software Foundation, Inc.
-# Split from grog.pl and put under GPL2 by
+# This file was split from grog.pl and put under GPL2 by
 #               Bernd Warken <groff-bernd.warken-72@web.de>.
+# The macros for identifying the devices were taken from Ralph
+# Corderoy's `grog.sh' from 2006.
 
 # This file is part of `grog', which is part of `groff'.
 
@@ -28,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-# Last_Update = '10 Jun 2014';
+# Last_Update = '12 Jun 2014';
 ########################################################################
 
 require v5.6;
@@ -60,6 +62,7 @@ my %Groff = (
 	     'gperl' => 0,
 	     'grap' => 0,
 	     'grn' => 0,
+	     'ideal' => 0,
 	     'lilypond' => 0,
 	     'pic' => 0,
 	     'refer' => 0,
@@ -78,11 +81,25 @@ my %Groff = (
 	     'ms' => 0,
 
 	     # requests
+	     'AB' => 0,		# ms
+	     'AE' => 0,		# ms
+	     'AI' => 0,		# ms
+	     'AU' => 0,		# ms
 	     'NH' => 0,		# ms
-	     'TH' => 0,		# man and ms
+	     'TL' => 0,		# ms
+	     'XP' => 0,		# ms
+
+	     'IP' => 0,		# man and ms
+	     'LP' => 0,		# man and ms
+	     'P' => 0,		# man and ms
+	     'PP' => 0,		# man and ms
 	     'SH' => 0,		# man and ms
+	     'TH' => 0,		# man and ms
+
+	     'OP' => 0,		# man
 	     'SS' => 0,		# man
-	     'P' => 0,		# man
+	     'SY' => 0,		# man
+	     'YS' => 0,		# man
 
 	     # for mdoc and mdoc-old
 	     # .Oo and .Oc for modern mdoc, only .Oo for mdoc-old
@@ -92,13 +109,11 @@ my %Groff = (
 );
 
 
-############################ subs ######################################
-
 ########################################################################
-# sub minus_args: command line arguments except file names
+# sub args_with_minus: command line arguments that are not file names
 ########################################################################
 
-sub minus_args {
+sub args_with_minus {
   my @filespec = ();
   my $double_minus = 0;
   my $was_minus = 0;
@@ -222,6 +237,9 @@ sub do_first_line {
     if ( $line =~ /G/ ) {
       $Groff{'grap'}++;
     }
+    if ( $line =~ /i/ ) {
+      $Groff{'ideal'}++;
+    }
     if ( $line =~ /j/ ) {
       $Groff{'chem'}++;
     }
@@ -251,6 +269,8 @@ sub do_first_line {
 sub do_line {
   my ( $line, $file ) = @_;
 
+  our $is_mmse = 0;
+
   return if ( $line =~ /^[.']\s*\\"/ );	# comment
 
   return unless ( $line =~ /^[.']/ );	# ignore text lines
@@ -262,137 +282,278 @@ sub do_line {
   return if ( $line =~ /^\.$/ );	# ignore .
   return if ( $line =~ /^\.\.$/ );	# ignore ..
 
+  # split command
+  $line =~ /^(\.\w+)\s*(.*)$/;
+  my $command = $1;
+  $command = '' unless ( defined $command );
+  my $args = $2;
+  $args = '' unless ( defined $args );
+
+
+  ######################################################################
   # soelim
-  if ( $line =~ /^\.(so|mso|PS\s*<).*$/ ) {	# `.so', `.mso', `.PS<...'
+  if ( $line =~ /^\.(do)?\s*(so|mso|PS\s*<|SO_START).*$/ ) {
+    # `.so', `.mso', `.PS<...', `.SO_START'
     $Groff{'soelim'}++;
     return;
   }
-  if ( $line =~ /^\.\s*do\s*(so|mso|PS\s*<).*$/ ) {	# `.do so', etc
+  if ( $line =~ /^\.(do)?\s*(so|mso|PS\s*<|SO_START).*$/ ) {
+    # `.do so', `.do mso', `.do PS<...', `.do SO_START'
     $Groff{'soelim'}++;
     return;
   }
+
+  ######################################################################
+  # macros
 
   if ( $line =~ /^\.de1?\W?/ ) {
     # this line is a macro definition, add it to %macros
     my $macro = $line;
     $macro =~ s/^\.de1?\s+(\w+)\W*/.$1/;
     return if ( exists $macros{$macro} );
-    $macros{ $macro } = 1;
+    $macros{$macro} = 1;
     return;
   }
 
-  $line =~ s/(\.\w+).*$/$1/;		# let only request left
 
-  {
-    # if line command is a defined macro, just ignore this line
-    my $macro = $line;
-    $macro =~ s/^(\.\w+)/$1/;
-    return if ( exists $macros{ $macro } );
-  }
+  # if line command is a defined macro, just ignore this line
+  return if ( exists $macros{$command} );
 
+
+  ######################################################################
   # preprocessors
-  if ( $line =~ /^(\.cstart)|(begin\s+chem)$/ ) {
+
+  if ( $command =~ /^(\.cstart)|(begin\s+chem)$/ ) {
     $Groff{'chem'}++;		# for chem
     return;
   }
-  if ( $line =~ /^\.EQ$/ ) {
+  if ( $command =~ /^\.EQ$/ ) {
     $Groff{'eqn'}++;		# for eqn
     return;
   }
-  if ( $line =~ /^\.G1$/ ) {
+  if ( $command =~ /^\.G1$/ ) {
     $Groff{'grap'}++;		# for grap
     return;
   }
-  if ( $line =~ /^\.Perl$/ ) {
+  if ( $command =~ /^\.Perl$/ ) {
     $Groff{'gperl'}++;		# for gperl
     return;
   }
-  if ( $line =~ /^\.GS$/ ) {
+  if ( $command =~ /^\.GS$/ ) {
     $Groff{'grn'}++;		# for grn
     return;
   }
-  if ( $line =~ /^\.lilypond$/ ) {
+  if ( $command =~ /^\.IS$/ ) {
+    $Groff{'ideal'}++;		# for ideal
+    return;
+  }
+  if ( $command =~ /^\.lilypond$/ ) {
     $Groff{'lilypond'}++;	# for glilypond
     return;
   }
-  if ( $line =~ /^\.PS$/ ) {
+  if ( $command =~ /^\.PS$/ ) {
     $Groff{'pic'}++;		# for gpic
     return;
   }
-  if ( $line =~ /^\.R1$/ ) {
+  if ( $command =~ /^\.R1$/ ) {
     $Groff{'refer'}++;		# for refer
     return;
   }
-  if ( $line =~ /^\.\[$/ ) {
+  if ( $command =~ /^\.\[$/ ) {
     $Groff{'refer_open'}++;	# for refer open
     return;
   }
-  if ( $line =~ /^\.\]$/ ) {
+  if ( $command =~ /^\.\]$/ ) {
     $Groff{'refer_close'}++;	# for refer close
     return;
   }
-  if ( $line =~ /^\.TS$/ ) {
+  if ( $command =~ /^\.TS$/ ) {
     $Groff{'tbl'}++;		# for tbl
     return;
   }
 
 
+  ######################################################################
   # devices
+  ######################################################################
 
-  # for man
-  if ( $line =~ /^\.TH$/ ) {
-    $Groff{'TH'}++;
+  ##########
+  # modern mdoc
+
+  if ( $command =~ /^\.(Dd)$/ ) {
+    $Groff{'Dd'}++;		# for modern mdoc
     return;
   }
-  if ( $line =~ /^\.SH$/ ) {
-    $Groff{'SH'}++;
-    return;
-  }
-  if ( $line =~ /^\.SS$/ ) {
-    $Groff{'SS'}++;
-    return;
-  }
-#  if ( $line =~ /^\.P$/ ) {
-#   $Groff{'P'}++;
-#    return;
-#  }
 
   # In the old version of -mdoc `Oo' is a toggle, in the new it's
   # closed by `Oc'.
-  if ( $line =~ /^\.Oc$/ ) {
+  if ( $command =~ /^\.Oc$/ ) {
     $Groff{'Oc'}++;		# only for modern mdoc
     return;
   }
-  if ( $line =~ /^\.Oo$/ ) {
+
+
+  ##########
+  # old and modern mdoc
+
+  if ( $command =~ /^\.Oo$/ ) {
     $Groff{'Oo'}++;		# for mdoc and mdoc-old
     return;
   }
 
-  if ( $line =~ /^\.(Dd)$/ ) {
-    $Groff{'Dd'}++;		# for modern mdoc
-    return;
-  }
-  if ( $line =~ /^\.(Tp|Dp|De|Cx|Cl)$/ ) {
+
+  ##########
+  # old mdoc
+  if ( $command =~ /^\.(Tp|Dp|De|Cx|Cl)$/ ) {
     $Groff{'mdoc_old'}++;	# true for old mdoc
     return;
   }
 
-  if ( $line =~ /^\.([ilnp]p|sh)$/ ) {
-    $Groff{'me'}++;		# for me
+
+  ##########
+  # for ms
+
+  if ( $command =~ /^\.AB$/ ) {
+    $Groff{'AB'}++;		# for ms
     return;
   }
-  if ( $line =~ /^\.(PH|SA)$/ ) {
-    $Groff{'mm'}++;		# for mm
+  if ( $command =~ /^\.AE$/ ) {
+    $Groff{'AE'}++;		# for ms
     return;
   }
-  if ( $line =~ /^\.(PRINTSTYLE|START)$/ ) {
-    $Groff{'mom'}++;		# for mom
+  if ( $command =~ /^\.AI$/ ) {
+    $Groff{'AI'}++;		# for ms
     return;
   }
-  if ( $line =~ /^\.NH$/ ) {
+  if ( $command =~ /^\.AU$/ ) {
+    $Groff{'AU'}++;		# for ms
+    return;
+  }
+  if ( $command =~ /^\.NH$/ ) {
     $Groff{'NH'}++;		# for ms
     return;
   }
+  if ( $command =~ /^\.TL$/ ) {
+    $Groff{'TL'}++;		# for ms
+    return;
+  }
+  if ( $command =~ /^\.XP$/ ) {
+    $Groff{'XP'}++;		# for ms
+    return;
+  }
+
+
+  ##########
+  # for man and ms
+
+  if ( $command =~ /^\.IP$/ ) {
+    $Groff{'IP'}++;		# for man and ms
+    return;
+  }
+  if ( $command =~ /^\.LP$/ ) {
+    $Groff{'LP'}++;		# for man and ms
+    return;
+  }
+  if ( $command =~ /^\.P$/ ) {
+    $Groff{'P'}++;		# for man and ms
+    return;
+  }
+  if ( $command =~ /^\.PP$/ ) {
+    $Groff{'PP'}++;		# for man and ms
+    return;
+  }
+  if ( $command =~ /^\.SH$/ ) {
+    $Groff{'SH'}++;		# for man and ms
+    return;
+  }
+  if ( $command =~ /^\.TH$/ ) {
+    $Groff{'TH'}++;		# for man and ms
+    return;
+  }
+
+
+  ##########
+  # for man only
+
+  if ( $command =~ /^\.OP$/ ) {	# for man
+    $Groff{'OP'}++;
+    return;
+  }
+  if ( $command =~ /^\.SS$/ ) {	# for man
+    $Groff{'SS'}++;
+    return;
+  }
+  if ( $command =~ /^\.YS$/ ) {	# for man
+   $Groff{'YS'}++;
+    return;
+  }
+  if ( $command =~ /^\.SY$/ ) {	# for man
+    $Groff{'SY'}++;
+    return;
+  }
+
+
+  ##########
+  # me
+
+  if ( $command =~ /^\.(
+		      [ilnp]p|
+		      sh
+		    )$/x ) {
+    $Groff{'me'}++;		# for me
+    return;
+  }
+
+
+  #############
+  # mm and mmse
+
+  if ( $command =~ /^\.(
+		      H|
+		      MULB|
+		      LO|
+		      LT|
+		      NCOL|
+		      P\$|
+		      PH|
+		      SA
+		    )$/x ) {
+    $Groff{'mm'}++;		# for mm and mmse
+    if ( $command =~ /^\.LO$/ ) {
+      if ( $args =~ /^(DNAMN|MDAT|BIL|KOMP|DBET|BET|SIDOR)/ ) {
+	$Groff{'mmse'}++;	# for mmse
+      }
+    } elsif ( $command =~ /^\.LT$/ ) {
+      if ( $args =~ /^(SVV|SVH)/ ) {
+	$Groff{'mmse'}++;	# for mmse
+      }
+    }
+    return;
+  }
+
+
+  ##########
+  # mom
+
+  if ( $line =~ /^\.(
+		   ALD|
+		   DOCTYPE|
+		   FAMILY|
+		   FT|
+		   FAM|
+		   LL|
+		   LS|
+		   NEWPAGE|
+		   PAGE|
+		   PAPER|
+		   PRINTSTYLE|
+		   PT_SIZE|
+		   T_MARGIN
+		 )$/x ) {
+    $Groff{'mom'}++;		# for mom
+    return;
+  }
+
 } # sub do_line
 
 
@@ -401,6 +562,10 @@ sub do_line {
 ########################################################################
 
 sub make_groff_line {
+  our %File_Name_Extensions;
+  our $is_mmse;
+  our @FILES;
+
   my @m = ();
   my @preprograms = ();
 
@@ -456,7 +621,10 @@ EOF
     }
   }
 
+
+  ##########
   # preprocessors
+
   if ( $Groff{'lilypond'} ) {
     push @preprograms, 'glilypond';
   }
@@ -464,13 +632,14 @@ EOF
     push @preprograms, 'gperl';
   }
   $Groff{'refer'} ||= $Groff{'refer_open'} && $Groff{'refer_close'};
-  if ( $Groff{'pic'} || $Groff{'tbl'} || $Groff{'eqn'} ||
-       $Groff{'grn'} || $Groff{'grap'} || $Groff{'refer'} ||
-       $Groff{'chem'} ) {
+  if ( $Groff{'chem'} || $Groff{'eqn'} || $Groff{'grap'} ||
+       $Groff{'grn'} || $Groff{'ideal'} || $Groff{'pic'} ||
+       $Groff{'refer'} || $Groff{'tbl'} ) {
     my $s = "-";
     $s .= "e" if $Groff{'eqn'};
     $s .= "g" if $Groff{'grn'};
     $s .= "G" if $Groff{'grap'};
+    $s .= "i" if $Groff{'ideal'};
     $s .= "j" if $Groff{'chem'};
     $s .= "p" if $Groff{'pic'};
     $s .= "R" if $Groff{'refer'};
@@ -480,22 +649,48 @@ EOF
   }
 
 
+  ######################################################################
   # tmacs
+  ######################################################################
 
-  if ( $Groff{'TH'} && ( $Groff{'SH'} ||  $Groff{'SS'} ) ) {
-    $Groff{'TH'} = 0;
-    $Groff{'SH'} = 0;
-    $Groff{'SS'} = 0;
-    $Groff{'man'} = 1;
-    push(@m, '-man');
-    push(@Command, '-man');
+  ###########
+  # man or ms
+
+  {
+    my $is_ms = 0;
+    if ( $Groff{'TH'} || $Groff{'P'} || $Groff{'IP'}  ||
+	 $Groff{'LP'} || $Groff{'PP'} || $Groff{'SH'} ) {
+      # man or ms
+      if ( $Groff{'SS'} ||  $Groff{'SY'} ||  $Groff{'OP'} ) {
+	# it is `man', because these macros are not `ms'
+	$Groff{'man'} = 1;
+	push(@m, '-man');
+	push(@Command, '-man');
+      } elsif
+	(	# it must now be `ms'
+	 $Groff{'1C'} || $Groff{'2C'} ||
+	 $Groff{'AB'} || $Groff{'AE'} || $Groff{'AI'} || $Groff{'AU'} ||
+	 $Groff{'BX'} || $Groff{'CD'} || $Groff{'DA'} || $Groff{'DE'} ||
+	 $Groff{'DS'} || $Groff{'LD'} || $Groff{'ID'} || $Groff{'NH'} ||
+	 $Groff{'TL'} || $Groff{'UL'} || $Groff{'XP'}
+	) {
+	$is_ms = 1;
+      } else {	# maybe `ms'
+	print STDERR 'grog: device -ms assumed without proof.'
+	  unless ( $File_Name_Extensions{'ms'} );
+	$is_ms = 1;
+      }
+    }
+    if ( $is_ms ) {
+      $Groff{'ms'} = 1;
+      push(@m, '-ms');
+      push(@Command, '-ms');
+    }
   }
 
-  if ( $Groff{'NH'} ) {
-    $Groff{'ms'}++;
-    push(@m, '-ms');
-    push(@Command, '-ms');
-  }
+
+  ##########
+  # mdoc
 
   if ( ( $Groff{'Oo'} && $Groff{'Oc'} ) || $Groff{'Dd'} ) {
     $Groff{'Oc'} = 0;
@@ -503,26 +698,46 @@ EOF
     push(@m, '-mdoc');
     push(@Command, '-mdoc');
   }
-
   if ( $Groff{'mdoc_old'} || $Groff{'Oo'} ) {
     push(@m, '-mdoc_old');
     push(@Command, '-mdoc_old');
   }
 
 
+  ##########
+  # me
+
   if ( $Groff{'me'} ) {
     push(@m, '-me');
     push(@Command, '-me');
   }
+
+
+  ##########
+  # mm and mmse
+
   if ( $Groff{'mm'} ) {
-    push(@m, '-mm');
-    push(@Command, '-mm');
+    if ( $is_mmse ) {	# swedish mmse
+      push(@m, '-mmse');
+      push(@Command, '-mmse');
+    } else {		# normal mm
+      push(@m, '-mm');
+      push(@Command, '-mm');
+    }
   }
+
+
+  ##########
+  # mom
+
   if ( $Groff{'mom'} ) {
     push(@m, '-mom');
     push(@Command, '-mom');
   }
 
+
+  ######################################################################
+  # create groff command
 
   unshift @Command, 'groff';
   if ( @preprograms ) {
@@ -536,7 +751,7 @@ EOF
     push @progs, '|';
     unshift @Command, @progs;
   } else {
-    push(@Command, @ARGV);
+    push(@Command, @FILES);
   }
 
   foreach (@Command) {

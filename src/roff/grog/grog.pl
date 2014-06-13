@@ -9,7 +9,9 @@
 # Copyright (C) 1993, 2006, 2009, 2011-2012, 2014
 #               Free Software Foundation, Inc.
 # Written by James Clark, maintained by Werner Lemberg.
-# Rewritten and put under GPL by Bernd Warken <groff-bernd.warken-72@web.de>.
+# Rewritten with Perl by Bernd Warken <groff-bernd.warken-72@web.de>.
+# The macros for identifying the devices were taken from Ralph
+# Corderoy's `grog.sh' from 2006.
 
 # This file is part of `grog', which is part of `groff'.
 
@@ -28,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-our $Last_Update = '10 Jun 2014';
+our $Last_Update = '12 Jun 2014';
 ########################################################################
 
 require v5.6;
@@ -87,10 +89,22 @@ our $Prog = $0;
   $Prog = $f;
 }
 
+&args_with_minus();
 
-&minus_args();
+our %File_Name_Extensions = (
+		   'man' => 0,
+		   'mandoc' => 0,
+		   'mdoc' => 0,
+		   'me' => 0,
+		   'mm' => 0,
+		   'mmse' => 0,
+		   'mom' => 0,
+		   'ms' => 0,
+		  );
 
+our $is_mmse = 0;
 
+our @FILES = @ARGV;
 
 foreach my $file ( @ARGV ) { # test for each file name in the arguments
   unless ( open(FILE, $file eq "-" ? $file : "< $file") ) {
@@ -98,12 +112,57 @@ foreach my $file ( @ARGV ) { # test for each file name in the arguments
     next;
   }
 
+  if ( $file =~ /\./ ) {	# file name has a dot `.'
+    my $ext = $file =~ s/
+		     .*
+		     \.
+		     ([^.]*)
+		     $
+		   /$1/x;
+    if ( $ext =~ /^([1-9lno]|man|n)$/ ) {
+      $File_Name_Extensions{'man'}++;
+    } elsif ( $ext =~ /^mandoc$/ ) {
+      $File_Name_Extensions{'mandoc'}++;
+    } elsif ( $ext =~ /^mdoc$/ ) {
+      $File_Name_Extensions{'mdoc'}++;
+    } elsif ( $ext =~ /^me$/ ) {
+      $File_Name_Extensions{'me'}++;
+    } elsif ( $ext =~ /^mm$/ ) {
+      $File_Name_Extensions{'mm'}++;
+    } elsif ( $ext =~ /^mmse$/ ) {
+      $File_Name_Extensions{'mmse'}++;
+    } elsif ( $ext =~ /^mom$/ ) {
+      $File_Name_Extensions{'mom'}++;
+    } elsif ( $ext =~ /^ms$/ ) {
+      $File_Name_Extensions{'ms'}++;
+    } elsif ( $ext =~ /^(
+			 chem|
+			 eqn|
+			 pic|
+			 tbl|
+			 ref|
+			 t|
+			 tr|
+			 groff|
+			 roff|
+			 www|
+			 hdtbl|
+			 grap|
+			 grn|
+			 pdfroff
+		       )$/x ) {
+      # ignore
+    } else {
+      print STDERR 'Unknown file name extension '. $file . '.';
+    }
+  }
+
   my $line = <FILE>;
 
   if ( defined $line ) {
     if ( $line ) {
       chomp $line;
-      unless ( &do_first_line( $line, $file ) ) {	# not an option line
+      unless ( &do_first_line( $line, $file ) ) { # not an option line
 	&do_line( $line, $file );
       }
     } else {
