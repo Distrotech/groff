@@ -30,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-# Last_Update = '12 Jun 2014';
+# Last_Update = '14 Jun 2014';
 ########################################################################
 
 require v5.6;
@@ -739,11 +739,17 @@ EOF
   ######################################################################
   # create groff command
 
+  @FILES = ( '-' ) unless ( @FILES );
+
+  for (@FILES) {
+    print STDERR 'filearg: ' . $_;
+  }
+
   unshift @Command, 'groff';
   if ( @preprograms ) {
     my @progs;
     $progs[0] = shift @preprograms;
-    push(@progs, @ARGV);
+    push(@progs, @FILES);
     for ( @preprograms ) {
       push @progs, '|';
       push @progs, $_;
@@ -778,7 +784,9 @@ EOF
   # execute the `groff' command here with option `--run'
   if ( $do_run ) {
     print STDERR "@Command";
-    system(join ' ', @Command);
+    my $cmd = join ' ', @Command;
+    print 'command will be: ' . $cmd;
+    # system($cmd);
   } else {
     print "@Command";
   }
