@@ -739,12 +739,6 @@ EOF
   ######################################################################
   # create groff command
 
-  @FILES = ( '-' ) unless ( @FILES );
-
-  for (@FILES) {
-    print STDERR 'filearg: ' . $_;
-  }
-
   unshift @Command, 'groff';
   if ( @preprograms ) {
     my @progs;
