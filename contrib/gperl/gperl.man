@@ -9,11 +9,13 @@ gperl \- groff preprocessor for Perl parts in roff files
 .\" Legalese
 .\" --------------------------------------------------------------------
 .
-.de author
+.de authors
 This file was written by Bernd Warken <groff-bernd.warken-72@web.de>.
+.
+Latest update: 14 Jun 2014
 ..
 .
-.de co
+.de copyright
 Copyright (C) 2014 Free Software Foundation, Inc.
 .
 .P
@@ -43,7 +45,11 @@ The license text is available in the internet at
 .\" Setup
 .\" --------------------------------------------------------------------
 .
-.ds Ellipsis "\&.\|.\|.\&\"
+.
+.char \[Ellipsis] \f[S]\N'188'\fP
+.
+.\" ds Ellipsis \[el]
+.\" ds Ellipsis "\&.\|.\|.\&\"
 .
 .\" --------------------------------------------------------------------
 .\" Macro definitions
@@ -78,6 +84,21 @@ The license text is available in the internet at
 .  Text \\$*
 .  ft
 ..
+.
+.\" --------------------------------------------------------------------
+.\" .Topic  ([<indent>])
+.\"
+.\" A bulleted paragraph
+.\"
+.de Topic
+.  ie \\n[.$]=0 \
+.    ds @indent 2m\"
+.  el \
+.    ds @indent \\$1\"
+.  IP \[bu] \\*[@indent]
+.  rm @indent
+..
+.
 .\" End of macro definitions
 .
 .
@@ -86,9 +107,9 @@ The license text is available in the internet at
 .\" --------------------------------------------------------------------
 .
 .SY gperl
-.OP option \*[Ellipsis]
+.OP \fIoption \[Ellipsis]
 .OP --
-.OP \%filespec \*[Ellipsis]
+.OP \fI\%filespec \[Ellipsis]
 .YS
 .
 .SY gperl
@@ -115,40 +136,24 @@ files.
 .
 The result of a
 .I Perl part
-can be stored in
-.I roff
-strings
-.RB ( .ds )
-or numerical registers
-.RB ( .rn ).
+can be stored in a
+.I groff string
+within the final line of a
+.IR "Perl part" .
 .
 .
 .\" --------------------------------------------------------------------
-.SH "OPTION OVERVIEW"
+.SH "OPTIONS"
 .\" --------------------------------------------------------------------
 .
-.TP
-.I breaking options
-.RS
-.P
-.SY
-.OP -h\~\fR|\fB\~--help
-.OP -v\~\fR|\fB\~--version
-.YS
-.RE
-.
-.
-.\" --------------------------------------------------------------------
-.SH "OPTION DETAILS"
-.\" --------------------------------------------------------------------
-.
-As soon as one of these options is found on the command line it is
-executed, printed to standard output, and the running
-.B \%gperl
-preprocessor is finished thereafter.
+So far, there are only
+.IR "breaking options" ,
+that means that the program writes the asked for information and
+stops a running program line.
 .
 All other arguments are ignored.
 .
+These options are
 .
 .TP
 .B -h\~\fR|\fB\~--help
@@ -168,76 +173,173 @@ Print version information to standard output.
 .I Perl
 parts in
 .I groff files
-are created by the new command
-.BR .Perl .
-.
-.
-.P
-A
-.I Perl part
-is started either by the request
+are enclosed by two
 .B .Perl
-wiothout arguments, or by a request that's has the term
+requests with different arguments, a
+.I starting
+and an
+.I ending
+command.
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Starting Perl Mode"
+.\" --------------------------------------------------------------------
+.
+The starting
+.I Perl request
+can either be without arguments, or by a request that has the term
 .B start
 as its first argument.
+.RS
+.Topic
+.B \&.Perl
+.Topic
+.B \&.Perl start
+.RE
+.
+All arguments after
+.B start
+are ignored.
 .
 .
-.P
-All
+.\" --------------------------------------------------------------------
+.SS "Ending Perl Mode without Storage"
+.\" --------------------------------------------------------------------
+.
+A
 .B .Perl
-command lines with other arguments finish a running
+command line with an argument different from
+.B start
+finishes a running
 .IR "Perl part" .
 .
-So one can add arbitrary arguments for closing.
-.
-It would be reasonable to add the argument
-.BI stop ;
+Of course, it would be reasonable to add the argument
+.BR stop ;
 that's possible, but not necessary.
 .
+.RS
+.Topic
+.B \&.Perl stop
+.Topic
+.BI \&.Perl " other_than_start"
+.RE
+.
+The argument
+.I other_than_start
+can additionally used as a variable name for storage, see next
+section.
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Ending Perl Mode with Storage"
+.\" --------------------------------------------------------------------
+.
+A useful feature of
+.B gperl
+is to store some result from the
+.IR "Perl mode" .
+.
 .
 .P
-A useful feature is to store the standard output of a
+That can be done by running the
 .I Perl part
-into a
-.I roff
-string or register.
+within
+.B gperl
+using one of the
+.I Perl commands
+from
+.BR IPC::System::Simple .
 .
-Storable data can be reached by
-.I printing to standard output
-with the
-.I Perl
-command
-.BR print .
+We use now the program
+.B capture
+for running the
+.IR "Perl parts" .
 .
 .
 .P
-Numerical output can be stored into a
-.IR "roff register" ,
-by adding the following 2 arguments to a
+The related storage information comes from the collection of all
+printing to standard output with the normal Perl
+.B print
+command in a
+.IR "Perl part" .
+.
+This pseudo-printing information does not go to
+.I STDOUT
+as normally, but is received as the result from the program, which
+runs the
+.IR "Perl part" .
+.
+.
+.P
+But the printing towards
+.IR STDERR ,
+(standard error) works as usual.
+.
+All error information goes to the real normal
+.IR "standard error" ,
+without other automatical storage.
+.
+.
+.P
+To use that output from the
+.I Perl part
+for
+.IR roff ,
+.B gperl
+creates automatically a line with the string defining roff command
+.BR .ds .
+.
+Because of the Perl-structure of the result, only string output can be
+used, not
+.IR "numerical roff registers" .
+.
+In
+.BR \%groff (@MAN7EXT@),
+one can create registers from strings.
+.
+.
+.B
+As the
+.I Perl mode
+must first be finished to get the information, this storage can only
+be done by arguments in the final
 .B .Perl
-stopping command line; the argument
-.B ds
-or
+command.
+.
+Possible arguments are
+.
+.RS
+.Topic
+.BI .Perl " var_name"
+.Topic
+.BI ".Perl ds" " var_name"
+.Topic
+.BI ".Perl .ds" " var_name"
+.Topic
+.BI ".Perl stop" " var_name"
+.Topic
+.BI ".Perl stop ds" " var_name"
+.Topic
+.BI ".Perl stop .ds" " var_name"
+.RE
+.
+.
+.P
+The
+.I var_name
+is some word that will be used by
+.B gperl
+for a
 .B .ds
-and a suitable variable name.
+roff string definition.
 .
-.
-.P
-String output can be stored into a
-.IR "roff string" ,
-by adding the following 2 arguments to a
-.B .Perl
-stopping command line; the argument
-.B nr
-or
-.B .nr
-and a suitable variable name.
-.
-.
-.P
-Other arguments in a
-.B .Perl
-command line are just ignored.
+If this
+.I var_name
+is the only argument, it must be different from
+.BR start ,
+at other argument places it can be chosen arbitrarily, but without
+spaces.
 .
 .
 .\" --------------------------------------------------------------------
@@ -252,10 +354,10 @@ could look like that:
 .RS
 .EX
 before
-.Perl start
+\&.Perl start
 my $result = 'some data';
 print $result . \[rq]\[rs]n\[rq];
-.Perl stop .ds some_string 
+\&.Perl stop .ds some_string 
 after
 .EE
 .RE
@@ -274,6 +376,11 @@ such that the following line is printed:
 \&.ds some_string some data
 .EE
 .RE
+by
+.B gperl
+as food for the coming
+.B groff
+run.
 .
 .
 .\" --------------------------------------------------------------------
@@ -292,13 +399,13 @@ such that the following line is printed:
 .\" --------------------------------------------------------------------
 .SH "AUTHOR"
 .\" --------------------------------------------------------------------
-.author
+.authors
 .
 .
 .\" --------------------------------------------------------------------
 .SH "COPYING"
 .\" --------------------------------------------------------------------
-.co
+.copyright
 .
 .
 .\" --------------------------------------------------------------------

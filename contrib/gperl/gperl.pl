@@ -10,8 +10,8 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 27 Feb 2014
-my $version = '1.0';
+my $Latest_Update = '14 Jun 2014';
+my $version = '1.1';
 
 # This file is part of `gperl', which is part of `groff'.
 
@@ -54,14 +54,14 @@ use Cwd;
 use FindBin;
 
 # for running perl scripts
-use IPC::System::Simple qw(system capture);
+use IPC::System::Simple qw(system systemx capture capturex);
 
 
 ########################################################################
 # system variables and exported variables
 ########################################################################
 
-$\ = "\n";
+$\ = "\n";	# final part for print command
 
 ########################################################################
 # read-only variables with double-@ construct
@@ -92,17 +92,19 @@ if ($before_make) {
 
 
 ########################################################################
-# options
-#######################################################################
+# breaking options
+########################################################################
 
 foreach (@ARGV) {
   if ( /^(-h|--h|--he|--hel|--help)$/ ) {
-    print 'usage:';
-    print 'gperl [-h|--help]';
-    print 'gperl [-v|--version]';
+    print q(Usage for the `gperl' program:);
+    print 'gperl [-h|--help]     gives usage information';
+    print 'gperl [-v|--version]  displays the version number';
+    print q(This program is a `groff' preprocessor that handles Perl ) .
+      q(parts in `roff' files.);
     exit;
   } elsif ( /^(-v|--v|--ve|--ver|--vers|--versi|--versio|--version)$/ ) {
-    print 'gperl version ' . $version;
+    print q(`gperl' version ) . $version . ' of ' . $Latest_Update;
     exit;
   }
 }
@@ -131,106 +133,105 @@ my $out_file;
 
 ########################################################################
 # input
-#######################################################################
+########################################################################
 
 my $perl_mode = 0;
 my %set_cmd;
 
 foreach (<>) {
   chomp;
-  if ( /^[.']\s*Perl\s?/ ) { # .Perl ...
-    my $res = &perl_request( $_ );
+  my $line = $_;
+  my $is_dot_Perl = $line =~ /^[.']\s*Perl(|\s+.*)$/;
 
-    if ( $res eq '' ) {
-      print $_;
-      next;
+  unless ( $is_dot_Perl ) {	# not a `.Perl' line
+    if ( $perl_mode ) {		# is running in Perl mode
+      print OUT $line;
+    } else {			# normal line, not Perl-related
+      print $line;
     }
-
-    if ( $res eq 'start' ) {
-      if ( $perl_mode ) {
-	# `.Perl start' is called twice, ignore
-      } else { # new Perl start
-	$perl_mode = 1;
-	open OUT, '>', $out_file;
-      }
-      next;
-    } elsif ( $res eq 'stop' ) {
-      close OUT;
-      $perl_mode = 0;
-      my $res = capture('perl',  $out_file);
-      print $set_cmd{'command'} . ' ' . $set_cmd{'var'} . ' ' . $res
-	if ( exists $set_cmd{'command'} );
-      %set_cmd = ();
-      next;
-    }
-  }
-
-  if ( $perl_mode ) {
-    print OUT $_;
     next;
   }
 
-  print $_;
-}
 
+  ##########
+  # now the line is a `.Perl' line
 
-########################################################################
+  my $args = $line;
+  $args =~ s/\s+$//;	# remove final spaces
+  $args =~ s/^[.']\s*Perl\s*//;	# omit .Perl part, leave the arguments
 
-sub perl_request {
-  my $line = shift;
-  my @args = split /\s+/, $line;
-  my $is_ds = 0;
-  my $is_rn = 0;
+  my @args = split /\s+/, $args;
 
-  # 3 results:
-  # '' : error
-  # 'start'
-  # 'stop'
-
-  # arg must be a command line starting with .Perl
-  return '' if ( $line !~ /^[.']\s*Perl/ );
-
-  # different numbers of arguments
-
-  shift @args; # ignore first argument `.Perl'
-
-  return 'start' if ( @args == 0 ); # `.Perl' without args
-  return 'start' if ( $args[0] eq 'start' );
-
-  # now everything means `stop', but only within Perl mode
-  return '' unless ( $perl_mode );
-
-  if ( $args[0] eq 'stop' ) {
-    shift @args; # remove `stop' arg
+  if ( @args == 0 || $args[0] eq 'start' ) {
+    # for `.Perl' no args or first arg `start' means opening `Perl' mode
+    if ( $perl_mode ) {
+      # `.Perl' was started twice, ignore
+      print STDERR q(`.Perl' starter was run several times);
+      next;
+    } else {	# new Perl start
+      $perl_mode = 1;
+      open OUT, '>', $out_file;
+      next;
+    }
   }
 
-  if ( @args <= 1 ) {
-    # ignore single arg, variable name for possible ds or rn is lacking
-    return 'stop';
+  ##########
+  # now the line must be a Perl ending line (stop)
+
+  unless ( $perl_mode ) {
+    print STDERR 'gperl: there was a Perl ending without being in ' .
+      'Perl mode.';
+    next;
   }
 
-  # now >= 2 args for STDOUT result saving
-  if ( $args[0] =~ /^[.']?ds$/ ) {
-    $is_ds = 1;
-    %set_cmd = (
-	   'command' => $args[0],
-	   'var' => $args[1],
-	  );
-  } elsif ( $args[0] =~ /^[.']?rn$/ ) {
-    $is_rn = 1;
-    %set_cmd = (
-	   'command' => $args[0],
-	   'var' => $args[1],
-	  );
-  } else {
-    # ignore other args
-    return 'stop';
+  $perl_mode = 0;	# `Perl' stop calling is correct
+  close OUT;		# close the storing of `Perl' commands
+
+  ##########
+  # run this `Perl' part, later on about storage of the result
+  my $print_res = capturex('perl',  $out_file);
+
+  shift @args if ( $args[0] eq 'stop' ); # remove `stop' arg if exists
+
+  if ( @args == 0 ) {
+    # no args for saving, so $print_res doesn't matter
+    next;
   }
 
-  $set_cmd{'command'} = '.' . $set_cmd{'command'}
-    if ( $set_cmd{'command'} !~ /^[.']/ );
+  # extract the now leading arg for saving mode
+  my $save_mode = shift @args;
 
-  return 'stop';
+  if ( @args == 0 ) {
+    # no args for saving variable name, so $print_res doesn't matter
+    print STDERR 'gperl: a variable name for the saving mode ' .
+      $save_mode . ' must be provided in the line:';
+    print STDERR '    ' . $line;
+    next;
+  }
+
+  my $command;
+
+  # variable name for saving command the $print_res
+  my $var_name = shift @args;
+  # ignore all other args
+
+  if ( $save_mode =~ /^\.?ds$/ ) {		# string
+    $command = '.ds';
+  } elsif ( $save_mode =~ /^\.?nr$/ ) {
+    # Number registers do not work, just for compatibility.
+    # Storage is done into a `groff' string variable
+    $command = '.ds';
+  } else {	# no storage variables provided
+     print STDERR 'gperl: wrong argument ' . $save_mode .
+       'in Perl stop line:';
+     print STDERR '    ' . $line;
+     print STDERR 'allowed are only .ds for storing a string or .nr ' .
+       'for a number register';
+     next;
+  }
+
+  $command .= ' ' . $var_name . ' ' . $print_res;
+  print $command;
 }
 
 
