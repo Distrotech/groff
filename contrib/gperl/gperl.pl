@@ -10,8 +10,8 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $Latest_Update = '14 Jun 2014';
-my $version = '1.1';
+my $Latest_Update = '15 Jun 2014';
+my $version = '1.2';
 
 # This file is part of `gperl', which is part of `groff'.
 
@@ -25,9 +25,8 @@ my $version = '1.1';
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see
-# <http://www.gnu.org/licenses/gpl-2.0.html>.
+# You can find a copy of the GNU General Public License in the internet
+# at <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
 
@@ -53,8 +52,9 @@ use Cwd;
 # $Bin is the directory where this script is located
 use FindBin;
 
-# for running perl scripts
-use IPC::System::Simple qw(system systemx capture capturex);
+# for running the perl parts with the `Perl' programs and getting output
+# also useful for shell programs
+use IPC::System::Simple qw(capture capturex run runx system systemx);
 
 
 ########################################################################
@@ -136,7 +136,6 @@ my $out_file;
 ########################################################################
 
 my $perl_mode = 0;
-my %set_cmd;
 
 foreach (<>) {
   chomp;
@@ -162,8 +161,11 @@ foreach (<>) {
 
   my @args = split /\s+/, $args;
 
-  if ( @args == 0 || $args[0] eq 'start' ) {
-    # for `.Perl' no args or first arg `start' means opening `Perl' mode
+  ##########
+  # start Perl mode
+  if ( @args == 0 || @args == 1 && $args[0] eq 'start' ) {
+    # For `.Perl' no args or first arg `start' means opening `Perl' mode.
+    # Everything else means an ending command.
     if ( $perl_mode ) {
       # `.Perl' was started twice, ignore
       print STDERR q(`.Perl' starter was run several times);
@@ -180,7 +182,8 @@ foreach (<>) {
 
   unless ( $perl_mode ) {
     print STDERR 'gperl: there was a Perl ending without being in ' .
-      'Perl mode.';
+      'Perl mode:';
+    print STDERR '    ' . $line;
     next;
   }
 
@@ -189,49 +192,59 @@ foreach (<>) {
 
   ##########
   # run this `Perl' part, later on about storage of the result
-  my $print_res = capturex('perl',  $out_file);
+  # array stores prints with \n
+  my @print_res = capturex('perl',  $out_file);
 
-  shift @args if ( $args[0] eq 'stop' ); # remove `stop' arg if exists
+  # remove `stop' arg if exists
+  shift @args if ( $args[0] eq 'stop' );
 
   if ( @args == 0 ) {
-    # no args for saving, so $print_res doesn't matter
+    # no args for saving, so @print_res doesn't matter
     next;
   }
 
-  # extract the now leading arg for saving mode
-  my $save_mode = shift @args;
+  my @var_names = ();
+  my @mode_names = ();
 
-  if ( @args == 0 ) {
-    # no args for saving variable name, so $print_res doesn't matter
-    print STDERR 'gperl: a variable name for the saving mode ' .
-      $save_mode . ' must be provided in the line:';
-    print STDERR '    ' . $line;
-    next;
+  my $mode = 'ds';
+  for ( @args ) {
+    if ( /^\.?ds$/ ) {
+      $mode = '.ds';
+      next;
+    }
+    if ( /^\.?nr$/ ) {
+      $mode = '.nr';
+      next;
+    }
+    push @mode_names, $mode;
+    push @var_names, $_;
   }
 
-  my $command;
+  my $n_res = @print_res;
+  my $n_vars = @var_names;
 
-  # variable name for saving command the $print_res
-  my $var_name = shift @args;
-  # ignore all other args
-
-  if ( $save_mode =~ /^\.?ds$/ ) {		# string
-    $command = '.ds';
-  } elsif ( $save_mode =~ /^\.?nr$/ ) {
-    # Number registers do not work, just for compatibility.
-    # Storage is done into a `groff' string variable
-    $command = '.ds';
-  } else {	# no storage variables provided
-     print STDERR 'gperl: wrong argument ' . $save_mode .
-       'in Perl stop line:';
-     print STDERR '    ' . $line;
-     print STDERR 'allowed are only .ds for storing a string or .nr ' .
-       'for a number register';
-     next;
+  if ( $n_vars < $n_res ) {
+    print STDERR 'gperl: not enough variables for Perl part: ' .
+      $n_vars . ' variables for ' . $n_res . ' output lines.';
+  } elsif ( $n_vars > $n_res ) {
+    print STDERR 'gperl: too many variablenames for Perl part: ' .
+      $n_vars . ' variables for ' . $n_res . ' output lines.';
+  }
+  if ( $n_vars < $n_res ) {
+    print STDERR 'gperl: not enough variables for Perl part: ' .
+      $n_vars . ' variables for ' . $n_res . ' output lines.';
   }
 
-  $command .= ' ' . $var_name . ' ' . $print_res;
-  print $command;
+  my $n_min = $n_res;
+  $n_min = $n_vars if ( $n_vars < $n_res );
+  exit unless ( $n_min );
+  $n_min -= 1; # for starting with 0
+
+  for my $i ( 0..$n_min ) {
+    my $value = $print_res[$i];
+    chomp $value;
+    print $mode_names[$i] . ' ' . $var_names[$i] . ' ' . $value;
+  }
 }
 
 

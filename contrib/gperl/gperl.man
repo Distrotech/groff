@@ -190,17 +190,13 @@ The starting
 .I Perl request
 can either be without arguments, or by a request that has the term
 .B start
-as its first argument.
+as its only argument.
 .RS
 .Topic
 .B \&.Perl
 .Topic
 .B \&.Perl start
 .RE
-.
-All arguments after
-.B start
-are ignored.
 .
 .
 .\" --------------------------------------------------------------------
@@ -227,8 +223,9 @@ that's possible, but not necessary.
 .
 The argument
 .I other_than_start
-can additionally used as a variable name for storage, see next
-section.
+can additionally be used as a
+.I groff
+string variable name for storage \[em] see next section.
 .
 .
 .\" --------------------------------------------------------------------
@@ -237,42 +234,211 @@ section.
 .
 A useful feature of
 .B gperl
-is to store some result from the
+is to store one or more results from the
 .IR "Perl mode" .
 .
 .
 .P
-That can be done by running the
+The output of a
 .I Perl part
-within
-.B gperl
-using one of the
+can be got by using one of the
 .I Perl commands
 from
-.BR IPC::System::Simple .
+.BR IPC::System::Simple :
+.BR capture ,
+.BR capturex ,
+.BR run ,
+.BR runx ,
+.BR system ,
+or
+.BR systemx .
 .
-We use now the program
-.B capture
-for running the
-.IR "Perl parts" .
+Several of these programs work, we use now the program
+.B capturex
+from running Perl parts.
 .
 .
 .P
-The related storage information comes from the collection of all
-printing to standard output with the normal Perl
+This program collects all printing to STDOUT (normal standard output)
+by the Perl
 .B print
-command in a
-.IR "Perl part" .
+program.
 .
-This pseudo-printing information does not go to
-.I STDOUT
-as normally, but is received as the result from the program, which
-runs the
-.IR "Perl part" .
+This pseudo-printing output can have several lines, due to printed
+line breaks with
+.BR \[rs]n .
+.
+By that, the output of a Perl run should be stored into a Perl array,
+with a single line for each array member.
 .
 .
 .P
-But the printing towards
+This Perl array output can be stored by
+.B gperl
+in either
+.TP
+.I groff strings
+by creating a groff command
+.B .ds
+.
+.TP
+.I groff number register
+by creating a groff command
+.B .rn
+.
+.
+.P
+The storage modes can be determined by arguments of a final stopping
+.B .Perl
+command.
+.
+Each argument
+.B .ds
+changes the mode into
+.I groff string
+and
+.B .nr
+changes the mode into
+.I groff number register
+for all following output parts.
+.
+.
+.P
+By default, all output is saved as strings, so
+.B .ds
+is not really needed before the first
+.B .nr
+command.
+.
+That suits to
+.BR \%groff (@MAN7EXT@),
+because every output can be saved as
+.I groff
+string, but the number registers can be very restrictive.
+.
+.
+.P
+In
+.IR "string mode" ,
+.B gperl
+generates a
+.I groff string
+storage line
+.RS
+.EX
+\&\fB.ds \fIvar_name content
+.EE
+.RE
+.
+In
+.I number register mode
+the following groff command is generated
+.RS
+.EX
+\&\fB.nr \fIvar_name content
+.EE
+.RE
+.
+.
+.P
+We present argument collections in the following.
+.
+You can add as first argument for all
+.BR stop .
+.
+We omit this additional element. 
+.
+.
+.P
+.TP
+.BI ".Perl .ds " var_name
+This will store 1 output line into the groff string named
+.I var_name
+by the automatically created command
+.RS
+.RS
+.EX
+.BI .ds " var_name output"
+.EE
+.RE
+.RE
+.
+.
+.TP
+.BI .Perl " var_name"
+If
+.I var_name
+is different from
+.B start
+this is equivalent to the former command, because the string mode is
+string with
+.B .ds
+command.
+default.
+.
+.
+.TP
+.BI .Perl " var_name1 var_name2"
+This will store 2 output lines into groff string names
+.I var_name1
+and
+.IR var_name2 ,
+because the default mode
+.B .ds
+is active, such that no
+.B .ds
+argument is needed.
+.
+Of course, this is equivalent to
+.RS
+.RS
+.EX
+.BI ".Perl .ds " "var_name1 var_name2"
+.EE
+.RE
+and
+.RS
+.EX
+.BI ".Perl .ds " "var_name1 " ".ds" " var_name2"
+.EE
+.RE
+.RE
+.
+.
+.TP
+.BI ".Perl .nr" " var_name1 varname2"
+stores both variables as number register variables.
+.
+.B gperl
+generates
+.RS
+.EX
+.BI .nr " var_name1 output_line1"
+.BI .nr " var_name2 output_line2"
+.EE
+.RE
+.
+.
+.TP
+.BI ".Perl .nr " var_name1 " .ds " var_name2
+stores the 1st argument as
+.I number register
+and the second as
+.I string
+by
+.RS
+.EX
+.BI .nr " var_name1 output_line1"
+.BI .ds " var_name2 output_line2"
+.EE
+.RE
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Printing towards STDERR is without Storage"
+.\" --------------------------------------------------------------------
+.
+The printing towards
 .IR STDERR ,
 (standard error) works as usual.
 .
@@ -281,69 +447,8 @@ All error information goes to the real normal
 without other automatical storage.
 .
 .
-.P
-To use that output from the
-.I Perl part
-for
-.IR roff ,
-.B gperl
-creates automatically a line with the string defining roff command
-.BR .ds .
-.
-Because of the Perl-structure of the result, only string output can be
-used, not
-.IR "numerical roff registers" .
-.
-In
-.BR \%groff (@MAN7EXT@),
-one can create registers from strings.
-.
-.
-.B
-As the
-.I Perl mode
-must first be finished to get the information, this storage can only
-be done by arguments in the final
-.B .Perl
-command.
-.
-Possible arguments are
-.
-.RS
-.Topic
-.BI .Perl " var_name"
-.Topic
-.BI ".Perl ds" " var_name"
-.Topic
-.BI ".Perl .ds" " var_name"
-.Topic
-.BI ".Perl stop" " var_name"
-.Topic
-.BI ".Perl stop ds" " var_name"
-.Topic
-.BI ".Perl stop .ds" " var_name"
-.RE
-.
-.
-.P
-The
-.I var_name
-is some word that will be used by
-.B gperl
-for a
-.B .ds
-roff string definition.
-.
-If this
-.I var_name
-is the only argument, it must be different from
-.BR start ,
-at other argument places it can be chosen arbitrarily, but without
-spaces.
-.
-.
 .\" --------------------------------------------------------------------
-.SH "EXAMPLE"
+.SH "EXAMPLES"
 .\" --------------------------------------------------------------------
 .
 A possible
@@ -356,8 +461,8 @@ could look like that:
 before
 \&.Perl start
 my $result = 'some data';
-print $result . \[rq]\[rs]n\[rq];
-\&.Perl stop .ds some_string 
+print $result;
+\&.Perl stop .ds string_var
 after
 .EE
 .RE
@@ -369,11 +474,11 @@ This stores the result
 into the
 .I roff string
 called
-.BR some_string ,
+.BR string_var ,
 such that the following line is printed:
 .RS
 .EX
-\&.ds some_string some data
+\&.ds string_var some data
 .EE
 .RE
 by
@@ -383,17 +488,63 @@ as food for the coming
 run.
 .
 .
+.P
+A
+.I Perl part
+with several outputs is:
+.RS
+.EX
+\&.Perl start
+print \[rq]first\[rs]n\[rq];
+print \[rq]second line\[rs]n\[rq];
+print \[rq]3\[rs]n\[rq];
+\&.Perl var1 var2 .nr var3 
+.EE
+.RE
+.
+This stores 3 printed lines into 3
+.I groff
+strings.
+.BR var1 , var2 , var3 .
+.
+So the following
+.I groff
+command lines are created:
+.RS
+.EX
+\&.ds var1 first
+\&.ds var2 second line
+\&.nr var3 3
+.EE
+.RE
+.
+.
 .\" --------------------------------------------------------------------
 .SH "SEE ALSO"
 .\" --------------------------------------------------------------------
 .
 .P
+Man\-pages related to
+.I groff
+are
 .BR \%groff (@MAN1EXT@),
 .BR \%groff (@MAN7EXT@),
 .BR \%grog (@MAN1EXT@),
-.BR \%groffer (@MAN1EXT@),
+and
+.BR \%groffer (@MAN1EXT@).
+.
+.
+.P
+Documents related to
+.I Perl
+are
 .BR \%perl (@MAN1EXT@),
-.BR \%perl (@MAN7EXT@).
+.BR \%perl (@MAN7EXT@),
+and
+.UR http://\:search.cpan.org/\:~pjf/\:IPC-System-Simple-1.25/\:lib/\:\
+IPC/\:System/\:Simple.pm
+.IR "Perl " IPC:System:Simple
+.UE
 .
 .
 .\" --------------------------------------------------------------------
