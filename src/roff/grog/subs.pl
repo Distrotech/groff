@@ -30,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-# Last_Update = '14 Jun 2014';
+# Last_Update = '15 Jun 2014';
 ########################################################################
 
 require v5.6;
@@ -38,6 +38,9 @@ require v5.6;
 use warnings;
 use strict;
 use File::Spec;
+
+# for running programs
+use IPC::System::Simple qw(capture capturex run runx system systemx);
 
 $\ = "\n";
 
@@ -779,8 +782,7 @@ EOF
   if ( $do_run ) {
     print STDERR "@Command";
     my $cmd = join ' ', @Command;
-    print 'command will be: ' . $cmd;
-    # system($cmd);
+    system($cmd);
   } else {
     print "@Command";
   }
