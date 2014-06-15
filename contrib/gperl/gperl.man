@@ -12,7 +12,7 @@ gperl \- groff preprocessor for Perl parts in roff files
 .de authors
 This file was written by Bernd Warken <groff-bernd.warken-72@web.de>.
 .
-Latest update: 14 Jun 2014
+Latest update: 16 Jun 2014
 ..
 .
 .de copyright
@@ -107,7 +107,7 @@ The license text is available in the internet at
 .\" --------------------------------------------------------------------
 .
 .SY gperl
-.OP \fIoption \[Ellipsis]
+.OP -
 .OP --
 .OP \fI\%filespec \[Ellipsis]
 .YS
@@ -136,9 +136,11 @@ files.
 .
 The result of a
 .I Perl part
-can be stored in a
-.I groff string
-within the final line of a
+can be stored in groff
+.I strings
+or
+.I numerical registers
+based on the arguments at a final line of a
 .IR "Perl part" .
 .
 .
@@ -147,13 +149,36 @@ within the final line of a
 .\" --------------------------------------------------------------------
 .
 So far, there are only
-.IR "breaking options" ,
-that means that the program writes the asked for information and
-stops a running program line.
+.I filespec
+or
+.I breaking
+options.
 .
-All other arguments are ignored.
 .
-These options are
+.P
+.I filespec
+are file names or the minus character
+.B \[em]
+character for standard input.
+.
+As usual, the argument
+.B \[em]\[em]
+can be used in order to let all fowllowing arguments mean file names,
+even if the names begin with a minus character
+.BR \[em] .
+.
+.
+.P
+An option is
+.IR breaking ,
+when the program just writes the information that was asked for and
+then stops.
+.
+All other arguments will be ignored by that.
+.
+These
+.I breaking
+options are heree
 .
 .TP
 .B -h\~\fR|\fB\~--help

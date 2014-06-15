@@ -10,8 +10,8 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $Latest_Update = '15 Jun 2014';
-my $version = '1.2';
+my $Latest_Update = '16 Jun 2014';
+my $version = '1.2.1';
 
 # This file is part of `gperl', which is part of `groff'.
 
@@ -92,14 +92,15 @@ if ($before_make) {
 
 
 ########################################################################
-# breaking options
+# options
 ########################################################################
 
 foreach (@ARGV) {
   if ( /^(-h|--h|--he|--hel|--help)$/ ) {
     print q(Usage for the `gperl' program:);
-    print 'gperl [-h|--help]     gives usage information';
-    print 'gperl [-v|--version]  displays the version number';
+    print 'gperl [-] [--] [filespec...] normal file name arguments';
+    print 'gperl [-h|--help]        gives usage information';
+    print 'gperl [-v|--version]     displays the version number';
     print q(This program is a `groff' preprocessor that handles Perl ) .
       q(parts in `roff' files.);
     exit;
