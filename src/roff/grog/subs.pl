@@ -67,7 +67,12 @@ my %Groff = (
 	     'grn' => 0,
 	     'ideal' => 0,
 	     'lilypond' => 0,
+
 	     'pic' => 0,
+	     'PS' => 0,		# opening for pic
+	     'PF' => 0,		# alternative opening for pic
+	     'PE' => 0,		# closing for pic
+
 	     'refer' => 0,
 	     'refer_open' => 0,
 	     'refer_close' => 0,
@@ -357,10 +362,21 @@ sub do_line {
     $Groff{'lilypond'}++;	# for glilypond
     return;
   }
+
+  # pic can be opened by .PS or .PF and closed by .PE
   if ( $command =~ /^\.PS$/ ) {
-    $Groff{'pic'}++;		# for gpic
+    $Groff{'pic'}++;		# normal opening for pic
     return;
   }
+  if ( $command =~ /^\.PF$/ ) {
+    $Groff{'PF'}++;		# alternative opening for pic
+    return;
+  }
+  if ( $command =~ /^\.PE$/ ) {
+    $Groff{'PE'}++;		# closing for pic
+    return;
+  }
+
   if ( $command =~ /^\.R1$/ ) {
     $Groff{'refer'}++;		# for refer
     return;
@@ -644,21 +660,31 @@ EOF
   ##########
   # preprocessors
 
+  # preprocessors without `groff' option
   if ( $Groff{'lilypond'} ) {
     push @preprograms, 'glilypond';
   }
   if ( $Groff{'gperl'} ) {
     push @preprograms, 'gperl';
   }
+  if ( $Groff{'ideal'} ) {
+    push @preprograms, 'gideal';
+    # || $Groff{'ideal'}
+    # $s .= "J" if $Groff{'ideal'};
+  }
+
+  # preprocessors with `groff' option
+  if ( ( $Groff{'PS'} ||  $Groff{'PF'} ) &&  $Groff{'PE'} ) {
+    $Groff{'pic'} = 1;
+  }
   $Groff{'refer'} ||= $Groff{'refer_open'} && $Groff{'refer_close'};
   if ( $Groff{'chem'} || $Groff{'eqn'} || $Groff{'grap'} ||
-       $Groff{'grn'} || $Groff{'ideal'} || $Groff{'pic'} ||
+       $Groff{'grn'} || $Groff{'pic'} ||
        $Groff{'refer'} || $Groff{'tbl'} ) {
     my $s = "-";
     $s .= "e" if $Groff{'eqn'};
-    $s .= "g" if $Groff{'grn'};
     $s .= "G" if $Groff{'grap'};
-    $s .= "i" if $Groff{'ideal'};
+    $s .= "g" if $Groff{'grn'};
     $s .= "j" if $Groff{'chem'};
     $s .= "p" if $Groff{'pic'};
     $s .= "R" if $Groff{'refer'};
