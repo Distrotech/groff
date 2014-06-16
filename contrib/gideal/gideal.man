@@ -1,0 +1,335 @@
+.\" t
+.TH GIDEAL @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+gideal \[em] \f[I]groff\f[] preprocessor for the \f[I]ideal\f[] language
+.
+.\" The .SH was moved to this place in order to appease `apropos'.
+.
+.\" --------------------------------------------------------------------
+.\" Legalese
+.\" --------------------------------------------------------------------
+.
+.ig
+gideal.1 - man page for the ideal roff preprocessor
+.
+Source file position:  <groff_source_top>/contrib/gideal/gideal.man
+Installed position:    $prefix/share/man/man1/gideal.1
+.
+Last update: 16 Jun 2014
+..
+.
+.de authors
+This file was written by Bernd Warken
+.MT bernd.warken@web.de
+.ME .
+..
+.
+.de copying
+Copyright \(co 2014
+.RS
+.ft CI
+Free Software Foundation, Inc.
+.ft R
+.RE
+.
+.P
+This file is part of
+.IR \%gideal ,
+which is part of
+.IR \%groff ,
+a free software project.
+.
+You can redistribute it and/or modify it under the terms of the
+.nh
+.ft CI
+GNU General Public License
+.ft R
+.hy
+as published by the
+.nh
+.ft CI
+Free Software Foundation version\~2
+.ft R
+.hy
+(\\f[CI]GPL2\\f[R]).
+.
+.P
+The license text is available in the internet at
+.UR http://www.gnu.org/licenses/gpl-2.0.html
+.UE .
+..
+.
+.
+.\" --------------------------------------------------------------------
+.\" Setup
+.\" --------------------------------------------------------------------
+.
+.\" ds Ellipsis "\&.\|.\|.\&\"
+.
+.
+.\" --------------------------------------------------------------------
+.\" Macro definitions
+.\" --------------------------------------------------------------------
+.
+.\" --------------------------------------------------------------------
+.\" .FONT (<font name> <text> [<font name> <text> ...])
+.\"
+.\" Print in different fonts: R, I, B, CR, CI, CB
+.\"
+.de FONT
+.  if (\\n[.$] = 0) \{\
+.	nop \&\f[P]\&
+.	return
+.  \}
+.  ds result \&
+.  while (\\n[.$] >= 2) \{\
+.	as result \,\f[\\$1]\\$2
+.	if !"\\$1"P .as result \f[P]
+.	shift 2
+.  \}
+.  if (\\n[.$] = 1) .as result \,\f[\\$1]
+.  nh
+.  nop \\*[result]\&
+.  hy
+..
+.
+.\" --------------------------------------------------------------------
+.\" .Topic  ([<indent>])
+.\"
+.\" A bulleted paragraph
+.\"
+.de Topic
+.  ie \\n[.$]=0 \
+.    ds @indent 2m\"
+.  el \
+.    ds @indent \\$1\"
+.  IP \[bu] \\*[@indent]
+.  rm @indent
+..
+.
+.\" --------------------------------------------------------------------
+.\" .UL (<text to underline> [<append>])
+.\"
+.\" Underline $1 and append $2 without underline
+.\"
+.de UL
+.  if t \}\
+.    nop \Z'\\$1'\v'.25m'\D'l \w'\\$1'u 0'\v'-.25m'\\$2
+.    return
+.  \}
+.  ul 1
+\\$1\c
+\\$2
+..
+.
+.
+.\" --------------------------------------------------------------------
+.\" End of macro definitions.
+.\" --------------------------------------------------------------------
+.
+.
+.\" --------------------------------------------------------------------
+.SH SYNOPSIS
+.\" --------------------------------------------------------------------
+.
+.SY gideal
+.OP \-
+.OP \-\-
+.OP \fI\%filespec \[Ellipsis]
+.YS
+.
+.SY gideal
+.BR \-h | \-\-help
+.YS
+.
+.SY gideal
+.BR \-v | \-\-version
+.YS
+.
+.
+.\" --------------------------------------------------------------------
+.SH DESCRIPTION
+..\" --------------------------------------------------------------------
+.
+.BR ideal (@MAN7EXT@)
+is a
+.I roff language
+for drawing pictures.
+.
+.
+.P
+.B gideal
+is a
+.I groff preprocessor
+for using this language within
+.I groff files
+(to be done).
+.
+.
+.\" --------------------------------------------------------------------
+.SH OPTIONS
+.\" --------------------------------------------------------------------
+.
+In
+.BR gideal ,
+there are the following kinds of options:
+.Topic
+.I breaking options
+.Topic
+.I filespec options
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Breaking Options"
+.\" --------------------------------------------------------------------
+.
+.I Breaking options
+are used to display a corresponding information, but then the whole
+program run is stopped and finished.
+.
+.
+.P
+The breaking options
+.B \-v
+or
+.B \-\-version
+prints information on the version number.
+.
+.
+.P
+The breaking options
+.B \-h
+or
+.B \-\-help
+prints usage information.
+.
+.
+.P
+Both of these options automatically end the
+.B grog
+program.
+.
+Other options are then ignored, and no
+.B groff
+command line is generated.
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Filespec Options"
+.\" --------------------------------------------------------------------
+.
+Each argument that does not start with a minus
+.B \-
+character is interpreted as a file name.
+.
+.
+.P
+As usual, the single minus character argument
+.B \-
+means to integrate
+.IR "standard input" .
+.
+.
+.P
+The double minus
+.B \-\-
+argument means noting special by itself, but means that all following
+arguments will be interpreted as file names, even if the called file
+name starts with a minus
+.B \-
+character.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "IDEAL PARTS"
+.\" --------------------------------------------------------------------
+.
+Within a roff file, an
+.I ideal part
+is started with the command
+.BR .IS .
+.
+.
+.P
+this part is ended with the command
+.B .IE
+or
+.BR .IF .
+.
+.
+.P
+The text between these requests is handled by the preprocessor
+.BR gideal .
+.
+.
+.\" --------------------------------------------------------------------
+.SH HISTORY
+.\" --------------------------------------------------------------------
+.
+The roff preprocessor and the roff language
+.I ideal
+were invented by
+.I Christopher J. Wyk
+in 1981 at AT&T.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "SEE ALSO"
+.\" --------------------------------------------------------------------
+.
+.TP
+.BR ideal (@MAN7EXT@)
+for information about the
+.I ideal language
+in
+.IR groff .
+.
+.
+.TP
+.B Unix8 preprocessor
+freely available documentation for the
+.IR "ideal preprocessor" .
+.
+The
+.I preprocessor
+there is called
+.BR ideal ,
+not
+.B gideal
+as in
+.IR groff .
+.br
+.UR http://man.cat-v.org/unix_8th/1/ideal
+.UE .
+.
+.
+.TP
+.BR groff (@MAN1EXT@),
+.TQ
+.BR groff (@MAN7EXT@)
+Information about the
+.I groff
+system.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "AUTHORS"
+.\" --------------------------------------------------------------------
+.
+.authors
+.
+.
+.\" --------------------------------------------------------------------
+.SH "COPYING"
+.\" --------------------------------------------------------------------
+.
+.copying
+.
+.
+.\" --------------------------------------------------------------------
+.\" Emacs settings
+.\" --------------------------------------------------------------------
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" End:
