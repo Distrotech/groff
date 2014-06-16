@@ -30,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-# Last_Update = '15 Jun 2014';
+# Last_Update = '16 Jun 2014';
 ########################################################################
 
 require v5.6;
@@ -90,6 +90,7 @@ my %Groff = (
 	     'AU' => 0,		# ms
 	     'NH' => 0,		# ms
 	     'TL' => 0,		# ms
+	     'UL' => 0,		# ms
 	     'XP' => 0,		# ms
 
 	     'IP' => 0,		# man and ms
@@ -97,11 +98,13 @@ my %Groff = (
 	     'P' => 0,		# man and ms
 	     'PP' => 0,		# man and ms
 	     'SH' => 0,		# man and ms
-	     'TH' => 0,		# man and ms
 
 	     'OP' => 0,		# man
 	     'SS' => 0,		# man
 	     'SY' => 0,		# man
+	     'TH' => 0,		# man
+	     'TP' => 0,		# man
+	     'UR' => 0,		# man
 	     'YS' => 0,		# man
 
 	     # for mdoc and mdoc-old
@@ -188,7 +191,7 @@ sub args_with_minus {
       next;
     }
 
-    if ($arg =~ /^-/) {
+    if ($arg =~ /^-[^m]/) {
       push(@Command, $arg);
       next;
     } else {
@@ -469,8 +472,8 @@ sub do_line {
     $Groff{'SH'}++;		# for man and ms
     return;
   }
-  if ( $command =~ /^\.TH$/ ) {
-    $Groff{'TH'}++;		# for man and ms
+  if ( $command =~ /^\.UL$/ ) {
+    $Groff{'UL'}++;		# for man and ms
     return;
   }
 
@@ -486,12 +489,24 @@ sub do_line {
     $Groff{'SS'}++;
     return;
   }
-  if ( $command =~ /^\.YS$/ ) {	# for man
-   $Groff{'YS'}++;
-    return;
-  }
   if ( $command =~ /^\.SY$/ ) {	# for man
     $Groff{'SY'}++;
+    return;
+  }
+  if ( $command =~ /^\.TH$/ ) {
+    $Groff{'TH'}++;		# for man
+    return;
+  }
+  if ( $command =~ /^\.TP$/ ) {	# for man
+    $Groff{'TP'}++;
+    return;
+  }
+  if ( $command =~ /^\.UR$/ ) {
+    $Groff{'UR'}++;		# for man
+    return;
+  }
+  if ( $command =~ /^\.YS$/ ) {	# for man
+   $Groff{'YS'}++;
     return;
   }
 
@@ -571,6 +586,7 @@ sub make_groff_line {
 
   my @m = ();
   my @preprograms = ();
+
 
   # device from -T
   $device = '' unless ( defined $device );
@@ -661,14 +677,14 @@ EOF
 
   {
     my $is_ms = 0;
-    if ( $Groff{'TH'} || $Groff{'P'} || $Groff{'IP'}  ||
+    if ( $Groff{'P'} || $Groff{'IP'}  ||
 	 $Groff{'LP'} || $Groff{'PP'} || $Groff{'SH'} ) {
       # man or ms
-      if ( $Groff{'SS'} ||  $Groff{'SY'} ||  $Groff{'OP'} ) {
+      if ( $Groff{'SS'} ||  $Groff{'SY'} ||  $Groff{'OP'} ||
+	   $Groff{'TH'} || $Groff{'TP'} || $Groff{'UR'} ) {
 	# it is `man', because these macros are not `ms'
 	$Groff{'man'} = 1;
 	push(@m, '-man');
-	push(@Command, '-man');
       } elsif
 	(	# it must now be `ms'
 	 $Groff{'1C'} || $Groff{'2C'} ||
@@ -687,7 +703,6 @@ EOF
     if ( $is_ms ) {
       $Groff{'ms'} = 1;
       push(@m, '-ms');
-      push(@Command, '-ms');
     }
   }
 
@@ -699,11 +714,9 @@ EOF
     $Groff{'Oc'} = 0;
     $Groff{'Oo'} = 0;
     push(@m, '-mdoc');
-    push(@Command, '-mdoc');
   }
   if ( $Groff{'mdoc_old'} || $Groff{'Oo'} ) {
     push(@m, '-mdoc_old');
-    push(@Command, '-mdoc_old');
   }
 
 
@@ -712,7 +725,6 @@ EOF
 
   if ( $Groff{'me'} ) {
     push(@m, '-me');
-    push(@Command, '-me');
   }
 
 
@@ -722,10 +734,8 @@ EOF
   if ( $Groff{'mm'} ) {
     if ( $is_mmse ) {	# swedish mmse
       push(@m, '-mmse');
-      push(@Command, '-mmse');
     } else {		# normal mm
       push(@m, '-mm');
-      push(@Command, '-mm');
     }
   }
 
@@ -735,13 +745,13 @@ EOF
 
   if ( $Groff{'mom'} ) {
     push(@m, '-mom');
-    push(@Command, '-mom');
   }
 
 
   ######################################################################
   # create groff command
 
+  my $file_args_included;	# file args now only at 1st preprog
   unshift @Command, 'groff';
   if ( @preprograms ) {
     my @progs;
@@ -753,31 +763,71 @@ EOF
     }
     push @progs, '|';
     unshift @Command, @progs;
+    $file_args_included = 1;
   } else {
-    push(@Command, @FILES);
+    $file_args_included = 0;
   }
 
   foreach (@Command) {
     next unless /\s/;
+    # when one argument has several words, use accents
     $_ = "'" . $_ . "'";
   }
 
 
-  my $n = scalar @m;
-  my $np = scalar @Mparams;
-  print STDERR "$Prog: more than 1 `-m' argument: @Mparams" if $np > 1;
-  if ($n == 0) {
-    unshift @Command, $Mparams[0] if $np == 1;
-  } elsif ($n == 1) {
-    if ($np == 1) {
-      print STDERR "$Prog: wrong `-m' argument: $Mparams[0]"
-	if $m[0] ne $Mparams[0];
-    }
-  } else {
-    print STDERR "$Prog: error: there are several macro packages: @m";
-    exit 1;
+  ##########
+  # -m arguments
+  my $nr_m_guessed = scalar @m;
+  if ( $nr_m_guessed > 1 ) {
+    print STDERR 'More than 1 argument for -m found: ' . "@m";
   }
 
+  my $nr_m_args = scalar @Mparams;	# m-arguments for grog
+  my $last_m_arg = '';	# last provided -m option
+  if ( $nr_m_args > 1 ) {
+    # take the last given -m argument of grog call,
+    # ignore other -m arguments and the found ones
+    $last_m_arg = $Mparams[-1];	# take the last -m argument
+    print STDERR $Prog . ": more than 1 `-m' argument: @Mparams";
+    print STDERR 'We take the last one: ' . $last_m_arg;
+  } elsif ( $nr_m_args == 1 ) {
+    $last_m_arg = $Mparams[0];
+  }
+
+  my $final_m = '';
+  if ( $last_m_arg ) {
+    my $is_equal = 0;
+    for ( @m ) {
+      if ( $_ eq $last_m_arg ) {
+	$is_equal = 1;
+	last;
+      }
+      next;
+    }	# end for @m
+    if ( $is_equal ) {
+      $final_m = $last_m_arg;
+    } else {
+      print STDERR 'Provided -m argument ' . $last_m_arg .
+	' differs from guessed -m args: ' . "@m";
+      print STDERR 'The argument is taken.';
+      $final_m = $last_m_arg;
+    }
+  } else {	# no -m arg provided
+    if ( $nr_m_guessed > 1 ) {
+      print STDERR 'More than 1 -m arguments were guessed: ' . "@m";
+      print STDERR 'Guessing stopped.';
+      exit 1;
+    } elsif ( $nr_m_guessed == 1 ) {
+      $final_m = $m[0];
+    } else {
+      # no -m provided or guessed
+    }
+  }
+  push @Command, $final_m if ( $final_m );
+
+  push(@Command, @FILES) unless ( $file_args_included );
+
+  #########
   # execute the `groff' command here with option `--run'
   if ( $do_run ) {
     print STDERR "@Command";
@@ -787,7 +837,6 @@ EOF
     print "@Command";
   }
 
-  exit $n if $n > 1;
   exit 0;
 }	# sub make_groff_line
 
