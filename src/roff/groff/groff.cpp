@@ -3,6 +3,8 @@
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
+Latest update: 17 Jun 2014
+
 This file is part of groff.
 
 groff is free software; you can redistribute it and/or modify it under
@@ -51,14 +53,15 @@ extern "C" {
 
 // The number of commands must be in sync with MAX_COMMANDS in pipeline.h
 
-// grap and chem must come before pic;
+// grap, chem, and ideal must come before pic;
 // tbl must come before eqn
 const int PRECONV_INDEX = 0;
 const int SOELIM_INDEX = PRECONV_INDEX + 1;
 const int REFER_INDEX = SOELIM_INDEX + 1;
 const int GRAP_INDEX = REFER_INDEX + 1;
 const int CHEM_INDEX = GRAP_INDEX + 1;
-const int PIC_INDEX = CHEM_INDEX + 1;
+const int IDEAL_INDEX = CHEM_INDEX + 1;
+const int PIC_INDEX = IDEAL_INDEX + 1;
 const int TBL_INDEX = PIC_INDEX + 1;
 const int GRN_INDEX = TBL_INDEX + 1;
 const int EQN_INDEX = GRN_INDEX + 1;
@@ -139,7 +142,7 @@ int main(int argc, char **argv)
   };
   while ((opt = getopt_long(
 		  argc, argv,
-		  "abcCd:D:eEf:F:gGhiI:jkK:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ",
+		  "abcCd:D:eEf:F:gGhiI:jJkK:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ",
 		  long_options, NULL))
 	 != EOF) {
     char buf[3];
@@ -173,6 +176,10 @@ int main(int argc, char **argv)
       break;
     case 't':
       commands[TBL_INDEX].set_name(command_prefix, "tbl");
+      break;
+    case 'J':
+      commands[_INDEX].set_name(command_prefix, "gideal");
+      // need_pic = 1;
       break;
     case 'j':
       commands[CHEM_INDEX].set_name(command_prefix, "chem");
@@ -219,7 +226,8 @@ int main(int argc, char **argv)
 	"GNU groff comes with ABSOLUTELY NO WARRANTY.\n"
 	"You may redistribute copies of groff and its subprograms\n"
 	"under the terms of the GNU General Public License.\n"
-	"For more information about these matters, see the file named COPYING.\n");
+	"For more information about these matters, see the file\n"
+	"named COPYING.\n");
       printf("\ncalled subprograms:\n\n");
       fflush(stdout);
       commands[POST_INDEX].append_arg(buf);
@@ -773,6 +781,7 @@ void help()
 "-g\tpreprocess with grn\n"
 "-G\tpreprocess with grap\n"
 "-j\tpreprocess with chem\n"
+"-J\tpreprocess with gideal\n"
 "-s\tpreprocess with soelim\n"
 "-R\tpreprocess with refer\n"
 "-Tdev\tuse device dev\n"

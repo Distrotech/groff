@@ -30,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-# Last_Update = '16 Jun 2014';
+# Last_Update = '17 Jun 2014';
 ########################################################################
 
 require v5.6;
@@ -369,7 +369,7 @@ sub do_line {
     return;
   }
   if ( $command =~ /^\.PF$/ ) {
-    $Groff{'PF'}++;		# alternative opening for pic
+    $Groff{'PF'}++;		# alternate opening for pic
     return;
   }
   if ( $command =~ /^\.PE$/ ) {
@@ -667,24 +667,22 @@ EOF
   if ( $Groff{'gperl'} ) {
     push @preprograms, 'gperl';
   }
-  if ( $Groff{'ideal'} ) {
-    push @preprograms, 'gideal';
-    # || $Groff{'ideal'}
-    # $s .= "J" if $Groff{'ideal'};
-  }
 
   # preprocessors with `groff' option
   if ( ( $Groff{'PS'} ||  $Groff{'PF'} ) &&  $Groff{'PE'} ) {
     $Groff{'pic'} = 1;
   }
+
   $Groff{'refer'} ||= $Groff{'refer_open'} && $Groff{'refer_close'};
-  if ( $Groff{'chem'} || $Groff{'eqn'} || $Groff{'grap'} ||
-       $Groff{'grn'} || $Groff{'pic'} ||
+
+  if ( $Groff{'chem'} || $Groff{'eqn'} ||  $Groff{'ideal'} ||
+       $Groff{'grap'} || $Groff{'grn'} || $Groff{'pic'} ||
        $Groff{'refer'} || $Groff{'tbl'} ) {
     my $s = "-";
     $s .= "e" if $Groff{'eqn'};
     $s .= "G" if $Groff{'grap'};
     $s .= "g" if $Groff{'grn'};
+    $s .= "J" if $Groff{'ideal'};
     $s .= "j" if $Groff{'chem'};
     $s .= "p" if $Groff{'pic'};
     $s .= "R" if $Groff{'refer'};
