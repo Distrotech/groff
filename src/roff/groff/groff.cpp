@@ -178,7 +178,7 @@ int main(int argc, char **argv)
       commands[TBL_INDEX].set_name(command_prefix, "tbl");
       break;
     case 'J':
-      commands[_INDEX].set_name(command_prefix, "gideal");
+      commands[IDEAL_INDEX].set_name(command_prefix, "gideal");
       // need_pic = 1;
       break;
     case 'j':

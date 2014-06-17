@@ -6,7 +6,7 @@
 #   Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 16 Jun 2014
+# Last update: 17 Jun 2014
 
 # This file is part of `gideal' which is part of `groff'.
 
@@ -46,15 +46,32 @@ gideal: gideal.pl
 	    $(srcdir)/gideal.pl >$@; \
 	chmod +x $@
 
+.PHONY: libdirs
+libdires: 
+
 .PHONY: install_data
 install_data: gideal
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	$(RM) $(DESTDIR)$(bindir)/gideal
 	$(INSTALL_SCRIPT) gideal $(DESTDIR)$(bindir)/gideal
+	-test -d $(DESTDIR)$(datasubdir)/ideal \
+          || $(mkinstalldirs) $(DESTDIR)$(datasubdir)/ideal
+	-test -d $(DESTDIR)$(datasubdir)/ideal/libfiles \
+          || $(mkinstalldirs) $(DESTDIR)$(datasubdir)/ideal/libfiles
+	$(RM) $(DESTDIR)$(datasubdir)/ideal/libfiles/*
+	for i in $(srcdir)/libfiles/*.ideal; do \
+	  n=`echo $$i | sed 's|$(srcdir)/libfiles/||g'`; \
+	  $(INSTALL_DATA) $$i $(DESTDIR)$(datasubdir)/ideal/libfiles/$$n; \
+	done
+	$(RM) $(DESTDIR)$(datasubdir)/ideal/libfiles/README.txt
+	$(INSTALL_DATA) $$(srcdir)/libfiles//README.txt \
+		$(DESTDIR)$(datasubdir)/ideal/libfiles/README.txt;
+
 
 .PHONY: uninstall_sub
 uninstall_sub:
 	$(RM) $(DESTDIR)$(bindir)/gideal
+	$(RM) $(DESTDIR)$(datasubdir)/ideal/libfiles/*
 
 
 ########################################################################
