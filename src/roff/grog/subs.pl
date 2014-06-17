@@ -254,6 +254,9 @@ sub do_first_line {
     if ( $line =~ /j/ ) {
       $Groff{'chem'}++;
     }
+    if ( $line =~ /J/ ) {
+      $Groff{'ideal'}++;
+    }
     if ( $line =~ /p/ ) {
       $Groff{'pic'}++;
     }
