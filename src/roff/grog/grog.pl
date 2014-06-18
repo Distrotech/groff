@@ -54,7 +54,8 @@ my $grog_dir;
 if ($before_make) { # before installation
   my $grog_source_dir = $FindBin::Bin;
   $at_at{'BINDIR'} = $grog_source_dir;
-  $grog_dir = $grog_source_dir;
+# $grog_dir = $grog_source_dir;
+  $grog_dir = '.';
   my $top = $grog_source_dir . '/../../../';
   open FILE, '<', $top . 'VERSION' ||
     die 'Could not open top file VERSION.';
@@ -74,17 +75,21 @@ if ($before_make) { # before installation
 
 die "$grog_dir is not an existing directory;" unless -d $grog_dir;
 
-unshift(@INC, $grog_dir);
 
+#############
+# import subs
+unshift(@INC, $grog_dir);
 require 'subs.pl';
+
+
+###############
+# our variables
 
 our $Prog = $0;
 {
   my ($v, $d, $f) = File::Spec->splitpath($Prog);
   $Prog = $f;
 }
-
-&args_with_minus();
 
 
 # for first line check
@@ -130,6 +135,12 @@ our %File_Name_Extensions = (
 our $is_mmse = 0;
 
 our @FILES = @ARGV;
+
+
+##########
+# run subs
+
+&args_with_minus();
 
 foreach my $file ( @ARGV ) { # test for each file name in the arguments
   unless ( open(FILE, $file eq "-" ? $file : "< $file") ) {

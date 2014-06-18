@@ -37,6 +37,7 @@ require v5.6;
 
 use warnings;
 use strict;
+
 use File::Spec;
 
 # for running programs
@@ -703,6 +704,9 @@ EOF
   if ( ( $Groff{'PS'} ||  $Groff{'PF'} ) &&  $Groff{'PE'} ) {
     $Groff{'pic'} = 1;
   }
+  if ( $Groff{'gideal'} ) {
+    $Groff{'pic'} = 1;
+  }
 
   $Groff{'refer'} ||= $Groff{'refer_open'} && $Groff{'refer_close'};
 
@@ -891,7 +895,7 @@ EOF
   }
 
   exit 0;
-}	# sub make_groff_line
+}	# sub &make_groff_line()
 
 
 ########################################################################
