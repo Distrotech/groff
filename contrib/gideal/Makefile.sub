@@ -46,26 +46,35 @@ gideal: gideal.pl
 	    $(srcdir)/gideal.pl >$@; \
 	chmod +x $@
 
-.PHONY: libdirs
-libdires: 
-
 .PHONY: install_data
 install_data: gideal
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	$(RM) $(DESTDIR)$(bindir)/gideal
 	$(INSTALL_SCRIPT) gideal $(DESTDIR)$(bindir)/gideal
+
+	-test -d $(DESTDIR)$(datasubdir) \
+          || $(mkinstalldirs) $(DESTDIR)$(datasubdir)
 	-test -d $(DESTDIR)$(datasubdir)/ideal \
           || $(mkinstalldirs) $(DESTDIR)$(datasubdir)/ideal
 	-test -d $(DESTDIR)$(datasubdir)/ideal/libfiles \
           || $(mkinstalldirs) $(DESTDIR)$(datasubdir)/ideal/libfiles
 	$(RM) $(DESTDIR)$(datasubdir)/ideal/libfiles/*
-	for i in $(srcdir)/libfiles/*.ideal; do \
+	for i in $(srcdir)/libfiles/*; do \
 	  n=`echo $$i | sed 's|$(srcdir)/libfiles/||g'`; \
 	  $(INSTALL_DATA) $$i $(DESTDIR)$(datasubdir)/ideal/libfiles/$$n; \
 	done
-	$(RM) $(DESTDIR)$(datasubdir)/ideal/libfiles/README.txt
-	$(INSTALL_DATA) $(srcdir)/libfiles/README.txt \
-		$(DESTDIR)$(datasubdir)/ideal/libfiles/README.txt;
+
+	-test -d $(DESTDIR)$(exampledir) \
+          || $(mkinstalldirs) $(DESTDIR)$(exampledir)
+	-test -d $(DESTDIR)$(exampledir)/ideal \
+          || $(mkinstalldirs) $(DESTDIR)$(exampledir)/ideal
+	-test -d $(DESTDIR)$(exampledir)/ideal/files \
+          || $(mkinstalldirs) $(DESTDIR)$(exampledir)/ideal/files
+	$(RM) $(DESTDIR)$(exampledir)/ideal/files/*
+	for i in $(srcdir)/files/*; do \
+	  n=`echo $$i | sed 's|$(srcdir)/files/||g'`; \
+	  $(INSTALL_DATA) $$i $(DESTDIR)$(exampledir)/ideal/files/$$n; \
+	done
 
 
 .PHONY: uninstall_sub

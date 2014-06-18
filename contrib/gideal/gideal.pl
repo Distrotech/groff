@@ -10,8 +10,8 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $Latest_Update = '16 Jun 2014';
-my $version = '0.9';
+my $Latest_Update = '17 Jun 2014';
+my $version = '0.9.1';
 
 # This file is part of `gideal', which is part of `groff'.
 
@@ -73,7 +73,7 @@ $| = 1;       # flush after each print or write command
 # read-only variables with double-@ construct
 ########################################################################
 
-my $before_make;        # script before run of `make'
+my $before_make;	# script before run of `make'
 {
   my $at = '@';
   $before_make = 1 if '@VERSION@' eq "${at}VERSION${at}";

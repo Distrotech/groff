@@ -15,7 +15,7 @@ gideal.1 - man page for the ideal roff preprocessor
 Source file position:  <groff_source_top>/contrib/gideal/gideal.man
 Installed position:    $prefix/share/man/man1/gideal.1
 .
-Last update: 16 Jun 2014
+Last update: 18 Jun 2014
 ..
 .
 .de authors
@@ -59,13 +59,12 @@ The license text is available in the internet at
 .UE .
 ..
 .
-.
 .\" --------------------------------------------------------------------
 .\" Setup
 .\" --------------------------------------------------------------------
 .
+.char \[Ellipsis] \f[S]\N'188'\fP
 .\" ds Ellipsis "\&.\|.\|.\&\"
-.
 .
 .\" --------------------------------------------------------------------
 .\" Macro definitions
@@ -261,20 +260,80 @@ or
 The text between these requests is handled by the preprocessor
 .BR gideal .
 .
+By that the
+.I ideal part
+is transformed into
+.IR "pic content" ,
+belonging to another graphical preprocessor
+.BR pic (1).
+.
 .
 .\" --------------------------------------------------------------------
 .SH HISTORY
 .\" --------------------------------------------------------------------
 .
-The roff preprocessor and the roff language
-.I ideal
-were invented by
+The roff language
+.BR ideal (@MAN7EXT@)
+was invented by
 .I Christopher J. Wyk
 in 1981 at AT&T.
 .
 .
+.P
+A roff preprocessor for this language with the same name was also
+invented by the same programmer, but this preprocessor is very
+old-fashioned.
+.
+That's why there is a completely new within groff is in the development.
+.
+It is called
+.BR gideal (@MAN1EXT@),
+other thatn the original preprocessor.
+.
+.
 .\" --------------------------------------------------------------------
 .SH "SEE ALSO"
+.\" --------------------------------------------------------------------
+.
+.\" --------------------------------------------------------------------
+.SS "libfiles"
+.\" --------------------------------------------------------------------
+.
+.I libfiles
+are files written in
+.IR ideal .
+.
+Such a file can be included into a roff file with
+.I ideal parts
+by the ideal command
+.BR ...libfile .
+.
+A
+.I libfile
+can also serve as an example.
+.
+.
+.P
+With the installation, the available
+.I libfiles
+get into
+.B @DATASUBDIR@/ideal/libfiles
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Examples"
+.\" --------------------------------------------------------------------
+.
+Some
+.I roff
+files with included 
+.Iideal parts
+will be stored at the installation into
+.BR @EXAMPLEDIR@/ideal .
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Man-Pages"
 .\" --------------------------------------------------------------------
 .
 .TP
@@ -284,6 +343,26 @@ for information about the
 in
 .IR groff .
 .
+.
+.TP
+.BR groff (@MAN1EXT@),
+.TQ
+.BR groff (@MAN7EXT@),
+.TQ
+.BR grog (@MAN1EXT@),
+.TQ
+.BR pic (@MAN1EXT@),
+.TQ
+.BR gpic (@MAN1EXT@),
+.TQ
+Information about the
+.I groff
+system.
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Documentation and Articles"
+.\" --------------------------------------------------------------------
 .
 .TP
 .B Unix8 preprocessor
@@ -304,12 +383,29 @@ as in
 .
 .
 .TP
-.BR groff (@MAN1EXT@),
-.TQ
-.BR groff (@MAN7EXT@)
-Information about the
-.I groff
-system.
+.B ACM articles for buying
+.
+.RS
+.
+.TP
+.B p99-van_wyk.pdf.gz
+.nf
+A Graphics Typesetting Language
+Christopher J. Van Wyk
+.fi
+.UR http://dl.acm.org/citation.cfm?id=806460
+.UE
+.
+.TP
+.B p163-van_wyk.pdf.gz
+.nf
+A High-Level Language for Specifying Pictures
+Christopher J. Van Wyk
+.fi
+.UR http://dl.acm.org/citation.cfm?id=357303
+.UE
+.
+.RE
 .
 .
 .\" --------------------------------------------------------------------
