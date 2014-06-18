@@ -65,7 +65,7 @@ my %Groff = (
 	     'gperl' => 0,
 	     'grap' => 0,
 	     'grn' => 0,
-	     'ideal' => 0,
+	     'gideal' => 0,
 	     'lilypond' => 0,
 
 	     'pic' => 0,
@@ -81,6 +81,7 @@ my %Groff = (
 
 	     # tmacs
 	     'man' => 0,
+	     'mandoc' => 0,
 	     'mdoc' => 0,
 	     'mdoc_old' => 0,
 	     'me' => 0,
@@ -223,15 +224,15 @@ sub args_with_minus {
 # used as an groff option line.  This is done by:
 # - start the line with '\" (apostrophe, backslash, double quote)
 # - add a space character
-# - a word using the following characters can be appended: `egGjpRst'.
+# - a word using the following characters can be appended: `egGjJpRst'.
 #     Each of these characters means an option for the generated
 #     `groff' command line, e.g. `-t'.
 
 sub do_first_line {
   my ( $line, $file ) = @_;
 
-  # For a leading groff options line use only [egGjpRst]
-  if  ( $line =~ /^[.']\\"[\segGjpRst]+&/ ) {
+  # For a leading groff options line use only [egGjJpRst]
+  if  ( $line =~ /^[.']\\"[\segGjJpRst]+&/ ) {
     # this is a groff options leading line
     if ( $line =~ /^\./ ) {
       # line is a groff options line with . instead of '
@@ -239,6 +240,9 @@ sub do_first_line {
 	"instead of a period . for groff options line!";
     }
 
+    if ( $line =~ /j/ ) {
+      $Groff{'chem'}++;
+    }
     if ( $line =~ /e/ ) {
       $Groff{'eqn'}++;
     }
@@ -249,13 +253,7 @@ sub do_first_line {
       $Groff{'grap'}++;
     }
     if ( $line =~ /i/ ) {
-      $Groff{'ideal'}++;
-    }
-    if ( $line =~ /j/ ) {
-      $Groff{'chem'}++;
-    }
-    if ( $line =~ /J/ ) {
-      $Groff{'ideal'}++;
+      $Groff{'gideal'}++;
     }
     if ( $line =~ /p/ ) {
       $Groff{'pic'}++;
@@ -269,11 +267,28 @@ sub do_first_line {
     if ( $line =~ /t/ ) {
       $Groff{'tbl'}++;
     }
-    return 1;	# a leading groff options line
-  } else {
-    return 0;	# not a leading groff options line
+    return 1;	# a leading groff options line, 1 means yes, 0 means no
   }
-}	# sub do_first_line
+
+  # not a leading short groff options line
+
+  return 0 if ( $line !~ /^[.']\\"\s*(.*)$/ );	# ignore non-comments
+
+  return 0 unless ( $1 );	# for empty comment
+
+  # all following array members are either preprocs or 1 tmac, in 
+  my @words = split '\s+', $1;
+
+  for my $word ( @words ) {
+    if ( $word eq 'ideal' ) {
+      $word = 'gideal';
+    } elsif ( $word eq 'gpic' ) {
+      $word = 'pic';
+    } elsif ( $word =~ /^(gn|)eqn$/ ) {
+      $word = 'eqn';
+    }
+  }
+}
 
 
 ########################################################################
@@ -358,7 +373,7 @@ sub do_line {
     return;
   }
   if ( $command =~ /^\.IS$/ ) {
-    $Groff{'ideal'}++;		# for ideal
+    $Groff{'gideal'}++;		# preproc gideal for ideal
     return;
   }
   if ( $command =~ /^\.lilypond$/ ) {
@@ -678,20 +693,18 @@ EOF
 
   $Groff{'refer'} ||= $Groff{'refer_open'} && $Groff{'refer_close'};
 
-  if ( $Groff{'chem'} || $Groff{'eqn'} ||  $Groff{'ideal'} ||
+  if ( $Groff{'chem'} || $Groff{'eqn'} ||  $Groff{'gideal'} ||
        $Groff{'grap'} || $Groff{'grn'} || $Groff{'pic'} ||
        $Groff{'refer'} || $Groff{'tbl'} ) {
-    my $s = "-";
-    $s .= "e" if $Groff{'eqn'};
-    $s .= "G" if $Groff{'grap'};
-    $s .= "g" if $Groff{'grn'};
-    $s .= "J" if $Groff{'ideal'};
-    $s .= "j" if $Groff{'chem'};
-    $s .= "p" if $Groff{'pic'};
-    $s .= "R" if $Groff{'refer'};
-    $s .= "s" if $Groff{'soelim'};
-    $s .= "t" if $Groff{'tbl'};
-    push(@Command, $s);
+    push(@Command, '-e') if $Groff{'eqn'};
+    push(@Command, '-G') if $Groff{'grap'};
+    push(@Command, '-g') if $Groff{'grn'};
+    push(@Command, '-J') if $Groff{'gideal'};
+    push(@Command, '-j') if $Groff{'chem'};
+    push(@Command, '-p') if $Groff{'pic'};
+    push(@Command, '-R') if $Groff{'refer'};
+    push(@Command, '-s') if $Groff{'soelim'};
+    push(@Command, '-t') if $Groff{'tbl'};
   }
 
 

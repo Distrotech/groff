@@ -86,6 +86,36 @@ our $Prog = $0;
 
 &args_with_minus();
 
+
+# for first line check
+our %preprocs_tmacs = (
+		       'chem' => 0,
+		       'eqn' => 0,
+		       'gideal' => 0,
+		       'grap' => 0,
+		       'grn' => 0,
+		       'pic' => 0,
+		       'refer' => 0,
+		       'soelim' => 0,
+		       'tbl' => 0,
+
+		       'geqn' => 0,
+		       'gpic' => 0,
+		       'neqn' => 0,
+		       'ideal' => 0,
+
+		       'man' => 0,
+		       'mandoc' => 0,
+		       'mdoc' => 0,
+		       'mdoc-old' => 0,
+		       'me' => 0,
+		       'mm' => 0,
+		       'mom' => 0,
+		       'ms' => 0,
+		      );
+
+
+# known extensions of roff file names
 our %File_Name_Extensions = (
 		   'man' => 0,
 		   'mandoc' => 0,
