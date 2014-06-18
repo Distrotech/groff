@@ -230,7 +230,7 @@ sub args_with_minus {
 
 sub do_first_line {
   my ( $line, $file ) = @_;
-
+  our %preprocs_tmacs;
   # For a leading groff options line use only [egGjJpRst]
   if  ( $line =~ /^[.']\\"[\segGjJpRst]+&/ ) {
     # this is a groff options leading line
@@ -289,7 +289,7 @@ sub do_first_line {
     } elsif ( $word =~ /^(gn|)eqn$/ ) {
       $word = 'eqn';
     }
-    if ( exists $preproc_tmacs{$word} ) {
+    if ( exists $preprocs_tmacs{$word} ) {
       push $word, @in;
     } else {
       # not word for preproc or tmac
