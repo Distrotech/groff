@@ -27,6 +27,9 @@
 MAN1=grog.n
 MOSTLYCLEANADD=grog $(MAN1)
 
+# not all make programs have $(RM) predefined.
+RM=rm -f
+
 all: grog $(MAN1)
 
 # lib .pl-files
@@ -37,7 +40,7 @@ GROG_=`echo $(GROG) | sed 's|$(srcdir)/||g'`
 # Perl version works for all parts of `groff'.
 
 grog: grog.pl $(GROG) $(SH_DEPS_SED_SCRIPT)
-	rm -f $@
+	$(RM) $@
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
 	    -e "1s|^\(#! \).*perl|\\1$(PERL)|" \
 	    -e "s|@g@|$(g)|g" \
@@ -52,19 +55,28 @@ grog: grog.pl $(GROG) $(SH_DEPS_SED_SCRIPT)
 .PHONY: install_data
 install_data: grog
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/grog
+	$(RM) $(DESTDIR)$(bindir)/grog
 	$(INSTALL_SCRIPT) grog $(DESTDIR)$(bindir)/grog
 	-test -d $(DESTDIR)$(grog_dir) || $(mkinstalldirs) $(DESTDIR)$(grog_dir)
 	for f in $(GROG_); do \
-	  rm -f $(DESTDIR)$(grog_dir)/$$f; \
+	  $(RM) $(DESTDIR)$(grog_dir)/$$f; \
 	  $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(grog_dir)/$$f; \
 	done
 
 .PHONY: uninstall_data
 uninstall_sub:
-	rm -f $(DESTDIR)$(bindir)/grog
+	$(RM) $(DESTDIR)$(bindir)/grog
 	-for f in $(GROG_); do \
-	  rm -f $(DESTDIR)$(grog_dir)/$$f; \
+	  $(RM) $(DESTDIR)$(grog_dir)/$$f; \
 	done
 	-d=$(DESTDIR)$(grog_dir);\
 	  if test -d $$d; then rmdir $$d; fi
+
+
+########################################################################
+# Emacs settings
+########################################################################
+#
+# Local Variables:
+# mode: makefile
+# End:

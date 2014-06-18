@@ -30,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-our $Last_Update = '16 Jun 2014';
+our $Last_Update = '18 Jun 2014';
 ########################################################################
 
 require v5.6;
@@ -49,15 +49,12 @@ my $before_make;	# script before run of `make'
 
 
 our %at_at;
-my $file_perl_test_pl;
 my $grog_dir;
 
 if ($before_make) { # before installation
   my $grog_source_dir = $FindBin::Bin;
   $at_at{'BINDIR'} = $grog_source_dir;
   $grog_dir = $grog_source_dir;
-  $file_perl_test_pl = File::Spec->catfile($grog_source_dir,
-					   'perl_test.pl');
   my $top = $grog_source_dir . '/../../../';
   open FILE, '<', $top . 'VERSION' ||
     die 'Could not open top file VERSION.';
@@ -73,8 +70,6 @@ if ($before_make) { # before installation
   $at_at{'GROFF_VERSION'} = '@VERSION@';
   $at_at{'BINDIR'} = '@BINDIR@';
   $grog_dir = '@grog_dir@';
-  $file_perl_test_pl = File::Spec->catfile($grog_dir,
-					   'perl_test.pl');
 }
 
 die "$grog_dir is not an existing directory;" unless -d $grog_dir;
