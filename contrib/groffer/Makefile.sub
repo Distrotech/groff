@@ -7,7 +7,7 @@
 # Written by Werner Lemberg <wl@gnu.org> and
 # Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 11 Jun 2014
+# Last update: 18 Jun 2014
 
 # This file is part of `groffer' which is part of `groff'.
 
@@ -40,14 +40,13 @@ MAN1=groffer.n \
      roff2text.n \
      roff2x.n
 
-MOSTLYCLEANADD=groffer HAVE_PERL $(MAN1) $(ROFF2MAN) $(ROFF2PROGS)
+MOSTLYCLEANADD=groffer $(MAN1) $(ROFF2MAN) $(ROFF2PROGS)
 
 all: groffer
 
 GROFFER_PERL=subs.pl \
              main_subs.pl \
              man.pl \
-             perl_test.pl \
              split_env.sh
 GROFFER_REST=roff2.man \
              version.sh \
@@ -57,21 +56,17 @@ GROFFER_REST=roff2.man \
 
 groffer: $(GROFFER_PERL) \
 		$(GROFFER_REST) $(SH_DEPS_SED_SCRIPT)
-	if perl $(srcdir)/perl_test.pl 2>&1 >/dev/null; then \
-	  : >HAVE_PERL; \
-	  echo "Using perl version of groffer."; \
-	  sed -f "$(SH_DEPS_SED_SCRIPT)" \
-	      -e "s|@g@|$(g)|g" \
-	      -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
-	      -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
-	      -e "s|@groffer_dir@|$(DESTDIR)$(groffer_dir)|g" \
-	      -e "s|@VERSION@|$(version)$(revision)|g" \
-	      -e "$(SH_SCRIPT_SED_CMD)" \
-	      $(srcdir)/groffer.pl >$@; \
-	  for f in $(ROFF2PROGS); do \
-	    cp $(srcdir)/roff2.pl $$f; \
-	  done; \
-	fi
+	sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	    -e "s|@g@|$(g)|g" \
+	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
+	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
+	    -e "s|@groffer_dir@|$(DESTDIR)$(groffer_dir)|g" \
+	    -e "s|@VERSION@|$(version)$(revision)|g" \
+	    -e "$(SH_SCRIPT_SED_CMD)" \
+	     $(srcdir)/groffer.pl >$@; \
+	for f in $(ROFF2PROGS); do \
+	  cp $(srcdir)/roff2.pl $$f; \
+	done; \
 	chmod +x $@
 	for m in $(ROFF2MODES); do \
 	  cat $(srcdir)/roff2.man \
@@ -93,11 +88,9 @@ install_data: groffer
 	for f in $(GROFFER_PERL); do \
 	  rm -f $(DESTDIR)$(groffer_dir)/$$f; \
 	done
-	if test -f HAVE_PERL; then \
-	  for f in $(GROFFER_PERL); do \
-	    $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(groffer_dir)/$$f; \
-	  done; \
-	fi
+	for f in $(GROFFER_PERL); do \
+	  $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(groffer_dir)/$$f; \
+	done;
 
 uninstall_sub:
 	rm -f $(DESTDIR)$(bindir)/groffer
@@ -106,3 +99,12 @@ uninstall_sub:
 	  rm -f $(DESTDIR)$(groffer_dir)/$$f;\
 	done
 	-rmdir $(DESTDIR)$(libdir)/groff/groffer
+
+
+########################################################################
+# Emacs settings
+########################################################################
+#
+# Local Variables:
+# mode: makefile
+# End:

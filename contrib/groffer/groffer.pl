@@ -57,6 +57,8 @@ use FindBin;
 # system variables and exported variables
 ########################################################################
 
+require 5.6.1;
+
 our $Dev_Null;
 our $Umask;
 our @Path;
@@ -113,7 +115,6 @@ my $before_make;		# script before run of `make'
 }
 
 my %at_at;
-my $file_perl_test_pl;
 my $groffer_libdir;
 
 if ($before_make) {
@@ -122,8 +123,6 @@ if ($before_make) {
   $at_at{'G'} = '';
   $at_at{'LIBDIR'} = '';
   $groffer_libdir = $groffer_source_dir;
-  $file_perl_test_pl = File::Spec->catfile($groffer_source_dir,
-					       'perl_test.pl');
   $File_version_sh = File::Spec->catfile($groffer_source_dir, 'version.sh');
   $Groff_Version = '';
 } else {
@@ -132,8 +131,6 @@ if ($before_make) {
   $at_at{'G'} = '@g@';
   $at_at{'LIBDIR'} = '@libdir@';
   $groffer_libdir = '@groffer_dir@';
-  $file_perl_test_pl = File::Spec->catfile($groffer_libdir,
-					       'perl_test.pl');
   $File_version_sh = File::Spec->catfile($groffer_libdir, 'version.sh');
 }
 
@@ -144,10 +141,6 @@ unshift(@INC, $groffer_libdir);
 
 $File_split_env_sh = File::Spec->catfile($groffer_libdir, 'split_env.sh');
 die "$File_split_env_sh does not exist;" unless -f "$File_split_env_sh";
-
-# test perl on suitable version
-die "$file_perl_test_pl does not exist;" unless -f "$file_perl_test_pl";
-do "$file_perl_test_pl" or die "Perl test: $@";
 
 require 'subs.pl';
 require 'main_subs.pl';
