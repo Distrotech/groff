@@ -279,7 +279,9 @@ sub do_first_line {
   # all following array members are either preprocs or 1 tmac, in 
   my @words = split '\s+', $1;
 
-  for my $word ( @words ) {
+  my @in = ();
+  my $word;
+  for $word ( @words ) {
     if ( $word eq 'ideal' ) {
       $word = 'gideal';
     } elsif ( $word eq 'gpic' ) {
@@ -287,7 +289,18 @@ sub do_first_line {
     } elsif ( $word =~ /^(gn|)eqn$/ ) {
       $word = 'eqn';
     }
+    if ( exists $preproc_tmacs{$word} ) {
+      push $word, @in;
+    } else {
+      # not word for preproc or tmac
+      return 0;
+    }
   }
+
+  for $word ( @in ) {
+    $Groff{$word}++ ;
+  }
+
 }
 
 
