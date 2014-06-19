@@ -1,8 +1,5 @@
 .ig
-before installation: <top-groff-source>/src/roff/groff/groff.man
-after installation:  </usr or /usr/local>/share/man/man7/groff/groff.1
-
-Latest update: 19 Jun 2014
+groff.man
 
 Copyright (C) 1989, 2002-2009, 2011, 2014
 Free Software Foundation, Inc.
@@ -1499,7 +1496,93 @@ This device name is overwritten by the option
 .
 .
 .\" --------------------------------------------------------------------
-.SH FILES
+.SH EXAMPLES
+.\" --------------------------------------------------------------------
+.
+The following example illustrates the power of the
+.B groff
+program as a wrapper around
+.BR @g@troff .
+.
+.P
+To process a
+.I roff
+file using the preprocessors
+.B tbl
+and
+.B pic
+and the
+.B me
+macro set, classical
+.I troff
+had to be called by
+.
+.IP
+.EX
+pic foo.me | tbl | troff \-me \-Tlatin1 | grotty
+.EE
+.
+.P
+Using
+.BR groff ,
+this pipe can be shortened to the equivalent command
+.
+.IP
+.EX
+groff \-p \-t \-me \-T latin1 foo.me
+.EE
+.
+.P
+An even easier way to call this is to use
+.BR grog (@MAN1EXT@)
+to guess the preprocessor and macro options and execute the generated
+command (by using backquotes to specify shell command substitution)
+.
+.IP
+.EX
+\`grog \-Tlatin1 foo.me\`
+.EE
+.
+.P
+The simplest way is to view the contents in an automated way by
+calling
+.
+.IP
+.EX
+groffer foo.me
+.EE
+.
+.
+.\" --------------------------------------------------------------------
+.SH BUGS
+.\" --------------------------------------------------------------------
+.
+.P
+On \f[CR]EBCDIC\f[] hosts (e.g., \f[CR]OS/390 Unix\f[]), output
+devices
+.B ascii
+and
+.B latin1
+aren't available.
+.
+Similarly, output for \f[CR]EBCDIC\f[] code page
+.B cp1047
+is not available on \f[CR]ASCII\f[] based operating systems.
+.
+.P
+Report bugs to
+.MT bug-groff@gnu.org
+the groff mailing list
+.ME .
+.
+Include a complete, self-contained example that allows the bug to
+be reproduced, and say which version of
+.I groff
+you are using.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "POSITIONS FROM INSTALLATION"
 .\" --------------------------------------------------------------------
 .
 There are some directories in which
@@ -1593,89 +1676,63 @@ of device
 .
 .
 .\" --------------------------------------------------------------------
-.SH EXAMPLES
+.SS "collection of installation positions"
 .\" --------------------------------------------------------------------
 .
-The following example illustrates the power of the
-.B groff
-program as a wrapper around
-.BR @g@troff .
-.
-.P
-To process a
-.I roff
-file using the preprocessors
-.B tbl
-and
-.B pic
-and the
-.B me
-macro set, classical
-.I troff
-had to be called by
-.
-.IP
-.EX
-pic foo.me | tbl | troff \-me \-Tlatin1 | grotty
-.EE
-.
-.P
-Using
-.BR groff ,
-this pipe can be shortened to the equivalent command
-.
-.IP
-.EX
-groff \-p \-t \-me \-T latin1 foo.me
-.EE
-.
-.P
-An even easier way to call this is to use
-.BR grog (@MAN1EXT@)
-to guess the preprocessor and macro options and execute the generated
-command (by using backquotes to specify shell command substitution)
-.
-.IP
-.EX
-\`grog \-Tlatin1 foo.me\`
-.EE
-.
-.P
-The simplest way is to view the contents in an automated way by
-calling
-.
-.IP
-.EX
-groffer foo.me
-.EE
-.
-.
-.\" --------------------------------------------------------------------
-.SH BUGS
-.\" --------------------------------------------------------------------
-.
-.P
-On \f[CR]EBCDIC\f[] hosts (e.g., \f[CR]OS/390 Unix\f[]), output
-devices
-.B ascii
-and
-.B latin1
-aren't available.
-.
-Similarly, output for \f[CR]EBCDIC\f[] code page
-.B cp1047
-is not available on \f[CR]ASCII\f[] based operating systems.
-.
-.P
-Report bugs to
-.MT bug-groff@gnu.org
-the groff mailing list
-.ME .
-.
-Include a complete, self-contained example that allows the bug to
-be reproduced, and say which version of
+This section describes the position of all files of the
 .I groff
-you are using.
+package after the installation.
+.
+For other installation processes, the position can be quite different.
+.
+.TP
+.B @DEFAULT_INDEX@
+index directory and index name
+.TP
+.B @LEGACYFONTDIR@
+legacy font directory
+.TP
+.B @BINDIR@
+directory for binary programs
+.TP
+.B @SYSTEMMACRODIR@
+system tmac directory
+.TP
+.B @DOCDIR@
+documentation directory
+.TP
+.B @EXAMPLEDIR@
+directory for examples
+.TP
+.B @HTMLDOCDIR@
+documentation directory for html files
+.TP
+.B @PDFDOCDIR@
+documentation directory for pdf files
+.TP
+.B @DATASUBDIR@
+data subdirectory
+.TP
+.B @COMMON_WORDS_FILE@
+file for common words
+.TP
+.B @FONTDIR@
+directory for fonts
+.TP
+.B @OLDFONTDIR@
+directory for old fonts
+.TP
+.B @MACRODIR@
+tmac directory
+.TP
+.B @TMAC_MDIR@
+mm tmac directory
+.TP
+.B @LOCALFONTDIR@
+local font directory
+.TP
+.B @LOCALMACRODIR@
+local tmac directory
 .
 .
 .\" --------------------------------------------------------------------
@@ -1741,53 +1798,6 @@ This is the only grap version supported by
 .
 .
 .\" --------------------------------------------------------------------
-.SH AUTHORS
-.\" --------------------------------------------------------------------
-.
-Copyright \(co 2014
-Free Software Foundation, Inc.
-.
-.P
-This document is distributed under the terms of the \f[CR]FDL\f[]
-(\f[CR]GNU Free Documentation License\f[]) version 1.3 or later.
-.
-You should have received a copy of the \f[CR]FDL\f[] on your system,
-it is also available on-line at the
-.UR http://\:www.gnu.org/\:copyleft/\:fdl.html
-GNU copyleft site
-.UE .
-.
-.P
-This document is based on the original
-.I groff
-man page written by
-.MT jjc@jclark.com
-James Clark
-.UE .
-.
-It was rewritten, enhanced, and put under the FDL license by
-Bernd Warken <groff-bernd.warken-72@web.de>.
-.
-It is maintained by
-.MT wl@gnu.org
-Werner Lemberg
-.ME .
-.
-.P
-.I groff
-is a \f[CR]GNU\f[] free software project.
-.
-All parts of the
-.I groff package
-are protected by \f[CR]GNU copyleft licenses\f[].
-.
-The software files are distributed under the terms of the \f[CR]GNU
-General Public License\f[] (\f[CR]GPL\f[]), while the documentation
-files mostly use the \f[CR]GNU Free Documentation License\f[]
-(\f[CR]FDL\f[]).
-.
-.
-.\" --------------------------------------------------------------------
 .SH "SEE ALSO"
 .\" --------------------------------------------------------------------
 .ad l
@@ -1812,6 +1822,37 @@ They can be read with
 .BR man (1)
 or
 .BR \%groffer (@MAN1EXT@).
+.
+.P
+But there are special sections of
+.IR man-pages .
+.
+.groff
+has man-pages in sections
+.BR 1 , " 5" , and " 7" .
+.
+When there are several
+.I man-pages
+with the same name in the same
+.I man
+section, the one with the lowest section is should as first.
+.
+The other man-pages can be shown anyway by adding the section number
+as argument before the man-page name.
+.
+Reading the man-page about the
+.I groff
+language is done by one of
+.RS
+.nf
+.nh
+.EX
+.B man 7 groff
+.B groffer 7 groff
+.EE
+.hy
+.fi
+.RE
 .
 .TP
 Introduction, history and further readings:
@@ -1900,6 +1941,53 @@ The following utilities are available:
 .BR \%pic2graph (@MAN1EXT@),
 .BR \%tfmtodit (@MAN1EXT@),
 .BR \%xtotroff (@MAN1EXT@).
+.
+.\" --------------------------------------------------------------------
+.SH AUTHORS
+.\" --------------------------------------------------------------------
+.
+Copyright \(co 2014
+Free Software Foundation, Inc.
+.
+.P
+This document is distributed under the terms of the \f[CR]FDL\f[]
+(\f[CR]GNU Free Documentation License\f[]) version 1.3 or later.
+.
+You should have received a copy of the \f[CR]FDL\f[] on your system,
+it is also available on-line at the
+.UR http://\:www.gnu.org/\:copyleft/\:fdl.html
+GNU copyleft site
+.UE .
+.
+.P
+This document is based on the original
+.I groff
+man page written by
+.MT jjc@jclark.com
+James Clark
+.UE .
+.
+It was rewritten, enhanced, and put under the FDL license by
+Bernd Warken <groff-bernd.warken-72@web.de>.
+.
+It is maintained by
+.MT wl@gnu.org
+Werner Lemberg
+.ME .
+.
+.P
+.I groff
+is a \f[CR]GNU\f[] free software project.
+.
+All parts of the
+.I groff package
+are protected by \f[CR]GNU copyleft licenses\f[].
+.
+The software files are distributed under the terms of the \f[CR]GNU
+General Public License\f[] (\f[CR]GPL\f[]), while the documentation
+files mostly use the \f[CR]GNU Free Documentation License\f[]
+(\f[CR]FDL\f[]).
+.
 .
 .\" --------------------------------------------------------------------
 .\" Emacs setup
