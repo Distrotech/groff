@@ -291,7 +291,7 @@ sub do_first_line {
       $word = 'eqn';
     }
     if ( exists $preprocs_tmacs{$word} ) {
-      push $word, @in;
+      push @in, $word;
     } else {
       # not word for preproc or tmac
       return 0;
