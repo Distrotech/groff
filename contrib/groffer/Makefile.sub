@@ -72,18 +72,13 @@ groffer: $(GROFFER_PERL) $(GROFFER_REST) $(SH_DEPS_SED_SCRIPT)
 	    | sed 's/@ROFF2MODE@/'"$$m"'/g' > roff2$${m}.man; \
 	done
 
-install_data: groffer groffer.tmac
+install_data: groffer
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	rm -f $(DESTDIR)$(bindir)/groffer
 	$(INSTALL_SCRIPT) groffer $(DESTDIR)$(bindir)/groffer
 	for f in $(ROFF2PROGS); do \
 	  rm -f $(DESTDIR)$(bindir)/$$f; \
 	  $(INSTALL_SCRIPT) $$f $(DESTDIR)$(bindir)/$$f; \
-	done
-	- test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
-	for f in groffer.tmac; do \
-	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(tmacdir)/$$f; \
 	done
 	-test -d $(DESTDIR)$(groffer_dir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(groffer_dir)
@@ -97,7 +92,6 @@ install_data: groffer groffer.tmac
 	done;
 
 uninstall_sub:
-	rm -f $(DESTDIR)$(tmacdir)/groffer.tmac
 	rm -f $(DESTDIR)$(bindir)/groffer
 	-for f in $(ROFF2PROGS); do rm -f $(DESTDIR)$(bindir)/$$f; done
 	-for f in $(GROFFER_PERL) version.sh; do \
