@@ -1,10 +1,16 @@
+.TH @G@CHEM @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+@g@chem \- groff preprocessor for producing chemical structure diagrams
+.
+.SH "SYNOPSIS"
+.
 .ig
 @g@chem.1 - man page for @g@chem (section 1).
 
 Source file position:  <groff_source_top>/contrib/chem/chem.man
 Installed position:    $prefix/share/man/man1/@g@chem.1
 
-Last update: 27 Mar 2014
+Last update: 3 Jul 2014
 ..
 .
 .
@@ -56,48 +62,26 @@ is available in the internet at
 .\" --------------------------------------------------------------------
 .\" Local macro definitions
 .
-.ds El \&.\|.\|.\&
-.
-.\" .File_name  (<path_name>)
-.\"
-.\" Display a file or directory name in CB font.
-.\"
-.de FN
-.  CB \\$@
-..
-.
-.\" .CB  (<path_name>)
-.\"
-.\" Display a line in CB font, for example after .TP
-.\"
-.de CB
-.nh
-\\&\\f(CB\\$1\\fP\\$2
-.hy
-..
+.mso groffer.tmac
 .
 .\" End of macro definitions
 .
 .
-.TH @G@CHEM @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-.SH NAME
-@g@chem \- groff preprocessor for producing chemical structure diagrams
-.
-.
-.SH "SYNOPSIS"
 .\" --------------------------------------------------------------------
 .\" SH "SYNOPSIS"
 .\" --------------------------------------------------------------------
 .
 .SY @g@chem
-.RI [ "\%option" \*(El]
+.OP \fI\%option \[Ellipsis]\fP
 .OP \-\-
-.RI [ "\%filespec" \*(El]
+.OP \fI\%filespec \[Ellipsis]\fP
+.YS
 .
 .SY @g@chem
 .B \-h
 |
 .B \-\-help
+.YS
 .
 .SY @g@chem
 .B \-v
@@ -165,16 +149,16 @@ language.
 The program
 .B @g@chem
 originates from the Perl source file
-.FN chem.pl .
+.FONT CB chem.pl .
 It tells
 .B @g@pic
 to include a copy of the macro file
-.FN chem.pic .
+.FONT CB chem.pic .
 .
 Moreover the
 .I groff
 source file
-.FN pic.tmac
+.FONT CB pic.tmac
 is loaded.
 .
 .
@@ -261,7 +245,7 @@ followed by
 .BR groffer :
 .
 .IP
-.B "@g@chem [file\*(El] | groffer"
+.B @g@chem [file \[Ellipsis]] | groffer
 .
 .P
 If you want to create just
@@ -275,7 +259,7 @@ with the option
 for the activation of
 .BR @g@pic :
 .IP
-.B "@g@chem [file\*(El] | groff \-p \*(El"
+.B @g@chem [file \[Ellipsis]] | groff \-p \[Ellipsis]
 .
 .
 .\" --------------------------------------------------------------------
@@ -289,7 +273,7 @@ and a way to glue them together as desired, bonds of several styles,
 moieties (e.g.,
 .BR C ,
 .BR NH3 ,
-\*(El), and strings.
+\[Ellipsis], and strings.
 .
 .
 .\" --------------------------------------------------------------------
@@ -449,14 +433,14 @@ puts a circle into any kind of ring.
 .RB [ \%double\ \c
 .IR i , j\ \c
 .IR k , l\ \c
-\*(El]
+\[Ellipsis]
 .RI [ picstuff ]
 .YS
 .RE
 .
 .
 .P
-The vertices of a ring are numbered 1, 2, \*(El from the
+The vertices of a ring are numbered 1, 2, \[Ellipsis] from the
 vertex that points in the natural compass direction.
 .
 So for a hexagonal ring with the point at the top, the top vertex
@@ -477,7 +461,7 @@ R2: ring pointing right
 .P
 The ring vertices are named
 .BR .V1 ,
-\*(El,
+\[Ellipsis],
 .BI .V n\fR,\fP
 with
 .B .V1
@@ -517,7 +501,7 @@ creates two benzene rings connected along a side.
 .
 .P
 Interior double bonds are specified as
-.BI \%double\  n1 , n2\ n3 , n4\ \fR\*(El;\fP
+.BI \%double\  n1 , n2\ n3 , n4\ \fR\[Ellipsis];\fP
 each number pair adds an interior bond.
 .
 So the alternate form of a benzene ring is
@@ -654,7 +638,7 @@ command.
 .
 It represents a string that should be printed (without the quotes).
 .
-Text within quotes \(dq\*(El\(dq is treated more or less
+Text within quotes \(dq\[Ellipsis]\(dq is treated more or less
 like a moiety except that no changes are made to the quoted part.
 .
 .
@@ -674,7 +658,7 @@ A name is just
 .
 .IP
 .IB Name :
-\*(El
+\[Ellipsis]
 .
 .
 .P
@@ -703,7 +687,7 @@ only letters and numbers is valid:
 The specific construction
 .RS
 .TP
-.BR bond\  \*(El " ; moiety"
+.BR bond\  \[Ellipsis] " ; moiety"
 .RE
 .P
 is equivalent to
@@ -855,7 +839,7 @@ properties of built-in objects.
 .
 .
 .P
-There is no in-line chemistry yet (e.g., analogous to the $\*(El$
+There is no in-line chemistry yet (e.g., analogous to the $\[Ellipsis]$
 construct of eqn).
 .
 .
@@ -889,14 +873,14 @@ A squiggle bond is needed.
 .\" --------------------------------------------------------------------
 .
 .TP
-.FN @DATASUBDIR@/pic/chem.pic
+.FONT CB @DATASUBDIR@/pic/chem.pic
 A collection of
 .I pic
 macros needed by
 .BR @g@chem .
 .
 .TP
-.FN @MACRODIR@/pic.tmac
+.FONT CB @MACRODIR@/pic.tmac
 A macro file which redefines
 .B .PS
 and
@@ -906,12 +890,12 @@ to center
 diagrams.
 .
 .TP
-.FN @DOCDIR@/examples/chem/*.chem
+.FONT CB @DOCDIR@/examples/chem/*.chem
 Example files for
 .IR chem .
 .
 .TP
-.FN @DOCDIR@/examples/chem/122/*.chem
+.FONT CB @DOCDIR@/examples/chem/122/*.chem
 Example files from the classical
 .I chem
 book
@@ -973,7 +957,7 @@ chem awk source
 .UE .
 .
 Its
-.FN README
+.FONT CB README
 file was used for this manual page.
 .
 .
