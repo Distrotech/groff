@@ -51,7 +51,6 @@ install_data: gideal
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	$(RM) $(DESTDIR)$(bindir)/gideal
 	$(INSTALL_SCRIPT) gideal $(DESTDIR)$(bindir)/gideal
-
 	-test -d $(DESTDIR)$(datasubdir) \
           || $(mkinstalldirs) $(DESTDIR)$(datasubdir)
 	-test -d $(DESTDIR)$(datasubdir)/ideal \
@@ -63,7 +62,6 @@ install_data: gideal
 	  n=`echo $$i | sed 's|$(srcdir)/libfiles/||g'`; \
 	  $(INSTALL_DATA) $$i $(DESTDIR)$(datasubdir)/ideal/libfiles/$$n; \
 	done
-
 	-test -d $(DESTDIR)$(exampledir) \
           || $(mkinstalldirs) $(DESTDIR)$(exampledir)
 	-test -d $(DESTDIR)$(exampledir)/ideal \
@@ -80,7 +78,12 @@ install_data: gideal
 .PHONY: uninstall_sub
 uninstall_sub:
 	$(RM) $(DESTDIR)$(bindir)/gideal
+	-rmdir $(DESTDIR)$(bindir)
+	$(RM) $(DESTDIR)$(datasubdir)/ideal/files/*
+	-rmdir $(DESTDIR)$(datasubdir)/ideal/files
 	$(RM) $(DESTDIR)$(datasubdir)/ideal/libfiles/*
+	-rmdir $(DESTDIR)$(datasubdir)/ideal/libfiles
+	-rmdir $(DESTDIR)$(datasubdir)/ideal
 
 
 ########################################################################
