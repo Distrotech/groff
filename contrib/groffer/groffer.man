@@ -9,15 +9,15 @@ groffer \- display groff files and man\~pages on X and tty
 .\" Legalese
 .\" --------------------------------------------------------------------
 .
-.de author
+.de authors
 This file was written by Bernd Warken <groff-bernd.warken-72@web.de>.
 .
 .
 .P
-Latest update: 31 May 2014
+Latest update: 3 Jul 2014
 ..
 .de co
-Copyright (C) 2001, 2002, 2004\[en]2006, 2009\[en]2012, 2014
+Copyright (C) 2001\[en]2002, 2004\[en]2006, 2009\[en]2012, 2014
   Free Software Foundation, Inc.
 .
 .P
@@ -43,114 +43,7 @@ The license text is available in the internet at
 .UE .
 ..
 .
-.\" --------------------------------------------------------------------
-.\" Setup
-.\" --------------------------------------------------------------------
-.
-.char \[Ellipsis] \f[S]\N'188'\fP
-.
-.\" ds Ellipsis \[el]
-.\" ds Ellipsis "\&.\|.\|.\&\"
-.
-.\" --------------------------------------------------------------------
-.\" Macro definitions
-.
-.\" --------------------------------------------------------------------
-.\" .CB  (<text>...)
-.\"
-.\" Print in constant-width bold font.
-.\"
-.de CB
-.  ft CB
-.  Text \\$*
-.  ft
-..
-.\" --------------------------------------------------------------------
-.\" .CI  (<text>...)
-.\"
-.\" Print in constant-width italic font.
-.\"
-.de CI
-.  ft CI
-.  Text \\$*
-.  ft
-..
-.\" --------------------------------------------------------------------
-.\" .CR  (<text>...)
-.\"
-.\" Print in constant-width roman font.
-.\"
-.de CR
-.  ft CR
-.  Text \\$*
-.  ft
-..
-.\" --------------------------------------------------------------------
-.\" .Error  (<text>...)
-.\"
-.\" Print error message to terminal and abort.
-.\"
-.de Error
-.  tm \\$*
-.  ab
-..
-.\" --------------------------------------------------------------------
-.\" .Env_var  (<env_var_name> [<punct>])
-.\"
-.\" Display an environment variable, with optional punctuation.
-.\"
-.de Env_var
-.  nh
-.  SM
-.  Text \f[CB]\\$1\f[]\\$2
-.  hy
-..
-.\" --------------------------------------------------------------------
-.\" .File_name  (<path_name>)
-.\"
-.\" Display a file or directory name in CB font.
-.\"
-.de File_name
-.  Header_CB \\$@
-..
-.\" --------------------------------------------------------------------
-.\" .Header_CB  (<path_name>)
-.\"
-.\" Display a line in CB font, for example after .TP
-.\"
-.de Header_CB
-.  nh
-.  Text \f[CB]\\$1\f[]\\$2
-.  hy
-..
-.\"  --------------------------------------------------------------------
-.\" .Text  (<text>...)
-.\"
-.\" Treat the arguments as text, no matter how they look.
-.\"
-.de Text
-.  if \\n[.$]=0 \
-.    return
-.  nh
-.  nop \)\\$*\)
-.  hy
-..
-.\" --------------------------------------------------------------------
-.\" .Topic  ([<indent>])
-.\"
-.\" A bulleted paragraph
-.\"
-.de Topic
-.  ie \\n[.$]=0 \
-.    ds @indent 2m\"
-.  el \
-.    ds @indent \\$1\"
-.  IP \[bu] \\*[@indent]
-.  rm @indent
-..
-
-.\" End of macro definitions
-.
+.mso groffer.tmac
 .
 .\" --------------------------------------------------------------------
 .\" SH "SYNOPSIS"
@@ -777,7 +670,7 @@ when a different mode was specified before.
 .
 .
 .TP
-.Header_CB dvi
+.FONT CB dvi
 Display formatted input in a
 .I \%dvi
 viewer program.
@@ -788,7 +681,7 @@ program.
 .
 .
 .TP
-.Header_CB groff
+.FONT CB groff
 After the file determination, switch
 .B \%groffer
 to process the input like
@@ -801,7 +694,7 @@ viewing features.
 .
 .
 .TP
-.Header_CB html
+.FONT CB html
 Translate the input into html format and display the result in a web
 browser program.
 .
@@ -815,7 +708,7 @@ The text html viewer is
 .
 .
 .TP
-.Header_CB pdf
+.FONT CB pdf
 Transform
 .I roff input files
 into a
@@ -836,7 +729,7 @@ is displayed with suitable viewer programs, such as
 .
 .
 .TP
-.Header_CB pdf2
+.FONT CB pdf2
 This is the traditional
 .IR "pdf mode" .
 .
@@ -859,7 +752,7 @@ Finally it is displayed using different viewer programs.
 .
 .
 .TP
-.Header_CB ps
+.FONT CB ps
 Display formatted input in a Postscript viewer program.
 .
 By default, the formatted input is displayed in one of many viewer
@@ -867,7 +760,7 @@ programs.
 .
 .
 .TP
-.Header_CB text
+.FONT CB text
 Format in a
 .I \%groff\~text\~mode
 and write the result to standard output without a pager or viewer
@@ -880,7 +773,7 @@ by default, can be chosen with option
 .
 .
 .TP
-.Header_CB tty
+.FONT CB tty
 Format in a
 .I \%groff\~text\~mode
 and write the result to standard output using a text pager program,
@@ -888,13 +781,13 @@ even when in \%\f[CR]X\~Window\f[].
 .
 .
 .TP
-.Header_CB www
+.FONT CB www
 Equivalent to
 .BR \-\-mode=html .
 .
 .
 .TP
-.Header_CB x
+.FONT CB x
 Display the formatted input in a native
 .I roff
 viewer.
@@ -936,7 +829,7 @@ the default width of the geometry of the display program is chosen to
 .
 .
 .TP
-.Header_CB X
+.FONT CB X
 Equivalent to
 .BR \-\-mode=x .
 .
@@ -950,7 +843,7 @@ They are only interesting for advanced applications.
 .
 .
 .TP
-.Header_CB groff
+.FONT CB groff
 Generate device output with plain
 .I \%groff
 without using the special viewing features of
@@ -965,7 +858,7 @@ is assumed.
 .
 .
 .TP
-.Header_CB source
+.FONT CB source
 Output the roff source code of the input files without further
 processing.
 .
@@ -2875,11 +2768,11 @@ and the part
 .File_name .7
 stand for the
 .IR section ;
-.File_name groff
+.FONT CB groff
 is the name of the
 .IR \%man\~page ;
 the final part
-.File_name .gz
+.FONT CB .gz
 stands for a compression with
 .BR gzip (1).
 As the
@@ -2894,25 +2787,25 @@ This can be done by one of the following commands.
 .EE
 .
 .TP
-.File_name /usr/local/man/man1/ctags.1emacs21.bz2
+.FONT CB /usr/local/man/man1/ctags.1emacs21.bz2
 Here
 .File_name /usr/local/man
 must be in
 .IR \%man\~path ;
 the subdirectory
-.File_name man1/
+.FONT CB man1/
 and the file name part
-.File_name .1
+.FONT CB .1
 stand for
 .IR section\~1 ;
 the name of the
 .I \%man\~page
 is
-.File_name ctags ;
+.FONT CB ctags R ;
 the section has an extension
-.File_name emacs21 ;
+.FONT CB emacs21 R ;
 and the file is compressed as
-.File_name .bz2
+.FONT CB .bz2
 with
 .BR bzip2 (1).
 The file can be viewed with one of the following commands
@@ -2926,31 +2819,31 @@ where \f[CR]e\fP works as an abbreviation for the extension
 .
 .
 .TP
-.File_name /usr/man/linux/de/man7/man.7.Z
+.FONT CB /usr/man/linux/de/man7/man.7.Z
 The directory
-.File_name /usr/man
+.FONT CB /usr/man
 is now part of the
 .IR \%man\~path ;
 then there is a subdirectory for an
 .I operating system
 name
-.File_name linux/ ;
+.FONT CB linux/ R ;
 next comes a subdirectory
-.File_name de/
+.FONT CB de/
 for the German
 .IR language ;
 the
 .I section
 names
-.File_name man7
+.FONT CB man7
 and
-.File_name .7
+.FONT CB .7
 are known so far;
-.File_name man
+.FONT CB man
 is the name of the
 .IR \%man\~page ;
 and
-.File_name .Z
+.FONT CB .Z
 signifies the compression that can be handled by
 .BR gzip (1).
 We want now show how to provide several values for some options.
@@ -3265,13 +3158,13 @@ program can be preconfigured by two configuration files.
 .
 .
 .TP
-.File_name \%/etc/groff/groffer.conf
+.FONT CB \%/etc/groff/groffer.conf
 System-wide configuration file for
 .BR \%groffer .
 .
 .
 .TP
-.File_name \%$HOME/.groff/groffer.conf
+.FONT CB \%$HOME/.groff/groffer.conf
 User-specific configuration file for
 .BR \%groffer ,
 where
@@ -3285,7 +3178,7 @@ overriding by the user.
 .P
 Both files are handled for the configuration, but the configuration
 file in
-.File_name /etc
+.FONT CB /etc
 comes first; it is overwritten by the configuration file in the home
 directory; both configuration files are overwritten by the environment
 variable
@@ -3369,7 +3262,7 @@ So there are no shell commands in the configuration files.
 .P
 As an example, consider the following configuration file that can be
 used either in
-.File_name \%/etc/groff/groffer.conf
+.FONT CB \%/etc/groff/groffer.conf
 or
 .File_name \%\s+2~\s0/.groff/groffer.conf .
 .
@@ -3480,7 +3373,7 @@ pager program when not in \%\f[CR]X\~Window\fP.
 .EE
 .sp
 If the file
-.File_name \%./groff
+.FONT CB \%./groff
 exists use it as input.
 .
 Otherwise interpret the argument as a search for the
@@ -3501,7 +3394,7 @@ search for the
 of
 .B \%groff
 even when the file
-.File_name ./groff
+.FONT CB ./groff
 exists.
 .
 .sp
@@ -3526,7 +3419,7 @@ a small set.
 .EE
 .sp
 If the file
-.File_name ./fb.modes
+.FONT CB ./fb.modes
 does not exist interpret this as a search for the
 .I \%man\~page
 of
@@ -3590,7 +3483,7 @@ The option
 guarantees that the
 .I \%man\~page
 is retrieved, even when a local file
-.File_name \%ls
+.FONT CB \%ls
 exists in the actual directory.
 .
 .
@@ -3627,7 +3520,7 @@ This is a set of abbreviated arguments, it is determined as
 .sp
 .
 The file
-.File_name file.gz
+.FONT CB file.gz
 is sent to standard input, this is decompressed, and then this is
 transported to the
 .I \%groff intermediate output mode
@@ -3955,9 +3848,9 @@ The decompression programs supported by
 .
 .
 .\" --------------------------------------------------------------------
-.SH "AUTHOR"
+.SH "AUTHORS"
 .\" --------------------------------------------------------------------
-.author
+.authors
 .
 .
 .\" --------------------------------------------------------------------

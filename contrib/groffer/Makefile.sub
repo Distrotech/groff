@@ -30,7 +30,7 @@
 ROFF2MODES=dvi html pdf ps text x
 ROFF2PROGS=`echo $(ROFF2MODES) | sed 's/[a-z][a-z]*/roff2&/g'`
 ROFF2MAN=`echo $(ROFF2MODES) | sed 's/[a-z][a-z]*/roff2&.man/g'`
-ROFF2MANN=`echo $(ROFF2MODES) | sed 's/[a-z][a-z]*/roff2&.n/g'`
+ROFF2N=`echo $(ROFF2MODES) | sed 's/[a-z][a-z]*/roff2&.n/g'`
 
 MAN1=groffer.n \
      roff2dvi.n \
@@ -40,7 +40,7 @@ MAN1=groffer.n \
      roff2text.n \
      roff2x.n
 
-MOSTLYCLEANADD=groffer $(MAN1) $(ROFF2MAN) $(ROFF2PROGS)
+MOSTLYCLEANADD=groffer $(MAN1) $(ROFF2MAN) $(ROFF2N) $(ROFF2PROGS)
 
 all: groffer
 
@@ -97,6 +97,7 @@ install_data: groffer groffer.tmac
 	done;
 
 uninstall_sub:
+	rm -f $(DESTDIR)$(tmacdir)/groffer.tmac
 	rm -f $(DESTDIR)$(bindir)/groffer
 	-for f in $(ROFF2PROGS); do rm -f $(DESTDIR)$(bindir)/$$f; done
 	-for f in $(GROFFER_PERL) version.sh; do \
