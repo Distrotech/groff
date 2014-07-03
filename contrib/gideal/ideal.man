@@ -15,7 +15,7 @@ ideal.7 - man page for the ideal roff language
 Source file position:  <groff_source_top>/contrib/gideal/ideal.man
 Installed position:    $prefix/share/man/man7/ideal.7
 .
-Last update: 16 Jun 2014
+Last update: 3 Jul 2014
 ..
 .
 .de authors
@@ -62,69 +62,10 @@ The license text is available in the internet at
 .
 .\" --------------------------------------------------------------------
 .\" Setup
-.\" --------------------------------------------------------------------
 .
-.char \[Ellipsis] \f[S]\N'188'\fP
+.mso groffer.tmac
 .
-.
-.\" --------------------------------------------------------------------
-.\" Macro definitions
-.\" --------------------------------------------------------------------
-.
-.\" --------------------------------------------------------------------
-.\" .FONT (<font name> <text> [<font name> <text> ...])
-.\"
-.\" Print in different fonts: R, I, B, CR, CI, CB
-.\"
-.de FONT
-.  if (\\n[.$] = 0) \{\
-.	nop \&\f[P]\&
-.	return
-.  \}
-.  ds result \&
-.  while (\\n[.$] >= 2) \{\
-.	as result \,\f[\\$1]\\$2
-.	if !"\\$1"P .as result \f[P]
-.	shift 2
-.  \}
-.  if (\\n[.$] = 1) .as result \,\f[\\$1]
-.  nh
-.  nop \\*[result]\&
-.  hy
-..
-.
-.\" --------------------------------------------------------------------
-.\" .Topic  ([<indent>])
-.\"
-.\" A bulleted paragraph
-.\"
-.de Topic
-.  ie \\n[.$]=0 \
-.    ds @indent 2m\"
-.  el \
-.    ds @indent \\$1\"
-.  IP \[bu] \\*[@indent]
-.  rm @indent
-..
-.
-.\" --------------------------------------------------------------------
-.\" .UL (<text to underline> [<append>])
-.\"
-.\" Underline $1 and append $2 without underline
-.\"
-.de UL
-.  if t \}\
-.    nop \Z'\\$1'\v'.25m'\D'l \w'\\$1'u 0'\v'-.25m'\\$2
-.    return
-.  \}
-.  ul 1
-\\$1\c
-\\$2
-..
-.
-.
-.\" --------------------------------------------------------------------
-.\" End of macro definitions.
+.\" end of macro definitions
 .\" --------------------------------------------------------------------
 .
 .
