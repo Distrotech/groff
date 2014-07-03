@@ -57,8 +57,13 @@ If not, see the GNU licenses at
 .\" Setup
 .\" --------------------------------------------------------------------
 .
-.ds Ellipsis "\&.\|.\|.\&\"
-.ad l
+.\" --------------------------------------------------------------------
+.\" Characters
+.\" --------------------------------------------------------------------
+.
+.ie t .char \[Ellipsis] \f[S]\N'188'\f[P]
+.el .char \[Ellipsis] \&.\|.\|.\&\
+.\" called by \[Ellipsis]
 .
 .
 .\" --------------------------------------------------------------------
@@ -68,10 +73,11 @@ If not, see the GNU licenses at
 .\" --------------------------------------------------------------------
 .\" .FONT (<font name> <text> [<font name> <text> ...])
 .\"
-.\" Print in different fonts: R, I, B, CR, CI, CB
+.\"  in different fonts: R, I, B, CR, CI, CB
 .\"
-.de1 FONT
+.de FONT
 .  if (\\n[.$] = 0) \{\
+.	\" compatibility to .ft
 .	nop \&\f[P]\&
 .	return
 .  \}
@@ -79,14 +85,15 @@ If not, see the GNU licenses at
 .  while (\\n[.$] >= 2) \{\
 .	as result \,\f[\\$1]\\$2
 .	if !"\\$1"P" .as result \f[P]
+.       \" the double-quote " after P above is now ignored in Emacs
 .	shift 2
 .  \}
 .  if (\\n[.$] = 1) .as result \,\f[\\$1]
-.  nh
+.\"  nh
 .  nop \\*[result]\&
-.  hy
+.\"  hy
+.  rm result
 ..
-.
 .
 .\" --------------------------------------------------------------------
 .\" .OP+ (<option> [ [ | option] ...] [<optarg> [<end>] ])
@@ -96,7 +103,7 @@ If not, see the GNU licenses at
 .\" Example: `.OP+ -h | --help | --usage' gets `[-h|--help|--usage]'
 .\" Example: `.OP+ -v | --verbose "" ,' gets `[-v|--verbose],'
 .\"
-.de1 OP+
+.de OP+
 .  if ( \\n[.$] == 0 ) \{\
 .	nop \&\f[CR][]\fR\&
 .	return
@@ -120,6 +127,9 @@ If not, see the GNU licenses at
 .  nop \\*[result]\&
 .  hy
 ..
+.
+.ad l
+.
 .
 .\" --------------------------------------------------------------------
 .SH "SYNOPSIS"
