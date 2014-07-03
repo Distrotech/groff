@@ -7,7 +7,7 @@
 # Written by Werner Lemberg <wl@gnu.org> and
 # Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 18 Jun 2014
+# Last update: 3 Jul 2014
 
 # This file is part of `groffer' which is part of `groff'.
 
@@ -54,8 +54,7 @@ GROFFER_REST=roff2.man \
              groffer.pl \
              roff2.pl
 
-groffer: $(GROFFER_PERL) \
-		$(GROFFER_REST) $(SH_DEPS_SED_SCRIPT)
+groffer: $(GROFFER_PERL) $(GROFFER_REST) $(SH_DEPS_SED_SCRIPT)
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
 	    -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
@@ -73,13 +72,18 @@ groffer: $(GROFFER_PERL) \
 	    | sed 's/@ROFF2MODE@/'"$$m"'/g' > roff2$${m}.man; \
 	done
 
-install_data: groffer
+install_data: groffer groffer.tmac
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	rm -f $(DESTDIR)$(bindir)/groffer
 	$(INSTALL_SCRIPT) groffer $(DESTDIR)$(bindir)/groffer
 	for f in $(ROFF2PROGS); do \
 	  rm -f $(DESTDIR)$(bindir)/$$f; \
 	  $(INSTALL_SCRIPT) $$f $(DESTDIR)$(bindir)/$$f; \
+	done
+	- test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
+	for f in groffer.tmac; do \
+	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(tmacdir)/$$f; \
 	done
 	-test -d $(DESTDIR)$(groffer_dir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(groffer_dir)
