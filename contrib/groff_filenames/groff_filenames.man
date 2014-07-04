@@ -81,65 +81,29 @@ You can also visit
 ..
 .
 .\" --------------------------------------------------------------------
-.\" Setup
-.\" --------------------------------------------------------------------
-.
-.ds1 Ellipsis "\&.\|.\|.\&"
-.
-.\" --------------------------------------------------------------------
-.\" Macro definitions
-.\" --------------------------------------------------------------------
-.
-.\" --------------------------------------------------------------------
-.\" .FONT (<font name> <text> [<font name> <text> ...])
-.\"
-.\" Print in different fonts: R, I, B, CR, CI, CB
-.\"
-.de1 FONT
-.  if (\\n[.$] = 0) \{\
-.	nop \&\f[]\&
-.	return
-.  \}
-.  ds result \&
-.  while (\\n[.$] >= 2) \{\
-.	as result \,\f[\\$1]\\$2\f[]
-.	shift 2
-.  \}
-.  if (\\n[.$] = 1) .as result \,\f[\\$1]
-.  nh
-.  nop \\*[result]\&
-.  hy
-..
-.
-.\" --------------------------------------------------------------------
-.\" End of macro definitions
-.\" --------------------------------------------------------------------
-.
-.
-.\" --------------------------------------------------------------------
 .SH DESCRIPTION
 .\" --------------------------------------------------------------------
 .
 Since the evolution of
-.FONT CI roff
+.I roff
 in the 1970s, a whole bunch of filename extensions for
-.FONT CI roff
+.I roff
 files were used.
 .
 .
 .P
 The
-.FONT CI roff
+.I roff
 extensions refer to preprocessors or macro packages.
 .
 These extensions are fixed in all
-.FONT CI Unix R \-like
+.IR Unix \-like
 operating systems.
 .
 .
 .P
 Later on,
-.FONT CR groff
+.B groff
 added some more extensions.
 .
 We will now write a
@@ -151,7 +115,7 @@ We will now write a
 .\" --------------------------------------------------------------------
 .
 Each
-.FONT CI roff
+.I roff
 file can be optionally
 .IR compressed .
 .
@@ -167,13 +131,13 @@ So the whole filename has the structure
 .P
 Mostly known are the
 .I compressor extensions
-.FONT CB .Z R ,
-.FONT CB .gz R ,
+.BR .Z ,
+.BR .gz ,
 and
-.FONT CB .bzip2 R .
+.BR .bzip2 .
 .
 Relatively new is
-.FONT CB .xz R .
+.BR .xz .
 .
 .
 .P
@@ -188,21 +152,20 @@ and only comment the structure
 .\" --------------------------------------------------------------------
 .
 The
-.FONT CR Unix
-.FONT CI "manual pages"
+.I Unix manual pages
 are shortly named
-.FONT CI "man\-pages" R .
+.IR "man\-pages" .
 .
 The
-.FONT CI man\-page
+.I man\-page
 style is the best known part of the
-.FONT CI roff
+.I roff
 language.
 .
 .
 .P
 The extensions for
-.FONT CI man
+.I man
 should be better documented.
 .
 So this is documented here.
@@ -210,9 +173,9 @@ So this is documented here.
 .
 .P
 Files written in the
-.FONT CI man
+.I man
 language use the following extension:
-.IB * . <section>[<group>] .
+.BI *. <section>[<group>] \fR.\fP
 .
 .
 .\" --------------------------------------------------------------------
@@ -220,53 +183,53 @@ language use the following extension:
 .\" --------------------------------------------------------------------
 .
 The traditional
-.FONT I "man\-page " CI <section>
+.I man\-page <section>
 is a digit from
-.FONT CB 1
+.B 1
 to
-.FONT CB 8 R .
+.BR 8 .
 .
 .
 .TP
-.FONT I <name> CB .1
+.IB <name> .1
 .TQ
-.FONT I <name> CB .2
+.IB <name> .2
 .TQ
-.FONT I <name> CB .3
+.IB <name> .3
 .TQ
-.FONT I <name> CB .4
+.IB <name> .4
 .TQ
-.FONT I <name> CB .5
+.IB <name> .5
 .TQ
-.FONT I <name> CB .6
+.IB <name> .6
 .TQ
-.FONT I <name> CB .7
+.IB <name> .7
 .TQ
-.FONT I <name> CB .8
+.IB <name> .8
 Classic man\-page
 .IR sections .
 .
 .
 .P
 Linux added the section number
-.FONT CB 9
+.B 9
 for kernel man\-pages.
 .
 .
 .TP
-.FONT I <name> CB .9
+.IB <name> .9
 .I Linux
 kernel man-pages
 .
 .
 .P
 In older commercial
-.FONT CI Unix
+.I Unix
 systems, the 3 characters
-.FONT CB l R ,
-.FONT CB n R ,
+.BR l ,
+.BR n ,
 and
-.FONT CB o
+.B o
 were also used as
 .I section
 names.
@@ -277,11 +240,11 @@ but there are still documents in this format.
 .
 .
 .TP
-.FONT I <name> CB .l
+.IB <name> .l
 .TQ
-.FONT I <name> CB .n
+.IB <name> .n
 .TQ
-.FONT I <name> CB .o
+.IB <name> .o
 .I Deprecated
 old
 .IR "man\-page sections" .
@@ -294,17 +257,17 @@ old
 The
 .I <group>
 extension in
-.FONT CB . I <section>[<group>]
+.BI . <section>[<group>]
 is optional, but it can be any string of word characters.
 .
 Usually programmers use a group name that is already used, e.g.
-.FONT CB x
+.B x
 for
-.FONT CI "X Window System"
+.I "X Window System"
 documents or
-.FONT CB tk
+.B tk
 to refer to the
-.FONT CI tk
+.I tk
 programming language.
 .
 .
@@ -313,54 +276,54 @@ Examples:
 .
 .
 .TP
-.FONT CB groff.1
+.B groff.1
 is the man-page for
-.FONT CB groff
+.B groff
 in
 .I section
-.FONT CB 1
+.B 1
 without a
 .I group
 .
 .
 .TP
-.FONT CB xargs.1posix.gz
+.B xargs.1posix.gz
 is the man\-page for the program
-.FONT CB xargs
+.B xargs
 in
 .I section
-.FONT CB 1
+.B 1
 and
 .I group
-.FONT CB posix R ;
+.BR posix ;
 moreover it is
 .I compressed
 with
-.FONT CB gz
-.FONT R ( CB gzip R ).
+.B gz
+.RB ( gzip ).
 .
 .
 .TP
-.FONT CB config.5ssl
-.FONT CI "OpenSSL CONF"
+.B config.5ssl
+.I "OpenSSL CONF"
 library configuration files from
 .I section
-.FONT CB 5
+.B 5
 with
 .I group
-.FONT CB ssl R .
+.BR ssl .
 .
 .
 .TP
-.FONT CB dpkg-reconfigure.8cdebconf
+.B dpkg-reconfigure.8cdebconf
 man\-page for the program
-.FONT CB dpkg\-reconfigure
+.B dpkg\-reconfigure
 in
 .I section
-.FONT CB 8
+.B 8
 and
 .I group
-.FONT CB cdebconf R .
+.BR cdebconf .
 .
 .
 .\" --------------------------------------------------------------------
@@ -368,45 +331,45 @@ and
 .\" --------------------------------------------------------------------
 .
 There are 2
-.FONT CI roff
+.I roff
 languages for writing man\-pages:
-.FONT CB man
+.B man
 and
-.FONT CB mdoc R .
+.BR mdoc .
 .
 .
 .P
 The names of these 2 styles are taken as
 .I extensions
 for the source code files of man\-pages in the
-.FONT CI groff
+.I groff
 package.
 .
 .
 .TP
-.FONT I <name> CB .man
+.IB <name> .man
 .I traditional
 Unix\-like man\-page format.
 .
 .
 .TP
-.FONT I <name> CB .mdoc
+.IB <name> .mdoc
 additional BSD man-page format.
 .
 .
 .TP
-.FONT I <name> CB .mandoc
+.IB <name> .mandoc
 Files using this extension recognize both man\-page formats in
-.FONT CB groff
+.B groff
 and other processors.
 .
 .
 .TP
-.FONT I <name> CB .n
+.IB <name> .n
 A temporary man-page file produced by a run of
 .B make
 in the
-.FONT CB groff
+.B groff
 source package.
 .
 .
@@ -419,17 +382,17 @@ source package.
 .\" --------------------------------------------------------------------
 .
 The
-.FONT CI "classical roff"
-languages were interpreted by the
-.FONT CB "traditional troff"
+.I "classical roff"
+languages were interpreted by the traditional
+.B "troff"
 and
-.FONT CB "nroff"
+.B "nroff"
 programs.
 .
 .
 .P
 There were several
-.FONT CI roff
+.I roff
 languages, each represented by a
 .IR "macro-package" .
 .
@@ -438,32 +401,32 @@ Each of these provided a suitable file name
 .
 .
 .TP
-.FONT I <name> CB .me
-.FONT CI roff
+.IB <name> .me
+.I roff
 file using the
-.FONT CB me
+.B me
 .IR "macro package" .
 .
 .
 .TP
-.FONT I <name> CB .mm
-.FONT CI roff
+.IB <name> .mm
+.I roff
 file using the
-.FONT CB mm
+.B mm
 .I macro package
 .
 .
 .TP
-.FONT I <name> CB .ms
-.FONT CI roff
+.IB <name> .ms
+.I roff
 file using the
-.FONT CB ms
+.B ms
 .I macro package
 .
 .
 .P
 All of these classical
-.FONT CI roff
+.I roff
 languages and their extensions are still very active in
 .BR groff .
 .
@@ -473,34 +436,34 @@ languages and their extensions are still very active in
 .\" --------------------------------------------------------------------
 .
 In traditional
-.FONT CI roff
+.I roff
 the source code for the macro packages was stored in
-.FONT CI TMAC
+.I TMAC
 files.
 .
 Their file names have the form:
 .
 .
 .TP
-.FONT CB tmac. I <package> R ,
+.BI tmac. <package> \fR,\fP
 .I <package>
 is the name of the macro package without the leading
-.FONT CB m
+.B m
 character, which is reintegrated by the option
-.FONT CB -m R .
+.BR -m .
 .
 .
 .P
 For example,
-.FONT CB tmac.an
+.B tmac.an
 is the source for the
-.FONT CB man
+.B man
 macro package.
 .
 .
 .P
 In the
-.FONT CB groff
+.B groff
 source, more suitable file names were integrated, see later on.
 .
 .
@@ -514,30 +477,30 @@ were used as filename extension:
 .
 .
 .TP
-.FONT I <name> CB .chem
+.IB <name> .chem
 for the integration of chemical formulas
 .
 .
 .TP
-.FONT I <name> CB .eqn
+.IB <name> .eqn
 for the mathematical use of equations
 .
 .
 .TP
-.FONT I <name> CB .pic
+.IB <name> .pic
 graphical tool
 .
 .
 .TP
-.FONT I <name> CB .tbl
+.IB <name> .tbl
 for tables with
-.FONT CI tbl
+.I tbl
 .
 .
 .TP
-.FONT I <name> CB .ref
+.IB <name> .ref
 for files using the
-.FONT CB prefer
+.B prefer
 .I preprocessor
 .
 .
@@ -546,11 +509,11 @@ for files using the
 .\" --------------------------------------------------------------------
 .
 .TP
-.FONT I <name> CB .t
+.IB <name> .t
 .TQ
-.FONT I <name> CB .tr
+.IB <name> .tr
 for files using the
-.FONT CI roff
+.I roff
 language of any kind
 .
 .
@@ -558,30 +521,29 @@ language of any kind
 .SH NEW GROFF EXTENSIONS
 .\" --------------------------------------------------------------------
 .
-.FONT CI "GNU roff"
-.FONT CB groff
+.I "GNU roff"
+.B groff
 is the actual
-.FONT CI roff
+.I roff
 standard, both for classical
-.FONT CI roff
+.I roff
 and new extensions.
 .
 So even the used new extensions in the source code should be regarded
 as actual standard.
 .
 The following extensions are used instead of classical
-.FONT CB .t
+.B .t
 or
-.FONT CB .tr R :
+.BR .tr :
 .
 .
 .TP
-.FONT I <name> CB .groff
+.IB <name> .groff
 .TQ
-.FONT I <name> CB .roff
+.IB <name> .roff
 general ending for files using the
-.FONT CI groff
-.I language
+.I groff language
 .
 .
 .\" --------------------------------------------------------------------
@@ -589,52 +551,52 @@ general ending for files using the
 .\" --------------------------------------------------------------------
 .
 As the classical form
-.FONT CB tmac. I <package_without_m> R ,
+.BI tmac. <package_without_m> \fR,\fP
 of the
-.FONT CI TMAC
+.I TMAC
 file names is quite strange,
 .
-.FONT CI groff
+.I groff
 added the following structures:
 .
 .
 .TP
-.FONT I <package_without_m> CB .tmac
+.IB <package_without_m> .tmac
 .TQ
-.FONT CB m I <package> CB .tmac
+.BI m <package> .tmac
 .TQ
-.FONT CB groff_m I <package> CB .tmac
+.BI groff_m <package> .tmac
 .
 .
 .\" --------------------------------------------------------------------
 .SS Files Using new Macro Packages
 .\" --------------------------------------------------------------------
 .
-.FONT CI Groff
+.I Groff
 uses the following new macro packages:
 .
 .
 .TP
-.FONT I <name> CB .mmse
+.IB <name> .mmse
 file with swedish
-.FONT CB mm
+.B mm
 .I macros
 for
 .B groff
 .
 .
 .TP
-.FONT I <name> CB .mom
+.IB <name> .mom
 files written in the
-.FONT CI "groff macro package"
-.FONT CB mom
+.I "groff macro package"
+.B mom
 .
 .
 .TP
-.FONT I <name> CB .www
+.IB <name> .www
 files written in
-.FONT CB HTML R \-like
-.FONT CI groff
+.BR HTML \-like
+.I groff
 .IR macros .
 .
 .
@@ -643,9 +605,9 @@ files written in
 .\" --------------------------------------------------------------------
 .
 .TP
-.FONT I <name> CB .hdtbl
+.IB <name> .hdtbl
 a new
-.FONT CI tbl
+.I tbl
 format.
 .
 See
@@ -653,14 +615,14 @@ See
 .
 .
 .TP
-.FONT I <name> CB .grap
+.IB <name> .grap
 files written for the graphical
-.FONT CB grap
+.B grap
 processor.
 .
 .
 .TP
-.FONT I <name> CB .grn
+.IB <name> .grn
 for including
 .BR gremlin (@MAN1EXT@),
 pictures, see
@@ -668,11 +630,11 @@ pictures, see
 .
 .
 .TP
-.FONT I <name> CB .pdfroff
+.IB <name> .pdfroff
 transform this file with
-.FONT CB pdfroff
+.B pdfroff
 of the
-.FONT CI groff
+.I groff
 system
 .
 .
