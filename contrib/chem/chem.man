@@ -10,11 +10,11 @@
 Source file position:  <groff_source_top>/contrib/chem/chem.man
 Installed position:    $prefix/share/man/man1/@g@chem.1
 
-Last update: 3 Jul 2014
+Last update: 4 Jul 2014
 ..
 .
 .
-.de au
+.de authors
 This file was written by Bernd Warken <groff-bernd.warken-72@web.de>.
 It is based on the documentation of
 .UR http://\:cm.bell-labs.com/\:cm/\:cs/\:who/\:bwk/\:index.html
@@ -27,7 +27,7 @@ version of
 ..
 .
 .
-.de co
+.de copying
 Copyright (C) 2006\[en]2009, 2014 Free Software Foundation, Inc.
 .
 .
@@ -76,16 +76,6 @@ is available in the internet at
 .\" Macro definitions
 .
 .\" --------------------------------------------------------------------
-.\" .Error  (<text>...)
-.\"
-.\" Print error message to terminal and abort.
-.\"
-.de Error
-.  tm \\$*
-.  ab
-..
-.
-.\" --------------------------------------------------------------------
 .\" .FONT (<font name> <text> [<font name> <text> ...])
 .\"
 .\"  in different fonts: R, I, B, CR, CI, CB
@@ -108,44 +98,6 @@ is available in the internet at
 .  nop \\*[result]\&
 .\"  hy
 .  rm result
-..
-.
-.\"  --------------------------------------------------------------------
-.\" .Text  (<text>...)
-.\"
-.\" Treat the arguments as text, no matter how they look.
-.\"
-.de Text
-.  if \\n[.$]=0 \
-.    return
-.  nh
-.  nop \)\\$*\)
-.  hy
-..
-.
-.\" --------------------------------------------------------------------
-.\" .Topic  ([<indent>])
-.\"
-.\" A bulleted paragraph
-.\"
-.de Topic
-.  ie \\n[.$]=0 .ds @indent 2m\"
-.  el .ds @indent \\$1\"
-.
-.  ie t .IP \[bu] \\*[@indent]
-.  el .IP \- \\*[@indent]
-.
-.  rm @indent
-..
-.
-.\" --------------------------------------------------------------------
-.\" .UNDERLINE (<text to underline> [<append>])
-.\"
-.\" Underline $1 and append $2 without underline
-.\"
-.de UNDERLINE
-.  ie n \fI\\$1\fP\\$2
-.  el \Z'\\$1'\v'.25m'\D'l \w'\\$1'u 0'\v'-.25m'\\$2
 ..
 .
 .
@@ -234,16 +186,17 @@ language.
 The program
 .B @g@chem
 originates from the Perl source file
-.FONT CB chem.pl .
+.BR chem.pl .
+.
 It tells
 .B @g@pic
 to include a copy of the macro file
-.FONT CB chem.pic .
+.BR chem.pic .
 .
 Moreover the
 .I groff
 source file
-.FONT CB pic.tmac
+.B pic.tmac
 is loaded.
 .
 .
@@ -958,14 +911,14 @@ A squiggle bond is needed.
 .\" --------------------------------------------------------------------
 .
 .TP
-.FONT CB @DATASUBDIR@/pic/chem.pic
+.B @DATASUBDIR@/pic/chem.pic
 A collection of
 .I pic
 macros needed by
 .BR @g@chem .
 .
 .TP
-.FONT CB @MACRODIR@/pic.tmac
+.B @MACRODIR@/pic.tmac
 A macro file which redefines
 .B .PS
 and
@@ -975,12 +928,12 @@ to center
 diagrams.
 .
 .TP
-.FONT CB @DOCDIR@/examples/chem/*.chem
+.B @DOCDIR@/examples/chem/*.chem
 Example files for
 .IR chem .
 .
 .TP
-.FONT CB @DOCDIR@/examples/chem/122/*.chem
+.B @DOCDIR@/examples/chem/122/*.chem
 Example files from the classical
 .I chem
 book
@@ -1042,7 +995,7 @@ chem awk source
 .UE .
 .
 Its
-.FONT CB README
+.B README
 file was used for this manual page.
 .
 .
@@ -1056,15 +1009,15 @@ is
 .
 .
 .\" --------------------------------------------------------------------
-.SH "AUTHOR"
+.SH "AUTHORS"
 .\" --------------------------------------------------------------------
-.au
+.authors
 .
 .
 .\" --------------------------------------------------------------------
 .SH "COPYING"
 .\" --------------------------------------------------------------------
-.co
+.copying
 .
 .
 .\" --------------------------------------------------------------------
