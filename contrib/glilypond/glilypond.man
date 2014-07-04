@@ -13,7 +13,7 @@ This file was written by Bernd Warken
 .MT groff\-bernd.warken\-72@web.de
 .ME .
 .
-Last update: 25 Apr 2013
+Last update: 4 Jul 2014
 ..
 .
 .
@@ -26,36 +26,28 @@ glilypond - integrate lilypond into groff files
 Source file position: <groff-source>/contrib/lilypond/glilypond.man
 Installed position: <prefix>/share/man/man1/glilypond.1
 
-Copyright \(co 2013
+Copyright \(co 2013-2014
           Free Software Foundation, Inc.
 
-This file is part of GNU groff.
+This file is part of GNU groff, a free software project.
 
-GNU groff is free software: you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or ("at
-your option") any later version.
-
-GNU groff is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with groff], see the files COPYING and LICENSE in the top
-directory of the groff source package.
-
+You can redistribute it and/or modify it under the terms of the
+.nh
+.B "GNU General Public License"
 .hy
-.fi
-If not, see the GNU licenses at
-.UR http://www.gnu.org/licenses/
+as published by the
+.nh
+.BR "Free Software Foundation" ,
+.hy
+version\~2.
+
+The license text is available in the internet at
+.nh
+.UR http://\%www.gnu.org/\%licenses/\%gpl-2.0.html
 .UE .
+.hy
 ..
 .
-.
-.\" --------------------------------------------------------------------
-.\" Setup
-.\" --------------------------------------------------------------------
 .
 .\" --------------------------------------------------------------------
 .\" Characters
@@ -65,69 +57,6 @@ If not, see the GNU licenses at
 .el .char \[Ellipsis] \&.\|.\|.\&\
 .\" called by \[Ellipsis]
 .
-.
-.\" --------------------------------------------------------------------
-.\" Macro definitions
-.\" --------------------------------------------------------------------
-.
-.\" --------------------------------------------------------------------
-.\" .FONT (<font name> <text> [<font name> <text> ...])
-.\"
-.\"  in different fonts: R, I, B, CR, CI, CB
-.\"
-.de FONT
-.  if (\\n[.$] = 0) \{\
-.	\" compatibility to .ft
-.	nop \&\f[P]\&
-.	return
-.  \}
-.  ds result \&
-.  while (\\n[.$] >= 2) \{\
-.	as result \,\f[\\$1]\\$2
-.	if !"\\$1"P" .as result \f[P]
-.       \" the double-quote " after P above is now ignored in Emacs
-.	shift 2
-.  \}
-.  if (\\n[.$] = 1) .as result \,\f[\\$1]
-.\"  nh
-.  nop \\*[result]\&
-.\"  hy
-.  rm result
-..
-.
-.\" --------------------------------------------------------------------
-.\" .OP+ (<option> [ [ | option] ...] [<optarg> [<end>] ])
-.\"
-.\" like .OP, but with 1st arg split and optional final character
-.\" Example: `.OP+ -p | --prefix ly .' gets `[-p|--prefix ly].'
-.\" Example: `.OP+ -h | --help | --usage' gets `[-h|--help|--usage]'
-.\" Example: `.OP+ -v | --verbose "" ,' gets `[-v|--verbose],'
-.\"
-.de OP+
-.  if ( \\n[.$] == 0 ) \{\
-.	nop \&\f[CR][]\fR\&
-.	return
-.  \}
-.  nh
-.  ds result \&\f[CR][\f[CB]\\$1
-.  shift
-.  while (\\n[.$] >= 2) \{\
-.	ie '\\$1'|' .as result \f[CR]|\f[CB]\\$2
-.	el \{\
-.		ie '\\$1'' .as result \f[CR]]\fR\\$2
-.		el .as result \fI\ \\$1\f[CR]]\fR\\$2
-.		nop \\*[result]\&
-.		hy
-.		return
-.	\}
-.	shift 2
-.  \}
-.  ie ( \\n[.$] == 0 ) .as result \f[CR]]\fR
-.  el .as result \fI\ \\$1\f[CR]]\fR
-.  nop \\*[result]\&
-.  hy
-..
-.
 .ad l
 .
 .
@@ -136,10 +65,10 @@ If not, see the GNU licenses at
 .\" --------------------------------------------------------------------
 .
 .SY glilypond
-.OP+ options
-.OP+ -
-.OP+ --
-.OP+ \%filespec \*[Ellipsis]
+.OP "" options
+.OP -
+.OP --
+.OP "" "\%filespec \*[Ellipsis]"
 .YS
 .
 .
@@ -147,13 +76,13 @@ If not, see the GNU licenses at
 .SH DESCRIPTION
 .\" --------------------------------------------------------------------
 .
-.FONT CB glilypond
+.B glilypond
 transforms sheet music written in the
-.FONT CI lilypond
+.I lilypond
 language into the
 .BR groff (@MAN7EXT@)
 language using the
-.FONT CB .PSPIC
+.B .PSPIC
 request, such that
 .BR groff (@MAN1EXT@)
 can transform it into a format that can be displayed directly.
@@ -161,9 +90,9 @@ can transform it into a format that can be displayed directly.
 .
 .P
 Files in
-.FONT CI groff
+.I groff
 language and
-.FONT CI "standard input"
+.I "standard input"
 can be provided as arguments.
 .
 .
@@ -175,15 +104,21 @@ can be provided as arguments.
 .SS "Breaking Options"
 .\" --------------------------------------------------------------------
 .
-.SY
-.OP+ -? | -h | --help | --usage
-.YS
-.SY
-.OP+ --version
-.YS
-.SY
-.OP+ -l | --license
-.YS
+.nh
+.nf
+.TP
+.BR -? | -h | --help | --usage
+Print help or usage information, then leave the program.
+.
+.TP
+.B --version
+Print version information.
+.
+.TP
+.BR -l | --license
+Print license information.
+.fi
+.hy
 .
 .
 .\" --------------------------------------------------------------------
@@ -191,31 +126,31 @@ can be provided as arguments.
 .\" --------------------------------------------------------------------
 .
 .TP
-.OP+ --ly2eps
+.OP --ly2eps
 Here the
-.FONT CB lilypond
+.B lilypond
 program creates
-.FONT CI eps
+.I eps
 files directly.
 .
 This is the default.
 .
 .
 .TP
-.OP+ --pdf2eps
+.OP --pdf2eps
 The program
-.FONT CB glilypond
+.B glilypond
 generates a
-.FONT CI pdf
+.I pdf
 file using
-.FONT CB lilypond R .
+.BR lilypond .
 .
 Then the
-.FONT CI eps
+.I eps
 file is generated by
-.FONT CB pdf2ps
+.B pdf2ps
 and
-.FONT CB ps2eps R .
+.BR ps2eps R .
 .
 .
 .\" --------------------------------------------------------------------
@@ -223,40 +158,40 @@ and
 .\" --------------------------------------------------------------------
 .
 .TP
-.OP+ -e | --eps_dir directory_name
+.BR -e | --eps_dir \fIdirectory_name\fP
 Normally all
-.FONT CI EPS
+.I EPS
 files are sent to the temporary directory.
 .
 With this option, you can generate your own directory, in which all useful
-.FONT CI EPS
+.I EPS
 files are send.
 .
 So at last, the temporary directory can be removed.
 .
 .
 .TP
-.OP+ -p | --prefix begin_of_name
+.BR -p | --prefix "\fI begin_of_name\fP"
 Normally all temporary files get names that start with the
-.FONT CB ly CI \*[Ellipsis]
+.BI ly \[Ellipsis]
 prefix.
 .
 With this option, you can freely change this prefix.
 .
 .
 .TP
-.OP+ -k | --keep_all
+.BR -k | --keep_all
 Normally all temporary files without the
-.FONT CI eps
+.I eps
 files are deleted.
 .
 With this option, all generated files either by the
-.FONT CB lilypond
+.B lilypond
 program or other format transposers are kept.
 .
 .
 .TP
-.OP+ -t | --temp_dir dir
+.BR -t | --temp_dir "\fI dir\fP"
 With this option, you call a directory that is the base for the
 temporary directory.
 .
@@ -275,11 +210,11 @@ In this temporary directory, the temporary files are stored.
 .\" --------------------------------------------------------------------
 .
 .TP
-.OP+ -o | --output file_name
+.BR -o | --output "\fI file_name\fP"
 Normally all
-.FONT CI groff
+.I groff
 output of this program is sent to
-.FONT CB STDOUT R .
+.BR STDOUT R .
 .
 With this option, that can be changed, such that the output is stored
 into a file named in the option argument
@@ -287,7 +222,7 @@ into a file named in the option argument
 .
 .
 .TP
-.OP+ -v | -V | --verbose
+.BR -v | -V | --verbose
 A lot more of information is sent to STDERR.
 .
 .
@@ -299,9 +234,9 @@ The argument handling of options
 .
 .
 .P
-.FONT CI "Short options"
+.I "Short options"
 are arguments that start with a single dash
-.FONT CB \- R .
+.BR \- .
 .
 Such an argument can consist of arbitrary many options without option
 argument, composed as a collection of option characters following the
@@ -321,9 +256,9 @@ taken as the option argument.
 .
 .P
 This is the standard for
-.FONT CI POSIX
+.I POSIX
 and
-.FONT CI GNU
+.I GNU
 option management.
 .
 .
@@ -331,18 +266,19 @@ option management.
 For example,
 .
 .TP
-.FONT CB \-kVesome_dir
+.BI \-kVe " some_dir"
 is a collection of the short options
-.FONT CB \-k
+.B \-k
 and
-.FONT CB \-V
+.B \-V
 without option argument, followed by the short option
-.FONT CB \-e
+.B \-e
 with option argument that is the following part of the argument
-.FONT CB some_dir R .
+.IR some_dir .
 .
 So this argument could also be written as several arguments
-.FONT CB "\-k \-V \-e some_dir" R .
+.B \-k \-V \-e
+.IR some_dir .
 .
 .
 .\" --------------------------------------------------------------------
@@ -350,35 +286,35 @@ So this argument could also be written as several arguments
 .\" --------------------------------------------------------------------
 .
 Arguments that start with a double dash
-.FONT CB \-\-
+.B \-\-
 are so-called
-.FONT CI "long options" R .
+.I "long options" R .
 .
 Each double dash argument can only have a single long option.
 .
 .
 .P
-.FONT CI "Long options"
+.I "Long options"
 have or have not an option argument.
 .
 An option argument can be the next argument or can be appended with an
 equal sign
-.FONT CB =
+.B =
 to the same argument as the long option.
 .
 .
 .TP
-.FONT CB \-\-help
+.B \-\-help
 is a long option without an option argument.
 .
 .TP
-.FONT CB "\-\-eps_dir some_dir"
+.BI \-\-eps_dir " some_dir"
 .TQ
-.FONT CB "\-\-eps_dir=some_dir"
+.BI \-\-eps_dir= some_dir
 is the long option
-.FONT CB "\-\-eps_dir
+.B \-\-eps_dir
 with the option argument
-.FONT CB some_dir R .
+.IR some_dir .
 .
 .
 .P
@@ -388,36 +324,38 @@ possible.
 .
 .P
 The
-.FONT CI "long option"
-.FONT CB \-\-keep_all
+.I "long option"
+.B \-\-keep_all
 can be abbreviated from
-.FONT CB \-\-keep_al
+.B \-\-keep_al
 up to
-.FONT CB \-\-k
+.B \-\-k
 because the program does not have another
-.FONT CI "long option"
+.I "long option"
 whose name starts with the character
-.FONT CB k R .
+.BR k .
 .
 .
 .P
 On the other hand, the option
-.FONT CB \-\-version
+.B \-\-version
 cannot be abbreviated further than
-.FONT CB \-\-vers
+.B \-\-vers
 because there is also the
-.FONT CI "long option " CB \-\-verbose
+.I long option
+.B \-\-verbose
 that can be abbreviated up to
-.FONT CB \-\-verb R .
+.BR \-\-verb .
 .
 .
 .P
 An option argument can also be appended to an abbreviation.
 .
 So is
-.FONT CB \-\-e=some_dir
+.BI \-\-e= some_dir
 the same as
-.FONT CB "\-\-eps_dir some_dir" R .
+.B \-\-eps_dir
+.IR some_dir .
 .
 .
 .P
@@ -425,18 +363,18 @@ Moreover the program allows an arbitrary usage of upper and lower case
 in the option name.
 .
 This is
-.FONT CI Perl
+.I Perl
 style.
 .
 .
 .P
 For example, the
-.FONT CI "long option"
-.FONT CB \-\-keep_all
+.I "long option"
+.B \-\-keep_all
 can as well be written as
-.FONT CB \-\-Keep_All
+.B \-\-Keep_All
 or even as an abbreviation like
-.FONT CB \-\-KeE R .
+.BR \-\-KeE .
 .
 .
 .\" --------------------------------------------------------------------
@@ -444,7 +382,7 @@ or even as an abbreviation like
 .\" --------------------------------------------------------------------
 .
 An argument that is not an option or an option argument is called a
-.FONT CI filespec
+.I filespec
 argument.
 .
 .
@@ -452,7 +390,7 @@ argument.
 Without any
 .I filespec
 argument,
-.FONT CI "standard input"
+.I "standard input"
 is read.
 .
 .
@@ -460,32 +398,32 @@ is read.
 Each
 .I filespec
 argument must either be the name of a readable file or a dash
-.FONT CB -
+.B \-
 for
-.FONT CI "standard input" R .
+.IR "standard input" .
 .
 Each input must be written in the
-.FONT CI roff
+.I roff
 or
-.FONT CI groff
+.I groff
 language and can include
-.FONT CI lilypond
+.I lilypond
 parts.
 .
 .
 .P
 Normally arguments starting with a dash
-.FONT CB \-
+.B \-
 are interpreted as an option.
 .
 But if you use an argument that consists only of a doubled dash
-.FONT CB \-\- R ,
+.B \-\- R ,
 all following arguments are taken as
-.FONT CI filespec
+.I filespec
 argument, even if such an argument starts with a dash.
 .
 This is handled according to the
-.FONT CI GNU
+.I GNU
 standard.
 .
 .
@@ -498,50 +436,54 @@ standard.
 .\" --------------------------------------------------------------------
 .
 A
-.FONT CI lilypond
+.I lilypond
 part within a structure written in the
-.FONT CI groff
+.I groff
 language is the whole part between the marks
+.RS
 .EX
-.FONT CB ".lilypond start"
+.B ".lilypond start"
 .EE
+.RE
 and
+.RS
 .EX
-.FONT CB ".lilypond end"
+.B ".lilypond end"
 .EE
+.RE
 .
 .
 .P
 A
-.FONT CI groff
+.I groff
 input can have several of these
-.FONT CI lilypond
+.I lilypond
 parts.
 .
 .
 .P
 When processing such a
-.FONT CI lilypond
+.I lilypond
 part between
-.FONT CB ".lilypond start"
+.B ".lilypond start"
 and
-.FONT CB ".lilypond end"
+.B ".lilypond end"
 we say that the
-.FONT CB glilypond
+.B glilypond
 program is in
-.FONT CI "lilypond mode" R .
+.IR "lilypond mode" .
 .
 .
 .P
 These
-.FONT CI lilypond
+.I lilypond
 parts are sent into temporary
-.FONT CI lilypond
+.I lilypond
 files with the file name extension
-.FONT CB .ly R .
+.BR .ly .
 .
 These files are transformed later on into
-.FONT CI EPS
+.I EPS
 files.
 .
 .
@@ -550,51 +492,51 @@ files.
 .\" --------------------------------------------------------------------
 .
 An additional command line for file inclusion of
-.FONT CI lilypond
+.I lilypond
 files is given by
 .EX
-.FONT CB ".lilypond include" I " file_name"
+.BI ".lilypond include" " file_name"
 .EE
 in
-.FONT CI groff
+.I groff
 input.
 .
 For each such
-.FONT CI include
+.I include
 command, one file of
-.FONT CI lilypond
+.I lilypond
 code can be included into the
-.FONT CI groff
+.I groff
 code.
 .
 Arbitrarily many of these commands can be included in the
-.FONT CI groff
+.I groff
 input.
 .
 .
 .P
 These include commands can only be used outside the
-.FONT CI lilypond
+.I lilypond
 parts.
 .
 Within the
-.FONT CI "lilypond mode" R ,
+.IR "lilypond mode" ,
 this inclusion is not possible.
 .
 So
-.FONT CB ".lilypond include"
+.B ".lilypond include"
 may not be used in
-.FONT CI "lilypond mode" R ,
+.IR "lilypond mode" ,
 i.e.\& between
-.FONT CB ".lilypond start"
+.B ".lilypond start"
 and
-.FONT CB ".lilypond end" R .
+.BR ".lilypond end" .
 .
 .
 These included
-.FONT CI ly R -files
+.IR ly -files
 are also transformed into
-.FONT CI EPS
+.I EPS
 files.
 .
 .
@@ -603,9 +545,9 @@ files.
 .\" --------------------------------------------------------------------
 .
 By the transformation process of
-.FONT CI lilypond
+.I lilypond
 parts into
-.FONT CI EPS
+.I EPS
 files, there are many files generated.
 .
 By default, these files are regarded as temporary files and as such
@@ -622,19 +564,21 @@ This process can be changed by command line options.
 .
 The temporary directory for this program is either created
 automatically or can be named by the option
-.OP+ -t | --temp_dir dir .
+.BR -t | --temp_dir
+.IR dir .
 .
 .
 .P
 Moreover, the
-.FONT CI EPS
+.I EPS
 files that are later on referred by
-.FONT CB .PSPIC
+.B .PSPIC
 command in the final
-.FONT CI groff
+.I groff
 output can be stored in a different directory that can be set by the
 command line option
-.OP+ -e | --eps_dir directory_name .
+.BR -e | --eps_dir
+.IR directory_name .
 .
 With this option, the temporary directory can be removed completely at
 the end of the program.
@@ -643,25 +587,26 @@ the end of the program.
 .P
 The beginning of the names of the temporary files can be set by the
 command line option
-.OP+ -p | --prefix begin_of_name .
+.OP -p | --prefix
+.IR begin_of_name .
 .
 .
 .P
 All of the temporary files except the
-.FONT CI EPS
+.I EPS
 files are deleted finally.
 .
 This can be changed by setting the command line option
-.OP+ -k | --keep_files
+.OP -k | --keep_files .
 .
 With this, all temporary files and directories are kept, not deleted.
 .
 .
 .P
 These
-.FONT CI EPS
+.I EPS
 files are stored in a temporary or
-.FONT CI EPS
+.I EPS
 directory.
 .
 But they cannot be deleted by the transformation process because they
@@ -679,22 +624,24 @@ are needed for the display which can take a long time.
 This mode is the default.
 .
 It can also be chosen by the option
-.FONT CB --ly2eps R .
+.BR --ly2eps .
 .
 .
 .P
 In this mode, the
-.FONT CB .ly
+.B .ly
 files are transformed by the
-.FONT CB lilypond
+.B lilypond
 program into many files of different formats, including
-.FONT CI eps
+.I eps
 files, using
+.RS
 .EX
-.FONT CB "$ lilypond \-\-ps \-dbackend=eps \-dgs\-load\-fonts \-\-output=" I file\-name
+.BI "$ lilypond \-\-ps \-dbackend=eps \-dgs\-load\-fonts \-\-output=" file\-name
 .EE
+.RE
 for each
-.FONT CB .ly
+.B .ly
 file.
 .
 The output
@@ -704,34 +651,34 @@ must be provided without an extension, its directory is temporary.
 .
 .P
 There are many
-.FONT CI EPS
+.I EPS
 files created.
 .
 One having the complete transformed
-.FONT CB ly
+.B ly
 file, named
-.FONT I file\-name CB .eps R .
+.IB file\-name .eps \fR.\fP
 .
 .
 .P
 Moreover there are
-.FONT CI EPS
+.I EPS
 files for each page, named
-.FONT I file\-name CB \- I digit CB .eps R .
+.IB file\-name \- digit .eps \fR.\fP
 .
 .
 .P
 The last step to be done is replacing all
-.FONT CI lilypond
+.I lilypond
 parts by the collection of the corresponding
-.FONT CI EPS
+.I EPS
 page files.
 .
 This is done by
-.FONT CI groff
+.I groff
 commands
 .EX
-.FONT CB ".PSPIC " CI file-name CB \- I digit CB .eps
+.BI ".PSPIC " file-name \- digit .eps
 .EE
 .
 .
@@ -740,82 +687,90 @@ commands
 .\" --------------------------------------------------------------------
 .
 This mode can be chosen by the option
-.FONT CB --pdf2eps R .
+.BR --pdf2eps .
 .
 .
 .P
 In this mode, the
-.FONT CB .ly
+.B .ly
 files are transformed by the
 .BR lilypond (1)
 program into
-.FONT CI pdf
+.I pdf
 files, using
+.RS
 .EX
-.FONT CB "lilypond \-\-pdf \-\-output=" I file-name
+.BI "lilypond \-\-pdf \-\-output=" file-name
 .EE
+.RE
 for each
-.FONT CB .ly
+.B .ly
 file.
 .
 The
 .I file-name
 must be provided without the extension
-.FONT CB .pdf R .
+.BR .pdf .
 .
 By this process, a file
-.FONT CI file-name CB .pdf
+.IB file-name .pdf
 is generated.
 .
 .
 .P
 The next step is to transform these
-.FONT CI PDF
+.I PDF
 files into a
-.FONT CI PS
+.I PS
 file.
 .
 This is done by the
 .BR pdf2ps (1)
 program using
+.RS
 .EX
-.FONT R "$ " CB "pdf2ps " CI file-name CB ".pdf " CI file-name CB ".ps"
+\fR$ \fP \fBpdf2ps\fP \fIfile-name\fP \fB.pdf\fP \fIfile-name\fP \fB.ps\fP
 .EE
+.RE
 .
 .
 The next step creates an
-.FONT CI EPS
+.I EPS
 file from the
-.FONT CI PS
+.I PS
 file.
 .
 This is done by the
 .BR ps2eps (1)
 program using
+.RS
 .EX
-.FONT R "$ " CB "ps2eps " CI file-name CB ".ps"
+.RB "$ " "ps2eps " \fIfile-name\fP ".ps"
 .EE
+.RE
 .
 .
 .P
 By that, a file
-.FONT CI file-name CB .eps
+.IB file-name .eps
 is created for each
-.FONT CI lilypond
+.I lilypond
 part in the
-.FONT CI groff
+.I groff
 file or standard input.
 .
 .
 .P
 The last step to be done is replacing all
-.FONT CI lilypond
+.I lilypond
 parts by the
-.FONT CI groff
+.I groff
 command
+.RS
 .EX
-.FONT CB ".PSPIC " CI file-name CB .eps
+.BI ".PSPIC " file-name .eps
 .EE
+.RE
 .
 .
 .\" --------------------------------------------------------------------
@@ -825,7 +780,7 @@ command
 The new
 .BR groff (@MAN7EXT@)
 structure generated by
-.FONT CB glilypond
+.B glilypond
 is either
 .
 .TP
@@ -839,7 +794,8 @@ or
 .TP
 2)
 stored into a file by given the option
-.OP \-o\fR\~|\fB\~\-\-output file_name
+.BR \-o\ \~| \~\-\-output
+.I file_name
 .
 .
 .\" --------------------------------------------------------------------
@@ -850,13 +806,13 @@ stored into a file by given the option
 .BR groff (@MAN1EXT@)
 the usage of the groff program and pointers to the documentation and
 availability of the
-.FONT CI groff
+.I groff
 system.
 .
 The main source of information for the
-.FONT CI groff
-szstem is the
-.FONT CB groff
+.I groff
+system is the
+.I groff
 .BR info (1)
 file.
 .
@@ -864,27 +820,27 @@ file.
 .TP
 .BR groff (@MAN7EXT@)
 documents the
-.FONT CI groff
+.I groff
 language.
 .
 .
 .TP
 .BR groff_tmac (@MAN5EXT@)
 contains documentation of the
-.FONT CB .PSPIC
+.B .PSPIC
 request.
 .
 .
 .TP
 .BR lilypond (1)
 The documentation of the
-.FONT CB lilypond
+.B lilypond
 program.
 .
 The main source of information for the
-.FONT CI lilypond
+.I lilypond
 language is the
-.FONT CB lilypond
+.I lilypond
 .BR info (1)
 file.
 .
@@ -892,18 +848,18 @@ file.
 .TP
 .BR pdf2ps (1)
 transform a
-.FONT CI PDF
+.I PDF
 file into a
-.FONT CI Postscript
+.I Postscript
 format.
 .
 .
 .TP
 .BR ps2eps (1)
 transform a
-.FONT CI PS
+.I PS
 file into an
-.FONT CI EPS
+.I EPS
 format.
 .
 .
