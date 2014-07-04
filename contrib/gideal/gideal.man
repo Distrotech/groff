@@ -15,7 +15,7 @@ gideal.1 - man page for the ideal roff preprocessor
 Source file position:  <groff_source_top>/contrib/gideal/gideal.man
 Installed position:    $prefix/share/man/man1/gideal.1
 .
-Last update: 3 Jul 2014
+Last update: 4 Jul 2014
 ..
 .
 .de authors
@@ -60,97 +60,15 @@ The license text is available in the internet at
 ..
 .
 .\" --------------------------------------------------------------------
-.\" setup
-.\" --------------------------------------------------------------------
-.
-.\" --------------------------------------------------------------------
 .\" Characters
 .\" --------------------------------------------------------------------
 .
 .ie t .char \[Ellipsis] \f[S]\N'188'\f[P]
-.el .char \[Ellipsis] \f[I]...\f[P]
+.el .char \[Ellipsis] \&.\|.\|.\&\
 .\" called by \[Ellipsis]
 .
-.
-.\" --------------------------------------------------------------------
-.\" Macro definitions
-.\" --------------------------------------------------------------------
-.
-.\" --------------------------------------------------------------------
-.\" .Error  (<text>...)
-.\"
-.\" Print error message to terminal and abort.
-.\"
-.de Error
-.  tm \\$*
-.  ab
-..
-.
-.\" --------------------------------------------------------------------
-.\" .FONT (<font name> <text> [<font name> <text> ...])
-.\"
-.\"  in different fonts: R, I, B, CR, CI, CB
-.\"
-.de FONT
-.  if (\\n[.$] = 0) \{\
-.	\" compatibility to .ft
-.	nop \&\f[P]\&
-.	return
-.  \}
-.  ds result \&
-.  while (\\n[.$] >= 2) \{\
-.	as result \,\f[\\$1]\\$2
-.	if !"\\$1"P" .as result \f[P]
-.       \" the double-quote " after P above is now ignored in Emacs
-.	shift 2
-.  \}
-.  if (\\n[.$] = 1) .as result \,\f[\\$1]
-.\"  nh
-.  nop \\*[result]\&
-.\"  hy
-.  rm result
-..
-.
-.\"  --------------------------------------------------------------------
-.\" .Text  (<text>...)
-.\"
-.\" Treat the arguments as text, no matter how they look.
-.\"
-.de Text
-.  if \\n[.$]=0 \
-.    return
-.  nh
-.  nop \)\\$*\)
-.  hy
-..
-.
-.\" --------------------------------------------------------------------
-.\" .Topic  ([<indent>])
-.\"
-.\" A bulleted paragraph
-.\"
-.de Topic
-.  ie \\n[.$]=0 .ds @indent 2m\"
-.  el .ds @indent \\$1\"
-.
-.  ie t .IP \[bu] \\*[@indent]
-.  el .IP \- \\*[@indent]
-.
-.  rm @indent
-..
-.
-.\" --------------------------------------------------------------------
-.\" .UNDERLINE (<text to underline> [<append>])
-.\"
-.\" Underline $1 and append $2 without underline
-.\"
-.de UNDERLINE
-.  ie n \fI\\$1\fP\\$2
-.  el \Z'\\$1'\v'.25m'\D'l \w'\\$1'u 0'\v'-.25m'\\$2
-..
-.
-.\" end of macro definitions
-.\" --------------------------------------------------------------------
+.ie t .char \[Bullet] \[bu]
+.el .char \[Bullet] \-
 .
 .
 .\" --------------------------------------------------------------------
@@ -163,13 +81,9 @@ The license text is available in the internet at
 .OP \fI\%filespec \[Ellipsis]
 .YS
 .
-.SY gideal
-.BR \-h | \-\-help
-.YS
-.
-.SY gideal
-.BR \-v | \-\-version
-.YS
+.BR "gideal \-h" | "\-\-help"
+.br
+.BR "gideal \-v" | "\-\-version"
 .
 .
 .\" --------------------------------------------------------------------
@@ -198,9 +112,9 @@ for using this language within
 In
 .BR gideal ,
 there are the following kinds of options:
-.Topic
+.IP \[Bullet] 2m
 .I breaking options
-.Topic
+.IP \[Bullet] 2m
 .I filespec options
 .
 .
