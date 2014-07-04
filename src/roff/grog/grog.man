@@ -16,10 +16,10 @@ grog.1 - man page for grog (section 1)
 Source file position:  <groff_source_top>/src/roff/grog/grog.man
 Installed position:    $prefix/share/man/man1/grog.1
 
-Last Update: 17 Jun 2014
+Last Update: 4 Jul 2014
 ..
 .de copying
-Copyright (C) 1989\[en]2003, 2006\[en]7, 2009\[en]12, 2014
+Copyright (C) 1989\[en]2003, 2006\[en]2007, 2009\[en]2012, 2014
 Free Software Foundation, Inc.
 .
 Written by James Clark.
@@ -71,24 +71,18 @@ GPL2
 .UE .
 ..
 .
-.
-.\" --------------------------------------------------------------------
-.\" Local macros
-.de FN
-.I \\$1
-..
-.
-.
 .\" --------------------------------------------------------------------
 .SH SYNOPSIS
 .
 .SY grog
 .OP \-C
 .OP \-\-run
+.OP \-\-warnings
 .OP \-\-with_ligatures
 .RI [ \%groff\-option\~ .\|.\|.\&]
 .OP \-\-
 .RI [ \%filespec\~ .\|.\|.]
+.YS
 .
 .SY grog
 .B \-h
@@ -166,17 +160,21 @@ compatibility mode, which is also transfered to the generated
 command line.
 .
 .TP
-.B \-\-run
-with this option, the command line is output at standard error and
-then run on the computer.
-.
-.TP
-.B \-\-with_ligatures
+.B \-\-ligatures
 this option forces to include the arguments
 .B -P-y -PU
 within the generated
 .B groff
 command line.
+.
+.TP
+.B \-\-run
+with this option, the command line is output at standard error and
+then run on the computer.
+.
+.TP
+.B \-\-warnings
+with this option, some more warnings are output to standard error.
 .
 .
 .P
@@ -383,7 +381,7 @@ groff \-me meintro.me
 So
 .B grog
 recognized that the file
-.FN meintro.me
+.B meintro.me
 is written with the
 .B \-me
 macro package.
@@ -415,7 +413,7 @@ Besides determining the macro package
 .BR \-ms ,
 .B grog
 recognized that the file
-.FN pic.ms
+.B pic.ms
 additionally needs
 .BR \-pte ,
 the combination of

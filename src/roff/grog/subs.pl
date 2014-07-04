@@ -30,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-# Last_Update = '18 Jun 2014';
+# Last_Update = '4 Jul 2014';
 ########################################################################
 
 require v5.6;
@@ -54,6 +54,7 @@ my @Command;			# stores the final output
 my @Mparams;			# stores the options `-m*'
 my $do_run = 0;			# run generated `groff' command
 my $pdf_with_ligatures = 0;	# `-P-y -PU' for `pdf' device
+my $with_warnings = 0;
 my $device = '';
 
 our $Prog;
@@ -162,12 +163,18 @@ sub args_with_minus {
       &version() if $arg =~ /^--?v/;	# --version, with exit
       &help() if $arg  =~ /--?h/;	# --help, with exit
 
-      if ( $arg =~ /^--?r/ ) {		#  --run, no exit
+      if ( $arg =~ /^--r/ ) {		#  --run, no exit
 	$do_run = 1;
 	next;
       }
 
-      if ( $arg =~ /^--?w/ ) {		#  --with_ligatures, no exit
+      if ( $arg =~ /^--wa/ ) {		#  --warnings, no exit
+	$with_warnings = 1;
+	next;
+      }
+
+      if ( $arg =~ /^--(wi|l)/ ) { # --ligatures, no exit
+	# the old --with_ligatures is only kept for compatibility
 	$pdf_with_ligatures = 1;
 	next;
       }
@@ -672,13 +679,15 @@ sub make_groff_line {
       if ( $pdf_with_ligatures ) {	# with ligature argument
 	push( @Command, '-P-y -PU' );
       } else {	# no ligature argument
-	print STDERR <<EOF;
+	 if ( $with_warnings ) {
+	   print STDERR <<EOF;
 If you have trouble with ligatures like `fi' in the `groff' output, you
 can proceed as one of
 - add `grog' option `--with_ligatures' or
 - use the `grog' option combination `-P-y -PU' or
 - try to remove the font named similar to `fonts-texgyre' from your system.
 EOF
+	 }
       }	# end of ligature
     }	# end of pdf device
   } else {	# wrong device
@@ -913,13 +922,14 @@ names, even if they start with a `-' character.
 
 `option' is either a `groff' option or one of these:
 
--h --help		print this uasge message and exit
--v --version		print version information and exit
+-h|--help	print this uasge message and exit
+-v|--version	print version information and exit
 
--C			compatibility mode
---run			run the checked-out groff command
---with_ligatures	include options `-P-y -PU' for internal font,
-			which preserverses the ligatures like `fi'
+-C		compatibility mode
+--ligatures	include options `-P-y -PU' for internal font, which
+		preserverses the ligatures like `fi'
+--run		run the checked-out groff command
+--warnings	display more warnings to standard error
 
 All other options should be `groff' 1-character options.  These are then
 appended to the generated `groff' command line.  The `-m' options will
