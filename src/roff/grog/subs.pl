@@ -30,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-# Last_Update = '4 Jul 2014';
+# Last_Update = '5 Jul 2014';
 ########################################################################
 
 require v5.6;
@@ -50,12 +50,18 @@ $\ = "\n";
 # my $Sp = '' if $arg eq '-C';
 my $Sp = '';
 
-my @Command;			# stores the final output
-my @Mparams;			# stores the options `-m*'
+# from `src/roff/groff/groff.cpp' near `getopt_long'
+my $groff_opts =
+  'abcCd:D:eEf:F:gGhiI:jJkK:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ';
+
+my @Command = ();		# stores the final output
+my @Mparams = ();		# stores the options `-m*'
+my @devices = ();
+my %File_Name_Extensions = ();
 my $do_run = 0;			# run generated `groff' command
 my $pdf_with_ligatures = 0;	# `-P-y -PU' for `pdf' device
 my $with_warnings = 0;
-my $device = '';
+my $is_mmse;
 
 our $Prog;
 
@@ -127,17 +133,22 @@ my %Groff = (
 # sub args_with_minus: command line arguments that are not file names
 ########################################################################
 
-sub args_with_minus {
-  my @filespec = ();
+sub handle_args {
+  our @filespec;			# stores inout file names
   my $double_minus = 0;
   my $was_minus = 0;
   my $was_T = 0;
-  my $had_filespec = 0;
+  my $optarg = 0;
 
   foreach my $arg (@ARGV) {
-    next unless $arg;
-    if ($double_minus) {
-      $had_filespec = 1;
+
+    if ( $optarg ) {
+      push @Command, $arg;
+      $optarg = 0;
+      next;
+    }
+
+    if ( $double_minus ) {
       if (-f $arg && -r $arg) {
 	push @filespec, $arg;
       } else {
@@ -147,40 +158,21 @@ sub args_with_minus {
     }
 
     if ( $was_T ) {
+      push @devices, $arg;
       $was_T = 0;
-      $device = $arg;
+      next;
+    }
+####### sub handle_args
+
+    unless ( $arg =~ /^-/ ) { # file name, no opt, no optarg
+      unless (-f $arg && -r $arg) {
+	print 'unknown file name: ' . $arg;
+      }
+      push @filespec, $arg;
       next;
     }
 
-    if ( $arg =~ /^--/ ) {
-
-      if ($arg eq '--') {
-	$double_minus = 1;
-	push(@Command, $arg);
-	next;
-      }
-
-      &version() if $arg =~ /^--?v/;	# --version, with exit
-      &help() if $arg  =~ /--?h/;	# --help, with exit
-
-      if ( $arg =~ /^--r/ ) {		#  --run, no exit
-	$do_run = 1;
-	next;
-      }
-
-      if ( $arg =~ /^--wa/ ) {		#  --warnings, no exit
-	$with_warnings = 1;
-	next;
-      }
-
-      if ( $arg =~ /^--(wi|l)/ ) { # --ligatures, no exit
-	# the old --with_ligatures is only kept for compatibility
-	$pdf_with_ligatures = 1;
-	next;
-      }
-    }
-
-    print STDERR "grog: wrong option $arg." if $arg =~ /^--/;
+    # now $arg starts with `-'
 
     if ($arg eq '-') {
       unless ($was_minus) {
@@ -190,38 +182,77 @@ sub args_with_minus {
       next;
     }
 
+    if ($arg eq '--') {
+      $double_minus = 1;
+      push(@filespec, $arg);
+      next;
+    }
+
+    &version() if $arg =~ /^--?v/;	# --version, with exit
+    &help() if $arg  =~ /--?h/;		# --help, with exit
+
+    if ( $arg =~ /^--r/ ) {		#  --run, no exit
+      $do_run = 1;
+      next;
+    }
+
+    if ( $arg =~ /^--wa/ ) {		#  --warnings, no exit
+      $with_warnings = 1;
+      next;
+    }
+####### sub handle_args
+
+    if ( $arg =~ /^--(wi|l)/ ) { # --ligatures, no exit
+      # the old --with_ligatures is only kept for compatibility
+      $pdf_with_ligatures = 1;
+      next;
+    }
+
     if ($arg =~ /^-m/) {
       push @Mparams, $arg;
       next;
     }
 
-    if ($arg =~ /^-T\s*$/) {
+    if ($arg =~ /^-T$/) {
       $was_T = 1;
       next;
     }
 
-    if ($arg =~ s/^-T(.+)$/$1/) {
-      $device = $arg;
+    if ($arg =~ s/^-T(\w+)$/$1/) {
+      push @devices, $1;
       next;
     }
 
-    if ($arg =~ /^-[^m]/) {
-      push(@Command, $arg);
-      next;
-    } else {
-      $had_filespec = 1;
-      if (-f $arg && -r $arg) {
-	push @filespec, $arg;
-      } else {
-	print STDERR "grog: $arg is not a readable file.";
+    if ($arg =~ /^-(\w)(\w*)$/) {	# maybe a groff option
+      my $opt_char = $1;
+      my $opt_char_with_arg = $opt_char . ':';
+      my $others = $2;
+      if ( $groff_opts =~ /$opt_char_with_arg/ ) {	# groff optarg
+	if ( $others ) {	# optarg is here
+	  push @Command, '-' . $opt_char;
+	  push @Command, '-' . $others;
+	  next;
+	}
+	# next arg is optarg
+	$optarg = 1;
+	next;
+####### sub handle_args
+      } elsif ( $groff_opts =~ /$opt_char/ ) {	# groff no optarg
+	push @Command, '-' . $opt_char;
+	if ( $others ) {	# $others is now an opt collection
+	  $arg = '-' . $others;
+	  redo;
+	}
+	# arg finished
+	next;
+      } else {		# not a groff opt
+	print STDERR 'unknown argument ' . $arg;
+	push(@Command, $arg);
+	next;
       }
-      next;
     }
   }
-  @filespec = ('-') if ! @filespec && ! $had_filespec;
-  exit 1 unless @filespec;
-  @ARGV = @filespec;
-}
+} # sub handle_args
 
 
 ########################################################################
@@ -272,6 +303,7 @@ sub do_first_line {
     if ( $line =~ /s/ ) {
       $Groff{'soelim'}++;
     }
+####### sub do_first_line
     if ( $line =~ /t/ ) {
       $Groff{'tbl'}++;
     }
@@ -306,10 +338,9 @@ sub do_first_line {
   }
 
   for $word ( @in ) {
-    $Groff{$word}++ ;
+    $Groff{$word}++;
   }
-
-}
+} # sub do_first_line
 
 
 ########################################################################
@@ -352,6 +383,7 @@ sub do_line {
     $Groff{'soelim'}++;
     return;
   }
+####### sub do_line
 
   ######################################################################
   # macros
@@ -402,6 +434,8 @@ sub do_line {
     return;
   }
 
+####### sub do_line
+
   # pic can be opened by .PS or .PF and closed by .PE
   if ( $command =~ /^\.PS$/ ) {
     $Groff{'pic'}++;		# normal opening for pic
@@ -435,7 +469,7 @@ sub do_line {
 
 
   ######################################################################
-  # devices
+  # macro packages
   ######################################################################
 
   ##########
@@ -446,6 +480,7 @@ sub do_line {
     return;
   }
 
+####### sub do_line
   # In the old version of -mdoc `Oo' is a toggle, in the new it's
   # closed by `Oc'.
   if ( $command =~ /^\.Oc$/ ) {
@@ -474,6 +509,7 @@ sub do_line {
   ##########
   # for ms
 
+####### sub do_line
   if ( $command =~ /^\.AB$/ ) {
     $Groff{'AB'}++;		# for ms
     return;
@@ -515,6 +551,7 @@ sub do_line {
     $Groff{'LP'}++;		# for man and ms
     return;
   }
+####### sub do_line
   if ( $command =~ /^\.P$/ ) {
     $Groff{'P'}++;		# for man and ms
     return;
@@ -564,6 +601,7 @@ sub do_line {
    $Groff{'YS'}++;
     return;
   }
+####### sub do_line
 
 
   ##########
@@ -603,7 +641,7 @@ sub do_line {
     }
     return;
   }
-
+####### sub do_line
 
   ##########
   # mom
@@ -637,66 +675,79 @@ sub do_line {
 sub make_groff_line {
   our %File_Name_Extensions;
   our $is_mmse;
-  our @FILES;
+  our @filespec;			# stores inout file names
 
   my @m = ();
   my @preprograms = ();
 
-
-  # device from -T
-  $device = '' unless ( defined $device );
-
   # default device when without `-T' is `ps' ($device empty)
 
-  if ( $device =~
-       /^(
-	  dvi
-	|
-	  html
-	|
-	  xhtml
-	|
-	  lbp
-	|
-	  lj4
-	|
-	  ps
-	|
-	  pdf
-	|
-	  ascii
-	|
-	  cp1047
-	|
-	  latin1
-	|
-	  utf8
-	)$/x ) {	# suitable device
+  my $device = '';
+  for my $d ( @devices ) {
+    if ( $d =~			# suitable devices
+	 /^(
+	    dvi
+	  |
+	    html
+	  |
+	    xhtml
+	  |
+	    lbp
+	  |
+	    lj4
+	  |
+	    ps
+	  |
+	    pdf
+	  |
+	    ascii
+	  |
+	    cp1047
+	  |
+	    latin1
+	  |
+	    utf8
+	  )$/x ) {
+###### sub make_groff_line
+      if ( $device ) {
+	next if ( $device eq $d );
+	print STDERR 'several different devices given: ' .
+	  $device . ' and ' .$d;
+	$device = $d;	# the last provided device is taken
+	next;
+      } else { # empty $device
+	$device = $d;
+	next;
+      }
+    } else {		# not suitable device
+      print STDERR 'not a suitable device for groff: ' . $d;
+      next;
+    }
+  }
 
-    push(@Command, '-T' . $device);	# for all suitable devices
+  if ( $device ) {
+    push @Command, '-T';
+    push @Command, $device;
+  }
 
-    if ( $device eq 'pdf' ) {
-      if ( $pdf_with_ligatures ) {	# with ligature argument
-	push( @Command, '-P-y -PU' );
-      } else {	# no ligature argument
-	 if ( $with_warnings ) {
-	   print STDERR <<EOF;
+  if ( $device eq 'pdf' ) {
+    if ( $pdf_with_ligatures ) {	# with --ligature argument
+      push( @Command, '-P-y -PU' );
+    } else {	# no --ligature argument
+      if ( $with_warnings ) {
+	print STDERR <<EOF;
 If you have trouble with ligatures like `fi' in the `groff' output, you
 can proceed as one of
 - add `grog' option `--with_ligatures' or
 - use the `grog' option combination `-P-y -PU' or
 - try to remove the font named similar to `fonts-texgyre' from your system.
 EOF
-	 }
-      }	# end of ligature
-    }	# end of pdf device
-  } else {	# wrong device
-    if ( $device ) {
-      print STDERR 'The device ' . $device . ' for -T is wrong.';
-      $device = '';
-    }
-  }
+      }	# end of warning
+    }	# end of ligature
+  }	# end of pdf device
 
+
+###### sub make_groff_line
 
   ##########
   # preprocessors
@@ -717,6 +768,7 @@ EOF
     $Groff{'pic'} = 1;
   }
 
+###### sub make_groff_line
   $Groff{'refer'} ||= $Groff{'refer_open'} && $Groff{'refer_close'};
 
   if ( $Groff{'chem'} || $Groff{'eqn'} ||  $Groff{'gideal'} ||
@@ -760,6 +812,7 @@ EOF
 	 $Groff{'TL'} || $Groff{'UL'} || $Groff{'XP'}
 	) {
 	$is_ms = 1;
+###### sub make_groff_line
       } else {	# maybe `ms'
 	print STDERR 'grog: device -ms assumed without proof.'
 	  unless ( $File_Name_Extensions{'ms'} );
@@ -813,6 +866,7 @@ EOF
     push(@m, '-mom');
   }
 
+###### sub make_groff_line
 
   ######################################################################
   # create groff command
@@ -822,7 +876,7 @@ EOF
   if ( @preprograms ) {
     my @progs;
     $progs[0] = shift @preprograms;
-    push(@progs, @FILES);
+    push(@progs, @filespec);
     for ( @preprograms ) {
       push @progs, '|';
       push @progs, $_;
@@ -847,6 +901,8 @@ EOF
   if ( $nr_m_guessed > 1 ) {
     print STDERR 'More than 1 argument for -m found: ' . "@m";
   }
+
+###### sub make_groff_line
 
   my $nr_m_args = scalar @Mparams;	# m-arguments for grog
   my $last_m_arg = '';	# last provided -m option
@@ -878,6 +934,7 @@ EOF
       print STDERR 'The argument is taken.';
       $final_m = $last_m_arg;
     }
+###### sub make_groff_line
   } else {	# no -m arg provided
     if ( $nr_m_guessed > 1 ) {
       print STDERR 'More than 1 -m arguments were guessed: ' . "@m";
@@ -891,11 +948,11 @@ EOF
   }
   push @Command, $final_m if ( $final_m );
 
-  push(@Command, @FILES) unless ( $file_args_included );
+  push(@Command, @filespec) unless ( $file_args_included );
 
   #########
   # execute the `groff' command here with option `--run'
-  if ( $do_run ) {
+  if ( $do_run ) { # with --run
     print STDERR "@Command";
     my $cmd = join ' ', @Command;
     system($cmd);

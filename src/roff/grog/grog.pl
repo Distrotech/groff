@@ -30,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-our $Last_Update = '4 Jul 2014';
+our $Last_Update = '5 Jul 2014';
 ########################################################################
 
 require v5.6;
@@ -134,27 +134,28 @@ our %File_Name_Extensions = (
 
 our $is_mmse = 0;
 
-our @FILES = @ARGV;
+our @filespec;
 
 
 ##########
 # run subs
 
-&args_with_minus();
+&handle_args();
 
-foreach my $file ( @ARGV ) { # test for each file name in the arguments
+foreach my $file ( @filespec ) { # test for each file name in the arguments
   unless ( open(FILE, $file eq "-" ? $file : "< $file") ) {
     print STDERR "$Prog: can't open \`$file\': $!";
     next;
   }
 
   if ( $file =~ /\./ ) {	# file name has a dot `.'
-    my $ext = $file =~ s/
-		     .*
-		     \.
-		     ([^.]*)
-		     $
-		   /$1/x;
+    my $ext = $file;
+    $ext =~ s/
+	       .*
+	       \.
+	       ([^.]*)
+	       $
+	     /$1/x;
     if ( $ext =~ /^([1-9lno]|man|n)$/ ) {
       $File_Name_Extensions{'man'}++;
     } elsif ( $ext =~ /^mandoc$/ ) {
