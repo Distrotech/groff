@@ -8,7 +8,7 @@
 # Copyright (C) 2006, 2009, 2014 Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 11 Jun 2014
+# Last update: 5 Jul 2014
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -86,7 +86,7 @@ sub main_set_options {
   ##### groffer options inhereted from groff
 
   my @opts_groff_short_na = ('a', 'b', 'c', 'C', 'e', 'E', 'g', 'G',
-  'i', 'k', 'l', 'N', 'p', 'R', 's', 'S', 't', 'U', 'z');
+  'i', 'j', 'J', 'k', 'l', 'N', 'p', 'R', 's', 'S', 't', 'U', 'z');
 
   my @opts_groff_short_arg = ('d', 'f', 'F', 'I', 'K', 'L', 'm', 'M', 'n',
   'o', 'P', 'r', 'w', 'W');
