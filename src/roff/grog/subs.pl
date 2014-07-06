@@ -733,7 +733,8 @@ sub make_groff_line {
 
   if ( $device eq 'pdf' ) {
     if ( $pdf_with_ligatures ) {	# with --ligature argument
-      push( @Command, '-P-y -PU' );
+      push( @Command, '-P-y' );
+      push( @Command, '-PU' );
     } else {	# no --ligature argument
       if ( $with_warnings ) {
 	print STDERR <<EOF;
