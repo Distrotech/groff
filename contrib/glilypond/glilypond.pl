@@ -24,8 +24,8 @@ use Data::Dumper;
 our $Legalese;
 
 {
-  use constant VERSION => 'v1.2'; # version of glilypond
-  use constant LASTUPDATE => '1 Jan 2014'; # date of last update
+  use constant VERSION => 'v1.3'; # version of glilypond
+  use constant LASTUPDATE => '5 Jul 2014'; # date of last update
 
 ### This constant `LICENSE' is the license for this file `GPL' >= 2
   use constant LICENSE => q*
