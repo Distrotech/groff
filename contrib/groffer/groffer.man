@@ -47,13 +47,15 @@ The license text is available in the internet at
 .\" Characters
 .\" --------------------------------------------------------------------
 .
-.ie t .char \[Ellipsis] \f[S]\N'188'\f[P]
-.el .char \[Ellipsis] \&.\|.\|.\&\
-.\" called by \[Ellipsis]
+.\" Ellipsis ...
+.ie t .ds EL \fS\N'188'\fP
+.el .ds EL \&.\|.\|.\&\
+.\" called with \*(EL
 .
-.ie t .char \[Bullet] \[bu]
-.el .char \[Bullet] \-
-.\" used it for `.IP \[Bullet] 2m' (former .Topic)
+.\" Bullet
+.ie t .ds BU \[bu]
+.el .ds BU *
+.\" used in `.IP \*(BU 2m' (former .Topic)
 .
 .
 .\" --------------------------------------------------------------------
@@ -62,16 +64,16 @@ The license text is available in the internet at
 .
 .SY groffer
 .OP \-\-
-.OP \%filespec \[Ellipsis]
+.OP \%filespec \*(EL
 .YS
 .
 .SY groffer
-.OP mode-option \[Ellipsis]
-.OP groff-options \[Ellipsis]
-.OP man-options \[Ellipsis]
-.OP X-options \[Ellipsis]
+.OP mode-option \*(EL
+.OP groff-options \*(EL
+.OP man-options \*(EL
+.OP X-options \*(EL
 .OP \-\-
-.OP \%filespec \[Ellipsis]
+.OP \%filespec \*(EL
 .YS
 .
 .SY groffer
@@ -220,7 +222,7 @@ Long options can be abbreviated in several ways.
 .SY
 .OP \-\-auto
 .OP \-\-default
-.OP \-\-default\-modes mode1,mode2,\[Ellipsis]
+.OP \-\-default\-modes mode1,mode2,\*(EL
 .OP \-\-dvi
 .OP \-\-groff
 .OP \-\-html
@@ -296,11 +298,11 @@ short options are accepted.
 .OP \-\-locale language
 .OP \-\-local\-file
 .OP \-\-location\~\fR|\fB\~\-\-where
-.OP \-\-manpath dir1:dir2:\[Ellipsis]
+.OP \-\-manpath dir1:dir2:\*(EL
 .OP \-\-no\-location
 .OP \-\-pager program
-.OP \-\-sections sec1:sec2:\[Ellipsis]
-.OP \-\-systems sys1,sys2,\[Ellipsis]
+.OP \-\-sections sec1:sec2:\*(EL
+.OP \-\-systems sys1,sys2,\*(EL
 .OP \-\-troff\-device device
 .YS
 .P
@@ -575,7 +577,6 @@ There is a chance to view the output source; for example, the
 combination of the options
 .B \-\-mode=ps
 and
-.\# B \-\-ps\-viewer=less
 .B \-\-viewer=less
 shows the content of the
 .I Postscript
@@ -601,7 +602,7 @@ and restart option processing using only the rest of the command line.
 .
 .
 .TP
-.BI \-\-default\-modes \ mode1,mode2,\[Ellipsis]
+.BI \-\-default\-modes \ mode1,mode2,\*(EL
 Set the sequence of modes for
 .I \%auto\~mode
 to the comma separated list given in the argument.
@@ -672,7 +673,7 @@ The following mode values are recognized:
 .RS
 .
 .TP
-.Header_CB auto
+.B auto
 Select the automatic determination of the display mode.
 .
 The sequence of modes that are tried can be set with the
@@ -1226,22 +1227,22 @@ The display differs from the
 .B \%apropos
 program by the following concepts:
 .RS
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Construct a
 .I \%groff
 frame similar to a
 .I \%man\~page
 to the output of
 .BR \%apropos ,
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 each
 .I \%filespec
 argument is searched on its own.
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 The restriction by
 .B \-\-sections
 is handled as well,
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 wildcard characters are allowed and handled without a further option.
 .RE
 .
@@ -1298,18 +1299,18 @@ This is written from anew, so it differs from
 .B whatis
 output by the following concepts
 .RS
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 each retrieved file name is added,
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 local files are handled as well,
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 the \fIlanguage\fP and \fIsystem\fP locale is supported,
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 the display is framed by a
 .I groff
 output format similar to a
 .IR \%man\~page ,
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 wildcard characters are allowed without a further option.
 .RE
 .
@@ -1474,7 +1475,7 @@ This was added by
 .
 .
 .TP
-.BI \-\-manpath \ 'dir1:dir2:\[Ellipsis]'
+.BI \-\-manpath \ 'dir1:dir2:\*(EL'
 Use the specified search path for retrieving
 .I \%man\~pages
 instead of the program defaults.
@@ -1496,7 +1497,7 @@ This can be set with
 .
 .
 .TP
-.BI \-\-sections \ sec1:sec2:\[Ellipsis]
+.BI \-\-sections \ sec1:sec2:\*(EL
 Restrict searching for
 .I \%man\~pages
 to the given
@@ -1505,7 +1506,7 @@ a colon-separated list.
 .
 .
 .TP
-.BI \-\-systems \ sys1,sys2,\[Ellipsis]
+.BI \-\-systems \ sys1,sys2,\*(EL
 Search for
 .I \%man\~pages
 for the given operating systems; the argument
@@ -1746,24 +1747,24 @@ Instead of displaying the formatted input, a lot of
 specific information is printed to standard output:
 .
 .RS
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 the output file name in the temporary directory,
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 the display mode of the actual
 .B \%groffer
 run,
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 the display program for viewing the output with its arguments,
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 the active parameters from the config files, the arguments in
 .SM
 .BR \%$GROFFER_OPT ,
 and the arguments of the command line,
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 the pipeline that would be run by the
 .B \%groff
 program, but without executing it.
@@ -1905,7 +1906,7 @@ Each
 parameter can have one of the following forms in decreasing sequence.
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 No
 .I \%filespec
 parameters means that
@@ -1924,7 +1925,7 @@ use the argument
 .BR man:\- .
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Next a
 .I \%filespec
 is tested whether it is the path name of an existing file.
@@ -1933,7 +1934,7 @@ Otherwise it is assumed to be a searching pattern for a
 .IR \%man\~page .
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 .BI \%man: name ( section_extension ) ,
 .BI \%man: name . section_extension,
 .IB \%name ( section_extension ) ,
@@ -1945,7 +1946,7 @@ in \%man\~section and possibly extension of
 .IR \%section_extension .
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Now
 .BI \%man: name
 searches for a
@@ -1956,7 +1957,7 @@ that has a document called
 .IR \%name .
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 .I \%section_extension\~name
 is a pattern of 2 arguments that originates from a strange argument
 parsing of the
@@ -1973,7 +1974,7 @@ character optionally followed by an
 .IR extension .
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 We are left with the argument
 .I \%name
 which is not an existing file.
@@ -2094,13 +2095,13 @@ You can change this automatic behavior by the option
 Known viewers for the graphical display modes and their standard
 \%\f[CR]X\~Window\f[] viewer programs are
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 in a PDF viewer
 .nh
 .RI ( \%pdf\~mode )
 .hy
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 in a web browser
 .nh
 .RI ( html
@@ -2109,13 +2110,13 @@ or
 .hy
 .RE
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 in a Postscript viewer
 .nh
 .RI ( \%ps\~mode )
 .hy
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 \%\f[CR]X\~Window\f[]
 .I roff
 viewers such as
@@ -2125,7 +2126,7 @@ or
 (in
 .IR \%x\~mode )
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 in a dvi viewer program
 .nh
 .RI ( \%dvi\~mode )
@@ -2383,18 +2384,18 @@ is a list of directories that are separated by colon.
 .
 It is generated by the following methods.
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 The environment variable
 .SM
 .B \%$MANPATH
 can be set.
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 It can be read from the arguments of the environment variable
 .SM
-.BR\%$MANOPT .
+.BR \%$MANOPT .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 The
 .I man\~path
 can be manually specified by using the option
@@ -2403,14 +2404,14 @@ An empty argument disables the
 .I \%man\~page
 searching.
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 When no
 .I man\~path
 was set the
 .BR \%manpath (1)
 program is tried to determine one.
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 If this does not work a reasonable default path from
 .SM
 .B $PATH
@@ -2436,18 +2437,18 @@ The names of such
 .I operating systems
 can be provided by 3 methods.
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 The environment variable
 .SM
 .B \%$SYSTEM
 has the lowest precedence.
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 This can be overridden by an option in
 .SM
 .BR \%$MANOPT .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 This again is overridden by the command line option
 .BR \-\-systems .
 .
@@ -2489,27 +2490,27 @@ The wanted
 .I language
 can be chosen by several methods.
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Environment variable
 .SM
 .BR $LANG .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 This is overridden by
 .SM
 .BR \%$LC_MESSAGES .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 This is overridden by
 .SM
 .BR $LC_ALL .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 This can be overridden by providing an option in
 .SM
 .BR \%$MANOPT .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 All these environment variables are overridden by the command line
 option
 .BR \-\-locale .
@@ -2609,7 +2610,7 @@ in this order.
 For each available
 .IR section ,
 a subdirectory
-.File_name man \fI<section>\fP
+.BI man <section>
 exists containing all
 .I man
 files for this
@@ -2667,22 +2668,22 @@ There are 4 methods to specify a
 .I section
 on the command line:
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Environment variable
 .SM
 .B \%$MANSECT
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Command line option
 .B \-\-sections
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Appendix to the
 .I name
 argument in the form
 .I <name>.<section>
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Preargument before the
 .I name
 argument in the form
@@ -2726,22 +2727,22 @@ on the command line.
 But it is not necessary to provide the whole extension name, some
 abbreviation is good enough in most cases.
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Environment variable
 .SM
 .B \%$EXTENSION
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Command line option
 .B \-\-extension
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Appendix to the
 .I <name>.<section>
 argument in the form
 .I <name>.<section><extension>
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Preargument before the
 .I name
 argument in the form
@@ -2760,7 +2761,7 @@ searching, see
 .\" --------------------------------------------------------------------
 .
 .TP
-.File_name /usr/share/man/man1/groff.1
+.B /usr/share/man/man1/groff.1
 This is an uncompressed file for the
 .I \%man\~page
 \f[CR]groff\fP in
@@ -2779,30 +2780,30 @@ should be searched, but as
 is searched first this file will be found first.
 .
 The file name is composed of the following components.
-.File_name /usr/share/man
+.B /usr/share/man/
 must be part of the
 .IR \%man\~path ;
 the subdirectory
-.File_name man1/
+.B man1/
 and the part
-.File_name .1
+.B .1
 stand for the
 .IR section ;
-.File_name groff
+.B groff
 is the name of the
 .IR \%man\~page .
 .
 .
 .TP
-.File_name /usr/local/share/man/man7/groff.7.gz
+.B /usr/local/share/man/man7/groff.7.gz
 The file name is composed of the following components.
-.File_name /usr/local/share/man
+.B /usr/local/share/man
 must be part of the
 .IR \%man\~path ;
 the subdirectory
-.File_name man7/
+.B man7/
 and the part
-.File_name .7
+.B .7
 stand for the
 .IR section ;
 .B groff
@@ -2826,7 +2827,7 @@ This can be done by one of the following commands.
 .TP
 .B /usr/local/man/man1/ctags.1emacs21.bz2
 Here
-.File_name /usr/local/man
+.B /usr/local/man
 must be in
 .IR \%man\~path ;
 the subdirectory
@@ -3318,7 +3319,7 @@ As an example, consider the following configuration file that can be
 used either in
 .B \%/etc/groff/groffer.conf
 or
-.File_name \%\s+2~\s0/.groff/groffer.conf .
+.B \%\s+2~\s0/.groff/groffer.conf .
 .
 .
 .P
@@ -3349,14 +3350,14 @@ options (the lines starting with
 This has the following effects:
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Use a text color of
 .B \%DarkBlue
 in all viewers that support this, such as
 .BR \%gxditview .
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Use a resolution of
 .B 100dpi
 in all viewers that support this, such as
@@ -3368,7 +3369,7 @@ is set to
 .BR X100 .
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Force
 .BR \%gxditview (@MAN1EXT@)
 as the
@@ -3381,7 +3382,7 @@ This geometry is suitable for a resolution of
 .BR 100dpi .
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Use
 .BR \%xpdf (1)
 as the
@@ -3412,9 +3413,9 @@ has much more fancy capabilities.
 .EE
 .sp
 Decompress, format and display the compressed file
-.File_name meintro.ms.gz
+.B meintro.ms.gz
 in the directory
-.File_name /usr/local/share/doc/groff ,
+.BR /usr/local/share/doc/groff ,
 using the standard viewer
 .B \%gxditview
 as graphical viewer when in \%\f[CR]X\~Window\fP, or the
@@ -3622,13 +3623,13 @@ and a large set of special characters.
 The following standard types of options are supported.
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 The option consisting of a single minus
 .B \-
 refers to standard input.
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 A single minus followed by characters refers to a single character
 option or a combination thereof; for example, the
 .B \%groffer
@@ -3638,7 +3639,7 @@ is equivalent to
 .BR \-Q\~\-m\~foo .
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 Long options are options with names longer than one character; they
 are always preceded by a double minus.
 .
@@ -3649,7 +3650,7 @@ is equivalent to
 .BR \-\-long\~arg .
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 An argument of
 .B \-\-
 ends option parsing; all further command line arguments are
@@ -3659,7 +3660,7 @@ parameters, i.e.\& file names or constructs for searching
 .IR \%man\~pages ).
 .
 .
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 All command line arguments that are neither options nor option
 arguments are interpreted as
 .I \%filespec
