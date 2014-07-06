@@ -26,8 +26,8 @@
 # settings
 ########################################################################
 
-my $Program_Version = '1.0.2';
-my $Last_Update = '3 Jul 2014';
+my $Program_Version = '1.0.3';
+my $Last_Update = '5 Jul 2014';
 
 # this setting of the groff version is only used before make is run,
 # otherwise @VERSION@ will set it.

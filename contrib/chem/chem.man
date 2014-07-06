@@ -10,54 +10,26 @@
 Source file position:  <groff_source_top>/contrib/chem/chem.man
 Installed position:    $prefix/share/man/man1/@g@chem.1
 
-Last update: 4 Jul 2014
-..
-.
-.
-.de authors
+Last update: 5 Jul 2014
+
 This file was written by Bernd Warken <groff-bernd.warken-72@web.de>.
-It is based on the documentation of
-.UR http://\:cm.bell-labs.com/\:cm/\:cs/\:who/\:bwk/\:index.html
-Brian Kernighan
-.UE 's
-original
-.I awk
-version of
-.IR chem .
+
+It is based on the documentation of Brian Kernighan's original awk
+version of chem at <http://cm.bell-labs.com/cm/cs/who/bwk/index.html>.
+
+Copyright (C) 2006\[en]2009, 2014
+	Free Software Foundation, Inc.
+
+This file is part of chem, which is part of groff, a free software
+project.
+
+You can redistribute it and/or modify it under the terms of the "GNU
+General Public License version 2" (GPL2) as published by the "Free
+Software Foundation".
+
+The license text for GPL2 is available in the internet at
+<http://www.gnu.org/licenses/gpl-2.0.html>.
 ..
-.
-.
-.de copying
-Copyright (C) 2006\[en]2009, 2014 Free Software Foundation, Inc.
-.
-.
-.P
-This file is part of
-.IR chem ,
-which is part of
-.IR groff ,
-a free software project.
-.
-You can redistribute it and/or modify it under the terms of the
-.nh
-.B "GNU General Public License"
-.RB ( GPL )
-.B version 2
-.hy
-as published by the
-.nh
-.BR "Free Software Foundation" .
-.hy
-.
-.
-.P
-The license text for
-.B GPL2
-is available in the internet at
-.UR http://www.gnu.org/licenses/gpl-2.0.html
-.UE .
-..
-.
 .
 .\" --------------------------------------------------------------------
 .\" Setup
@@ -67,9 +39,15 @@ is available in the internet at
 .\" Characters
 .\" --------------------------------------------------------------------
 .
-.ie t .char \[Ellipsis] \f[S]\N'188'\f[P]
-.el .char \[Ellipsis] \f[I]...\f[P]
-.\" called by \[Ellipsis]
+.\" Ellipsis ...
+.ie t .ds EL \fS\N'188'\fP
+.el .ds EL \&.\|.\|.\&\
+.\" called with \*(EL
+.
+.\" Bullet
+.ie t .ds BU \[bu]
+.el .ds BU *
+.\" used in `.IP \*(BU 2m' (former .Topic)
 .
 .
 .\" --------------------------------------------------------------------
@@ -109,9 +87,9 @@ is available in the internet at
 .\" --------------------------------------------------------------------
 .
 .SY @g@chem
-.OP \fI\%option \[Ellipsis]\fP
+.OP \fI\%option \*(EL\fP
 .OP \-\-
-.OP \fI\%filespec \[Ellipsis]\fP
+.OP \fI\%filespec \*(EL\fP
 .YS
 .
 .SY @g@chem
@@ -131,7 +109,6 @@ is available in the internet at
 .SH OPTION USAGE
 .\" --------------------------------------------------------------------
 .
-.P
 There are no other options than
 .BR \-h ,
 .BR \-\-help ,
@@ -283,7 +260,7 @@ followed by
 .BR groffer :
 .
 .IP
-.B @g@chem [file \[Ellipsis]] | groffer
+.B @g@chem [file \*(EL] | groffer
 .
 .P
 If you want to create just
@@ -297,7 +274,7 @@ with the option
 for the activation of
 .BR @g@pic :
 .IP
-.B @g@chem [file \[Ellipsis]] | groff \-p \[Ellipsis]
+.B @g@chem [file \*(EL] | groff \-p \*(EL
 .
 .
 .\" --------------------------------------------------------------------
@@ -311,7 +288,7 @@ and a way to glue them together as desired, bonds of several styles,
 moieties (e.g.,
 .BR C ,
 .BR NH3 ,
-\[Ellipsis], and strings.
+\*(EL, and strings.
 .
 .
 .\" --------------------------------------------------------------------
@@ -471,14 +448,14 @@ puts a circle into any kind of ring.
 .RB [ \%double\ \c
 .IR i , j\ \c
 .IR k , l\ \c
-\[Ellipsis]
+\*(EL
 .RI [ picstuff ]
 .YS
 .RE
 .
 .
 .P
-The vertices of a ring are numbered 1, 2, \[Ellipsis] from the
+The vertices of a ring are numbered 1, 2, \*(EL from the
 vertex that points in the natural compass direction.
 .
 So for a hexagonal ring with the point at the top, the top vertex
@@ -499,7 +476,7 @@ R2: ring pointing right
 .P
 The ring vertices are named
 .BR .V1 ,
-\[Ellipsis],
+\*(EL,
 .BI .V n\fR,\fP
 with
 .B .V1
@@ -539,7 +516,7 @@ creates two benzene rings connected along a side.
 .
 .P
 Interior double bonds are specified as
-.BI \%double\  n1 , n2\ n3 , n4\ \fR\[Ellipsis];\fP
+.BI \%double\  n1 , n2\ n3 , n4\ \fR\*(EL;\fP
 each number pair adds an interior bond.
 .
 So the alternate form of a benzene ring is
@@ -676,7 +653,7 @@ command.
 .
 It represents a string that should be printed (without the quotes).
 .
-Text within quotes \(dq\[Ellipsis]\(dq is treated more or less
+Text within quotes \(dq\*(EL\(dq is treated more or less
 like a moiety except that no changes are made to the quoted part.
 .
 .
@@ -696,7 +673,7 @@ A name is just
 .
 .IP
 .IB Name :
-\[Ellipsis]
+\*(EL
 .
 .
 .P
@@ -725,7 +702,7 @@ only letters and numbers is valid:
 The specific construction
 .RS
 .TP
-.BR bond\  \[Ellipsis] " ; moiety"
+.BR bond\  \*(EL " ; moiety"
 .RE
 .P
 is equivalent to
@@ -877,7 +854,7 @@ properties of built-in objects.
 .
 .
 .P
-There is no in-line chemistry yet (e.g., analogous to the $\[Ellipsis]$
+There is no in-line chemistry yet (e.g., analogous to the $\*(EL$
 construct of eqn).
 .
 .
@@ -980,6 +957,58 @@ for information on availability.
 .
 .
 .\" --------------------------------------------------------------------
+.SH "AUTHORS"
+.\" --------------------------------------------------------------------
+.
+This file was written by
+.MT groff-bernd.warken-72@web.de
+Bernd Warken 
+.ME .
+.
+It is based on the documentation of
+.UR http://\:cm.bell-labs.com/\:cm/\:cs/\:who/\:bwk/\:index.html
+Brian Kernighan
+.UE 's
+original
+.I awk
+version of
+.IR chem .
+.
+.
+.\" --------------------------------------------------------------------
+.SH "COPYING"
+.\" --------------------------------------------------------------------
+.
+Copyright (C) 2006\[en]2009, 2014
+	Free Software Foundation, Inc.
+.
+.P
+This file is part of
+.IR chem ,
+which is part of
+.IR groff ,
+a free software project.
+.
+You can redistribute it and/or modify it under the terms of the
+.nh
+.B "GNU General Public License version 2"
+.RB ( GPL2 )
+.hy
+as published by the
+.nh
+.BR "Free Software Foundation" .
+.hy
+.
+.
+.P
+The license text for
+.B GPL2
+is available in the internet at
+.UR http://www.gnu.org/licenses/gpl-2.0.html
+.UE .
+.
+.
+.\" --------------------------------------------------------------------
 .SH "SEE ALSO"
 .\" --------------------------------------------------------------------
 .
@@ -1006,18 +1035,6 @@ is
 .UR http://\:cm.bell-labs.com/\:cm/\:cs/\:cstr/\:122.ps.gz
 122.ps
 .UE .
-.
-.
-.\" --------------------------------------------------------------------
-.SH "AUTHORS"
-.\" --------------------------------------------------------------------
-.authors
-.
-.
-.\" --------------------------------------------------------------------
-.SH "COPYING"
-.\" --------------------------------------------------------------------
-.copying
 .
 .
 .\" --------------------------------------------------------------------
