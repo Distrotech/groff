@@ -748,7 +748,6 @@ EOF
     }	# end of ligature
   }	# end of pdf device
 
-
 ###### sub make_groff_line
 
   ##########

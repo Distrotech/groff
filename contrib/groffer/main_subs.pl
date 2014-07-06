@@ -1880,7 +1880,7 @@ sub main_display {
 
     /^pdf$/ and do {
       $modefile .= '.pdf';
-      $groggy = `cat $tmp_cat | grog -Tpdf -P-y -PU`;
+      $groggy = `cat $tmp_cat | grog -Tpdf --ligatures`;
       die "main_display(): grog error;" if $?;
       chomp $groggy;
       print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
