@@ -10,8 +10,8 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $Latest_Update = '4 Jul 2014';
-my $version = '1.2.2';
+my $Latest_Update = '6 Jul 2014';
+my $version = '1.2.3';
 
 # This file is part of `gperl', which is part of `groff'.
 

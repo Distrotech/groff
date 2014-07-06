@@ -12,7 +12,7 @@ gperl \- groff preprocessor for Perl parts in roff files
 .de authors
 This file was written by Bernd Warken <groff-bernd.warken-72@web.de>.
 .
-Latest update: 4 Jul 2014
+Latest update: 6 Jul 2014
 ..
 .
 .de copyright
@@ -45,9 +45,15 @@ The license text is available in the internet at
 .\" Characters
 .\" --------------------------------------------------------------------
 .
-.ie t .char \[Ellipsis] \f[S]\N'188'\f[P]
-.el .char \[Ellipsis] \&.\|.\|.\&\
-.\" called with \[Ellipsis]
+.\" Ellipsis ...
+.ie t .ds EL \fS\N'188'\fP
+.el .ds EL \&.\|.\|.\&\
+.\" called with \*(EL
+.
+.\" Bullet
+.ie t .ds BU \[bu]
+.el .ds BU *
+.\" used in `.IP \*(BU 2m' (former .Topic)
 .
 .
 .\" --------------------------------------------------------------------
@@ -57,7 +63,7 @@ The license text is available in the internet at
 .SY gperl
 .OP \-
 .OP \-\-
-.OP \& "\%filespec \[Ellipsis]"
+.OP \& "\%filespec \*(EL"
 .YS
 .
 .BR "gperl -h" | --help
@@ -161,9 +167,9 @@ can either be without arguments, or by a request that has the term
 .B start
 as its only argument.
 .RS
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 .B \&.Perl
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 .B \&.Perl start
 .RE
 .
@@ -184,9 +190,9 @@ Of course, it would be reasonable to add the argument
 that's possible, but not necessary.
 .
 .RS
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 .B \&.Perl stop
-.IP \[Bullet] 2m
+.IP \*(BU 2m
 .BI \&.Perl " other_than_start"
 .RE
 .
