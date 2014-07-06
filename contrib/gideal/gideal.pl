@@ -10,8 +10,8 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $Latest_Update = '4 Jul 2014';
-my $version = '0.9.5';
+my $Latest_Update = '6 Jul 2014';
+my $version = '0.9.6';
 
 # This file is part of `gideal', which is part of `groff'.
 
