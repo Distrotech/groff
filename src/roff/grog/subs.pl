@@ -30,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-# Last_Update = '5 Jul 2014';
+# Last_Update = '6 Jul 2014';
 ########################################################################
 
 require v5.6;
@@ -252,6 +252,7 @@ sub handle_args {
       }
     }
   }
+  @filespec = ('-') unless (@filespec);
 } # sub handle_args
 
 
