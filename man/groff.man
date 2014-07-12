@@ -3,11 +3,11 @@
 before installation: <top-groff-source>/man/groff.man
 after installation:  </usr or /usr/local>/share/man/man7/groff.7
 
-Latest update: 19 Jun 2014
+Latest update: 12 Jul 2014
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2000-2010, 2012
+Copyright (C) 2000-2010, 2012, 2014
   Free Software Foundation, Inc.
 written by Bernd Warken <groff-bernd.warken-72@web.de>
 maintained by Werner Lemberg <wl@gnu.org>
@@ -4064,6 +4064,221 @@ instead.
 .
 .PD
 .
+.
+.\" --------------------------------------------------------------------
+.SH UNDERLINING
+.\" --------------------------------------------------------------------
+.
+In the
+.I RUNOFF
+language, the underlining was quite easy.
+.
+But in
+.I roff
+this is much more difficult.
+.
+.
+.\" --------------------------------------------------------------------
+.SS Underlining with .ul
+.\" --------------------------------------------------------------------
+.
+There exists a
+.I groff
+request
+.B .ul
+(see above) that can underline the next or further source lines in
+.BR nroff ,
+but in
+.B troff
+it produces only a font change into
+.IR italic .
+.
+So this request is not really useful.
+.
+.
+.\" --------------------------------------------------------------------
+.SS Underlining with .UL from ms
+.\" --------------------------------------------------------------------
+.
+In the `ms' macro package in tmac/s.tmac
+.BR groff_ms (@MAN7EXT@),
+there is the macro
+.BR .UL .
+.
+But this works only in
+.BR troff ,
+not in
+.BR nroff .
+.
+.
+.\" --------------------------------------------------------------------
+.SS Underlining macro definitions
+.\" --------------------------------------------------------------------
+.
+So one can use the
+.I italic
+.B nroff
+idea from
+.B .ul
+and the
+.B troff
+definition
+in
+.I ms
+for writing a useful new macro, something like
+.
+.RS
+.EX
+\&.de UNDERLINE
+\&. ie n \[rs]\[rs]$1\[rs]f[I]\[rs]\[rs]$2\[rs]f[P]\[rs]\[rs]$3
+\&. el \[rs]\[rs]$1\[rs]Z\[aq]\[rs]\[rs]$2\[aq]\[rs]v\[aq].25m\[aq]\
+\[rs]D\[aq]l \[rs]w\[aq]\[rs]\[rs]$2\[aq]u 0\[aq]\[rs]v\[aq]-.25m\
+\[aq]\\[rs]\[rs]$3
+\&..
+.EE
+.RE
+.
+If
+.B doclifter (1)
+makes trouble, change the macro name
+.B UNDERLINE
+into some 2-letter word, like
+.BR Ul .
+.
+Moreover change the font writing from
+.B \[rs]f[P]
+to
+.BR \[rs]fP .
+.
+.
+.\" --------------------------------------------------------------------
+.SS Underlining without macro definitions
+.\" --------------------------------------------------------------------
+.P
+If one does not want to use macro definitions, e.g. when
+.B doclifter
+gets lost, use the following:
+.
+.RS
+.EX
+\&.ds u1 before
+\&.ds u2 in
+\&.ds u3 after
+\&.ie n \[rs]*[u1]\[rs]f[I]\[rs]*[u2]\[rs]f[P]\[rs]*[u3]
+\&.el \[rs]*[u1]\[rs]Z\[aq]\[rs]*[u2]\[aq]\[rs]v\[aq].25m\[aq]\[rs]D\
+\[aq]l \[rs]w\[aq]\[rs]*[u2]\[aq]u 0\[aq]\[rs]v\[aq]-.25m\[aq]\[rs]*[u3]
+.EE
+.RE
+.
+Due to
+.BR doclifter ,
+it might be necessary to change the variable writing
+.B \[rs][xy]
+and
+.B \[rs]*[xy]
+into the strange ancient writing
+.B \[rs]*(xy
+and
+.BR \[rs](xy ,
+and so on.
+.
+.
+.P
+Then these lines could look like
+.RS
+.EX
+\&.ds u1 before
+\&.ds u2 in
+\&.ds u3 after
+\&.ie n \[rs]*[u1]\[rs]fI\[rs]*(u2\[rs]fP\[rs]*(u3
+\&.el \[rs]*(u1\[rs]Z\[aq]\[rs]*(u2\[aq]\[rs]v\[aq].25m'\[rs]D\[aq]l \
+\[rs]w\[aq]\[rs]*(u2\[aq]u 0\[aq]\[rs]v\[aq]-.25m\[aq]\[rs]*(u3
+.EE
+.RE
+.
+.
+.P
+The result looks like
+.RS
+.ft CR
+before
+\z\[ul]i\
+\z\[ul]n
+after
+.ft R
+.RE
+.
+.
+.\" --------------------------------------------------------------------
+.SS Underlining with Overstriking \[rs]z and \[rs](ul
+.\" --------------------------------------------------------------------
+.
+.P
+There is another possibility for underlining by using overstriking
+with
+.BI \[rs]z c
+(print
+.I c
+with zero width without spacing) and
+.B \[rs](ul
+(underline character).
+.
+This produces the underlining of 1 character, both in
+.B nroff
+and in
+.BR troff .
+.
+.
+.P
+For example the underlining of a character say
+.B t
+looks like
+.B \[rs]z\[rs][ul]t
+or
+.B \[rs]z\[rs](ult
+.
+.
+.P
+Longer words look then a bit strange, but a useful mode is to write
+each character into a whole own line.
+.
+To underlines the 3 character part "tar" of the word "start":
+.
+.RS
+.EX
+.br
+before s\[rs]
+\[rs]z\[rs][ul]t\[rs]
+\[rs]z\[rs][ul]a\[rs]
+\[rs]z\[rs][ul]r\[rs]
+t after
+.EE
+.RE
+.
+or
+.
+.RS
+.EX
+.br
+before s\[rs]
+\[rs]z\[rs](ult\[rs]
+\[rs]z\[rs](ula\[rs]
+\[rs]z\[rs](ulr\[rs]
+t after
+.EE
+.RE
+.
+.P
+The result looks like
+.RS
+.ft CR
+before s\
+\z\[ul]t\
+\z\[ul]a\
+\z\[ul]r\
+t after
+.ft R
+.RE
 .
 .\" --------------------------------------------------------------------
 .SH COMPATIBILITY
