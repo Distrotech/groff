@@ -1,7 +1,16 @@
 '\" t
+.TH @G@TBL @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+@g@tbl \- format tables for troff
+.
+.\" --------------------------------------------------------------------
 .ig
 Copyright (C) 1989-1995, 2001-2004, 2006-2014
   Free Software Foundation, Inc.
+
+Last update: 21 Jul 2014
+
+Bernd Warken <groff-bernd.warken-72@web.de> added simple examples.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -19,14 +28,7 @@ translations approved by the Free Software Foundation instead of in
 the original English.
 ..
 .
-.
-.TH @G@TBL @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-.
-.
-.SH NAME
-@g@tbl \- format tables for troff
-.
-.
+.\" --------------------------------------------------------------------
 .SH SYNOPSIS
 .SY @g@tbl
 .OP \-Cv
@@ -34,6 +36,7 @@ the original English.
 .YS
 .
 .
+.\" --------------------------------------------------------------------
 .SH DESCRIPTION
 This manual page describes the GNU version of
 .BR tbl ,
@@ -76,7 +79,8 @@ Leader characters (\[rs]a) are handled as interpreted.
 Print the version number.
 .
 .
-.SH USAGE
+.\" --------------------------------------------------------------------
+.SH "LANGUAGE OVERVIEW"
 .B tbl
 expects to find table descriptions wrapped in the
 .B .TS
@@ -84,7 +88,154 @@ expects to find table descriptions wrapped in the
 .B .TE
 (table end) macros.
 .
+Within each such table sections, another table can be defined by
+using the request
+.B .T&
+before the final command
+.BR .TE .
 .
+Each table definition has the following structure:
+.
+.TP
+.I Global options
+This is optional.
+.
+This table part can use several of these options distributed in 1 or
+more lines.
+.
+The
+.I global option part
+must always be finished by a
+.B "semi-colon ;" .
+.
+.TP
+.I Table format specification
+This part must be given, it is not optional.
+.
+It determines the number of columns (cells) of the table.
+.
+Moreover each cell is classified by being central, left adjusted, or
+numerical, etc.
+.
+This specification can have several lines, but must be finished by a
+.B dot .
+at the end of the last line.
+.
+After each cell definition,
+.I column specifiers
+can be appended, but that's optional.
+.
+.
+.P
+Cells are separated by a tab character by default.
+.
+That can be changed by the
+.I global option
+.BI tbl( c ) \fR,
+where
+.I c
+is an arbitrary character.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "SIMPLE EXAMPLES"
+The easiest table definition is.
+.RS
+.EX
+\&.TS
+c c c .
+This	is	centered
+Well,	this	also
+\&.TE
+.EE
+.RE
+.
+.
+By using
+.B c c
+.BR c ,
+each cell in the whole table will be centered.
+.
+The separating character is here the default
+.IR tab .
+.
+.
+.P
+The result is
+.RS
+.EX
+.TS
+c c c .
+This	is	centered
+Well,	this	also
+.TE
+.EE
+.RE
+.
+.
+.P
+This definition is identical to
+.RS
+.EX
+\&.TS
+tab(@);
+ccc.
+This@is@centered
+Well,@this@also
+\&.TE
+.EE
+.RE
+.
+Here, the separating tab character is changed to the letter
+.BR @ .
+.
+.
+.P
+Moreover a title can be added and the centering directions can be
+changed to many other formats:
+.RS
+.EX
+\&.TS
+tab(@);
+c s s
+l c n .
+Title
+left@centers@123
+another@number@75
+\&.TE
+.EE
+.RE
+.
+The result is
+.RS
+.EX
+.TS
+tab(@);
+c s s
+l c n .
+Title
+left@centers@123
+another@number@75
+.TE
+.EE
+.RE
+.
+Here
+.B l
+means
+.IR left\-justified ,
+and
+.B n
+means
+.IR numerical ,
+which is here
+.IR right\-justified .
+.
+.
+.\" --------------------------------------------------------------------
+.SH USAGE
+.
+.\" --------------------------------------------------------------------
 .SS Global options
 The line immediately following the
 .B .TS
