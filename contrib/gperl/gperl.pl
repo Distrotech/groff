@@ -10,8 +10,8 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $Latest_Update = '6 Jul 2014';
-my $version = '1.2.3';
+my $Latest_Update = '1 Aug 2014';
+my $version = '1.2.4';
 
 # This file is part of `gperl', which is part of `groff'.
 
@@ -140,6 +140,7 @@ my $perl_mode = 0;
 
 foreach (<>) {
   chomp;
+  s/\s+$//;
   my $line = $_;
   my $is_dot_Perl = $line =~ /^[.']\s*Perl(|\s+.*)$/;
 
