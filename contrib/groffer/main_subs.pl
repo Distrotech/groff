@@ -66,9 +66,9 @@ sub main_set_options {
   'debug-keep', 'debug-lm', 'debug-params', 'debug-stacks',
   'debug-tmpdir', 'debug-user', 'default', 'do-nothing', 'dvi',
   'groff', 'help', 'intermediate-output', 'html', 'latin1', 'man',
-  'no-location', 'no-man', 'no-special', 'pdf', 'pdf2', 'ps', 'rv', 'source',
-  'text', 'to-stdout', 'text-device', 'tty', 'tty-device', 'version',
-  'whatis', 'where', 'www', 'x', 'X');
+  'no-location', 'no-man', 'no-special', 'pdf', 'pdf2', 'ps', 'rv',
+  'source', 'text', 'to-stdout', 'text-device', 'tty', 'tty-device',
+  'utf8', 'version', 'whatis', 'where', 'www', 'x', 'X');
 
 ### main_set_options()
   my @opts_groffer_long_arg =

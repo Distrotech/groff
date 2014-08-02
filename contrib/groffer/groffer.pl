@@ -10,7 +10,7 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 11 Jun 2014
+# Last update: 2 Aug 2014
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -166,8 +166,8 @@ our @Conf_Files = (File::Spec->catfile(File::Spec->rootdir(),
 		 );
 
 our @Default_Modes = ('pdf', 'pdf2', 'html', 'ps', 'x', 'dvi', 'tty');
-our $Default_Resolution = 75;
-our $Default_tty_Device = 'latin1';
+our $Default_Resolution = 100;
+our $Default_tty_Device = 'utf8';
 
 our @Macro_Packages = ('-man', '-mdoc', '-me', '-mm', '-mom', '-ms');
 
