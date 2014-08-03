@@ -1,0 +1,111 @@
+# Copyright (C) 2014
+#      Free Software Foundation, Inc.
+# 
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+GXDITVIEWSOURCES = \
+  src/devices/xditview/device.c \
+  src/devices/xditview/draw.c \
+  src/devices/xditview/Dvi.c \
+  src/devices/xditview/font.c \
+  src/devices/xditview/lex.c \
+  src/devices/xditview/page.c \
+  src/devices/xditview/parse.c \
+  src/devices/xditview/xditview.c \
+  src/devices/xditview/device.h \
+  src/devices/xditview/DviP.h \
+  src/devices/xditview/Menu.h \
+  src/devices/xditview/Dvi.h
+
+if WITHOUT_X11
+EXTRA_DIST += $(GXDITVIEWSOURCES)
+else
+xditview_srcdir = $(top_srcdir)/src/devices/xditview
+bin_PROGRAMS += gxditview
+gxditview_CPPFLAGS = $(AM_CPPFLAGS) $(X_CFLAGS) -Dlint \
+  -I$(top_builddir)/src/devices/xditview
+gxditview_LDADD = $(X_LIBS) $(X_PRE_LIBS) -lXaw -lXmu -lXt -lX11 \
+  $(X_EXTRA_LIBS) $(LIBM) libxutil.a
+gxditview_SOURCES = $(GXDITVIEWSOURCES)
+endif
+
+if !WITHOUT_X11
+XDITVIEW_GENHDRS = src/devices/xditview/GXditview-ad.h
+nodist_gxditview_SOURCES = $(XDITVIEW_GENHDRS)
+CLEANFILES += $(XDITVIEW_GENHDRS)
+
+man1_MANS += src/devices/xditview/gxditview.n
+
+# Because we defined gxditview_CPPFLAGS, automake renames all the xditview's 
+# objects, adding an "gxditview-" prefix. 
+src/devices/xditview/gxditview-device.$(OBJEXT): defs.h
+src/devices/xditview/gxditview-xditview.$(OBJEXT): $(XDITVIEW_GENHDRS)
+
+src/devices/xditview/GXditview-ad.h: $(xditview_srcdir)/GXditview.ad
+	@echo Making $@
+	$(SHELL) $(xditview_srcdir)/ad2c $(xditview_srcdir)/GXditview.ad > $@
+endif
+
+EXTRA_DIST += \
+  src/devices/xditview/ad2c \
+  src/devices/xditview/ChangeLog \
+  src/devices/xditview/DESC.in \
+  src/devices/xditview/FontMap \
+  src/devices/xditview/GXditview-color.ad \
+  src/devices/xditview/GXditview.ad \
+  src/devices/xditview/README \
+  src/devices/xditview/TODO \
+  src/devices/xditview/gray1.bm \
+  src/devices/xditview/gray2.bm \
+  src/devices/xditview/gray3.bm \
+  src/devices/xditview/gray4.bm \
+  src/devices/xditview/gray5.bm \
+  src/devices/xditview/gray6.bm \
+  src/devices/xditview/gray7.bm \
+  src/devices/xditview/gray8.bm \
+  src/devices/xditview/xdit.bm \
+  src/devices/xditview/xdit_mask.bm \
+  src/devices/xditview/gxditview.man
+
+# Custom installation of GXditview.ad and GXditview-color.ad
+install-data-local: install_xditview
+uninstall-local: uninstall_xditview
+
+if WITHOUT_X11
+install_xditview:
+uninstall_xditview:
+else
+install_xditview: $(xditview_srcdir)/GXditview.ad $(xditview_srcdir)/GXditview-color.ad
+	-test -d $(DESTDIR)$(appresdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(appresdir)
+	if test -f $(DESTDIR)$(appresdir)/GXditview; then \
+	  mv $(DESTDIR)$(appresdir)/GXditview \
+	    $(DESTDIR)$(appresdir)/GXditview.old; \
+	fi
+	if test -f $(DESTDIR)$(appresdir)/GXditview-color; then \
+	  mv $(DESTDIR)$(appresdir)/GXditview-color \
+	    $(DESTDIR)$(appresdir)/GXditview-color.old; \
+	fi
+	$(INSTALL_DATA) $(xditview_srcdir)/GXditview.ad \
+	  $(DESTDIR)$(appresdir)/GXditview
+	$(INSTALL_DATA) $(xditview_srcdir)/GXditview-color.ad \
+	  $(DESTDIR)$(appresdir)/GXditview-color
+
+uninstall_xditview:
+	rm -f $(DESTDIR)$(appresdir)/GXditview
+	rm -f $(DESTDIR)$(appresdir)/GXditview-color
+
+endif

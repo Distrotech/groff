@@ -46,14 +46,22 @@ AC_INIT([groff],
         [groff-]GROFF_VERSION_STRING)
 AC_PREREQ([2.62])
 
+# Directories where the helper scripts should be found. This must be consistent
+# with the variable build_aux in bootstrap.conf
+AC_CONFIG_AUX_DIR([build-aux])
+
 AC_CONFIG_HEADERS([src/include/config.h:src/include/config.hin])
 AC_CONFIG_SRCDIR([src/roff/groff/groff.cpp])
 
 AC_USE_SYSTEM_EXTENSIONS
 
+AM_INIT_AUTOMAKE([subdir-objects])
+
 # checks for programs
 AC_PROG_CC
 AC_PROG_CXX
+gl_EARLY
+gl_INIT
 GROFF_CXX_CHECK
 GROFF_EBCDIC
 GROFF_OS390
@@ -77,6 +85,7 @@ GROFF_INSTALL_SH
 GROFF_INSTALL_INFO
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AC_PROG_MKDIR_P
 
 # use a dummy substitution if no csh hack is necessary to avoid errors
 # with non-GNU sed programs
@@ -160,14 +169,35 @@ GROFF_TARGET_PATH_SEPARATOR
 GROFF_HTML_PROGRAMS
 GROFF_PDFDOC_PROGRAMS
 GROFF_PNMTOPS_NOSETPAGE
+GROFF_MAKE_RM
 gl_GLIBC21
 gl_LOCALCHARSET
 
-AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
-AC_CONFIG_FILES([Makefile doc/Makefile src/utils/xtotroff/Makefile])
-AC_CONFIG_FILES([contrib/gdiffmk/tests/runtests],
-                [chmod +x contrib/gdiffmk/tests/runtests])
+# If X11 is not available, don't build:
+# font/devX75 
+# font/devX75-12
+# font/devX100
+# font/devX100-12
+# src/devices/xditview 
+# src/utils/xtotroff
+# src/libs/libxutil
+AM_CONDITIONAL([WITHOUT_X11], [test "x$groff_no_x" = "xyes"])
+
+# make builtin variable RM
+AM_CONDITIONAL([MAKE_DONT_HAVE_RM], [test "x$groff_is_rm_defined" = "xno"])
+
+# Some programs have a "g" prefix if an existing groff installation is detected
+AM_CONDITIONAL([USEPROGRAMPREFIX], [test x$g = xg])
+
+AM_CONDITIONAL([BUILD_INFODOC], [test -n $make_infodoc])
+AM_CONDITIONAL([BUILD_HTML], [test -n $make_htmldoc])
+AM_CONDITIONAL([BUILD_HTMLEXAMPLES], [test -n $make_htmlexamples])
+AM_CONDITIONAL([BUILD_PDFDOC], [test -n $make_pdfdoc])
+AM_CONDITIONAL([BUILD_PDFEXAMPLES], [test -n $make_pdfexamples])
+AM_CONDITIONAL([BUILD_OTHERDOC], [test -n $make_otherdoc])
+AM_CONDITIONAL([BUILD_EXAMPLES], [test -n $make_examples])
+
+AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([test-groff], [chmod +x test-groff])
 AC_OUTPUT
-
 GROFF_APPRESDIR_CHECK

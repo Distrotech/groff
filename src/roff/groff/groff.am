@@ -1,0 +1,64 @@
+# Makefile.sub for `groff'
+
+# File position: <groff-source>/src/roff/groff/Makefile.sub
+
+# Copyright (C) 1993-2014
+#   Free Software Foundation, Inc.
+
+#   Rewritten by Bernd Warken <groff-bernd.warken-72@web.de> and
+#   Werner LEMBERG  <wl@gnu.org>
+#   Automake migration by Bertrand Garrigues
+
+# Last update: Aug 2014
+
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+########################################################################
+
+bin_PROGRAMS += groff
+groff_LDADD = \
+  libgroff.a \
+  lib/libgnu.a \
+  $(LIBM)
+groff_SOURCES = \
+  src/roff/groff/groff.cpp \
+  src/roff/groff/pipeline.c \
+  src/roff/groff/pipeline.h
+src/roff/groff/groff.$(OBJEXT): defs.h
+man1_MANS += src/roff/groff/groff.n
+EXTRA_DIST += src/roff/groff/groff.man
+GROFF_OPTS_OUTPUT = \
+  groff_opts_no_arg.txt \
+  groff_opts_with_arg.txt
+groffoptsdir = $(libprogramdir)
+groffopts_DATA = $(GROFF_OPTS_OUTPUT)
+
+MOSTLYCLEANFILES += groff_opts.tmp $(GROFF_OPTS_OUTPUT)
+
+all: src/roff/groff/groff.cpp groff_opts.tmp $(GROFF_OPTS_OUTPUT)
+groff_opts.tmp: src/roff/groff/groff.cpp
+	@$(GREP) -e ':.*:.*:' $? | sed -e 's/[ \t",]//g' > $@
+	@echo -n 'groff options: '
+	@cat $@
+
+groff_opts_no_arg.txt: groff_opts.tmp
+	@sed -e 's/[a-zA-Z]://g' $? > $@
+	@echo -n 'no arg: '
+	@cat $@
+
+groff_opts_with_arg.txt: groff_opts_no_arg.txt
+	@rm -f $@
+	@sed "s/[`cat $?`:]//g" groff_opts.tmp > $@
+	@echo -n 'with arg: '
+	@cat $@

@@ -71,7 +71,7 @@ AC_DEFUN([GROFF_PERL],
      AC_MSG_ERROR([perl version is too old], 1))])
 
 
-# It is possible to fine-tune generation of documenation.
+# It is possible to fine-tune generation of documentation.
 
 AC_DEFUN([GROFF_DOC_CHECK],
   [AC_ARG_WITH([doc],
@@ -1396,3 +1396,18 @@ AC_DEFUN([GROFF_GPINYINDIR_DEFAULT],
 AC_DEFUN([GROFF_GROGDIR_DEFAULT],
   grog_dir=$libprogramdir/grog
   AC_SUBST([grog_dir]))
+
+# Check for make builtin variable RM
+AC_DEFUN([GROFF_MAKE_RM],
+  [AC_MSG_CHECKING(whether make has builtin variable RM)
+cat <<EOF > test_make_rm.mk
+all:
+	@if test -n "\$(RM)"; then \
+	   echo "yes"; \
+	else \
+	   echo "no"; \
+	fi
+EOF
+  groff_is_rm_defined=`make -sf test_make_rm.mk`
+  AC_MSG_RESULT([$groff_is_rm_defined])
+  rm -f test_make_rm.mk])

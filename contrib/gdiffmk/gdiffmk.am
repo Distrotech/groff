@@ -1,0 +1,60 @@
+# Automake rules for `gdiffmk' (integration into the groff source tree)
+
+# File position: <groff-source>/contrib/gdiffmk/gdiffmk.am
+
+# Last update: Aug 2014
+
+# Copyright (C) 2004, 2006, 2009 Free Software Foundation, Inc.
+# Written by Mike Bianchi <MBianchi@Foveal.com <mailto:MBianchi@Foveal.com>>
+# Automake migration by Bertrand Garrigues
+
+# This file is part of the gdiffmk utility, which is part of groff.
+
+# groff is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+# License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+########################################################################
+gdiffmk_srcdir = $(top_srcdir)/contrib/gdiffmk
+bin_SCRIPTS += gdiffmk
+TESTS += contrib/gdiffmk/tests/gdiffmk_tests.sh
+man1_MANS += contrib/gdiffmk/gdiffmk.n
+EXTRA_DIST += \
+  contrib/gdiffmk/gdiffmk.man \
+  contrib/gdiffmk/ChangeLog \
+  contrib/gdiffmk/README \
+  contrib/gdiffmk/gdiffmk.sh \
+  contrib/gdiffmk/tests/gdiffmk_tests.sh \
+  contrib/gdiffmk/tests/runtests.sh \
+  contrib/gdiffmk/tests/baseline \
+  contrib/gdiffmk/tests/baseline.6 \
+  contrib/gdiffmk/tests/baseline.7 \
+  contrib/gdiffmk/tests/baseline.8 \
+  contrib/gdiffmk/tests/baseline.9 \
+  contrib/gdiffmk/tests/baseline.10 \
+  contrib/gdiffmk/tests/file1 \
+  contrib/gdiffmk/tests/file2
+
+MOSTLYCLEANFILES += gdiffmk
+
+gdiffmk: $(gdiffmk_srcdir)/gdiffmk.sh
+	sed -e "s|[@]BINDIR[@]|$(bindir)|g" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|g" \
+	    -e $(SH_SCRIPT_SED_CMD)  $(gdiffmk_srcdir)/gdiffmk.sh >$@
+	chmod +x $@
+
+clean-local: clean_gdiffmk_check
+clean_gdiffmk_check:
+	if test -d $(top_builddir)/contrib/gdiffmk/tests; then \
+	  cd $(top_builddir)/contrib/gdiffmk/tests && \
+	  $(abs_top_srcdir)/contrib/gdiffmk/tests/runtests.sh clean; \
+	fi

@@ -1,0 +1,60 @@
+# Automake rules for `glilypond' (integration into the `groff' source tree)
+
+# File position: <groff-source>/contrib/lilypond/glilypond.am
+
+# Copyright (C) 2013, 2014
+#   Free Software Foundation, Inc.
+# Written by Werner Lemberg <wl@gnu.org> and
+# Bernd Warken <groff-bernd.warken-72@web.de>.
+# Automake migration by Bertrand Garrigues
+
+# Last update: Aug 2014
+
+# This file is part of `glilypond' which is part of `groff'.
+
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+########################################################################
+glilypond_srcdir = $(top_srcdir)/contrib/glilypond
+bin_SCRIPTS += glilypond
+man1_MANS += contrib/glilypond/glilypond.n
+
+# files going to lib directory `$(glilypond_dir)'
+# TODO glilypond_dir is subsitued by configure.ac, check if this could be removed
+glilyponddir = $(glilypond_dir)
+dist_glilypond_DATA = \
+  contrib/glilypond/subs.pl \
+  contrib/glilypond/oop_fh.pl \
+  contrib/glilypond/args.pl \
+  contrib/glilypond/glilypond.pl
+
+MOSTLYCLEANFILES += glilypond
+EXTRA_DIST += \
+  contrib/glilypond/ChangeLog \
+  contrib/glilypond/ChangeLog.0x \
+  contrib/glilypond/glilypond.man \
+  contrib/glilypond/README.txt \
+  contrib/glilypond/examples/example.groff
+
+
+# create perl executable `glilypond', being stored into `bindir'
+glilypond: $(glilypond_srcdir)/glilypond.pl shdeps.sed
+	rm -f $@
+	sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	    -e "s|[@]g[@]|$(g)|g" \
+	    -e "s|[@]BINDIR[@]|$(DESTDIR)$(bindir)|g" \
+	    -e "s|[@]glilypond_dir[@]|$(DESTDIR)$(glilypond_dir)|g" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|g" \
+	    $(glilypond_srcdir)/glilypond.pl >$@
+	chmod +x $@

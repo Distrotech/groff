@@ -1,30 +1,38 @@
-    Copyright 2013
+    Copyright 2013, 2014
       Free Software Foundation, Inc.
 
-    Last Update: 23 Dec 2013
+    Last Update: 8 Aug 2014
 
     Copying and distribution of this file, with or without
     modification, are permitted in any medium without royalty provided
     the copyright notice and this notice are preserved.
 
 This file contains information that supplements the generic
-installation instructions in file `INSTALL.gen'.  It is meant for
+installation instructions in file `INSTALL'.  It is meant for
 people building directly from the development repository, rather than
 a release or snapshot tarball .
 
 If you want to start compiling the `groff' system with an existing
 script `configure' you won't need the information in this file.
 
-But if you want to use the `GNU autotools' (`aclocal', `autoreconf')
+But if you want to build groff from the git repository, you should
+first type:
+
+    $ ./bootstrap
+
+This will clone the gnulib repository as a git submodule in the gnulib
+directory, and invoke the `GNU autotools' (`aclocal', `autoreconf')
 for creating the following and some more files:
 
     aclocal.m4
     configure
-    Makefile
+    Makefile.in
 
 To change the file `aclocal.m4', run the shell command
 
     $ aclocal -I m4
+
+Note that the groff m4 macros are included via the acinclude.m4 file.
 
 To recreate the files `configure' and `Makefile', use the shell
 command
@@ -54,11 +62,27 @@ You may even use the shell command
 instead of `autoreconf', but that will ignore some features.  So
 `autoreconf' is better.
 
-`automake' is not used currently, however, we plan to convert the
-build system accordingly.  If you have experience in creating
-`Makefile.am' files we would be glad if you could help us in the
-conversion process.  Please contact the groff mailing list.
+If you modified only a .am file (for example to add a .c file), you
+can just call:
+
+    $ automake
+
+This will regenerate the Makefile.in. Then, instead of calling again
+the configure script, you can call:
+
+    $ ./config.status
+
+to regenerate the Makefile, and invoke make.
 
 After the use of the `GNU autotools', the usual compilation should
 work.  If the run of `configure' produces error reports you have
 produced errors in the `autotools' modification.
+
+The groff build system supports out of source build:
+    $ mkdir build
+    $ cd build
+    $ ../configure
+    $ make
+
+Parallel build is also supported and make can be invoked with the -j
+option.

@@ -1,0 +1,46 @@
+# Automake rules for `gperl' (preprocessor for added Perl parts)
+
+# File position: <groff-source>/contrib/gperl/gperl.am
+
+# Copyright (C) 2014
+#   Free Software Foundation, Inc.
+# Written by Bernd Warken <groff-bernd.warken-72@web.de>.
+# Automake migration by Bertrand Garrigues
+
+# Last update: Aug 2014
+
+# This file is part of `gperl' which is part of `groff'.
+
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see
+# <http://www.gnu.org/licenses/gpl-2.0.html>.
+
+########################################################################
+
+bin_SCRIPTS += gperl
+man1_MANS += contrib/gperl/gperl.n
+EXTRA_DIST += \
+  contrib/gperl/ChangeLog \
+  contrib/gperl/gperl.man \
+  contrib/gperl/gperl.pl
+MOSTLYCLEANFILES += gperl
+gperl: $(top_srcdir)/contrib/gperl/gperl.pl shdeps.sed
+	$(RM) $@
+	sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	    -e "s|[@]g[@]|$(g)|g" \
+	    -e "s|[@]BINDIR[@]|$(DESTDIR)$(bindir)|g" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|g" \
+	    -e "$(SH_SCRIPT_SED_CMD)" \
+	     $(top_srcdir)/contrib/gperl/gperl.pl >$@; \
+	chmod +x $@
+

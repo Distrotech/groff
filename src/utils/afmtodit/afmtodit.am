@@ -1,0 +1,48 @@
+# Copyright (C) 2013, 2014
+#   Free Software Foundation, Inc.
+#
+# Last update: Aug 2014
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+afmtodit_srcdir = $(top_srcdir)/src/utils/afmtodit
+
+bin_SCRIPTS += afmtodit
+man1_MANS += src/utils/afmtodit/afmtodit.n
+EXTRA_DIST += \
+  src/utils/afmtodit/afmtodit.man \
+  src/utils/afmtodit/afmtodit.pl \
+  src/utils/afmtodit/afmtodit.tables \
+  src/utils/afmtodit/make-afmtodit-tables
+
+MOSTLYCLEANFILES += afmtodit
+
+afmtodit: $(afmtodit_srcdir)/afmtodit.pl $(afmtodit_srcdir)/afmtodit.tables
+	if test -n "$(PERL)"; then \
+	  sed -e "s|/usr/bin/perl|$(PERL)|" \
+	      -e "s|[@]VERSION[@]|$(VERSION)|" \
+	      -e "s|[@]FONTDIR[@]|$(fontdir)|" \
+	      -e "/[@]afmtodit.tables[@]/ r $(afmtodit_srcdir)/afmtodit.tables" \
+	      -e "/[@]afmtodit.tables[@]/ d" \
+	      $(afmtodit_srcdir)/afmtodit.pl >afmtodit; \
+	else \
+	  sed -e "s|[@]VERSION[@]|$(VERSION)|" \
+	      -e "s|[@]FONTDIR[@]|$(fontdir)|" \
+	      -e "/[@]afmtodit.tables[@]/ r $(afmtodit_srcdir)/afmtodit.tables" \
+	      -e "/[@]afmtodit.tables[@]/ d" \
+	      $(afmtodit_srcdir)/afmtodit.pl >afmtodit; \
+	fi
+	chmod +x afmtodit

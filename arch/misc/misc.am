@@ -1,37 +1,24 @@
-#! /bin/sh
+# Copyright (C) 2004, 2009, 2014 Free Software Foundation, Inc.
+#      Written by Keith Marshall (keith.d.marshall@ntlworld.com)
 #
-# Copyright (C) 1989-2000, 2001-2005, 2009, 2011, 2014
-#   Free Software Foundation, Inc.
-# 
 # This file is part of groff.
-# 
+#
+# 1 June 2014: moved Makefile.sub to misc.am
+#
 # groff is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # groff is distributed in the hope that it will be useful, but WITHOUT ANY
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
-# This script runs groff without requiring that it be installed.
+EXTRA_DIST += arch/misc/shdeps.sh
+MOSTLYCLEANFILES += shdeps.sed
 
-SEP='@PATH_SEPARATOR@'
-builddir=@abs_top_builddir@
-srcdir=@abs_top_srcdir@
-
-GROFF_BIN_PATH=$builddir
-
-XENVIRONMENT=$srcdir/src/devices/xditview/GXditview.ad
-export XENVIRONMENT
-
-GROFF_COMMAND_PREFIX=
-GROFF_FONT_PATH=$builddir/font$SEP$srcdir/font
-GROFF_TMAC_PATH=$srcdir/tmac$SEP$builddir/tmac$SEP$srcdir/contrib/mom$SEP$builddir/contrib/mom
-export GROFF_BIN_PATH GROFF_COMMAND_PREFIX GROFF_FONT_PATH GROFF_TMAC_PATH
-
-exec $builddir/groff ${1+"$@"}
+shdeps.sed: $(top_srcdir)/arch/misc/shdeps.sh
+	$(SHELL) $(top_srcdir)/arch/misc/shdeps.sh "$(RT_SEP)" "$(SH_SEP)" "$(bindir)" > $@

@@ -1,0 +1,36 @@
+LBPPRINT=$(PSPRINT)
+devlbp_srcdir = $(top_srcdir)/font/devlbp
+DEVLBPFONTFILES = \
+  font/devlbp/HB \
+  font/devlbp/HBI \
+  font/devlbp/HI \
+  font/devlbp/HR \
+  font/devlbp/HNB \
+  font/devlbp/HNBI \
+  font/devlbp/HNI \
+  font/devlbp/HNR \
+  font/devlbp/TB \
+  font/devlbp/TBI \
+  font/devlbp/TI \
+  font/devlbp/TR \
+  font/devlbp/CR \
+  font/devlbp/CB \
+  font/devlbp/CI \
+  font/devlbp/ER \
+  font/devlbp/EB \
+  font/devlbp/EI
+devlbpfontdir = $(fontdir)/devlbp
+devlbpfont_DATA = $(DEVLBPFONTFILES) font/devlbp/DESC
+EXTRA_DIST += $(DEVLBPFONTFILES) font/devlbp/DESC.in
+MOSTLYCLEANFILES += font/devlbp/DESC
+
+font/devlbp/DESC: $(devlbp_srcdir)/DESC.in
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@cat $(devlbp_srcdir)/DESC.in >$@
+	@if test "$(PAGE)" = A4; then \
+	  echo "papersize a4" >>$@; \
+	else \
+	  echo "papersize letter" >>$@; \
+	fi
+	@test -z '$(LBPPRINT)' || echo print '$(LBPPRINT)' >>$@

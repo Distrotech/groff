@@ -1,0 +1,147 @@
+# Copyright (C) 2011, 2013-2014 Free Software Foundation, Inc.
+#      Free Software Foundation, Inc.
+#      Written by Deri James <deri@chuzzlewit.demon.co.uk>
+#      Automake migration by Bertrand Garrigues
+#
+# Last update: Aug 2014
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+devpdf_srcdir = $(top_srcdir)/font/devpdf
+GROFF_FONT_FILES=`cd $(top_builddir)/font/devpdf \
+                  && find * -maxdepth 0 -type f ! -name 'devpdf.am' \
+                            -exec grep -l internalname {} \;`
+ENC_FILES=`cd $(top_builddir)/font/devpdf; ls enc/*`
+MAP_FILES=`cd $(top_builddir)/font/devpdf; ls map/*`
+
+MOSTLYCLEANFILES += \
+  font/devpdf/download \
+  font/devpdf/DESC \
+  font/devpdf/Foundry \
+  font/devpdf/build_font_files \
+  font/devpdf/util/BuildFoundries
+
+devpdffontdir = $(fontdir)/devpdf
+devpdffont_DATA = \
+  font/devpdf/DESC \
+  font/devpdf/Foundry
+
+devpdffontencdir = $(devpdffontdir)/enc
+devpdffontenc_DATA = font/devpdf/enc/text.enc
+
+devpdffontmapdir = $(devpdffontdir)/map
+DEVPDFFONTMAP_1 = \
+  font/devpdf/map/dingbats.map \
+  font/devpdf/map/symbolchars \
+  font/devpdf/map/textmap
+DEVPDFFONTMAP_2 = font/devpdf/map/symbolmap
+devpdffontmap_DATA = $(DEVPDFFONTMAP_1) $(DEVPDFFONTMAP_2)
+
+devpdffontutildir = $(devpdffontdir)/util
+nodist_devpdffontutil_DATA = font/devpdf/util/BuildFoundries
+
+EXTRA_DIST += \
+  font/devpdf/DESC.in \
+  font/devpdf/Foundry.in \
+  font/devpdf/util
+
+font/devpdf/enc/text.enc:
+	@$(MKDIR_P) $(top_builddir)/font/devpdf/enc
+	cp -f $(top_srcdir)/font/devps/text.enc \
+	  $(top_builddir)/font/devpdf/enc
+
+font/devpdf/map/symbolmap:
+	@$(MKDIR_P) $(top_builddir)/font/devpdf/map
+	@cp -f $(top_srcdir)/font/devps/symbolmap \
+	  $(top_builddir)/font/devpdf/map
+
+$(DEVPDFFONTMAP_1):
+	@$(MKDIR_P) $(top_builddir)/font/devpdf/map
+	@cp -f $(top_srcdir)/font/devps/generate/`basename $@` \
+	  $(top_builddir)/font/devpdf/map
+
+font/devpdf/util/BuildFoundries: shdeps.sed $(devpdf_srcdir)/util/BuildFoundries.pl
+	@echo Making $@
+	@$(MKDIR_P) $(top_builddir)/font/devpdf/util
+	@rm -f $(top_builddir)/font/devpdf/util/BuildFoundries
+	@if test -n "$(PERL)"; then \
+	  sed -f $(SH_DEPS_SED_SCRIPT) \
+	      -e "s|/usr/bin/perl|$(PERL)|" \
+	      -e "s|[@]GROFF_GHOSTSCRIPT_INTERPRETERS[@]|$(GHOSTSCRIPT)|" \
+	      -e "s|[@]VERSION[@]|$(VERSION)|" \
+	      -e "s|[@]GROFF_FONT_DIR[@]|$(fontdir)|" \
+	      $(devpdf_srcdir)/util/BuildFoundries.pl \
+	  >$(top_builddir)/font/devpdf/util/BuildFoundries ;\
+	else \
+	  sed -f $(SH_DEPS_SED_SCRIPT) \
+	      -e "s|[@]VERSION[@]|$(VERSION)|" \
+	      -e "s|[@]GROFF_FONT_DIR[@]|$(fontdir)|" \
+	      $(devpdf_srcdir)/util/BuildFoundries.pl \
+	  >$(top_builddir)/font/devpdf/util/BuildFoundries ;\
+	fi
+	@chmod +x $(top_builddir)/font/devpdf/util/BuildFoundries
+
+font/devpdf/DESC: $(devpdf_srcdir)/DESC.in
+	@echo Making $@
+	@$(MKDIR_P) $(top_builddir)/font/devpdf
+	@rm -f $(top_builddir)/font/devpdf/DESC
+	@cat $(devpdf_srcdir)/DESC.in >$(top_builddir)/font/devpdf/DESC
+	@if test "$(PAGE)" = A4; then \
+	  echo "papersize a4" >>$(top_builddir)/font/devpdf/DESC; \
+	else \
+	  echo "papersize letter" >>$(top_builddir)/font/devpdf/DESC; \
+	fi
+
+font/devpdf/Foundry:
+	@rm -f $(top_builddir)/font/devpdf/Foundry
+	@cat $(devpdf_srcdir)/Foundry.in >$(top_builddir)/font/devpdf/Foundry
+
+all: font/devpdf/build_font_files
+
+# PATH : path to find afmtodit. We add $(abs_top_builddir) because afmtodit is
+# built in the top builddir.
+font/devpdf/build_font_files: afmtodit font/devpdf/DESC $(devpdffontenc_DATA) $(devpdffontmap_DATA) $(devpdffont_DATA) font/devpdf/util/BuildFoundries
+	@echo Making all fonts
+	@rm -f $@
+	@$(MKDIR_P) $(top_builddir)/font/devpdf
+	@echo "# foundry	ps name	psfile" > $(top_builddir)/font/devpdf/download
+	PATH="$(abs_top_builddir)$(GROFF_PATH_SEPARATOR)$(PATH)" \
+	  $(abs_top_builddir)/font/devpdf/util/BuildFoundries $(abs_top_builddir)/font/devpdf \
+	    '$(abs_top_srcdir)/font/devps : $(abs_top_builddir)/font/devps' \
+	   >> $(top_builddir)/font/devpdf/download
+	@touch $@
+
+mostlyclean-local: mostlyclean_devpdf_extra
+mostlyclean_devpdf_extra:
+	@echo Cleaning font/devpdf
+	rm -rf $(top_builddir)/font/devpdf/enc $(top_builddir)/font/devpdf/map;
+	for f in $(GROFF_FONT_FILES); do \
+	   rm -f $(top_builddir)/font/devpdf/$$f; \
+	done
+
+install-data-local: install_devpdf
+install_devpdf:
+	@echo Installing devpdf files
+	-@test -d $(DESTDIR)$(devpdffontdir)/util \
+	  || $(mkinstalldirs) $(DESTDIR)$(devpdffontdir)/util
+	@for f in $(GROFF_FONT_FILES); do \
+	  rm -f $(DESTDIR)$(devpdffontdir)/$$f; \
+	  if test -f $$f; then \
+	    $(INSTALL_DATA) $$f $(DESTDIR)$(devpdffontdir)/$$f; \
+	  else \
+	    $(INSTALL_DATA) $(top_builddir)/font/devpdf/$$f $(DESTDIR)$(devpdffontdir)/$$f; \
+	  fi; \
+	done
+	$(INSTALL_DATA) $(top_builddir)/font/devpdf/download $(DESTDIR)$(devpdffontdir)/

@@ -1,0 +1,86 @@
+devlj4_srcdir = $(top_srcdir)/font/devlj4
+LJ4RES = 1200
+LJ4PRINT = $(PSPRINT)
+DEVLJ4FONTFILES = \
+  font/devlj4/AB \
+  font/devlj4/ABI \
+  font/devlj4/AI \
+  font/devlj4/AR \
+  font/devlj4/ALBB \
+  font/devlj4/ALBR \
+  font/devlj4/AOB \
+  font/devlj4/AOI \
+  font/devlj4/AOR \
+  font/devlj4/CB \
+  font/devlj4/CBI \
+  font/devlj4/CI \
+  font/devlj4/CR \
+  font/devlj4/GB \
+  font/devlj4/GBI \
+  font/devlj4/GI \
+  font/devlj4/GR \
+  font/devlj4/LGB \
+  font/devlj4/LGI \
+  font/devlj4/LGR \
+  font/devlj4/OB \
+  font/devlj4/OBI \
+  font/devlj4/OI \
+  font/devlj4/OR \
+  font/devlj4/TB \
+  font/devlj4/TBI \
+  font/devlj4/TI \
+  font/devlj4/TR \
+  font/devlj4/TNRB \
+  font/devlj4/TNRBI \
+  font/devlj4/TNRI \
+  font/devlj4/TNRR \
+  font/devlj4/UB \
+  font/devlj4/UBI \
+  font/devlj4/UI \
+  font/devlj4/UR \
+  font/devlj4/UCB \
+  font/devlj4/UCBI \
+  font/devlj4/UCI \
+  font/devlj4/UCR \
+  font/devlj4/CLARENDON \
+  font/devlj4/CORONET \
+  font/devlj4/MARIGOLD \
+  font/devlj4/S \
+  font/devlj4/SYMBOL \
+  font/devlj4/WINGDINGS
+
+devlj4fontdir = $(fontdir)/devlj4
+dist_devlj4font_DATA = $(DEVLJ4FONTFILES) 
+nodist_devlj4font_DATA = font/devlj4/DESC
+
+DEVLJ4GENFILES = \
+  font/devlj4/generate/Makefile \
+  font/devlj4/generate/special.map \
+  font/devlj4/generate/symbol.map \
+  font/devlj4/generate/text.map \
+  font/devlj4/generate/wingdings.map \
+  font/devlj4/generate/special.awk
+devlj4fontgendir = $(devlj4fontdir)/generate
+dist_devlj4fontgen_DATA = $(DEVLJ4GENFILES)
+
+EXTRA_DIST += font/devlj4/DESC.in
+
+MOSTLYCLEANFILES += font/devlj4/DESC
+
+font/devlj4/DESC: $(devlj4_srcdir)/DESC.in
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@echo "res $(LJ4RES)" >$@
+	@echo "unitwidth `expr 7620000 / $(LJ4RES)`" >>$@
+	@cat $(devlj4_srcdir)/DESC.in >>$@
+	@if test "$(PAGE)" = A4; then \
+	   echo "papersize a4" >>$@; \
+	else \
+	   echo "papersize letter" >>$@; \
+	fi
+	@test -z '$(LJ4PRINT)' || echo print '$(LJ4PRINT)' >>$@
+
+fonts: devlj4_fonts
+devlj4_fonts: hpftodit font/devlj4/DESC
+	$(MAKE) -f $(devlj4_srcdir)/generate/Makefile \
+	  srcdir=$(devlj4_srcdir)/generate HPFTODIT=$(top_builddir)/hpftodit

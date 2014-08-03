@@ -1,0 +1,44 @@
+# Copyright (C) 2014
+#      Free Software Foundation, Inc.
+# 
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+prefixexecbin_PROGRAMS += refer
+refer_CPPFLAGS = $(AM_CPPFLAGS) -I $(top_srcdir)/src/preproc/refer
+refer_LDADD = libbib.a libgroff.a $(LIBM)
+refer_SOURCES =  \
+  src/preproc/refer/command.cpp \
+  src/preproc/refer/ref.cpp \
+  src/preproc/refer/refer.cpp \
+  src/preproc/refer/token.cpp \
+  src/preproc/refer/label.ypp \
+  src/preproc/refer/refer.h \
+  src/preproc/refer/ref.h \
+  src/preproc/refer/token.h \
+  src/preproc/refer/command.h
+man1_MANS += src/preproc/refer/refer.n
+EXTRA_DIST += src/preproc/refer/TODO src/preproc/refer/refer.man
+CLEANFILES += \
+  src/preproc/refer/label.cpp \
+  src/preproc/refer/label.hpp \
+  src/preproc/refer/label.output
+# As refer_CPPFLAGS was set, all the .o have a 'refer-' prefix
+src/preproc/refer/refer-command.$(OBJEXT): defs.h
+src/preproc/refer/refer-ref.$(OBJEXT): defs.h
+src/preproc/refer/refer-refer.$(OBJEXT): defs.h
+src/preproc/refer/refer-token.$(OBJEXT): defs.h
+src/preproc/refer/refer-label.$(OBJEXT): defs.h
+
