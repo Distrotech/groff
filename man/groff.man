@@ -3,7 +3,7 @@
 before installation: <top-groff-source>/man/groff.man
 after installation:  </usr or /usr/local>/share/man/man7/groff.7
 
-Latest update: 12 Jul 2014
+Latest update: 5 Aug 2014
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -3455,6 +3455,65 @@ Left arrow
 Plus-minus sign
 .B \(+-
 .PD
+.RE
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Unicode Characters"
+.\" --------------------------------------------------------------------
+.
+There is the extended escape
+.B u
+that allows to include all available Unicode characters into some
+.I roff
+file.
+.
+.
+.TP
+.BI \(rs[u xxxx ]
+.B u
+is the escape name.
+.
+.I xxxx
+is a hexadecimal number of 4 hex digits, such as
+.B 0041
+for the letter
+.BR A ,
+see
+.BR \(rs[0041] .
+. 
+.
+.TP
+.BI \(rs[u yyyyy ]
+.B u
+is the escape name.
+.
+.I yyyyy
+is a hexadecimal number of 5 hex digits, such as
+.B 2FA1A
+for a Chinese looking character for
+.IR "CJK Compatibility Ideographs Supplement" ,
+see
+.BR \(rs[2FA1A] .
+.
+.
+.RS
+.P
+Both hexadecimal collections mean the corresponding Unicode code for a
+character.
+.
+.
+.P
+The availability depends on the used font.
+.
+For text mode, the device
+.B -Tutf8
+is most complete, for
+.I troff
+modes it might happen that some or many characters will not be
+displayed.
+.
+Please check your fonts.
 .RE
 .
 .
