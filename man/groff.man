@@ -108,7 +108,7 @@ FDL in the main directory of the groff source package.
 .\" Result : prints \namearg, where `name' is in CB, `arg' in I
 .\"
 .de ESC
-.  Text "\f[CB]\[rs]\\$1\,\f[I]\\$2\/\fR"
+.  Text "\f[CB]\e\\$1\,\f[I]\\$2\/\fR"
 ..
 .\" ---------------------------------------------------------------------
 .\" .ESC[] name arg
@@ -120,7 +120,7 @@ FDL in the main directory of the groff source package.
 .\" Result : prints \name[arg], where `name' is in CB, `arg' in I
 .\"
 .de ESC[]
-.  Text "\f[CB]\[rs]\\$1\[lB]\f[]\,\f[I]\\$2\/\f[]\f[CB]\[rB]\f[]"
+.  Text "\f[CB]\e\\$1\[lB]\f[]\,\f[I]\\$2\/\f[]\f[CB]\[rB]\f[]"
 ..
 .\" ---------------------------------------------------------------------
 .\" .ESCq name arg
@@ -132,7 +132,7 @@ FDL in the main directory of the groff source package.
 .\" Result : prints \name'arg', where `name' is in CB, `arg' in I
 .\"
 .de ESCq
-.  Text "\f[CB]\[rs]\\$1\[cq]\f[]\,\f[I]\\$2\/\f[]\f[CB]\[cq]\f[]"
+.  Text "\f[CB]\e\\$1\[cq]\f[]\,\f[I]\\$2\/\f[]\f[CB]\[cq]\f[]"
 ..
 .\" ---------------------------------------------------------------------
 .\" .ESC? arg
@@ -143,7 +143,7 @@ FDL in the main directory of the groff source package.
 .\" Result : prints `\?arg?', where the `?' are in CB, `arg' in I
 .\"
 .de ESC?
-.  Text "\f[CB]\[rs]?\,\f[I]\\$1\/\f[CB]?\f[R]"
+.  Text "\f[CB]\e?\,\f[I]\\$1\/\f[CB]?\f[R]"
 ..
 .\" ---------------------------------------------------------------------
 .\" .esc name [punct]
@@ -155,7 +155,7 @@ FDL in the main directory of the groff source package.
 .\" Result  : prints \name, where `name' is in B, `punct' in R
 .\"
 .de esc
-.  BR "\[rs]\\$1" \\$2
+.  BR "\e\\$1" \\$2
 ..
 .\" ---------------------------------------------------------------------
 .\" .escarg name arg [punct]
@@ -168,7 +168,7 @@ FDL in the main directory of the groff source package.
 .\"           `name' is in B, `arg' in I
 .\"
 .de escarg
-.  Text \f[B]\[rs]\\$1\f[]\,\f[I]\\$2\/\f[]\\$3
+.  Text \f[B]\e\\$1\f[]\,\f[I]\\$2\/\f[]\\$3
 ..
 .\" ---------------------------------------------------------------------
 .\" .esc[] name arg [punct]
@@ -180,7 +180,7 @@ FDL in the main directory of the groff source package.
 .\" Result : prints \name[arg], where `name' is in CB, `arg' in CI
 .\"
 .de esc[]
-.  Text \f[CB]\[rs]\\$1\[lB]\f[]\,\f[CI]\\$2\/\f[]\f[CB]\[rB]\f[]\\$3
+.  Text \f[CB]\e\\$1\[lB]\f[]\,\f[CI]\\$2\/\f[]\f[CB]\[rB]\f[]\\$3
 ..
 .
 .\" ---------------------------------------------------------------------
@@ -193,7 +193,7 @@ FDL in the main directory of the groff source package.
 .\" Result : prints \name'arg', where `name' is in CB, `arg' in CI
 .\"
 .de escq
-.  Text \f[CB]\[rs]\\$1\[cq]\f[]\,\f[CI]\\$2\/\f[]\f[CB]\[cq]\f[]\\$3
+.  Text \f[CB]\e\\$1\[cq]\f[]\,\f[CI]\\$2\/\f[]\f[CB]\[cq]\f[]\\$3
 ..
 .
 .\" --------- strings ---------
@@ -606,7 +606,7 @@ Groff provides a printable representation with the
 escape sequence.
 .
 .TP
-\&\f[CB]\[rs]\f[]
+\&\f[CB]\e\f[]
 The backslash usually introduces an escape sequence (this can be
 changed with the
 .request ec
@@ -1060,7 +1060,7 @@ Empty line, ignored.
 Useful for structuring documents.
 .
 .TPx
-.REQ .\[rs]\[dq] "anything"
+.REQ .\e\[dq] "anything"
 Complete line is a comment.
 .
 .TPx
@@ -2733,7 +2733,7 @@ request.
 .\" --------- escaped characters ---------
 .
 .TP
-.ESC \[rs]
+.ESC \e
 reduces to a single backslash; useful to delay its interpretation as
 escape character in copy mode.
 .
@@ -3310,7 +3310,7 @@ glyphs, not (input) characters.]
 .P
 Common special characters are predefined by escape sequences of the
 form
-.BI \[rs]( xy
+.BI \e( xy
 with characters
 .I x
 and
@@ -3319,7 +3319,7 @@ and
 In
 .IR groff ,
 it is also possible to use the writing
-.BI \[rs][ xy ]
+.BI \e[ xy ]
 as well.
 .
 .
@@ -3886,7 +3886,7 @@ Current point size as a decimal fraction.
 .TPx
 .REG .slant
 The slant of the current font as set with
-.request \[rs]S .
+.request \eS .
 .
 .TPx
 .REG .sr
@@ -4283,13 +4283,13 @@ gets lost, use the following:
 Due to
 .BR doclifter ,
 it might be necessary to change the variable writing
-.B \[rs][xy]
+.B \e[xy]
 and
-.B \[rs]*[xy]
+.B \e*[xy]
 into the strange ancient writing
-.B \[rs]*(xy
+.B \e*(xy
 and
-.BR \[rs](xy ,
+.BR \e(xy ,
 and so on.
 .
 .
@@ -4320,17 +4320,17 @@ after
 .
 .
 .\" --------------------------------------------------------------------
-.SS Underlining with Overstriking \[rs]z and \[rs](ul
+.SS Underlining with Overstriking \ez and \e(ul
 .\" --------------------------------------------------------------------
 .
 .P
 There is another possibility for underlining by using overstriking
 with
-.BI \[rs]z c
+.BI \ez c
 (print
 .I c
 with zero width without spacing) and
-.B \[rs](ul
+.B \e(ul
 (underline character).
 .
 This produces the underlining of 1 character, both in
@@ -4343,9 +4343,9 @@ and in
 For example the underlining of a character say
 .B t
 looks like
-.B \[rs]z\[rs][ul]t
+.B \ez\e[ul]t
 or
-.B \[rs]z\[rs](ult
+.B \ez\e(ult
 .
 .
 .P
