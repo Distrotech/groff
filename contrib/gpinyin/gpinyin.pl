@@ -11,7 +11,7 @@
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
 my $Latest_Update = '8 Aug 2014';
-my $version = '0.9.1';
+my $version = '0.9.2';
 
 # This file is part of `gpinyin', which is part of `groff'.
 

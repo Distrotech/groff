@@ -45,20 +45,21 @@ gpinyin: gpinyin.pl
 	chmod +x $@
 
 .PHONY: install_data
-install_data: gpinyin sub.pl
-	-test -d $(DESTDIR)$(bindir) \
-	|| $(mkinstalldirs) $(DESTDIR)$(bindir); \
+install_data: gpinyin subs.pl
+	-test -d $(DESTDIR)$(bindir) || \
+	  $(mkinstalldirs) $(DESTDIR)$(bindir); \
 	$(RM) $(DESTDIR)$(bindir)/gpinyin; \
 	$(INSTALL_SCRIPT) gpinyin $(DESTDIR)$(bindir)/gpinyin; \
         -test -d $(DESTDIR)$(gpinyin_dir) || \
-	$(mkinstalldirs) $(DESTDIR)$(gpinyin_dir); \
-	$(RM) $(DESTDIR)$(gpinyin_dir)/sub.pl; \
-        $(INSTALL_SCRIPT) $(srcdir)/sub.pl $(DESTDIR)$(gpinyin_dir)/sub.pl
+	  $(mkinstalldirs) $(DESTDIR)$(gpinyin_dir); \
+	$(RM) $(DESTDIR)$(gpinyin_dir)/subs.pl; \
+        $(INSTALL_SCRIPT) $(srcdir)/subs.pl \
+	  $(DESTDIR)$(gpinyin_dir)/subs.pl
 
 .PHONY: uninstall_sub
 uninstall_sub:
 	$(RM) $(DESTDIR)$(bindir)/gpinyin; \
-        $(RM) $(DESTDIR)$(gpinyin_dir)/sub.pl; \
+        $(RM) $(DESTDIR)$(gpinyin_dir)/subs.pl; \
 	rmdir $(DESTDIR)$(gpinyin_dir)
 
 
