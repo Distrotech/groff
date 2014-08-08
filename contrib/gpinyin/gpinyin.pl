@@ -10,8 +10,8 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $Latest_Update = '1 Aug 2014';
-my $version = '0.9.0';
+my $Latest_Update = '8 Aug 2014';
+my $version = '0.9.1';
 
 # This file is part of `gpinyin', which is part of `groff'.
 

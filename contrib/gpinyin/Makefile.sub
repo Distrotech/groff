@@ -6,7 +6,7 @@
 #   Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-# Last update: 1 Aug 2014
+# Last update: 8 Aug 2014
 
 # This file is part of `gpinyin' which is part of `groff'.
 
@@ -45,14 +45,21 @@ gpinyin: gpinyin.pl
 	chmod +x $@
 
 .PHONY: install_data
-install_data: gpinyin
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(RM) $(DESTDIR)$(bindir)/gpinyin
-	$(INSTALL_SCRIPT) gpinyin $(DESTDIR)$(bindir)/gpinyin
+install_data: gpinyin sub.pl
+	-test -d $(DESTDIR)$(bindir) \
+	|| $(mkinstalldirs) $(DESTDIR)$(bindir); \
+	$(RM) $(DESTDIR)$(bindir)/gpinyin; \
+	$(INSTALL_SCRIPT) gpinyin $(DESTDIR)$(bindir)/gpinyin; \
+        -test -d $(DESTDIR)$(gpinyin_dir) || \
+	$(mkinstalldirs) $(DESTDIR)$(gpinyin_dir); \
+	$(RM) $(DESTDIR)$(gpinyin_dir)/sub.pl; \
+        $(INSTALL_SCRIPT) $(srcdir)/sub.pl $(DESTDIR)$(gpinyin_dir)/sub.pl
 
 .PHONY: uninstall_sub
 uninstall_sub:
-	$(RM) $(DESTDIR)$(bindir)/gpinyin
+	$(RM) $(DESTDIR)$(bindir)/gpinyin; \
+        $(RM) $(DESTDIR)$(gpinyin_dir)/sub.pl; \
+	rmdir $(DESTDIR)$(gpinyin_dir)
 
 
 ########################################################################

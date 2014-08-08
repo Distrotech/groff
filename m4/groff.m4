@@ -2,7 +2,7 @@
 # Copyright (C) 1989-1995, 2001-2007, 2009, 2011, 2013, 2014
 #   Free Software Foundation, Inc.
 #
-# Last update: 29 Mar 2014
+# Last update: 8 Aug 2014
 #
 # This file is part of groff.
 #
@@ -1386,6 +1386,11 @@ AC_DEFUN([GROFF_LIBPROGRAMDIR_DEFAULT],
 AC_DEFUN([GROFF_GLILYPONDDIR_DEFAULT],
   glilypond_dir=$libprogramdir/glilypond
   AC_SUBST([glilypond_dir]))
+
+
+AC_DEFUN([GROFF_GPINYINDIR_DEFAULT],
+  gpinyin_dir=$libprogramdir/gpinyin
+  AC_SUBST([gpinyin_dir]))
 
 
 AC_DEFUN([GROFF_GROGDIR_DEFAULT],
