@@ -111,7 +111,9 @@ src/libs/libgroff/version.cpp: $(top_srcdir)/VERSION $(top_srcdir)/REVISION
 	@echo Making version.cpp
 	@echo const char \*version_string = \"$(src_version)\"\; >$@
 	@echo const char \*revision_string = \"$(src_revision)\"\; >>$@
-	@echo extern \"C\" const char \*Version_string = \"$(src_version).$(src_revision)\"\; \
+	@echo extern \"C\" { >>$@
+	@echo const char \*Version_string = \"$(src_version).$(src_revision)\"\; >>$@
+	@echo } >>$@ \
 	  | sed -e 's/\.0\"/\"/' >>$@
 
 # Data for localcharset.c.  Taken from libiconv/libcharset.
@@ -119,7 +121,7 @@ src/libs/libgroff/version.cpp: $(top_srcdir)/VERSION $(top_srcdir)/REVISION
 all: charset.alias ref-add.sed ref-del.sed
 
 charset.alias: $(libgroff_srcdir)/config.charset
-	$(SHELL) $(libgroff_srcdir)//config.charset '$(HOST)' > t-$@
+	$(SHELL) $(libgroff_srcdir)/config.charset '$(HOST)' > t-$@
 	mv t-$@ $@
 
 PACKAGE=groff
