@@ -144,6 +144,7 @@ penguin.pdf:
 
 $(MOMSTRIPFILES): $(top_srcdir)/tmac/strip.sed
 	@$(MKDIR_P) `dirname $@`
+	LANG=C LC_ALL=C \
 	sed -f $(top_srcdir)/tmac/strip.sed $(mom_srcdir)/`basename $@`-u > $@;
 
 install-data-hook: install_mom
