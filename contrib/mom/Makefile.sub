@@ -184,7 +184,8 @@ install_pdfexamples: install_examples_always $(PROCESSEDEXAMPLEFILES)
 stamp-strip: $(STRIPFILES)
 	for f in $(STRIPFILES); do \
 	  rm -f $$f-s; \
-	  sed -f $(top_srcdir)/tmac/strip.sed $(srcdir)/$$f >$$f-s; \
+	  LANG=C LC_ALL=C \
+	    sed -f $(top_srcdir)/tmac/strip.sed $(srcdir)/$$f >$$f-s; \
 	done
 	touch $@
 
