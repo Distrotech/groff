@@ -1,0 +1,66 @@
+This file gives information on the tests that were made during the
+Automake migration.
+
+Environment
+-----------
+Arch Linux x64 with:
+  - Autoconf 2.69
+  - Automake 1.14.1
+  - GNU Make 4.0
+
+Current status
+--------------
+  - Gnulib integrated
+  - Minimum Automake support
+
+Tests
+-----
+
+1. Generation of build system files
+
+./bootstrap
+
+Generated the following files and directories:
+  INSTALL
+  Makefile.in
+  aclocal.m4
+  autom4te.cache/
+  build-aux/
+  configure
+  gnulib_m4/
+  lib/
+  src/include/config.hin
+
+2. Build of various targets
+
+Tests done in 2 configurations:
+
+  - Out-of source build mode
+
+    mkdir build
+    cd build
+    ../configure
+
+  - In source build:
+    ../configure
+
+2.1 make
+
+  - src/include/config.h generated
+  - lib/libgnu.a generated
+
+2.2 make clean
+
+The following files remains (this is expected):
+  - src/include/config.h
+  - src/include/stamp-h1
+
+2.3 make dist
+  
+  - groff-1.22.2.tar.gz is generated
+
+TODO
+----
+
+  - Gnulib: some files of src/libs/libgroff could be replaced by their
+    gnulib equivalent

@@ -40,20 +40,28 @@ m4_define([GROFF_VERSION_STRING],
                 GROFF_VERSION[.]GROFF_REVISION,
                 GROFF_VERSION))
 
-AC_INIT([groff],
+AC_INIT([GNU Troff],
         GROFF_VERSION_STRING,
         [bug-groff@gnu.org],
-        [groff-]GROFF_VERSION_STRING)
+        [groff])
 AC_PREREQ([2.62])
+
+# Directories where the helper scripts should be found. This must be consistent
+# with the variable build_aux in bootstrap.conf
+AC_CONFIG_AUX_DIR([build-aux])
 
 AC_CONFIG_HEADERS([src/include/config.h:src/include/config.hin])
 AC_CONFIG_SRCDIR([src/roff/groff/groff.cpp])
 
 AC_USE_SYSTEM_EXTENSIONS
 
+AM_INIT_AUTOMAKE([subdir-objects])
+
 # checks for programs
 AC_PROG_CC
 AC_PROG_CXX
+gl_EARLY
+gl_INIT
 GROFF_CXX_CHECK
 GROFF_EBCDIC
 GROFF_OS390
@@ -163,11 +171,7 @@ GROFF_PNMTOPS_NOSETPAGE
 gl_GLIBC21
 gl_LOCALCHARSET
 
-AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
-AC_CONFIG_FILES([Makefile doc/Makefile src/utils/xtotroff/Makefile])
-AC_CONFIG_FILES([contrib/gdiffmk/tests/runtests],
-                [chmod +x contrib/gdiffmk/tests/runtests])
-AC_CONFIG_FILES([test-groff], [chmod +x test-groff])
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
 GROFF_APPRESDIR_CHECK
