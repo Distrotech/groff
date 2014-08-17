@@ -1,10 +1,8 @@
-# Makefile.sub for `libxutil'
+# Automake rules for `include'
 #
-# File position: <groff-source>/src/libs/libxutil/Makefile.sub
+# File position: <groff-source>/src/include/include.am
 #
-# Copyright (C) 2014 Free Software Foundation, Inc.
-#
-# This file is part of `font utf8' which is part of `groff'.
+# Copyright (C) 2014  Free Software Foundation, Inc.
 #
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -22,21 +20,18 @@
 #
 ########################################################################
 
-LIB=xutil
-EXTRA_CFLAGS=$(X_CFLAGS)
-OBJS=\
-  DviChar.$(OBJEXT) \
-  XFontName.$(OBJEXT) \
-  xmalloc.$(OBJEXT)
-CSRCS=\
-  $(srcdir)/DviChar.c \
-  $(srcdir)/XFontName.c \
-  $(srcdir)/xmalloc.c
+nodist_noinst_HEADERS = defs.h
+defs.h:
+	@$(SHELL) $(top_srcdir)/gendef.sh defs.h \
+	"PROG_PREFIX=\"$(g)\"" \
+	"DEVICE=\"$(DEVICE)\"" \
+	"INSTALLPATH=\"$(prefix)\"" \
+	"BINPATH=\"$(bindir)\"" \
+	"FONTPATH=\"$(fontpath)\"" \
+	"MACROPATH=\"$(tmacpath)\"" \
+	"INDEX_SUFFIX=\"$(indexext)\"" \
+	"COMMON_WORDS_FILE=\"$(common_words_file)\"" \
+	"DEFAULT_INDEX_DIR=\"$(indexdir)\"" \
+	"DEFAULT_INDEX_NAME=\"$(indexname)\"" \
+	"DEFAULT_INDEX=\"$(indexdir)/$(indexname)\""
 
-########################################################################
-# Emacs settings
-########################################################################
-#
-# Local Variables:
-# mode: makefile
-# End:
