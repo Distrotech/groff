@@ -487,9 +487,12 @@ PURIFYCCFLAGS=
 # Add groff and gnulib m4 macros
 ACLOCAL_AMFLAGS = -I m4 -I gnulib_m4
 
-# Common preprocessor flags: gnulib includes
+# Common preprocessor flags: gnulib includes, common includes in
+# src/include, and config.h that is generated in the build tree
 AM_CPPFLAGS = \
+  -I$(top_srcdir)/src/include \
   -I$(top_srcdir)/lib \
+  -I$(top_builddir)/src/include \
   -I$(top_builddir)/lib
 
 # The following Automake variables will be overloaded by the various
@@ -517,6 +520,25 @@ man7_MANS =
 # source directory.
 
 include $(top_srcdir)/lib/gnulib.mk
+include $(top_srcdir)/src/include/include.am
+include $(top_srcdir)/src/libs/libbib/libbib.am
+include $(top_srcdir)/src/libs/libdriver/libdriver.am
+include $(top_srcdir)/src/libs/libgroff/libgroff.am
+include $(top_srcdir)/src/libs/libxutil/libxutil.am
+
+# Adding defs.h to BUILT_SOURCES will ensure that it will be built on
+# make all or make check before all other targets. However, if another
+# target is built from a clean build tree, (for example make groff)
+# the files in BUILT_SOURCES will not be built first. That is why
+# additional dependencies where added in the .am files that lists
+# objects that use defs (for exmaple in groff.am:
+# src/roff/groff/groff.$(OBJEXT): defs.h)
+BUILT_SOURCES += defs.h
+
+# Same thing for gnulib's localcharset.c and configmake.h: gnulib uses
+# BUILT_SOURCES only, adding the following makes 'make lib/libgnu.a'
+# possible
+lib/localcharset.$(OBJEXT): lib/configmake.h
 
 # Other files that should be present in the distribution tarball.
 EXTRA_DIST += \

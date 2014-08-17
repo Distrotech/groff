@@ -12,6 +12,7 @@ Current status
 --------------
   - Gnulib integrated
   - Minimum Automake support
+  - Build src/libs/*
 
 Tests
 -----
@@ -46,16 +47,56 @@ Tests done in 2 configurations:
 
 2.1 make
 
-  - src/include/config.h generated
-  - lib/libgnu.a generated
+Following files are generated:
+
+  - src/include/config.h
+  - lib/libgnu.a
+  - libbib.a
+  - libdriver.a
+  - libgroff.a, version.cpp and extra files (charset.alias,
+    ref-add.sed, ref-del.sed)
+  - libxutils.a
+
+In order to check and improve the dependencies, the following targets
+were built from a clean environment:
+  - make lib/libgnu.a
+  - make libbib.a
+  - make libdriver.a
+  - make libgroff.a
+  - make libxutil.a
 
 2.2 make clean
 
 The following files remains (this is expected):
   - src/include/config.h
   - src/include/stamp-h1
+  - .deps directories and .dirstamp files
 
-2.3 make dist
+TODO: following files should be cleaned:
+  - libgroff extra files and version.cpp
+
+2.3 make mostlyclean
+
+  Like 'make clean', but:
+  - lib*.a remain
+
+2.4 make dist-clean
+
+  To be checked
+
+2.5 make maintainer-clean
+
+  To be checked
+
+2.6 make install
+
+  To be checked
+
+2.7 make uninstall
+
+  To be checked
+
+2.8 make dist
 
   groff-1.22.3.tar.gz is generated
 
@@ -74,7 +115,7 @@ The following files remains (this is expected):
     doc/
     font/
     man/
-    src/* (except include)
+    src/* (except include): src/libs .c .cpp are missing
     tmac
     test-groff.in
 
@@ -89,6 +130,9 @@ The following files remains (this is expected):
     aclocal.m4
     configure   
 
+2.9 make distcheck
+  
+  - fails (src/libs sources are missing)
 Notes
 -----
 

@@ -1,10 +1,8 @@
-# Makefile.sub for `libbib'
+# Automake rules for `libxutil'
 #
-# File position: <groff-source>/src/libs/libbib/Makefile.sub
+# File position: <groff-source>/src/libs/libxutil/libxutil.am
 #
-# Copyright (C) 2014  Free Software Foundation, Inc.
-#
-# This file is part of `font utf8' which is part of `groff'.
+# Copyright (C) 2014 Free Software Foundation, Inc.
 #
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -22,25 +20,10 @@
 #
 ########################################################################
 
-LIB=bib
-OBJS=\
-  common.$(OBJEXT) \
-  index.$(OBJEXT) \
-  linear.$(OBJEXT) \
-  search.$(OBJEXT) \
-  map.$(OBJEXT)
-CCSRCS=\
-  $(srcdir)/common.cpp \
-  $(srcdir)/index.cpp \
-  $(srcdir)/linear.cpp \
-  $(srcdir)/search.cpp
-CSRCS=\
-  $(srcdir)/map.c
-
-########################################################################
-# Emacs settings
-########################################################################
-#
-# Local Variables:
-# mode: makefile
-# End:
+# TODO: X management
+noinst_LIBRARIES += libxutil.a
+libxutil_a_CPPFLAGS = $(AM_CPPFLAGS) $(X_CFLAGS)
+libxutil_a_SOURCES = \
+  src/libs/libxutil/DviChar.c \
+  src/libs/libxutil/XFontName.c \
+  src/libs/libxutil/xmalloc.c

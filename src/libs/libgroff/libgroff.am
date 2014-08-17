@@ -1,0 +1,115 @@
+# Copyright (C) 2014
+#      Free Software Foundation, Inc.
+# 
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+libgroff_srcdir = $(top_srcdir)/src/libs/libgroff
+noinst_LIBRARIES += libgroff.a
+libgroff_a_CPPFLAGS = \
+  $(AM_CPPFLAGS) \
+  -D__GETOPT_PREFIX=groff_ \
+  -DENABLE_RELOCATABLE=1 \
+  -DLIBDIR=\"$(libdir)\"
+
+# Build from OBJS
+libgroff_a_SOURCES = \
+  src/libs/libgroff/assert.cpp \
+  src/libs/libgroff/change_lf.cpp \
+  src/libs/libgroff/cmap.cpp \
+  src/libs/libgroff/color.cpp \
+  src/libs/libgroff/cset.cpp\
+  src/libs/libgroff/device.cpp \
+  src/libs/libgroff/errarg.cpp \
+  src/libs/libgroff/error.cpp \
+  src/libs/libgroff/fatal.cpp \
+  src/libs/libgroff/filename.cpp \
+  src/libs/libgroff/font.cpp \
+  src/libs/libgroff/fontfile.cpp \
+  src/libs/libgroff/geometry.cpp \
+  src/libs/libgroff/getopt.c \
+  src/libs/libgroff/getopt1.c \
+  src/libs/libgroff/glyphuni.cpp \
+  src/libs/libgroff/htmlhint.cpp \
+  src/libs/libgroff/hypot.cpp \
+  src/libs/libgroff/iftoa.c \
+  src/libs/libgroff/invalid.cpp \
+  src/libs/libgroff/itoa.c \
+  src/libs/libgroff/lf.cpp \
+  src/libs/libgroff/lineno.cpp \
+  src/libs/libgroff/localcharset.c \
+  src/libs/libgroff/macropath.cpp \
+  src/libs/libgroff/matherr.c \
+  src/libs/libgroff/maxfilename.cpp \
+  src/libs/libgroff/maxpathname.cpp \
+  src/libs/libgroff/mksdir.cpp \
+  src/libs/libgroff/nametoindex.cpp \
+  src/libs/libgroff/new.cpp \
+  src/libs/libgroff/paper.cpp \
+  src/libs/libgroff/prime.cpp \
+  src/libs/libgroff/progname.c \
+  src/libs/libgroff/ptable.cpp \
+  src/libs/libgroff/quotearg.c \
+  src/libs/libgroff/relocate.cpp \
+  src/libs/libgroff/searchpath.cpp \
+  src/libs/libgroff/spawnvp.c \
+  src/libs/libgroff/string.cpp \
+  src/libs/libgroff/strsave.cpp \
+  src/libs/libgroff/symbol.cpp \
+  src/libs/libgroff/tmpfile.cpp \
+  src/libs/libgroff/tmpname.cpp \
+  src/libs/libgroff/unicode.cpp \
+  src/libs/libgroff/uniglyph.cpp \
+  src/libs/libgroff/uniuni.cpp \
+  src/libs/libgroff/relocatable.h
+nodist_libgroff_a_SOURCES = src/libs/libgroff/version.cpp
+
+src_version=`cat $(top_srcdir)/VERSION`
+src_revision=`cat $(top_srcdir)/REVISION`
+
+# .o files have a 'libgroff_a-' prefix because we set libgroff_a_CPPFLAGS
+src/libs/libgroff/libgroff_a-device.$(OBJEXT): defs.h
+src/libs/libgroff/libgroff_a-fontfile.$(OBJEXT): defs.h
+src/libs/libgroff/libgroff_a-macropath.$(OBJEXT): defs.h
+src/libs/libgroff/libgroff_a-relocate.$(OBJEXT): defs.h
+
+src/libs/libgroff/version.cpp: $(top_srcdir)/VERSION $(top_srcdir)/REVISION
+	@echo Making version.cpp
+	@echo const char \*version_string = \"$(src_version)\"\; >$@
+	@echo const char \*revision_string = \"$(src_revision)\"\; >>$@
+	@echo extern \"C\" { >>$@
+	@echo const char \*Version_string = \"$(src_version).$(src_revision)\"\; >>$@
+	@echo } >>$@ \
+	  | sed -e 's/\.0\"/\"/' >>$@
+
+# Data for localcharset.c.  Taken from libiconv/libcharset.
+
+LIBGROFF_PACKAGE = groff
+
+all: charset.alias ref-add.sed ref-del.sed
+
+charset.alias: $(libgroff_srcdir)/config.charset
+	$(SHELL) $(libgroff_srcdir)/config.charset '$(HOST)' > t-$@
+	mv t-$@ $@
+
+ref-add.sed : $(libgroff_srcdir)/ref-add.sin
+	sed -e '/^#/d' \
+	    -e 's/@''PACKAGE''@/$(LIBGROFF_PACKAGE)/g' $(libgroff_srcdir)/ref-add.sin > t-$@
+	mv t-$@ $@
+
+ref-del.sed : $(libgroff_srcdir)/ref-del.sin
+	sed -e '/^#/d' \
+	    -e 's/@''PACKAGE''@/$(LIBGROFF_PACKAGE)/g' $(libgroff_srcdir)/ref-del.sin > t-$@
+	mv t-$@ $@
