@@ -56,6 +56,16 @@ Following files are generated:
   - libgroff.a, version.cpp and extra files (charset.alias,
     ref-add.sed, ref-del.sed)
   - libxutils.a
+  - addftinfo
+  - afmtodit
+  - hpftodit
+  - indxbib
+  - lkbib
+  - lookbib
+  - pfbtops
+  - tfmtodit
+  - xtotroff
+  - man files (.n) in src/utils
 
 In order to check and improve the dependencies, the following targets
 were built from a clean environment:
@@ -64,6 +74,15 @@ were built from a clean environment:
   - make libdriver.a
   - make libgroff.a
   - make libxutil.a
+  - make addftinfo
+  - make  afmtodit
+  - make hpftodit
+  - make indxbib
+  - make lkbib
+  - make lookbib
+  - make pfbtops
+  - make tfmtodit
+  - make xtotroff
 
 2.2 make clean
 
@@ -75,6 +94,8 @@ The following files remains (this is expected):
   - src/include/stamp-h1
   - .deps directories and .dirstamp files
 
+TODO: .n files, afmtodit
+
 2.3 make mostlyclean
 
   Like 'make clean', but the following files also remain (expected):
@@ -82,6 +103,8 @@ The following files remains (this is expected):
   - libgroff.a's charset.alias, ref-add.sed, ref-del.sed, and
     version.cpp.
   - gnulib's charset.alias, ref-add.sed, ref-del.sed and configmake.h
+
+TODO: .n files, afmtodit
 
 2.4 make distclean
 
@@ -119,10 +142,18 @@ The following files remains (this is expected):
   - If file charset.alias is always present in
     $(DESTDIR)/usr/local/lib, make install update it by adding 'groff'
     to the list of programs using it. Otherwise nothing is installed.
+  - programs from src/utils are installed in $(DESTDIR)/usr/local/bin
+  - man files from src/utils are installed in $(DESTDIR)/usr/local/share/man/man1
 
 2.7 make uninstall
+  
+  Removes:
 
-  - Removes $(DESTDIR)/usr/local/lib/charset.alias if exists
+  - $(DESTDIR)/usr/local/lib/charset.alias if exists
+  - $(DESTDIR)/usr/local/bin/*
+  - $(DESTDIR)/usr/local/man/man1/*
+
+  TODO: indexbib specific rules
 
 2.8 make dist
 

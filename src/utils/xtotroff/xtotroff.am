@@ -1,0 +1,7 @@
+bin_PROGRAMS += xtotroff
+man1_MANS += src/utils/xtotroff/xtotroff.n
+xtotroff_SOURCES = src/utils/xtotroff/xtotroff.c
+XLIBS=$(LIBXUTIL) $(LIBGROFF)
+xtotroff_LDADD = libxutil.a libgroff.a $(X_LIBS) $(X_PRE_LIBS) \
+  -lXaw -lXt -lX11 $(X_EXTRA_LIBS) $(LIBM)
+xtotroff_CPPFLAGS = $(AM_CPPFLAGS) $(X_CFLAGS)

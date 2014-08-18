@@ -1,0 +1,27 @@
+# Copyright (C) 2014
+#      Free Software Foundation, Inc.
+# 
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+indxbib_srcdir = $(top_srcdir)/src/utils/indxbib
+bin_PROGRAMS += indxbib
+indxbib_SOURCES = \
+  src/utils/indxbib/indxbib.cpp \
+  src/utils/indxbib/signal.c
+src/utils/indxbib/indxbib.$(OBJEXT): defs.h
+indxbib_LDADD = libbib.a libgroff.a $(LIBM)
+man1_MANS += src/utils/indxbib/indxbib.n
+

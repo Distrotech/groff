@@ -1,0 +1,7 @@
+bin_PROGRAMS += pfbtops
+man1_MANS += src/utils/pfbtops/pfbtops.n
+pfbtops_SOURCES = src/utils/pfbtops/pfbtops.c
+pfbtops_LDADD = libgroff.a $(LIBM)
+# We use the following trick to force the use of C++ compiler
+# See the Automake manual, "Libtool Convenience Libraries"
+nodist_EXTRA_pfbtops_SOURCES = src/utils/pfbtops/dummy.cpp

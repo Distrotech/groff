@@ -522,6 +522,15 @@ include $(top_srcdir)/src/libs/libbib/libbib.am
 include $(top_srcdir)/src/libs/libdriver/libdriver.am
 include $(top_srcdir)/src/libs/libgroff/libgroff.am
 include $(top_srcdir)/src/libs/libxutil/libxutil.am
+include $(top_srcdir)/src/utils/addftinfo/addftinfo.am
+include $(top_srcdir)/src/utils/afmtodit/afmtodit.am
+include $(top_srcdir)/src/utils/hpftodit/hpftodit.am
+include $(top_srcdir)/src/utils/indxbib/indxbib.am
+include $(top_srcdir)/src/utils/lkbib/lkbib.am
+include $(top_srcdir)/src/utils/lookbib/lookbib.am
+include $(top_srcdir)/src/utils/pfbtops/pfbtops.am
+include $(top_srcdir)/src/utils/tfmtodit/tfmtodit.am
+include $(top_srcdir)/src/utils/xtotroff/xtotroff.am
 
 # Adding defs.h to BUILT_SOURCES will ensure that it will be built on
 # make all or make check before all other targets. However, if another
@@ -560,3 +569,43 @@ EXTRA_DIST += \
   PROBLEMS \
   PROJECTS \
   README.MinGW
+
+# Rule to build .man files. The brackets around the @ are used to prevent the 
+# substitution of the variable by automake. 
+.man.n:
+	@echo Making $@ from $<
+	rm -f $@
+	$(MKDIR_P) `dirname $@`
+	@LC_ALL=C \
+	 sed -e "s|[@]APPRESDIR[@]|$(appresdir)|g" \
+	     -e "s|[@]BINDIR[@]|$(bindir)|g" \
+	     -e "s|[@]BROKEN_SPOOLER_FLAGS[@]|$(BROKEN_SPOOLER_FLAGS)|g" \
+	     -e "s|[@]COMMON_WORDS_FILE[@]|$(common_words_file)|g" \
+	     -e "s|[@]DATASUBDIR[@]|$(datasubdir)|g" \
+	     -e "s|[@]DEFAULT_INDEX[@]|$(indexdir)/$(indexname)|g" \
+	     -e "s|[@]DEFAULT_INDEX_NAME[@]|$(indexname)|g" \
+	     -e "s|[@]DEVICE[@]|$(DEVICE)|g" \
+	     -e "s|[@]DOCDIR[@]|$(docdir)|g" \
+	     -e "s|[@]EXAMPLEDIR[@]|$(exampledir)|g" \
+	     -e "s|[@]FONTDIR[@]|$(fontdir)|g" \
+	     -e "s|[@]g[@]|$(g)|g" \
+	     -e "s![@]G[@]!`echo $(g) | tr [a-z] [A-Z]`!g" \
+	     -e "s|[@]HTMLDOCDIR[@]|$(htmldocdir)|g" \
+	     -e "s|[@]INDEX_SUFFIX[@]|$(indexext)|g" \
+	     -e "s|[@]LEGACYFONTDIR[@]|$(legacyfontdir)|g" \
+	     -e "s|[@]LOCALFONTDIR[@]|$(localfontdir)|g" \
+	     -e "s|[@]LOCALMACRODIR[@]|$(localtmacdir)|g" \
+	     -e "s|[@]MACRODIR[@]|$(tmacdir)|g" \
+	     -e "s|[@]MAN1EXT[@]|$(man1ext)|g" \
+	     -e "s|[@]MAN5EXT[@]|$(man5ext)|g" \
+	     -e "s|[@]MAN7EXT[@]|$(man7ext)|g" \
+	     -e "s|[@]MDATE[@]|`$(SHELL) $(top_srcdir)/mdate.sh $<`|g" \
+	     -e "s|[@]OLDFONTDIR[@]|$(oldfontdir)|g" \
+	     -e "s|[@]PDFDOCDIR[@]|$(pdfdocdir)|g" \
+	     -e "s|[@]SYSTEMMACRODIR[@]|$(systemtmacdir)|g" \
+	     -e "s|[@]TMAC_AN_PREFIX[@]|$(tmac_an_prefix)|g" \
+	     -e "s|[@]TMAC_M_PREFIX[@]|$(tmac_m_prefix)|g" \
+	     -e "s|[@]TMAC_MDIR[@]|$(tmacdir)/mm|g" \
+	     -e "s|[@]TMAC_S_PREFIX[@]|$(tmac_s_prefix)|g" \
+	     -e "s|[@]VERSION[@]|$(VERSION)|g" \
+	 $< >$@

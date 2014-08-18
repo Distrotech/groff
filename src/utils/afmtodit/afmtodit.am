@@ -1,7 +1,7 @@
 # Copyright (C) 2013, 2014
 #   Free Software Foundation, Inc.
 #
-# Last update: 30 Mar 2014
+# Last update: Aug 2014
 #
 # This file is part of groff.
 #
@@ -18,32 +18,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-MAN1=afmtodit.n
-MOSTLYCLEANADD=afmtodit
+afmtodit_srcdir = $(top_srcdir)/src/utils/afmtodit
 
-all: afmtodit
+bin_SCRIPTS += afmtodit
+man1_MANS += src/utils/afmtodit/afmtodit.n
 
-afmtodit: afmtodit.pl afmtodit.tables
+afmtodit: $(afmtodit_srcdir)/afmtodit.pl $(afmtodit_srcdir)/afmtodit.tables
 	if test -n "$(PERL)"; then \
 	  sed -e "s|/usr/bin/perl|$(PERL)|" \
-	      -e "s|@VERSION@|$(version)$(revision)|" \
-	      -e "s|@FONTDIR@|$(fontdir)|" \
-	      -e "/@afmtodit.tables@/ r $(srcdir)/afmtodit.tables" \
-	      -e "/@afmtodit.tables@/ d" \
-	      $(srcdir)/afmtodit.pl >afmtodit; \
+	      -e "s|[@]VERSION[@]|$(VERSION)|" \
+	      -e "s|[@]FONTDIR[@]|$(fontdir)|" \
+	      -e "/[@]afmtodit.tables[@]/ r $(afmtodit_srcdir)/afmtodit.tables" \
+	      -e "/[@]afmtodit.tables[@]/ d" \
+	      $(afmtodit_srcdir)/afmtodit.pl >afmtodit; \
 	else \
-	  sed -e "s|@VERSION@|$(version)$(revision)|" \
-	      -e "s|@FONTDIR@|$(fontdir)|" \
-	      -e "/@afmtodit.tables@/ r $(srcdir)/afmtodit.tables" \
-	      -e "/@afmtodit.tables@/ d" \
-	      $(srcdir)/afmtodit.pl >afmtodit; \
+	  sed -e "s|[@]VERSION[@]|$(VERSION)|" \
+	      -e "s|[@]FONTDIR[@]|$(fontdir)|" \
+	      -e "/[@]afmtodit.tables[@]/ r $(afmtodit_srcdir)/afmtodit.tables" \
+	      -e "/[@]afmtodit.tables[@]/ d" \
+	      $(afmtodit_srcdir)/afmtodit.pl >afmtodit; \
 	fi
 	chmod +x afmtodit
-
-install_data: afmtodit
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/afmtodit
-	$(INSTALL_SCRIPT) afmtodit $(DESTDIR)$(bindir)/afmtodit
-
-uninstall_sub:
-	rm -f $(DESTDIR)$(bindir)/afmtodit
