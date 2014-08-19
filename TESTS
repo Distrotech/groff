@@ -13,6 +13,7 @@ Current status
   - Gnulib integrated
   - Minimum Automake support
   - Build src/libs/*
+  - Build src/utils/*
 
 Tests
 -----
@@ -94,7 +95,7 @@ The following files remains (this is expected):
   - src/include/stamp-h1
   - .deps directories and .dirstamp files
 
-TODO: .n files, afmtodit
+  - .n files, afmtodit are cleaned
 
 2.3 make mostlyclean
 
@@ -103,8 +104,6 @@ TODO: .n files, afmtodit
   - libgroff.a's charset.alias, ref-add.sed, ref-del.sed, and
     version.cpp.
   - gnulib's charset.alias, ref-add.sed, ref-del.sed and configmake.h
-
-TODO: .n files, afmtodit
 
 2.4 make distclean
 
@@ -144,6 +143,7 @@ TODO: .n files, afmtodit
     to the list of programs using it. Otherwise nothing is installed.
   - programs from src/utils are installed in $(DESTDIR)/usr/local/bin
   - man files from src/utils are installed in $(DESTDIR)/usr/local/share/man/man1
+  - $(DESTDIR)/usr/local/share/groff/1.22/eign (from src/utils/indxbib)
 
 2.7 make uninstall
   
@@ -152,8 +152,10 @@ TODO: .n files, afmtodit
   - $(DESTDIR)/usr/local/lib/charset.alias if exists
   - $(DESTDIR)/usr/local/bin/*
   - $(DESTDIR)/usr/local/man/man1/*
-
-  TODO: indexbib specific rules
+  - $(DESTDIR)/usr/local/share/groff/1.22/eign
+  - $(DESTDIR)/usr/local/share/groff/1.22/
+  - $(DESTDIR)/usr/local/share/groff/
+  
 
 2.8 make dist
 
@@ -175,7 +177,10 @@ TODO: .n files, afmtodit
     doc/
     font/
     man/
+    src/devices
     src/include (except config.hin and include.am)
+    src/preproc
+    src/roff
     tmac
     test-groff.in
 
