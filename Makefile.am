@@ -549,6 +549,12 @@ BUILT_SOURCES += defs.h
 # possible
 lib/localcharset.$(OBJEXT): lib/configmake.h
 
+# directories specific to groff
+uninstall-hook: uninstall_groffdirs
+uninstall_groffdirs:
+	rmdir $(DESTDIR)$(datasubdir)
+	rmdir $(DESTDIR)$(dataprogramdir)
+
 # Other files that should be present in the distribution tarball.
 EXTRA_DIST += \
   BUG-REPORT \
@@ -572,6 +578,8 @@ EXTRA_DIST += \
   PROBLEMS \
   PROJECTS \
   README.MinGW
+
+MOSTLYCLEANFILES += $(man1_MANS)
 
 # Rule to build .man files. The brackets around the @ are used to prevent the 
 # substitution of the variable by automake. 
