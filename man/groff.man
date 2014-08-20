@@ -3,7 +3,7 @@
 before installation: <top-groff-source>/man/groff.man
 after installation:  </usr or /usr/local>/share/man/man7/groff.7
 
-Latest update: 5 Aug 2014
+Latest update: 20 Aug 2014
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -1064,7 +1064,7 @@ Useful for structuring documents.
 Complete line is a comment.
 .
 .TPx
-.REQ .ab "string
+.REQ .ab "string"
 Print
 .I string
 on standard error, exit program.
@@ -2562,13 +2562,20 @@ c | c | c
 CfCB | CfCB | CfCB.
 preprocessor@start macro@ end macro
 =
+chem@.cstart@.cend
 eqn@.EQ@.EN
+gideal@.IS@.IE
 grap@.G1@.G2
 grn@.GS@.GE
+@@.IF
 pic@.PS@.PE
 refer@.R1@.R2
 soelim@\f[I]none@\f[I]none
 tbl@.TS@.TE
+_
+glilypond@.lilypond start@.lilypond stop
+gperl@.Perl start@.Perl stop
+gpinyin@.pinyin start@.pinyin stop
 .TE
 .P
 .
@@ -3470,7 +3477,7 @@ file.
 .
 .
 .TP
-.BI \(rs[u xxxx ]
+.BI \e[u xxxx ]
 .B u
 is the escape name.
 .
@@ -3480,11 +3487,11 @@ is a hexadecimal number of 4 hex digits, such as
 for the letter
 .BR A ,
 see
-.BR \(rs[0041] .
+.BR \e[u0041] .
 . 
 .
 .TP
-.BI \(rs[u yyyyy ]
+.BI \e[u yyyyy ]
 .B u
 is the escape name.
 .
@@ -3494,19 +3501,18 @@ is a hexadecimal number of 5 hex digits, such as
 for a Chinese looking character for
 .IR "CJK Compatibility Ideographs Supplement" ,
 see
-.BR \(rs[2FA1A] .
+.BR \e[u2FA1A] .
 .
 .
-.RS
 .P
 Both hexadecimal collections mean the corresponding Unicode code for a
 character.
 .
 .
 .TP
-.BI \(rs[u hex1 _ hex2 ]
+.BI \e[u hex1 _ hex2 ]
 .TQ
-.BI \(rs[u hex1 _ hex2 _ hex3 ]
+.BI \e[u hex1 _ hex2 _ hex3 ]
 .IR hex1 ,
 .IR hex2 ,
 and
@@ -3529,7 +3535,6 @@ modes it might happen that some or many characters will not be
 displayed.
 .
 Please check your fonts.
-.RE
 .
 .
 .\" --------------------------------------------------------------------
