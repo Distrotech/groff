@@ -1,0 +1,50 @@
+# Copyright (C) 2014
+#      Free Software Foundation, Inc.
+# 
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+GXDITVIEWSOURCES = \
+  src/devices/xditview/device.c \
+  src/devices/xditview/draw.c \
+  src/devices/xditview/Dvi.c \
+  src/devices/xditview/font.c \
+  src/devices/xditview/lex.c \
+  src/devices/xditview/page.c \
+  src/devices/xditview/parse.c \
+  src/devices/xditview/xditview.c \
+  src/devices/xditview/device.h \
+  src/devices/xditview/DviP.h \
+  src/devices/xditview/Menu.h \
+  src/devices/xditview/Dvi.h
+
+xditview_srcdir = $(top_srcdir)/src/devices/xditview
+bin_PROGRAMS += gxditview
+gxditview_CPPFLAGS = $(AM_CPPFLAGS) $(X_CFLAGS) -Dlint \
+  -I$(top_builddir)/src/devices/xditview
+gxditview_LDADD = $(X_LIBS) $(X_PRE_LIBS) -lXaw -lXmu -lXt -lX11 \
+  $(X_EXTRA_LIBS) $(LIBM) libxutil.a
+XDITVIEW_GENHDRS = src/devices/xditview/GXditview-ad.h
+gxditview_SOURCES = $(GXDITVIEWSOURCES) $(XDITVIEW_GENHDRS)
+man1_MANS += src/devices/xditview/gxditview.n
+
+# Because we defined gxditview_CPPFLAGS, automake renames all the xditview's 
+# objects, adding an "gxditview-" prefix. 
+src/devices/xditview/gxditview-device.$(OBJEXT): defs.h
+src/devices/xditview/gxditview-xditview.$(OBJEXT): $(XDITVIEW_GENHDRS)
+
+src/devices/xditview/GXditview-ad.h: $(xditview_srcdir)/GXditview.ad
+	@echo Making $@
+	$(SHELL) $(xditview_srcdir)/ad2c $(xditview_srcdir)/GXditview.ad > $@
