@@ -14,6 +14,7 @@ Current status
   - Minimum Automake support
   - Build src/libs/*
   - Build src/utils/*
+  - Build src/preproc/*
 
 Tests
 -----
@@ -52,11 +53,18 @@ Following files are generated:
 
   - src/include/config.h
   - lib/libgnu.a
+
+from arch/misc:
+  - shdeps.sed
+
+from src/libs:
   - libbib.a
   - libdriver.a
   - libgroff.a, version.cpp and extra files (charset.alias,
     ref-add.sed, ref-del.sed)
   - libxutils.a
+
+from src/utils:
   - addftinfo
   - afmtodit
   - hpftodit
@@ -67,6 +75,28 @@ Following files are generated:
   - tfmtodit
   - xtotroff
   - man files (.n) in src/utils
+
+from src/preproc:
+  - eqn
+  - grn
+  - pre-grohtml
+  - pic
+  - preconv
+  - refer
+  - soelim
+  - tbl
+  - Yacc and Lex support: the following files are generated:
+    -- eqn/eqn.cpp
+    -- eqn/eqn.hpp (previously eqn_tab.h)
+    -- pic/pic.cpp
+    -- pic/pic.hpp (previously pic_tab.h)
+    -- pic/pic.output
+    -- refer/label.cpp
+    -- refer/label.hpp
+    Compared to the previous build system, the only relevant diff is
+    an extra protection #define in label.cpp
+#ifndef YY_YY_SRC_PREPROC_REFER_LABEL_HPP_INCLUDED
+# define YY_YY_SRC_PREPROC_REFER_LABEL_HPP_INCLUDED
 
 In order to check and improve the dependencies, the following targets
 were built from a clean environment:
@@ -84,8 +114,18 @@ were built from a clean environment:
   - make pfbtops
   - make tfmtodit
   - make xtotroff
+  - make eqn
+  - make grn
+  - make pre-grohtml
+  - make pic
+  - make preconv
+  - make refer
+  - make soelim
+  - make tbl
 
 2.2 make clean
+
+  TODO: src/preproc
 
 The following files remains (this is expected):
   - Makefile

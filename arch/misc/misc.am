@@ -3,6 +3,8 @@
 #
 # This file is part of groff.
 #
+# 1 June 2014: moved Makefile.sub to misc.am
+#
 # groff is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or
@@ -16,9 +18,5 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-MOSTLYCLEANADD=shdeps.sed
-
-all: shdeps.sed
-
-shdeps.sed: $(srcdir)/shdeps.sh
-	$(SHELL) $(srcdir)/shdeps.sh "$(RT_SEP)" "$(SH_SEP)" "$(bindir)" > $@
+shdeps.sed: $(top_srcdir)/arch/misc/shdeps.sh
+	$(SHELL) $(top_srcdir)/arch/misc/shdeps.sh "$(RT_SEP)" "$(SH_SEP)" "$(bindir)" > $@
