@@ -998,18 +998,12 @@ AC_DEFUN([GROFF_CMD_FILES],
    case "$host_os" in
    *mingw*)
      make_winscripts=winscripts
-     make_install_winscripts=install_winscripts
-     make_uninstall_winscripts=uninstall_winscripts
      AC_MSG_RESULT([yes]) ;;
    *)
      make_winscripts=
-     make_install_winscripts=
-     make_uninstall_winscripts=
      AC_MSG_RESULT([no]) ;;
    esac
-   AC_SUBST([make_winscripts])
-   AC_SUBST([make_install_winscripts])
-   AC_SUBST([make_uninstall_winscripts])])
+   AC_SUBST([make_winscripts])])
 
 
 # Check whether we need a declaration for a function.

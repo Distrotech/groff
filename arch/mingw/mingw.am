@@ -1,8 +1,5 @@
-# Copyright (C) 2004-2014 Free Software Foundation, Inc.
-#      Original Makefile.sub written by Keith Marshall
-#      (keith.d.marshall@ntlworld.com).
-#      Adapted to Automake by Bertrand Garrigues
-#      (bertrand.garrigues@laposte.net).
+# Copyright (C) 2014
+#   Free Software Foundation, Inc.
 #
 # This file is part of groff.
 #
@@ -18,8 +15,30 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-EXTRA_DIST += arch/misc/shdeps.sh
-MOSTLYCLEANFILES += shdeps.sed
+#
+# mingw.am
+#
+WINSCRIPTS=\
+  arch/mingw/afmtodit.cmd \
+  arch/mingw/chem.cmd \
+  arch/mingw/gperl.cmd \
+  arch/mingw/gpinyin.cmd \
+  arch/mingw/grap2graph.cmd \
+  arch/mingw/groffer.cmd \
+  arch/mingw/grog.cmd \
+  arch/mingw/gropdf.cmd \
+  arch/mingw/mmroff.cmd \
+  arch/mingw/neqn.cmd \
+  arch/mingw/pdfmom.cmd \
+  arch/mingw/roff2dvi.cmd \
+  arch/mingw/roff2html.cmd \
+  arch/mingw/roff2pdf.cmd \
+  arch/mingw/roff2ps.cmd \
+  arch/mingw/roff2text.cmd \
+  arch/mingw/roff2x.cmd
 
-shdeps.sed: $(top_srcdir)/arch/misc/shdeps.sh
-	$(SHELL) $(top_srcdir)/arch/misc/shdeps.sh "$(RT_SEP)" "$(SH_SEP)" "$(bindir)" > $@
+if BUILD_WINSCRIPTS
+bin_SCRIPTS += $(WINSCRIPTS)
+else
+EXTRA_DIST += $(WINSCRIPTS)
+endif
