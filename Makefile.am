@@ -523,6 +523,7 @@ AM_YFLAGS = -d -v
 # source directory.
 
 include $(top_srcdir)/lib/gnulib.mk
+include $(top_srcdir)/arch/mingw/mingw.am
 include $(top_srcdir)/arch/misc/misc.am
 include $(top_srcdir)/src/include/include.am
 include $(top_srcdir)/src/libs/libbib/libbib.am
@@ -589,7 +590,8 @@ EXTRA_DIST += \
   MORE.STUFF \
   PROBLEMS \
   PROJECTS \
-  README.MinGW
+  README.MinGW \
+  arch/djgpp
 
 MOSTLYCLEANFILES += $(man1_MANS)
 
