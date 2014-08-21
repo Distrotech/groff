@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 #include "pic.h"
 #include "ptable.h"
 #include "object.h"
-#include "pic_tab.h"
+#include "pic.hpp"
 
 declare_ptable(char)
 implement_ptable(char)
