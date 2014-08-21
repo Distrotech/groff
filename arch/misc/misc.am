@@ -1,5 +1,8 @@
 # Copyright (C) 2004-2014 Free Software Foundation, Inc.
-#      Written by Keith Marshall (keith.d.marshall@ntlworld.com)
+#      Original Makefile.sub written by Keith Marshall
+#      (keith.d.marshall@ntlworld.com).
+#      Adapted to Automake by Bertrand Garrigues
+#      (bertrand.garrigues@laposte.net).
 #
 # This file is part of groff.
 #
@@ -16,17 +19,5 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-MOSTLYCLEANADD=shdeps.sed
-
-all: shdeps.sed
-
-shdeps.sed: $(srcdir)/shdeps.sh
-	$(SHELL) $(srcdir)/shdeps.sh "$(RT_SEP)" "$(SH_SEP)" "$(bindir)" > $@
-
-########################################################################
-# Emacs settings
-########################################################################
-#
-# Local Variables:
-# mode: makefile
-# End:
+shdeps.sed: $(top_srcdir)/arch/misc/shdeps.sh
+	$(SHELL) $(top_srcdir)/arch/misc/shdeps.sh "$(RT_SEP)" "$(SH_SEP)" "$(bindir)" > $@

@@ -513,6 +513,9 @@ man1_MANS =
 man5_MANS =
 man7_MANS =
 
+# for lex/yacc
+AM_YFLAGS = -d -v
+
 # Non-recursive makefile system. See Automake manual '7.3 An
 # Alternative Approach to Subdirectories'. We use a single Makefile.am
 # that includes other .am files, rather than using SUBDIRS.  Note that
@@ -520,11 +523,20 @@ man7_MANS =
 # source directory.
 
 include $(top_srcdir)/lib/gnulib.mk
+include $(top_srcdir)/arch/misc/misc.am
 include $(top_srcdir)/src/include/include.am
 include $(top_srcdir)/src/libs/libbib/libbib.am
 include $(top_srcdir)/src/libs/libdriver/libdriver.am
 include $(top_srcdir)/src/libs/libgroff/libgroff.am
 include $(top_srcdir)/src/libs/libxutil/libxutil.am
+include $(top_srcdir)/src/preproc/eqn/eqn.am
+include $(top_srcdir)/src/preproc/grn/grn.am
+include $(top_srcdir)/src/preproc/html/html.am
+include $(top_srcdir)/src/preproc/pic/pic.am
+include $(top_srcdir)/src/preproc/preconv/preconv.am
+include $(top_srcdir)/src/preproc/refer/refer.am
+include $(top_srcdir)/src/preproc/soelim/soelim.am
+include $(top_srcdir)/src/preproc/tbl/tbl.am
 include $(top_srcdir)/src/utils/addftinfo/addftinfo.am
 include $(top_srcdir)/src/utils/afmtodit/afmtodit.am
 include $(top_srcdir)/src/utils/hpftodit/hpftodit.am

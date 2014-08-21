@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "eqn.h"
-#include "eqn_tab.h"
+#include "eqn.hpp"
 #include "stringclass.h"
 #include "ptable.h"
 

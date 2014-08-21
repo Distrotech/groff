@@ -1,0 +1,55 @@
+# Copyright (C) 2014
+#      Free Software Foundation, Inc.
+# 
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+bin_PROGRAMS += eqn
+bin_SCRIPTS += neqn
+eqn_CPPFLAGS = \
+  $(AM_CPPFLAGS) \
+  -I $(top_srcdir)/src/preproc/eqn \
+  -I $(top_builddir)/src/preproc/eqn
+eqn_LDADD = $(LIBM) libgroff.a
+eqn_SOURCES = \
+  src/preproc/eqn/main.cpp \
+  src/preproc/eqn/lex.cpp \
+  src/preproc/eqn/box.cpp \
+  src/preproc/eqn/limit.cpp \
+  src/preproc/eqn/list.cpp \
+  src/preproc/eqn/over.cpp \
+  src/preproc/eqn/text.cpp \
+  src/preproc/eqn/script.cpp \
+  src/preproc/eqn/mark.cpp \
+  src/preproc/eqn/other.cpp \
+  src/preproc/eqn/delim.cpp \
+  src/preproc/eqn/sqrt.cpp \
+  src/preproc/eqn/pile.cpp \
+  src/preproc/eqn/special.cpp \
+  src/preproc/eqn/eqn.ypp \
+  src/preproc/eqn/box.h \
+  src/preproc/eqn/pbox.h \
+  src/preproc/eqn/eqn.h
+
+man1_MANS += src/preproc/eqn/eqn.n src/preproc/eqn/neqn.n
+
+src/preproc/eqn/eqn-lex.$(OBJEXT): src/preproc/eqn/eqn.hpp
+
+neqn: $(top_srcdir)/src/preproc/eqn/neqn.sh $(SH_DEPS_SED_SCRIPT)
+	$(RM) $@
+	sed -e 's/[@]g[@]/$(g)/g' \
+	    -f $(SH_DEPS_SED_SCRIPT) \
+	    -e $(SH_SCRIPT_SED_CMD) $(top_srcdir)/src/preproc/eqn/neqn.sh >$@
+	chmod +x $@
