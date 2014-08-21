@@ -44,8 +44,18 @@ eqn_SOURCES = \
   src/preproc/eqn/eqn.h
 
 man1_MANS += src/preproc/eqn/eqn.n src/preproc/eqn/neqn.n
+EXTRA_DIST += \
+  src/preproc/eqn/TODO \
+  src/preproc/eqn/neqn.sh \
+  src/preproc/eqn/eqn.man \
+  src/preproc/eqn/neqn.man
 
 src/preproc/eqn/eqn-lex.$(OBJEXT): src/preproc/eqn/eqn.hpp
+CLEANFILES += \
+  src/preproc/eqn/eqn.hpp \
+  src/preproc/eqn/eqn.cpp \
+  src/preproc/eqn/eqn.output
+MOSTLYCLEANFILES += neqn
 
 neqn: $(top_srcdir)/src/preproc/eqn/neqn.sh $(SH_DEPS_SED_SCRIPT)
 	rm -f $@

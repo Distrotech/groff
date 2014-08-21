@@ -586,7 +586,8 @@ EXTRA_DIST += \
   MORE.STUFF \
   PROBLEMS \
   PROJECTS \
-  README.MinGW
+  README.MinGW \
+  arch/djgpp
 
 MOSTLYCLEANFILES += $(man1_MANS)
 

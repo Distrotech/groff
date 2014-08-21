@@ -125,9 +125,7 @@ were built from a clean environment:
 
 2.2 make clean
 
-  TODO: src/preproc
-
-The following files remains (this is expected):
+The following files remain (this is expected):
   - Makefile
   - config.status
   - config.log
@@ -136,6 +134,8 @@ The following files remains (this is expected):
   - .deps directories and .dirstamp files
 
   - .n files, afmtodit are cleaned
+  - shdeps.sed is cleaned
+  - binaries from bin_PROGRAMS are cleaned
 
 2.3 make mostlyclean
 
@@ -144,6 +144,12 @@ The following files remains (this is expected):
   - libgroff.a's charset.alias, ref-add.sed, ref-del.sed, and
     version.cpp.
   - gnulib's charset.alias, ref-add.sed, ref-del.sed and configmake.h
+
+Differences with former build system:
+
+  - Programs (listed in bin_PROGRAMS) are not cleaned by 'make
+    mostlyclean'. This could be changed if needed (MOSTLYCLEANFILES +=
+    $(bin_PROGRAMS)).
 
 2.4 make distclean
 
@@ -196,11 +202,9 @@ The following files remains (this is expected):
   - $(DESTDIR)/usr/local/share/groff/1.22/
   - $(DESTDIR)/usr/local/share/groff/
   
-
 2.8 make dist
 
-  groff-1.22.2.tar.gz is generated. src/libs .c, .cpp and .am files
-  are present.
+  groff-1.22.2.tar.gz is generated.
 
   - Files/directories that are not distributed on purpose:
     .gitignore
@@ -212,14 +216,12 @@ The following files remains (this is expected):
     TESTS
 
   - Missing files/directories (TODO):
-    arch/
     contrib/
     doc/
     font/
     man/
     src/devices
     src/include (except config.hin and include.am)
-    src/preproc
     src/roff
     tmac
     test-groff.in
@@ -234,7 +236,13 @@ The following files remains (this is expected):
     Makefile.in
     aclocal.m4
     configure   
-
+    src/preproc/eqn/eqn.cpp
+    src/preproc/eqn/eqn.hpp
+    src/preproc/pic/pic.cpp
+    src/preproc/pic/pic.hpp 
+    src/preproc/refer/label.hpp
+    src/preproc/refere/label.cpp
+    
 2.9 make distcheck
   
   - configure fails: src/roff/groff/groff.cpp is missing (passed to
