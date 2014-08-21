@@ -1,0 +1,43 @@
+# Copyright (C) 2011-2014
+#      Free Software Foundation, Inc.
+#  Original Makefile.sub written by Deri James <deri@chuzzlewit.demon.co.uk>.
+#  Automake migration by Bertrand Garrigues
+# 
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+gropdf_dir = $(top_srcdir)/src/devices/gropdf
+
+bin_SCRIPTS += gropdf pdfmom
+
+man1_MANS += \
+  src/devices/gropdf/gropdf.n \
+  src/devices/gropdf/pdfmom.n
+
+gropdf: $(gropdf_dir)/gropdf.pl $(SH_DEPS_SED_SCRIPT)
+	rm -f $@
+	sed -f $(SH_DEPS_SED_SCRIPT) \
+	    -e "s|[@]VERSION[@]|$(VERSION)|" \
+	    -e "s|[@]PERL[@]|$(PERL)|" \
+	    -e "s|[@]GROFF_FONT_DIR[@]|$(fontpath)|" \
+	    -e "s|[@]RT_SEP[@]|$(RT_SEP)|" $(gropdf_dir)/gropdf.pl >$@
+	chmod +x $@
+
+pdfmom: $(gropdf_dir)/pdfmom.pl $(SH_DEPS_SED_SCRIPT)
+	rm -f $@
+	sed -f $(SH_DEPS_SED_SCRIPT) \
+	    -e "s|[@]VERSION[@]|$(VERSION)|" \
+	    -e "s|[@]PERL[@]|$(PERL)|" $(gropdf_dir)/pdfmom.pl >$@
+	chmod +x $@

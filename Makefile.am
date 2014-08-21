@@ -526,6 +526,14 @@ include $(top_srcdir)/src/libs/libbib/libbib.am
 include $(top_srcdir)/src/libs/libdriver/libdriver.am
 include $(top_srcdir)/src/libs/libgroff/libgroff.am
 include $(top_srcdir)/src/libs/libxutil/libxutil.am
+include $(top_srcdir)/src/devices/grodvi/grodvi.am
+include $(top_srcdir)/src/devices/grohtml/grohtml.am
+include $(top_srcdir)/src/devices/grolbp/grolbp.am
+include $(top_srcdir)/src/devices/grolj4/grolj4.am
+include $(top_srcdir)/src/devices/gropdf/gropdf.am
+include $(top_srcdir)/src/devices/grops/grops.am
+include $(top_srcdir)/src/devices/grotty/grotty.am
+include $(top_srcdir)/src/devices/xditview/xditview.am
 include $(top_srcdir)/src/preproc/eqn/eqn.am
 include $(top_srcdir)/src/preproc/grn/grn.am
 include $(top_srcdir)/src/preproc/html/html.am
