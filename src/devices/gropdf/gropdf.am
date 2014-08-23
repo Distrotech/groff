@@ -21,10 +21,20 @@
 gropdf_dir = $(top_srcdir)/src/devices/gropdf
 
 bin_SCRIPTS += gropdf pdfmom
+EXTRA_DIST += \
+  src/devices/gropdf/TODO \
+  src/devices/gropdf/gropdf.pl \
+  src/devices/gropdf/pdfmom.pl \
+  src/devices/gropdf/gropdf.man \
+  src/devices/gropdf/pdfmom.man
 
 man1_MANS += \
   src/devices/gropdf/gropdf.n \
   src/devices/gropdf/pdfmom.n
+
+MOSTLYCLEANFILES += \
+  gropdf \
+  pdfmom
 
 gropdf: $(gropdf_dir)/gropdf.pl $(SH_DEPS_SED_SCRIPT)
 	$(RM) $@

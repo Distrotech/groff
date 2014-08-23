@@ -601,7 +601,7 @@ EXTRA_DIST += \
   README.MinGW \
   arch/djgpp
 
-MOSTLYCLEANFILES += $(man1_MANS)
+MOSTLYCLEANFILES += $(man1_MANS) $(man5_MANS)
 
 # Rule to build .man files. The brackets around the @ are used to prevent the 
 # substitution of the variable by automake. 
