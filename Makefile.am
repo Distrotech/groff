@@ -573,8 +573,12 @@ lib/localcharset.$(OBJEXT): lib/configmake.h
 # directories specific to groff
 uninstall-hook: uninstall_groffdirs
 uninstall_groffdirs:
-	rmdir $(DESTDIR)$(datasubdir)
-	rmdir $(DESTDIR)$(dataprogramdir)
+	if test -d $(DESTDIR)$(datasubdir); then \
+	  rmdir $(DESTDIR)$(datasubdir); \
+	fi
+	if test -d $(DESTDIR)$(dataprogramdir); then \
+	  rmdir $(DESTDIR)$(dataprogramdir); \
+	fi
 
 # Other files that should be present in the distribution tarball.
 EXTRA_DIST += \
