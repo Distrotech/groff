@@ -202,8 +202,6 @@ Differences with former build system:
 
 2.6 make install
 
-TODO: src/devices specific rules
-
   mkdir -p ~/tmp/automake
   make install DESTDIR=~/tmp/automake
 
@@ -211,8 +209,12 @@ TODO: src/devices specific rules
     $(DESTDIR)/usr/local/lib, make install update it by adding 'groff'
     to the list of programs using it. Otherwise nothing is installed.
   - programs from src/utils are installed in $(DESTDIR)/usr/local/bin
-  - man files from src/utils are installed in $(DESTDIR)/usr/local/share/man/man1
+  - man files from src/utils, src/devices are installed in
+    $(DESTDIR)/usr/local/share/man/man1 or man5
   - $(DESTDIR)/usr/local/share/groff/1.22/eign (from src/utils/indxbib)
+  - In $(DESTDIR)/usr/local/lib/X11/app-defaults: GXditview and
+    GXditview-color. If these files are already present, they are
+    first moved to GXditview.old and GXditview-color.old.
 
 2.7 make uninstall
 
@@ -225,7 +227,11 @@ TODO: src/devices specific rules
   - $(DESTDIR)/usr/local/man/man1/*
   - $(DESTDIR)/usr/local/share/groff/1.22.3/eign
   - $(DESTDIR)/usr/local/share/groff/1.22.3/
+  - $(DESTDIR)/usr/local/man/man5/*
   - $(DESTDIR)/usr/local/share/groff/
+  - $(DESTDIR)/usr/local/lib/X11/app-defaults/GXditview and
+    GXditview-color. However, GXditview.old and GXditview-color.old
+    are not removed (this is the behaviour on the old build system)
   
 2.8 make dist
 
