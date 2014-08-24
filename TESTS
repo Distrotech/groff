@@ -15,6 +15,8 @@ Current status
   - Build src/libs/*
   - Build src/utils/*
   - Build src/preproc/*
+  - Build src/devices/*
+  - Build src/roff/*
 
 Tests
 -----
@@ -110,6 +112,12 @@ from src/devices:
   - grotty
   - gxditview
 
+from src/roff
+  - groff
+  - grog
+  - nroff
+  - troff
+
 In order to check and improve the dependencies, the following targets
 were built from a clean environment:
   - make lib/libgnu.a
@@ -143,8 +151,17 @@ were built from a clean environment:
   - make grops
   - make grotty
   - make gxditview
+  - make groff
+  - make grog
+  - make nroff
+  - make troff
 
 2.2 make clean
+
+TODO: following files are not cleaned:
+  - grog
+  - nroff
+  - src/roff/troff/majorminor.cpp
 
 The following files remain (this is expected):
   - Makefile
@@ -202,6 +219,11 @@ Differences with former build system:
 
 2.6 make install
 
+TODO: 
+
+  - groff.am should install groff_opts_no_arg.txt and
+    groff_opts_with_arg.txt
+
   mkdir -p ~/tmp/automake
   make install DESTDIR=~/tmp/automake
 
@@ -234,6 +256,8 @@ TODO: src/devices specific rules
     are not removed (this is the behaviour on the old build system)
   
 2.8 make dist
+
+TODO: missing files from src/roff
 
   groff-1.22.3.tar.gz is generated.
 
@@ -275,8 +299,15 @@ TODO: src/devices specific rules
     
 2.9 make distcheck
   
-  - configure fails: src/roff/groff/groff.cpp is missing (passed to
-    AC_CONFIG_SRCDIR macro)
+  This will attempt to make a tarball, and from this tarball, build
+the package(out-of-source build), clean it (checking that no file
+remains), install it, uninstall it (checking that no file remains in
+the install tree).
+
+  make distcheck
+
+  - configure script passed without error
+  - build of src/libs fails (lib.h missing)
 
 Notes
 -----

@@ -1,0 +1,55 @@
+# Copyright (C) 2014
+#      Free Software Foundation, Inc.
+# 
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+bin_PROGRAMS += troff
+man1_MANS += src/roff/troff/troff.n
+troff_LDADD = lib/libgnu.a libgroff.a $(LIBM)
+troff_SOURCES = \
+  src/roff/troff/dictionary.cpp \
+  src/roff/troff/div.cpp \
+  src/roff/troff/env.cpp \
+  src/roff/troff/input.cpp \
+  src/roff/troff/mtsm.cpp \
+  src/roff/troff/node.cpp \
+  src/roff/troff/number.cpp \
+  src/roff/troff/reg.cpp \
+  src/roff/troff/env.h \
+  src/roff/troff/node.h \
+  src/roff/troff/troff.h \
+  src/roff/troff/div.h \
+  src/roff/troff/reg.h \
+  src/roff/troff/dictionary.h \
+  src/roff/troff/input.h \
+  src/roff/troff/mtsm.h \
+  src/roff/troff/token.h \
+  src/roff/troff/charinfo.h \
+  src/roff/troff/request.h \
+  src/roff/troff/hvunits.h \
+  src/roff/troff/majorminor.cpp 
+
+src/roff/troff/input.$(OBJEXT): defs.h
+
+src/roff/troff/majorminor.cpp: $(top_srcdir)/VERSION $(top_srcdir)/REVISION
+	@echo Making $@
+	@$(RM) $@
+	@echo const char \*major_version = \
+	  \"`sed -e 's/^\([^.]*\)\..*$$/\1/' $(top_srcdir)/VERSION`\"\; >$@
+	@echo const char \*minor_version = \
+	   \"`sed -e 's/^[^.]*\.\([0-9]*\).*$$/\1/' $(top_srcdir)/VERSION`\"\; \
+	   >>$@
+	@echo const char \*revision = \"`cat $(top_srcdir)/REVISION`\"\; >>$@
