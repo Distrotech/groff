@@ -1,0 +1,10 @@
+bin_SCRIPTS += nroff
+nroff_srcdir = $(top_srcdir)/src/roff/nroff
+man1_MANS += src/roff/nroff/nroff.n
+
+nroff: $(nroff_srcdir)/nroff.sh $(SH_DEPS_SED_SCRIPT)
+	rm -f $@
+	sed -f $(SH_DEPS_SED_SCRIPT) \
+	    -e $(SH_SCRIPT_SED_CMD) \
+	    -e "s|[@]VERSION[@]|$(VERSION)|" $(nroff_srcdir)/nroff.sh >$@
+	chmod +x $@

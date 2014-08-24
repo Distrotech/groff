@@ -1,0 +1,47 @@
+# grog.am for `grog' (integration into the `groff' source tree)
+
+# File position: <groff-source>/src/roff/grog/grog.am
+
+# Copyright (C) 1993, 2006, 2009, 2013-2014
+#   Free Software Foundation, Inc.
+
+# Last update: Aug 2014
+
+# This file is part of `grog' which is part of `groff'.
+
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+grog_srcdir = $(top_srcdir)/src/roff/grog
+bin_SCRIPTS += grog
+GROG = src/roff/grog/subs.pl
+
+# grog_dir is defined by a m4 macro
+grogdir = $(grog_dir)
+dist_grog_DATA = $(GROG)
+man1_MANS += src/roff/grog/grog.n
+
+# Perl version works for all parts of `groff'.
+
+grog: $(grog_srcdir)/grog.pl $(GROG) $(SH_DEPS_SED_SCRIPT)
+	$(RM) $@
+	sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	    -e "1s|^\(#! \).*perl|\\1$(PERL)|" \
+	    -e "s|[@]g[@]|$(g)|g" \
+	    -e "s|[@]BINDIR[@]|$(DESTDIR)$(bindir)|g" \
+	    -e "s|[@]libdir[@]|$(DESTDIR)$(libdir)|g" \
+	    -e "s|[@]EGREP[@]|$(EGREP)|g" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|" \
+	    -e "$(SH_SCRIPT_SED_CMD)" \
+	    $(grog_srcdir)/grog.pl >$@
+	chmod +x $@

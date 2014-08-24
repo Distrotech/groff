@@ -542,6 +542,10 @@ include $(top_srcdir)/src/preproc/preconv/preconv.am
 include $(top_srcdir)/src/preproc/refer/refer.am
 include $(top_srcdir)/src/preproc/soelim/soelim.am
 include $(top_srcdir)/src/preproc/tbl/tbl.am
+include $(top_srcdir)/src/roff/groff/groff.am
+include $(top_srcdir)/src/roff/grog/grog.am
+include $(top_srcdir)/src/roff/nroff/nroff.am
+include $(top_srcdir)/src/roff/troff/troff.am
 include $(top_srcdir)/src/utils/addftinfo/addftinfo.am
 include $(top_srcdir)/src/utils/afmtodit/afmtodit.am
 include $(top_srcdir)/src/utils/hpftodit/hpftodit.am
