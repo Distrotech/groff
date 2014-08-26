@@ -18,6 +18,10 @@
 
 bin_PROGRAMS += troff
 man1_MANS += src/roff/troff/troff.n
+EXTRA_DIST += \
+  src/roff/troff/column.cpp \
+  src/roff/troff/troff.man \
+  src/roff/troff/TODO
 troff_LDADD = lib/libgnu.a libgroff.a $(LIBM)
 troff_SOURCES = \
   src/roff/troff/dictionary.cpp \
@@ -39,8 +43,9 @@ troff_SOURCES = \
   src/roff/troff/token.h \
   src/roff/troff/charinfo.h \
   src/roff/troff/request.h \
-  src/roff/troff/hvunits.h \
-  src/roff/troff/majorminor.cpp 
+  src/roff/troff/hvunits.h
+
+nodist_troff_SOURCES = src/roff/troff/majorminor.cpp 
 
 src/roff/troff/input.$(OBJEXT): defs.h
 CLEANFILES += src/roff/troff/majorminor.cpp
