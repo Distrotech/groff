@@ -36,3 +36,7 @@ defs.h:
 	"DEFAULT_INDEX_NAME=\"$(indexname)\"" \
 	"DEFAULT_INDEX=\"$(indexdir)/$(indexname)\""
 
+dist-hook: dist_include
+dist_include:
+	chmod u+w $(distdir)/src/include
+	cp -f $(top_srcdir)/src/include/*.h $(distdir)/src/include
