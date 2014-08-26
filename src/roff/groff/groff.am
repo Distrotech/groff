@@ -37,3 +37,26 @@ groff_SOURCES = \
   src/roff/groff/pipeline.h
 src/roff/groff/groff.$(OBJEXT): defs.h
 man1_MANS += src/roff/groff/groff.n
+GROFF_OPTS_OUTPUT = \
+  groff_opts_no_arg.txt \
+  groff_opts_with_arg.txt
+groffoptsdir = $(libprogramdir)
+groffopts_DATA = $(GROFF_OPTS_OUTPUT)
+
+MOSTLYCLEANFILES += groff_opts.tmp $(GROFF_OPTS_OUTPUT)
+
+groff_opts.tmp: src/roff/groff/groff.cpp
+	@$(GREP) -e ':.*:.*:' $? | sed -e 's/[ \t",]//g' > $@
+	@echo -n 'groff options: '
+	@cat $@
+
+groff_opts_no_arg.txt: groff_opts.tmp
+	@sed -e 's/[a-zA-Z]://g' $? > $@
+	@echo -n 'no arg: '
+	@cat $@
+
+groff_opts_with_arg.txt: groff_opts_no_arg.txt
+	@rm -f $@
+	@sed "s/[`cat $?`:]//g" groff_opts.tmp > $@
+	@echo -n 'with arg: '
+	@cat $@
