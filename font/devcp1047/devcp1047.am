@@ -1,0 +1,42 @@
+# Copyright (C) 2014
+#   Free Software Foundation, Inc.
+#
+# This file is part of `groff'
+#
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+devcp1047_srcdir = $(top_srcdir)/font/devcp1047
+DEVCP1047FONTS = R I B BI
+DEVCP1047FONTSFILES = \
+  font/devcp1047/R font/devcp1047/I font/devcp1047/B font/devcp1047/BI
+
+DEVCP1047RES = 240
+DEVCP1047CPI = 10
+DEVCP1047LPI = 6
+
+devcp1047fontdir = $(fontdir)/devcp1047
+devcp1047font_DATA = $(DEVCP1047FONTSFILES) font/devcp1047/DESC
+
+$(DEVCP1047FONTSFILES): $(devcp1047_srcdir)/R.proto
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@$(RM) $@
+	@$(SHELL) $(GENFONTSSH) $(devcp1047_srcdir)/R.proto \
+	 $(DEVCP1047RES) $(DEVCP1047CPI) `basename $@` > $@
+
+font/devcp1047/DESC: $(devcp1047_srcdir)/DESC.proto
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@$(SHELL) $(GENDESCSH) $(devcp1047_srcdir)/DESC.proto \
+	 $(DEVCP1047RES) $(DEVCP1047CPI) $(DEVCP1047LPI) $(DEVCP1047FONTS) > $@

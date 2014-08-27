@@ -1,0 +1,153 @@
+# Copyright (C) 2014
+#   Free Software Foundation, Inc.
+#
+# This file is part of `groff'
+#
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+devps_srcdir = $(top_srcdir)/font/devps
+devps_builddir = $(top_builddir)/font/devps
+DEVPSFONTFILES = \
+  font/devps/S \
+  font/devps/SS \
+  font/devps/ZD \
+  font/devps/ZDR \
+  font/devps/ZCMI \
+  font/devps/AB \
+  font/devps/ABI \
+  font/devps/AI \
+  font/devps/AR \
+  font/devps/BMB \
+  font/devps/BMBI \
+  font/devps/BMI \
+  font/devps/BMR \
+  font/devps/CB \
+  font/devps/CBI \
+  font/devps/CI \
+  font/devps/CR \
+  font/devps/HB \
+  font/devps/HBI \
+  font/devps/HI \
+  font/devps/HR \
+  font/devps/HNB \
+  font/devps/HNBI \
+  font/devps/HNI \
+  font/devps/HNR \
+  font/devps/NB \
+  font/devps/NBI \
+  font/devps/NI \
+  font/devps/NR \
+  font/devps/PB \
+  font/devps/PBI \
+  font/devps/PI \
+  font/devps/PR \
+  font/devps/TB \
+  font/devps/TBI \
+  font/devps/TI \
+  font/devps/TR \
+  font/devps/EURO \
+  font/devps/freeeuro.pfa \
+  font/devps/freeeuro.afm \
+  font/devps/text.enc \
+  font/devps/download
+
+DEVPSFONTFILES_GENERATED = \
+  font/devps/DESC \
+  font/devps/prologue \
+  font/devps/zapfdr.pfa \
+  font/devps/symbolsl.pfa
+devpsfontdir = $(fontdir)/devps
+devpsfont_DATA = $(DEVPSFONTFILES) $(DEVPSFONTFILES_GENERATED)
+
+# these files will be installed in oldfontdir
+OLDDEVPSFONTFILES = \
+  font/devps/old/S \
+  font/devps/old/SS \
+  font/devps/old/CB \
+  font/devps/old/CBI \
+  font/devps/old/CI \
+  font/devps/old/CR \
+  font/devps/old/HB \
+  font/devps/old/HBI \
+  font/devps/old/HI \
+  font/devps/old/HR \
+  font/devps/old/HNB \
+  font/devps/old/HNBI \
+  font/devps/old/HNI \
+  font/devps/old/HNR \
+  font/devps/old/NB \
+  font/devps/old/NBI \
+  font/devps/old/NI \
+  font/devps/old/NR \
+  font/devps/old/PB \
+  font/devps/old/PBI \
+  font/devps/old/PI \
+  font/devps/old/PR \
+  font/devps/old/TB \
+  font/devps/old/TBI \
+  font/devps/old/TI \
+  font/devps/old/TR \
+  font/devps/old/symbol.afm \
+  font/devps/old/symbolsl.afm \
+  font/devps/old/zapfdr.afm \
+  font/devps/old/zapfdr.ps
+olddevpsfontdir = $(oldfontdir)/devps
+olddevpsfont_DATA = $(OLDDEVPSFONTFILES)
+
+# Files installed in $(devfontdir)/generate
+DEVPSGENFILES = \
+  font/devps/generate/Makefile \
+  font/devps/generate/dingbats.map \
+  font/devps/generate/dingbats.rmap \
+  font/devps/generate/lgreekmap \
+  font/devps/generate/symbolchars \
+  font/devps/generate/symbolsl.afm \
+  font/devps/generate/textmap
+DEVPSGENSCRIPTS = \
+  font/devps/generate/afmname \
+  font/devps/generate/symbol.sed
+devpsgendir = $(devpsfontdir)/generate
+devpsgen_DATA = $(DEVPSGENFILES) $(DEVPSGENSCRIPTS)
+
+font/devps/DESC: $(devps_srcdir)/DESC.in
+	@$(MKDIR_P) font/devps
+	@cat $(devps_srcdir)/DESC.in >$@
+	@echo broken $(BROKEN_SPOOLER_FLAGS) >>$@
+	@if test "$(PAGE)" = A4; then \
+	  echo "papersize a4" >>$@; \
+	else \
+	  echo "papersize letter" >>$@; \
+	fi
+	@test -z '$(PSPRINT)' ||	echo print '$(PSPRINT)' >>$@
+
+fonts: devps_fonts
+# We add top_builddir to the PATH in case the only afmtodit available is the 
+# one in the current build.
+devps_fonts: afmtodit font/devps/DESC
+	PATH=$(top_builddir)$(GROFF_PATH_SEPARATOR)$(PATH) \
+        $(MAKE) -f $(devps_srcdir)/generate/Makefile \
+	  srcdir=$(devps_srcdir)/generate DESC=$(devps_srcdir)/DESC.in
+
+font/devps/prologue: $(devps_srcdir)/prologue.ps
+	@$(MKDIR_P) font/devps
+	$(RM) $@
+	sed -f $(devps_srcdir)/psstrip.sed $? >$@
+font/devps/zapfdr.pfa: $(devps_srcdir)/zapfdr.ps
+	@$(MKDIR_P) font/devps
+	$(RM) $@
+	sed -f $(devps_srcdir)/psstrip.sed $? >$@
+font/devps/symbolsl.pfa: $(devps_srcdir)/symbolsl.ps
+	@$(MKDIR_P) font/devps
+	$(RM) $@
+	sed -f $(devps_srcdir)/psstrip.sed $? >$@

@@ -1,0 +1,51 @@
+# Copyright (C) 2014
+#   Free Software Foundation, Inc.
+#
+# This file is part of `groff'
+#
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+devhtml_srcdir = $(top_srcdir)/font/devhtml
+DEVHTMLFONTS = R I B BI CR CI CB CBI S
+DEVHTMLFONTSFILES = \
+  font/devhtml/R \
+  font/devhtml/I \
+  font/devhtml/B \
+  font/devhtml/BI \
+  font/devhtml/CR \
+  font/devhtml/CI \
+  font/devhtml/CB \
+  font/devhtml/CBI \
+  font/devhtml/S
+
+DEVHTMLRES = 240
+DEVHTMLCPI = 10
+DEVHTMLLPI = 6
+
+devhtmlfontdir = $(fontdir)/devhtml
+devhtmlfont_DATA = $(DEVHTMLFONTSFILES) font/devhtml/DESC
+
+$(DEVHTMLFONTSFILES): $(devhtml_srcdir)/R.proto
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@$(RM) $@
+	@$(SHELL) $(GENFONTSSH) $(devhtml_srcdir)/R.proto \
+	 $(DEVHTMLRES) $(DEVHTMLCPI) `basename $@` > $@
+
+font/devhtml/DESC: $(devhtml_srcdir)/DESC.proto
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@$(SHELL) $(GENDESCSH) $(devhtml_srcdir)/DESC.proto \
+	 $(DEVHTMLRES) $(DEVHTMLCPI) $(DEVHTMLLPI) $(DEVHTMLFONTS) > $@
+	@echo "image_generator $(GHOSTSCRIPT)" >> $@
