@@ -513,6 +513,10 @@ man7_MANS =
 # for lex/yacc
 AM_YFLAGS = -d -v
 
+# Scripts for font files generation
+GENFONTSSH=$(top_srcdir)/font/scripts/genfonts.sh
+GENDESCSH = $(top_srcdir)/font/scripts/gendesc.sh
+
 # Non-recursive makefile system. See Automake manual '7.3 An
 # Alternative Approach to Subdirectories'. We use a single Makefile.am
 # that includes other .am files, rather than using SUBDIRS.  Note that
@@ -521,6 +525,20 @@ AM_YFLAGS = -d -v
 
 include $(top_srcdir)/lib/gnulib.mk
 include $(top_srcdir)/arch/misc/misc.am
+include $(top_srcdir)/font/devX100/devX100.am
+include $(top_srcdir)/font/devX100-12/devX100-12.am
+include $(top_srcdir)/font/devX75/devX75.am
+include $(top_srcdir)/font/devX75-12/devX75-12.am
+include $(top_srcdir)/font/devascii/devascii.am
+include $(top_srcdir)/font/devcp1047/devcp1047.am
+include $(top_srcdir)/font/devdvi/devdvi.am
+include $(top_srcdir)/font/devhtml/devhtml.am
+include $(top_srcdir)/font/devlatin1/devlatin1.am
+include $(top_srcdir)/font/devlbp/devlbp.am
+include $(top_srcdir)/font/devlj4/devlj4.am
+include $(top_srcdir)/font/devpdf/devpdf.am
+include $(top_srcdir)/font/devps/devps.am
+include $(top_srcdir)/font/devutf8/devutf8.am
 include $(top_srcdir)/src/include/include.am
 include $(top_srcdir)/src/libs/libbib/libbib.am
 include $(top_srcdir)/src/libs/libdriver/libdriver.am

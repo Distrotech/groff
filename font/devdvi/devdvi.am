@@ -1,0 +1,69 @@
+devdvi_srcdir = $(top_srcdir)/font/devdvi
+DEVDVIFONTFILES = \
+  font/devdvi/TR \
+  font/devdvi/TI \
+  font/devdvi/TB \
+  font/devdvi/TBI \
+  font/devdvi/CW \
+  font/devdvi/CWI \
+  font/devdvi/HR \
+  font/devdvi/HI \
+  font/devdvi/HB \
+  font/devdvi/HBI \
+  font/devdvi/TREC \
+  font/devdvi/TIEC \
+  font/devdvi/TBEC \
+  font/devdvi/TBIEC \
+  font/devdvi/CWEC \
+  font/devdvi/CWIEC \
+  font/devdvi/HREC \
+  font/devdvi/HIEC \
+  font/devdvi/HBEC \
+  font/devdvi/HBIEC \
+  font/devdvi/TRTC \
+  font/devdvi/TITC \
+  font/devdvi/TBTC \
+  font/devdvi/TBITC \
+  font/devdvi/CWTC \
+  font/devdvi/CWITC \
+  font/devdvi/HRTC \
+  font/devdvi/HITC \
+  font/devdvi/HBTC \
+  font/devdvi/HBITC \
+  font/devdvi/MI \
+  font/devdvi/S \
+  font/devdvi/EX \
+  font/devdvi/SA \
+  font/devdvi/SB \
+  font/devdvi/SC
+devdvifontdir = $(fontdir)/devdvi
+devdvifont_DATA = $(DEVDVIFONTFILES) font/devdvi/DESC
+
+DEVDVIGENFILES = \
+  font/devdvi/generate/Makefile \
+  font/devdvi/generate/msam.map \
+  font/devdvi/generate/msbm.map \
+  font/devdvi/generate/texb.map \
+  font/devdvi/generate/texex.map \
+  font/devdvi/generate/texi.map \
+  font/devdvi/generate/texmi.map \
+  font/devdvi/generate/texr.map \
+  font/devdvi/generate/texsy.map \
+  font/devdvi/generate/textt.map \
+  font/devdvi/generate/textex.map \
+  font/devdvi/generate/ec.map \
+  font/devdvi/generate/tc.map \
+  font/devdvi/generate/CompileFonts
+devdvigendir = $(fontdir)/devdvi/generate
+devdvigen_DATA = $(DEVDVIGENFILES)
+
+font/devdvi/DESC: $(devdvi_srcdir)/DESC.in
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@cat $(devdvi_srcdir)/DESC.in >$@
+	@if test "$(PAGE)" = A4; then \
+	  echo "papersize a4" >>$@; \
+	else \
+	  echo "papersize letter" >>$@; \
+	fi
+	@test -z '$(DVIPRINT)' || echo print '$(DVIPRINT)' >>$@

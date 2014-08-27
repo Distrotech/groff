@@ -1,0 +1,24 @@
+devlatin1_srcdir = $(top_srcdir)/font/devlatin1
+DEVLATIN1FONTS = R I B BI
+DEVLATIN1FONTSFILES = \
+  font/devlatin1/R font/devlatin1/I font/devlatin1/B font/devlatin1/BI
+
+DEVLATIN1RES = 240
+DEVLATIN1CPI = 10
+DEVLATIN1LPI = 6
+
+devlatin1fontdir = $(fontdir)/devlatin1
+devlatin1font_DATA = $(DEVLATIN1FONTSFILES) font/devlatin1/DESC
+
+$(DEVLATIN1FONTSFILES): $(devlatin1_srcdir)/R.proto
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@rm -f $@
+	@$(SHELL) $(GENFONTSSH) $(devlatin1_srcdir)/R.proto \
+	 $(DEVLATIN1RES) $(DEVLATIN1CPI) `basename $@` > $@
+
+font/devlatin1/DESC: $(devlatin1_srcdir)/DESC.proto
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@$(SHELL) $(GENDESCSH) $(devlatin1_srcdir)/DESC.proto \
+	 $(DEVLATIN1RES) $(DEVLATIN1CPI) $(DEVLATIN1LPI) $(DEVLATIN1FONTS) > $@

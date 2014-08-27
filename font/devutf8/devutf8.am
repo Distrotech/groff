@@ -1,0 +1,24 @@
+devutf8_srcdir = $(top_srcdir)/font/devutf8
+DEVUTF8FONTS = R I B BI
+DEVUTF8FONTSFILES = \
+  font/devutf8/R font/devutf8/I font/devutf8/B font/devutf8/BI
+
+DEVUTF8RES = 240
+DEVUTF8CPI = 10
+DEVUTF8LPI = 6
+
+devutf8fontdir = $(fontdir)/devutf8
+devutf8font_DATA = $(DEVUTF8FONTSFILES) font/devutf8/DESC
+
+$(DEVUTF8FONTSFILES): $(devutf8_srcdir)/R.proto
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@rm -f $@
+	@$(SHELL) $(GENFONTSSH) $(devutf8_srcdir)/R.proto \
+	 $(DEVUTF8RES) $(DEVUTF8CPI) `basename $@` > $@
+
+font/devutf8/DESC: $(devutf8_srcdir)/DESC.proto
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@$(SHELL) $(GENDESCSH) $(devutf8_srcdir)/DESC.proto \
+	 $(DEVUTF8RES) $(DEVUTF8CPI) $(DEVUTF8LPI) $(DEVUTF8FONTS) > $@

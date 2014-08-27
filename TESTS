@@ -17,6 +17,7 @@ Current status
   - Build src/preproc/*
   - Build src/devices/*
   - Build src/roff/*
+  - Build font/*
 
 Tests
 -----
@@ -118,6 +119,19 @@ from src/roff
   - nroff
   - troff
 
+from font: font files in 
+  - devascii
+  - devcp1047
+  - devdvi
+  - devhtml
+  - devlatin1
+  - devlbp
+  - devlj4
+  - devpdf
+  - devps
+  - devutf8
+
+
 In order to check and improve the dependencies, the following targets
 were built from a clean environment:
   - make lib/libgnu.a
@@ -158,6 +172,8 @@ were built from a clean environment:
 
 2.2 make clean
 
+TODO: font files are not cleaned
+
 The following files remain (this is expected):
   - Makefile
   - config.status
@@ -171,6 +187,8 @@ The following files remain (this is expected):
   - binaries from bin_PROGRAMS are cleaned
 
 2.3 make mostlyclean
+
+TODO: font files
 
   Like 'make clean', but the following files also remain (expected):
   - lib*.a
@@ -220,16 +238,31 @@ Differences with former build system:
   - If file charset.alias is always present in
     $(DESTDIR)/usr/local/lib, make install update it by adding 'groff'
     to the list of programs using it. Otherwise nothing is installed.
+
   - programs from src/utils are installed in $(DESTDIR)/usr/local/bin
+
   - man files from src/utils, src/devices are installed in
     $(DESTDIR)/usr/local/share/man/man1 or man5
-  - $(DESTDIR)/usr/local/share/groff/1.22/eign (from src/utils/indxbib)
+
+  - $(DESTDIR)/usr/local/share/groff/1.22.2/eign (from src/utils/indxbib)
+
   - In $(DESTDIR)/usr/X11/lib/X11/app-defaults: GXditview and
     GXditview-color. If these files are already present, they are
     first moved to GXditview.old and GXditview-color.old.
+
   - groff_opts_no_arg.txt and groff_opts_with_arg.txt are installed
 
+  - font files are installed in $(DESTDIR)/usr/local/groff/1.22.2/font
+    and oldfont and identical to the one installed with the previous
+    build system, except the fonts from devpdf which are not generated
+    identically at each build.
+
+Diff with previous build system:
+  - devcp1047 fonts are installed $(DESTDIR)/usr/local/groff/1.22.2/font
+
 2.7 make uninstall
+
+TODO: currently fails (fails to remove $(DESTDIR)/usr/local/share/groff/1.22.2)
 
   Removes:
 
@@ -245,6 +278,9 @@ Differences with former build system:
     are not removed (this is the behaviour on the old build system)
   
 2.8 make dist
+
+TODO: missing fonts, some files which should not be distributed are
+present in the tarball.
 
   groff-1.22.2.tar.gz is generated.
 
@@ -284,6 +320,8 @@ Differences with former build system:
     
 2.9 make distcheck
   
+To be checked when install, clean, and dist are fixed.
+
   This will attempt to make a tarball, and from this tarball, build
 the package(out-of-source build), clean it (checking that no file
 remains), install it, uninstall it (checking that no file remains in
@@ -298,3 +336,4 @@ Notes
 
   - Gnulib: some files of src/libs/libgroff could be replaced by their
     gnulib equivalent
+  - Gnulib: git-version-gen could be used

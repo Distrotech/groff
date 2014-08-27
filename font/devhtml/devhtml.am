@@ -1,0 +1,33 @@
+devhtml_srcdir = $(top_srcdir)/font/devhtml
+DEVHTMLFONTS = R I B BI CR CI CB CBI S
+DEVHTMLFONTSFILES = \
+  font/devhtml/R \
+  font/devhtml/I \
+  font/devhtml/B \
+  font/devhtml/BI \
+  font/devhtml/CR \
+  font/devhtml/CI \
+  font/devhtml/CB \
+  font/devhtml/CBI \
+  font/devhtml/S
+
+DEVHTMLRES = 240
+DEVHTMLCPI = 10
+DEVHTMLLPI = 6
+
+devhtmlfontdir = $(fontdir)/devhtml
+devhtmlfont_DATA = $(DEVHTMLFONTSFILES) font/devhtml/DESC
+
+$(DEVHTMLFONTSFILES): $(devhtml_srcdir)/R.proto
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@rm -f $@
+	@$(SHELL) $(GENFONTSSH) $(devhtml_srcdir)/R.proto \
+	 $(DEVHTMLRES) $(DEVHTMLCPI) `basename $@` > $@
+
+font/devhtml/DESC: $(devhtml_srcdir)/DESC.proto
+	@echo Making $@
+	@$(MKDIR_P) `dirname $@`
+	@$(SHELL) $(GENDESCSH) $(devhtml_srcdir)/DESC.proto \
+	 $(DEVHTMLRES) $(DEVHTMLCPI) $(DEVHTMLLPI) $(DEVHTMLFONTS) > $@
+	@echo "image_generator $(GHOSTSCRIPT)" >> $@

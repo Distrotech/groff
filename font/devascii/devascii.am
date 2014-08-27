@@ -1,0 +1,24 @@
+devascii_srcdir = $(top_srcdir)/font/devascii
+DEVASCIIFONTS = R I B BI
+DEVASCIIFONTSFILES = \
+  font/devascii/R font/devascii/I font/devascii/B font/devascii/BI
+
+DEVASCIIRES = 240
+DEVASCIICPI = 10
+DEVASCIILPI = 6
+
+devasciifontdir = $(fontdir)/devascii
+devasciifont_DATA = $(DEVASCIIFONTSFILES) font/devascii/DESC
+
+$(DEVASCIIFONTSFILES): $(devascii_srcdir)/R.proto
+	@echo Making $@
+	$(MKDIR_P) `dirname $@`
+	rm -f $@
+	$(SHELL) $(GENFONTSSH) $(devascii_srcdir)/R.proto \
+	  $(DEVASCIIRES) $(DEVASCIICPI) `basename $@` > $@
+
+font/devascii/DESC: $(devascii_srcdir)/DESC.proto
+	@echo Making $@
+	$(MKDIR_P) `dirname $@`
+	$(SHELL) $(GENDESCSH) $(devascii_srcdir)/DESC.proto \
+	  $(DEVASCIIRES) $(DEVASCIICPI) $(DEVASCIILPI) $(DEVASCIIFONTS) > $@
