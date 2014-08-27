@@ -12,7 +12,7 @@ gpinyin \- Chinese European-like writing within groff
 .de authors
 This file was written by Bernd Warken <groff-bernd.warken-72@web.de>.
 .
-Latest update: 1 Aug 2014
+Latest update: 27 Aug 2014
 ..
 .
 .de copyright
@@ -45,8 +45,10 @@ The license text is available in the internet at
 .\" Characters
 .\" --------------------------------------------------------------------
 .
-.ie t .char \[Ellipsis] \f[S]\N'188'\f[P]
-.el .char \[Ellipsis] \&.\|.\|.\&\
+.ie t .ds EL \f[S]\N'188'\f[P]
+.el .ds EL \&.\|.\|.\&\
+.\" ie t .char \[Ellipsis] \f[S]\N'188'\f[P]
+.\" el .char \[Ellipsis] \&.\|.\|.\&\
 .\" called with \[Ellipsis]
 .
 .
@@ -57,7 +59,7 @@ The license text is available in the internet at
 .SY gpinyin
 .OP \-
 .OP \-\-
-.OP \& "\%filespec \[Ellipsis]"
+.OP \& "\%filespec \*(EL"
 .YS
 .
 .BR "gpinyin -h" | --help
@@ -73,7 +75,7 @@ This is a preprocesor for
 .BR \%groff (@MAN1EXT@).
 .
 It allows to add the Chinese European-like language
-.B pinyin
+.I Pinyin
 into
 .BR groff (7)
 files.
@@ -83,27 +85,10 @@ files.
 .SH "OPTIONS"
 .\" --------------------------------------------------------------------
 .
-So far, there are only
-.I filespec
-or
-.I breaking
-options.
+.\" --------------------------------------------------------------------
+.SS "Breaking Options"
+.\" --------------------------------------------------------------------
 .
-.
-.P
-.I filespec
-are file names or the minus character
-.B \[em]
-character for standard input.
-.
-As usual, the argument
-.B \[em]\[em]
-can be used in order to let all fowllowing arguments mean file names,
-even if the names begin with a minus character
-.BR \[em] .
-.
-.
-.P
 An option is
 .IR breaking ,
 when the program just writes the information that was asked for and
@@ -111,9 +96,9 @@ then stops.
 .
 All other arguments will be ignored by that.
 .
-These
+The
 .I breaking
-options are heree
+options are here
 .
 .TP
 .B -h\~\fR|\fB\~--help
@@ -127,6 +112,30 @@ Print version information to standard output.
 .
 .
 .\" --------------------------------------------------------------------
+.SS "Filespec Options"
+.\" --------------------------------------------------------------------
+.
+So far, there are only
+.I filespec
+and
+.I breaking
+options.
+.
+.
+.P
+.I filespec
+arguments are file names or the minus sign
+.B \-
+for standard input.
+.
+As usual, the argument
+.B \-\-
+can be used in order to let all following arguments mean file names,
+even if the names begin with a minus character
+.BR \- .
+.
+.
+.\" --------------------------------------------------------------------
 .SH "PINYIN PARTS"
 .\" --------------------------------------------------------------------
 .
@@ -135,87 +144,268 @@ parts in
 .I groff files
 are enclosed by two
 .B .pinyin
-requests with different arguments, a
-.I starting
-and an
-.I ending
-command.
+requests with different arguments.
 .
-.
-.\" --------------------------------------------------------------------
-.SS "Starting pinyin Mode"
-.\" --------------------------------------------------------------------
-.
-The starting
-.I pinyin request
-can either be without arguments, or by a request that has the term
-.B start
-as its only argument.
+The starting request is
 .RS
-.IP \[Bullet] 2m
-.B \&.pinyin
-.IP \[Bullet] 2m
-.B \&.pinyin start
+.EX
+\e.pinyin start
+.EE
 .RE
-.
-.
-.\" --------------------------------------------------------------------
-.SS "Ending pinyin Mode without Storage"
-.\" --------------------------------------------------------------------
-.
-A
-.B .pinyin
-command line with an argument different from
-.B start
-finishes a running
-.IR "pinyin part" .
-.
-Of course, it would be reasonable to add the argument
-.B stop
 or
-.BR end ;
-that's possible, but not necessary.
-.
 .RS
-.IP \[Bullet] 2m
-.B \&.pinyin stop
-.IP \[Bullet] 2m
-.BI \&.pinyin " other_than_start"
+.EX
+\e.pinyin begin
+.EE
 .RE
+and the ending request is
+.RS
+.EX
+\e.pinyin stop
+.EE
+.RE
+or
+.RS
+.EX
+\e.pinyin end
+.EE
+.RE
+.
+.
+.\" --------------------------------------------------------------------
+.SH "PINYIN DETAILS"
+.\" --------------------------------------------------------------------
+.
+.I Pinyin
+is used for writing the Chinese language in a European-like
+(romanization) way.
+.
+The Chinese language consists of more than 400 syllables, each with
+one of 5 different tones.
+.
+In
+.IR Pinyin ,
+such toned syllables can be appended to word-like connections.
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Syllables"
+.\" --------------------------------------------------------------------
+.
+The Chinese language is based on about 411 defined
+.IR syllables ,
+see
+.UR http://en.wikipedia.org/wiki/Pinyin_table
+.UE .
+.
+.
+.P
+In
+.IR Pinyin ,
+each syllable consists of 1 to 6 European-like letters, the normal
+ASCII characters in upper and lower case, the only unusual characters
+are the
+.BR "U dieresis " ( umlaut )
+in both cases, i.e.
+.BR [a-zA-ZüÜ] .
+.
+.
+.P
+In the
+.B groff gpinyin
+input,
+all ASCII letters are written as usual.
+.
+But the
+.BR u / U
+.B dieresis
+can be written as either as
+.B \e[\[aq]u] or
+.B ue
+in lower case or
+.BR \e[\[aq]U] ,
+.BR Ue ,
+.B UE
+in upper case.
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Tones"
+.\" --------------------------------------------------------------------
+.
+Each syllable has exactly one of 5 defined
+.IR tones .
+.
+The 5th tone is not written at all, but each tone 1 to 4 is written
+as an accent above a defined vowel within the syllable.
+.
+.
+.P
+In the source file, these tones are written by adding a number 0 to 5
+after the syllable name.
+.
+.
+.P
+In each writing, the tone numbers 1 to 4 are transformed into accents
+above vowels.
+.
+.
+.P
+The 1st tone is the horizontal macron
+.BR \e[a\-]
+.B \[a-] ,
+similar to a minus or sub character, but on top of the vowel.
+.
+In each source file, write the 1st tone as
+.IB "syllable" 1\fR.
+.
+.
+.P
+The 2nd tone is the accute accent
+.B \e[aa]
+.BR \[aa] .
+.
+In each source file, write the 2nd tone as
+.IB "syllable" 2\fR.
+.
+.
+.P
+The 3rd tone is the caron sign,
+.BR \e[ah]
+.B \[ah] ,
+which looks a bit like a small
+.B v
+above the vowel.
+.
+In each source file, write the 3rd tone as
+.IB "syllable" 3\fR.
+.
+.
+.P
+The 4th tone is the grave accent
+.B \e[ga]
+.BR \[ga] .
+.
+In each source file, write the 4th tone as
+.IB "syllable" 4\fR.
+.
+.
+.P
+The 5th tone is the no-tone.
+.
+The numbers 0 and 5 can be used for the
+.BR ( no-tone ).
+.
+The
+.B no-tone
+number can be omitted, when the syllable is the end of some word.
+.
+But within a word of syllables, one of the
+.B no-tone
+numbers 0 or 5 must be written.
 .
 .
 .\" --------------------------------------------------------------------
 .SH "SEE ALSO"
 .\" --------------------------------------------------------------------
 .
-.P
-Man\-pages related to
-.I groff
-are
-.BR \%groff (@MAN1EXT@),
-.BR \%groff (@MAN7EXT@),
-.BR \%groff_char (@MAN7EXT@),
-.BR \%grog (@MAN1EXT@),
-and
-.BR \%groffer (@MAN1EXT@).
+.TP
+.BR \%groff (@MAN1EXT@)
+.TQ
+.BR \%grog (@MAN1EXT@)
+.TQ
+.BR \%groffer (@MAN1EXT@)
+Man\-pages with section
+.B 1
+related to
+.IR groff .
+.
+They can be called with either
+.RS
+.RS
+.EX
+.BI man " name"
+.BI groffer "name"
+.EE
+.RE
+.RE
+.
+.
+.TP
+.BR \%groff (@MAN7EXT@)
+.TQ
+.BR \%groff_char (@MAN7EXT@)
+Man\-pages with section
+.B 7
+related to
+.IR groff .
+.
+They can be called with either
+.RS
+.RS
+.EX
+.BI "man 7" " name"
+.BI "groffer 7" " name"
+.EE
+.RE
+.RE
 .
 .
 .P
-Documents related to
+Internet documents related to
 .I pinyin
 are
-.UR http://\;www.sino.uni-heidelberg.de/\:course_resources/\:s02/\:\
-py-vowels.htm
-.I Unicode vowels for pinyin 
+.RS
+.br
+.UR http://\:en.wikipedia.org/\:wiki/\:Pinyin
+.I Wikipedia pinyin
 .UE ,
 .
+.br
+.UR http://\:en.wikipedia.org/\:wiki/\:Pinyin_table
+.I Pinyin Table
+.UE ,
+.
+.br
+.UR http://\;www.sino.uni-heidelberg.de/\:course_resources/\:s02/\:\
+py-vowels.htm
+.I Unicode vowels for Pinyin 
+.UE ,
+.
+.br
 .UR http://\:www.foolsworkshop.com/\:ptou/\:index.html
 .IR pinyin to Unicode
 .UE ,
 .
-.UR http://www.mandarintools.com/
+.br
+.UR http://\:www.mandarintools.com/
 .I Online Chinese Tools
+.UE ,
+.
+.br
+.UR http://\:www.pinyin.info/\:index.html
+.I Main pinyin website
+.UE ,
+.
+.br
+.UR http://\:www.pinyin.info/\:rules/\:where.html
+.I Where do the tone marks go?
+.UE ,
+.
+.br
+.UR http://\:git.savannah.gnu.org/\:gitweb/\:\
+?p=cjk.git;a=blob_plain;f=doc/\:pinyin.txt;hb=HEAD
+.I Pinyin for TeX 1
+.UE ,
+.
+.br
+.UR http://\:git.savannah.gnu.org/\:gitweb/\:\
+?p=cjk.git;a=blob_plain;f=texinput/p\:inyin.sty;hb=HEAD
+.I Pinyin for TeX 2
 .UE .
+.
+.RE
+.
 .
 .\" --------------------------------------------------------------------
 .SH "AUTHOR"

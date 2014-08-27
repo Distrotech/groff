@@ -10,8 +10,8 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $Latest_Update = '8 Aug 2014';
-my $version = '0.9.2';
+my $Latest_Update = '27 Aug 2014';
+my $version = '1.0.0';
 
 # This file is part of `gpinyin', which is part of `groff'.
 
@@ -79,16 +79,21 @@ my $before_make;		# script before run of `make'
 
 my %at_at;
 my $file_gpinyin_test_pl;
-my $groffer_libdir;
+my $gpinyin_libdir;
 
 if ($before_make) {
   my $gpinyin_source_dir = $FindBin::Bin;
   $at_at{'BINDIR'} = $gpinyin_source_dir;
   $at_at{'G'} = '';
+  $gpinyin_libdir = '@gpinyin_dir@';
 } else {
   $at_at{'BINDIR'} = '@BINDIR@';
   $at_at{'G'} = '@g@';
+  $gpinyin_libdir = '@gpinyin_dir@';
+  unshift(@INC, $gpinyin_libdir);
 }
+
+require 'subs.pl';
 
 
 ########################################################################
@@ -104,11 +109,85 @@ foreach (@ARGV) {
     print q(This program is a `groff' preprocessor that handles ) .
       q(pinyin parts in `roff' files.);
     exit;
-  } elsif ( /^(-v|--v|--ve|--ver|--vers|--versi|--versio|--version)$/ ) {
+  } elsif (/^(-v|--v|--ve|--ver|--vers|--versi|--versio|--version)$/) {
     print q(`gpinyin' version ) . $version . ' of ' . $Latest_Update;
     exit;
   }
 }
+
+
+########################################################################
+# input
+########################################################################
+
+my $pinyin_mode = 0;	# not in Pinyin mode
+
+my @output_n =	# nroff
+  (
+   '.ie n \\{',
+  );
+
+my @output_t =	# troff
+  (
+   '.el \\{',
+  );
+
+foreach (<>) {	# get line from input
+  chomp;
+  s/\s+$//;		# remove final spaces
+# &err('gpinyin: ' . $_);
+
+  my $line = $_;	# with starting blanks
+
+  # .pinyin start or begin line
+  if ( $line =~ /^[.']\s*pinyin\s+(start|begin)$/ ) {
+    if ( $pinyin_mode ) {
+      # `.pinyin' was started twice, ignore
+      &err( q[`.pinyin' starter was run several times] );
+    } else {	# new pinyin start
+      $pinyin_mode = 1;
+    }
+    next;
+  }
+
+  # .pinyin stop or end line
+  if ( $line =~ /^[.']\s*pinyin\s+(stop|end)$/ ) {
+    if ( $pinyin_mode ) {		# normal stop
+      $pinyin_mode = 0;
+      &finish_pinyin_mode( \@output_n, \@output_t );
+    } else {	# ignore
+      &err( 'gpinyin: there was a .pinyin stop without ' .
+	'being in pinyin mode' );
+    }
+    next;
+  }
+
+  # now not a .pinyin line
+
+
+  if ( $pinyin_mode ) {	# within Pinyin
+    my $starting_blanks = '';
+    $starting_blanks = $1 if ( s/^(s+)// );	# handle starting spaces
+
+    my %outline = &handle_line($starting_blanks, $line);
+#&err('gpinyin outline n: ' . $outline{'n'} );
+#&err('gpinyin outline t: ' . $outline{'t'} );
+    push @output_n, $outline{'n'};
+    push @output_t, $outline{'t'};
+  } else {	# normal roff line, not within Pinyin
+    print $line;
+  }
+  next;
+}	# end of input line
+
+
+########################################################################
+# end of file without stopping `pinyin' mode
+if ( $pinyin_mode ) {
+  &finish_pinyin_mode( \@output_n, \@output_t );
+}
+
+########################################################################
 
 
 1;
