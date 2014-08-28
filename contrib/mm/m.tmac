@@ -735,8 +735,9 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" Wrapper to cancel the side effect of .tag + .br generating
 .\" unwanted vertical space.
 .de misc@tag
-.\" retain temporary indentation
+.\" retain temporary indentation and horizontal position
 .if !(\\n[.in]-\\n[.i]=0) .nr misc*ti \\n[.in]
+.nr misc*.k \\n[.k]
 .vpt 0
 .DEVTAG-\\$1 \\$2
 .br
@@ -746,6 +747,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	sp -1
 .\}
 .sp -1
+\h'\\n[misc*.k]u'\c
+.rr misc*.k
 .vpt 1
 ..
 .\" ######## module pict #################
