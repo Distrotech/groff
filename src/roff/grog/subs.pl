@@ -30,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-# Last_Update = '6 Jul 2014';
+# Last_Update = '28 Aug 2014';
 ########################################################################
 
 require v5.6;
@@ -74,6 +74,7 @@ my %Groff = (
 	     'grap' => 0,
 	     'grn' => 0,
 	     'gideal' => 0,
+	     'gpinyin' => 0,
 	     'lilypond' => 0,
 
 	     'pic' => 0,
@@ -261,7 +262,7 @@ sub handle_args {
 ########################################################################
 
 # As documented for the `man' program, the first line can be
-# used as an groff option line.  This is done by:
+# used as a groff option line.  This is done by:
 # - start the line with '\" (apostrophe, backslash, double quote)
 # - add a space character
 # - a word using the following characters can be appended: `egGjJpRst'.
@@ -317,7 +318,7 @@ sub do_first_line {
 
   return 0 unless ( $1 );	# for empty comment
 
-  # all following array members are either preprocs or 1 tmac, in 
+  # all following array members are either preprocs or 1 tmac
   my @words = split '\s+', $1;
 
   my @in = ();
@@ -418,8 +419,12 @@ sub do_line {
     $Groff{'grap'}++;		# for grap
     return;
   }
-  if ( $command =~ /^\.Perl$/ ) {
+  if ( $command =~ /^\.Perl/ ) {
     $Groff{'gperl'}++;		# for gperl
+    return;
+  }
+  if ( $command =~ /^\.pinyin/ ) {
+    $Groff{'gpinyin'}++;		# for gperl
     return;
   }
   if ( $command =~ /^\.GS$/ ) {
@@ -759,6 +764,9 @@ EOF
   }
   if ( $Groff{'gperl'} ) {
     push @preprograms, 'gperl';
+  }
+  if ( $Groff{'gpinyin'} ) {
+    push @preprograms, 'gpinyin';
   }
 
   # preprocessors with `groff' option

@@ -30,7 +30,7 @@
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
-our $Last_Update = '5 Jul 2014';
+our $Last_Update = '28 Aug 2014';
 ########################################################################
 
 require v5.6;
@@ -97,6 +97,7 @@ our %preprocs_tmacs = (
 		       'chem' => 0,
 		       'eqn' => 0,
 		       'gideal' => 0,
+		       'gpinyin' => 0,
 		       'grap' => 0,
 		       'grn' => 0,
 		       'pic' => 0,
@@ -107,7 +108,6 @@ our %preprocs_tmacs = (
 		       'geqn' => 0,
 		       'gpic' => 0,
 		       'neqn' => 0,
-		       'ideal' => 0,
 
 		       'man' => 0,
 		       'mandoc' => 0,
@@ -150,7 +150,7 @@ foreach my $file ( @filespec ) { # test for each file name in the arguments
 
   if ( $file =~ /\./ ) {	# file name has a dot `.'
     my $ext = $file;
-    $ext =~ s/
+    $ext =~ s/^
 	       .*
 	       \.
 	       ([^.]*)
@@ -180,13 +180,15 @@ foreach my $file ( @filespec ) { # test for each file name in the arguments
 			 ref|
 			 t|
 			 tr|
+			 g|
 			 groff|
 			 roff|
 			 www|
 			 hdtbl|
 			 grap|
 			 grn|
-			 pdfroff
+			 pdfroff|
+			 pinyin
 		       )$/x ) {
       # ignore
     } else {
