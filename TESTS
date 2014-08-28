@@ -172,8 +172,6 @@ were built from a clean environment:
 
 2.2 make clean
 
-TODO: font files are not cleaned
-
 The following files remain (this is expected):
   - Makefile
   - config.status
@@ -188,13 +186,12 @@ The following files remain (this is expected):
 
 2.3 make mostlyclean
 
-TODO: font files
-
   Like 'make clean', but the following files also remain (expected):
   - lib*.a
   - libgroff.a's charset.alias, ref-add.sed, ref-del.sed, and
     version.cpp.
   - gnulib's charset.alias, ref-add.sed, ref-del.sed and configmake.h
+  - src/preproc generated .cpp, hpp, and .output files
 
 Differences with former build system:
 
@@ -262,25 +259,22 @@ Diff with previous build system:
 
 2.7 make uninstall
 
-TODO: currently fails (fails to remove $(DESTDIR)/usr/local/share/groff/1.22.3)
-
   Removes:
 
   - $(DESTDIR)/usr/local/lib/charset.alias if exists
   - $(DESTDIR)/usr/local/bin/*
   - $(DESTDIR)/usr/local/man/man1/*
+  - $(DESTDIR)/usr/local/man/man5/*
   - $(DESTDIR)/usr/local/share/groff/1.22.3/eign
   - $(DESTDIR)/usr/local/share/groff/1.22.3/
-  - $(DESTDIR)/usr/local/man/man5/*
+  - $(DESTDIR)/usr/local/share/groff/1.22.3/font
+  - $(DESTDIR)/usr/local/share/groff/1.22.3/oldfont
   - $(DESTDIR)/usr/local/share/groff/
   - $(DESTDIR)/usr/local/lib/X11/app-defaults/GXditview and
     GXditview-color. However, GXditview.old and GXditview-color.old
     are not removed (this is the behaviour on the old build system)
   
 2.8 make dist
-
-TODO: missing fonts, some files which should not be distributed are
-present in the tarball.
 
   groff-1.22.3.tar.gz is generated.
 
@@ -296,7 +290,6 @@ present in the tarball.
   - Missing files/directories (TODO):
     contrib/
     doc/
-    font/
     man/
     tmac
     test-groff.in
@@ -320,8 +313,6 @@ present in the tarball.
     
 2.9 make distcheck
   
-To be checked when install, clean, and dist are fixed.
-
   This will attempt to make a tarball, and from this tarball, build
 the package(out-of-source build), clean it (checking that no file
 remains), install it, uninstall it (checking that no file remains in

@@ -68,7 +68,8 @@ DEVPSFONTFILES_GENERATED = \
   font/devps/zapfdr.pfa \
   font/devps/symbolsl.pfa
 devpsfontdir = $(fontdir)/devps
-devpsfont_DATA = $(DEVPSFONTFILES) $(DEVPSFONTFILES_GENERATED)
+dist_devpsfont_DATA = $(DEVPSFONTFILES) 
+nodist_devpsfont_DATA = $(DEVPSFONTFILES_GENERATED)
 
 # these files will be installed in oldfontdir
 OLDDEVPSFONTFILES = \
@@ -103,7 +104,7 @@ OLDDEVPSFONTFILES = \
   font/devps/old/zapfdr.afm \
   font/devps/old/zapfdr.ps
 olddevpsfontdir = $(oldfontdir)/devps
-olddevpsfont_DATA = $(OLDDEVPSFONTFILES)
+dist_olddevpsfont_DATA = $(OLDDEVPSFONTFILES)
 
 # Files installed in $(devfontdir)/generate
 DEVPSGENFILES = \
@@ -118,7 +119,23 @@ DEVPSGENSCRIPTS = \
   font/devps/generate/afmname \
   font/devps/generate/symbol.sed
 devpsgendir = $(devpsfontdir)/generate
-devpsgen_DATA = $(DEVPSGENFILES) $(DEVPSGENSCRIPTS)
+dist_devpsgen_DATA = $(DEVPSGENFILES) $(DEVPSGENSCRIPTS)
+
+MOSTLYCLEANFILES += $(DEVPSFONTFILES_GENERATED)
+EXTRA_DIST += \
+  font/devps/symbolmap \
+  font/devps/DESC.in  \
+  font/devps/prologue.ps \
+  font/devps/psstrip.sed \
+  font/devps/symbol.afm \
+  font/devps/symbolsl.ps \
+  font/devps/zapfdr.afm \
+  font/devps/zapfdr.ps \
+  font/devps/generate/freeeuro.sfd \
+  font/devps/generate/make-zapfdr \
+  font/devps/generate/symbolsl.awk \
+  font/devps/generate/sfdtopfa.pe \
+  font/devps/generate/zapfdr.sed
 
 font/devps/DESC: $(devps_srcdir)/DESC.in
 	@$(MKDIR_P) font/devps
