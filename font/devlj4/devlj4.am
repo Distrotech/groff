@@ -68,7 +68,8 @@ DEVLJ4FONTFILES = \
   font/devlj4/WINGDINGS
 
 devlj4fontdir = $(fontdir)/devlj4
-devlj4font_DATA = $(DEVLJ4FONTFILES) font/devlj4/DESC
+dist_devlj4font_DATA = $(DEVLJ4FONTFILES) 
+nodist_devlj4font_DATA = font/devlj4/DESC
 
 DEVLJ4GENFILES = \
   font/devlj4/generate/Makefile \
@@ -78,7 +79,11 @@ DEVLJ4GENFILES = \
   font/devlj4/generate/wingdings.map \
   font/devlj4/generate/special.awk
 devlj4fontgendir = $(devlj4fontdir)/generate
-devlj4fontgen_DATA = $(DEVLJ4GENFILES)
+dist_devlj4fontgen_DATA = $(DEVLJ4GENFILES)
+
+EXTRA_DIST += font/devlj4/DESC.in
+
+MOSTLYCLEANFILES += font/devlj4/DESC
 
 font/devlj4/DESC: $(devlj4_srcdir)/DESC.in
 	@echo Making $@
