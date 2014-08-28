@@ -26,6 +26,13 @@ GROFF_FONT_FILES=`cd $(top_builddir)/font/devpdf \
 ENC_FILES=`cd $(top_builddir)/font/devpdf; ls enc/*`
 MAP_FILES=`cd $(top_builddir)/font/devpdf; ls map/*`
 
+MOSTLYCLEANFILES += \
+  font/devpdf/download \
+  font/devpdf/DESC \
+  font/devpdf/Foundry \
+  font/devpdf/build_font_files \
+  font/devpdf/util/BuildFoundries
+
 devpdffontdir = $(fontdir)/devpdf
 devpdffont_DATA = \
   font/devpdf/DESC \
@@ -43,7 +50,12 @@ DEVPDFFONTMAP_2 = font/devpdf/map/symbolmap
 devpdffontmap_DATA = $(DEVPDFFONTMAP_1) $(DEVPDFFONTMAP_2)
 
 devpdffontutildir = $(devpdffontdir)/util
-devpdffontutil_DATA = font/devpdf/util/BuildFoundries
+nodist_devpdffontutil_DATA = font/devpdf/util/BuildFoundries
+
+EXTRA_DIST += \
+  font/devpdf/DESC.in \
+  font/devpdf/Foundry.in \
+  font/devpdf/util
 
 font/devpdf/enc/text.enc:
 	@$(MKDIR_P) $(top_builddir)/font/devpdf/enc
@@ -111,6 +123,14 @@ font/devpdf/build_font_files: afmtodit font/devpdf/DESC $(devpdffontenc_DATA) $(
 	   >> $(top_builddir)/font/devpdf/download
 	@touch $@
 
+mostlyclean-local: mostlyclean_devpdf_extra
+mostlyclean_devpdf_extra:
+	@echo Cleaning font/devpdf
+	rm -rf $(top_builddir)/font/devpdf/enc $(top_builddir)/font/devpdf/map;
+	for f in $(GROFF_FONT_FILES); do \
+	   rm -f $(top_builddir)/font/devpdf/$$f; \
+	done
+
 install-data-local: install_devpdf
 install_devpdf:
 	@echo Installing devpdf files
@@ -125,3 +145,23 @@ install_devpdf:
 	  fi; \
 	done
 	$(INSTALL_DATA) $(top_builddir)/font/devpdf/download $(DESTDIR)$(devpdffontdir)/
+
+uninstall-hook: uninstall_devpdf
+uninstall_devpdf:
+	@echo Uninstalling devpdf files
+	if test -d $(DESTDIR)$(devpdffontdir); then \
+	  for f in $(GROFF_FONT_FILES); do \
+	    rm -f $(DESTDIR)$(devpdffontdir)/$$f; \
+	  done; \
+	  if test -d $(DESTDIR)$(devpdffontutildir); then \
+	    rmdir $(DESTDIR)$(devpdffontutildir); \
+	  fi; \
+	  if test -d $(DESTDIR)$(devpdffontencdir); then \
+	    rmdir $(DESTDIR)$(devpdffontencdir); \
+	  fi; \
+	  if test -d $(DESTDIR)$(devpdffontmapdir); then \
+	    rmdir $(DESTDIR)$(devpdffontmapdir); \
+	  fi; \
+	  rm -f $(DESTDIR)$(devpdffontdir)/download; \
+	  rmdir $(DESTDIR)$(devpdffontdir); \
+	fi

@@ -513,10 +513,6 @@ man7_MANS =
 # for lex/yacc
 AM_YFLAGS = -d -v
 
-# Scripts for font files generation
-GENFONTSSH=$(top_srcdir)/font/scripts/genfonts.sh
-GENDESCSH = $(top_srcdir)/font/scripts/gendesc.sh
-
 # Non-recursive makefile system. See Automake manual '7.3 An
 # Alternative Approach to Subdirectories'. We use a single Makefile.am
 # that includes other .am files, rather than using SUBDIRS.  Note that
@@ -539,6 +535,7 @@ include $(top_srcdir)/font/devlj4/devlj4.am
 include $(top_srcdir)/font/devpdf/devpdf.am
 include $(top_srcdir)/font/devps/devps.am
 include $(top_srcdir)/font/devutf8/devutf8.am
+include $(top_srcdir)/font/scripts/scripts.am
 include $(top_srcdir)/src/include/include.am
 include $(top_srcdir)/src/libs/libbib/libbib.am
 include $(top_srcdir)/src/libs/libdriver/libdriver.am
@@ -590,12 +587,20 @@ lib/localcharset.$(OBJEXT): lib/configmake.h
 
 # directories specific to groff
 uninstall-hook: uninstall_groffdirs
-uninstall_groffdirs:
+uninstall_groffdirs: uninstall_devpdf
 	if test -d $(DESTDIR)$(datasubdir); then \
+	  rm -rf $(DESTDIR)$(fontdir); \
+	  rm -rf $(DESTDIR)$(oldfontdir); \
 	  rmdir $(DESTDIR)$(datasubdir); \
 	fi
 	if test -d $(DESTDIR)$(dataprogramdir); then \
 	  rmdir $(DESTDIR)$(dataprogramdir); \
+	fi
+	if test -d $(DESTDIR)$(grog_dir); then \
+	  rmdir $(DESTDIR)$(grog_dir); \
+	fi
+	if test -d $(DESTDIR)$(libprogramdir); then \
+	  rmdir $(DESTDIR)$(libprogramdir); \
 	fi
 
 # Other files that should be present in the distribution tarball.
