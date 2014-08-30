@@ -295,12 +295,29 @@ package.
 .TP
 .IB <name> .man
 .I traditional
-Unix\-like man\-page format.
+Unix\-like man\-page format within groff source files.
+.
+.
+.TP
+.IB <name> .n
+A temporary man-page file produced from a
+.IB name .man
+man\-page by a run of
+.B make
+within the
+.B groff
+source package.
 .
 .
 .TP
 .IB <name> .mdoc
-additional BSD man-page format.
+Man-page format in BSD.
+.
+.
+.TP
+.IB <name> .1b
+Man-page format in
+.IR "heirloom roff ".
 .
 .
 .TP
@@ -308,15 +325,6 @@ additional BSD man-page format.
 Files using this extension recognize both man\-page formats in
 .B groff
 and other processors.
-.
-.
-.TP
-.IB <name> .n
-A temporary man-page file produced by a run of
-.B make
-in the
-.B groff
-source package.
 .
 .
 .\" --------------------------------------------------------------------
@@ -603,6 +611,33 @@ History and future
 .BR gzip2 (@MAN1EXT@),
 .BR bzip2 (@MAN1EXT@),
 .BR xz (@MAN1EXT@)
+.
+.
+.P
+A man-page of the naming form
+.IB name ( n )
+can be read in text mode by
+.RS
+.EX
+.BI man " n name"
+.EE
+.RE
+or in graphical mode (PDF) by
+.RS
+.EX
+.BI groffer " n name"
+.EE
+.RE
+.
+.
+.P
+.UR http://heirloom.sourceforge.net/
+Heirloom documentation
+.UE
+.
+.UR http://heirloom.cvs.sourceforge.net/heirloom/
+Heirloom download
+.UE
 .
 .
 .\" --------------------------------------------------------------------
