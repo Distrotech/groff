@@ -1,4 +1,16 @@
-.ig
+.TH GROFF_FONT @MAN5EXT@ "@MDATE@" "Groff Version @VERSION@"
+.
+.SH NAME
+groff_font \- format of groff device and font description files
+.
+.
+.\" --------------------------------------------------------------------
+.\" License
+.\" --------------------------------------------------------------------
+.
+.\" Last update: 30 Aug 2014
+.
+.co
 Copyright (C) 1989-1995, 2001-2004, 2006-2009, 2012, 2014
   Free Software Foundation, Inc.
 
@@ -18,6 +30,10 @@ translations approved by the Free Software Foundation instead of in
 the original English.
 ..
 .
+.\" --------------------------------------------------------------------
+.\" Macro definitions
+.\" --------------------------------------------------------------------
+.
 .do nr groff_font_C \n[.C]
 .cp 0
 .
@@ -29,15 +45,10 @@ the original English.
 .  el .TP "\\$1"
 ..
 .
-.
-.TH GROFF_FONT @MAN5EXT@ "@MDATE@" "Groff Version @VERSION@"
-.
-.
-.SH NAME
-groff_font \- format of groff device and font description files
-.
-.
+.\" --------------------------------------------------------------------
 .SH DESCRIPTION
+.\" --------------------------------------------------------------------
+.
 The groff font format is roughly a superset of the ditroff
 font format.
 .
@@ -60,7 +71,9 @@ unlike the ditroff font format,
 there is no associated binary format.
 .
 .
+.\" --------------------------------------------------------------------
 .SS DESC file format
+.\" --------------------------------------------------------------------
 .
 The DESC file can contain the following types of line as shown below.
 .
@@ -363,16 +376,16 @@ but completely ignored:
 .BR biggestfont .
 .
 .
+.\" --------------------------------------------------------------------
 .SS Font file format
+.\" --------------------------------------------------------------------
 .
-A font file has two sections;
-empty lines are ignored in both of them.
+A font file has two sections; empty lines are ignored in both of them.
 .
 .LP
-The first section is a sequence
-of lines each containing a sequence of blank delimited
-words; the first word in the line is a key, and subsequent
-words give a value for that key.
+The first section is a sequence of lines each containing a sequence of
+blank delimited words; the first word in the line is a key, and
+subsequent words give a value for that key.
 .
 .TP
 .BI "ligatures " "lig1 lig2 \|.\|.\|.\| lign \fR[" 0 \fR]
@@ -629,8 +642,7 @@ This should be less than the italic correction.
 A line in the charset section can also have the format
 .
 .IP
-.I
-name \fB"
+.I name \fB\[dq]
 .
 .LP
 This indicates that
@@ -660,7 +672,9 @@ Most entries in kernpairs section have a negative value for\~\c
 .IR n .
 .
 .
+.\" --------------------------------------------------------------------
 .SH FILES
+.\" --------------------------------------------------------------------
 .
 .Tp \w'@FONTDIR@/devname/DESC'u+3n
 .BI @FONTDIR@/dev name /DESC
@@ -675,12 +689,43 @@ of device
 .IR name .
 .
 .
+.\" --------------------------------------------------------------------
 .SH "SEE ALSO"
+.\" --------------------------------------------------------------------
 .
 .BR groff_out (@MAN5EXT@),
-.BR @g@troff (@MAN1EXT@).
+.BR @g@troff (@MAN1EXT@),
+.BR addftinfo (@MAN1EXT@),
+.BR afmtodit (@MAN1EXT@)
+.
+.
+.P
+A man\-page
+.IR name ( n )
+of section
+.I n
+can be viewed either with
+.RS
+\[Do]
+.BI man " n name"
+.RE
+for text mode or
+.RS
+\[Do]
+.BI "groffer " n  name"
+.RE
+for graphical mode (default is PDF mode).
+.RE
+.
+.
+.\" --------------------------------------------------------------------
+.\" COPYING
+.\" --------------------------------------------------------------------
+.
+.co
 .
 .cp \n[groff_font_C]
+.
 .
 .\" Local Variables:
 .\" mode: nroff
