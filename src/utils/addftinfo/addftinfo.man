@@ -1,4 +1,15 @@
-.ig
+.TH ADDFTINFO @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+addftinfo \- add information to troff font files for use with groff
+.
+.
+.\" --------------------------------------------------------------------
+.\" License
+.\" --------------------------------------------------------------------
+.
+.\# Last update: 30 Aug 2014
+.
+.de co
 Copyright (C) 1989-2000, 2001, 2009, 2014 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -16,38 +27,56 @@ versions, except that this permission notice may be included in
 translations approved by the Free Software Foundation instead of in
 the original English.
 ..
-.TH ADDFTINFO @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-.SH NAME
-addftinfo \- add information to troff font files for use with groff
+.
+.\" --------------------------------------------------------------------
+.\" Characters
+.\" --------------------------------------------------------------------
+.
+.\" Ellipsis ...
+.ie t .ds EL \fS\N'188'\fP
+.el .ds EL \&.\|.\|.\&\
+.\" called with \*(EL
+.
+.
+.\" --------------------------------------------------------------------
 .SH SYNOPSIS
+.\" --------------------------------------------------------------------
+.
 .B addftinfo
 [
 .B \-v
 ]
 [
-.BI \- param\ value\fR.\|.\|.
+.IR "param-option value" \*(EL
 ]
 .I res
 .I unitwidth
 .I font
+.
+.
+.\" --------------------------------------------------------------------
 .SH DESCRIPTION
+.\" --------------------------------------------------------------------
+.
 .B addftinfo
-reads a troff font file
-and adds some additional font-metric information
-that is used by the groff system.
-The font file with the information added is written on the
-standard output.
-The information added is guessed using
-some parametric information about the font
-and assumptions
-about the traditional troff names for characters.
+reads a troff font file and adds some additional font-metric
+information that is used by the groff system.
+.
+The font file with the information added is written on the standard
+output.
+.
+The information added is guessed using some parametric information
+about the font and assumptions about the traditional troff names for
+characters.
+.
 The main information added is the heights and depths of characters.
+.
 The
 .I res
 and
 .I unitwidth
-arguments should be the same as the corresponding parameters
-in the DESC file;
+arguments should be the same as the corresponding parameters in the
+DESC file;
 .I font
 is the name of the file describing the font;
 if
@@ -55,56 +84,102 @@ if
 ends with
 .B I
 the font will be assumed to be italic.
+.
+.
+.\" --------------------------------------------------------------------
 .SH OPTIONS
-.B \-v
+.\" --------------------------------------------------------------------
+.
+.B \[en]v
 prints the version number.
+.
+.
 .LP
-All other options changes one of the parameters that is used
-to derive the heights and depths.
-Like the existing quantities in the font
-file, each
+All other options change one of the parameters that are used to derive
+the heights and depths.
+.
+Like the existing quantities in the font file, each
 .I value
 is in
 .RI inches/ res
 for a font whose point size is
 .IR unitwidth .
-.I param
+.
+.I param-option
 must be one of:
+.
 .TP
-.B x-height
+.B \[en]x\-height
 The height of lowercase letters without ascenders such as x.
+.
 .TP
-.B fig-height
+.B \[en]fig-height
 The height of figures (digits).
+.
 .TP
-.B asc-height
+.B \[en]asc-height
 The height of characters with ascenders, such as b, d or l.
+.
 .TP
-.B body-height
+.B \[en]body\-height
 The height of characters such as parentheses.
+.
 .TP
-.B cap-height
+.B \[en]cap-height
 The height of uppercase letters such as A.
+.
 .TP
-.B comma-depth
+.B \[en]comma\-depth
 The depth of a comma.
+.
 .TP
-.B desc-depth
+.B \[en]desc\-depth
 The depth of characters with descenders, such as p, q, or y.
+.
 .TP
-.B body-depth
+.B \[en]body\-depth
 The depth of characters such as parentheses.
+.
+.
 .LP
 .B addftinfo
-makes no attempt to use the specified parameters to guess
-the unspecified parameters.
+makes no attempt to use the specified parameters to guess the
+unspecified parameters.
+.
 If a parameter is not specified the default will be used.
-The defaults are chosen to have the reasonable values for
-a Times font.
+.
+The defaults are chosen to have the reasonable values for a Times
+font.
 .SH "SEE ALSO"
 .BR groff_font (@MAN5EXT@),
 .BR groff (@MAN1EXT@),
 .BR groff_char (@MAN7EXT@)
+.
+.
+.P
+Watch a man\-page
+.IB name ( n )
+with
+.RS
+.EX
+.BI "man" " n name"
+.EE
+.RE
+in text mode and with
+.RS
+.EX
+.BI "groffer" " n name"
+.EE
+.RE
+in graphical mode (PDF, etc.).
+.
+.
+.\" --------------------------------------------------------------------
+.SH COPYING
+.\" --------------------------------------------------------------------
+.
+.co
+.
 .
 .\" Local Variables:
 .\" mode: nroff
