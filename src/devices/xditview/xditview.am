@@ -30,6 +30,9 @@ GXDITVIEWSOURCES = \
   src/devices/xditview/Menu.h \
   src/devices/xditview/Dvi.h
 
+if WITHOUT_X11
+EXTRA_DIST += $(GXDITVIEWSOURCES)
+else
 xditview_srcdir = $(top_srcdir)/src/devices/xditview
 bin_PROGRAMS += gxditview
 gxditview_CPPFLAGS = $(AM_CPPFLAGS) $(X_CFLAGS) -Dlint \
@@ -51,6 +54,7 @@ src/devices/xditview/gxditview-xditview.$(OBJEXT): $(XDITVIEW_GENHDRS)
 src/devices/xditview/GXditview-ad.h: $(xditview_srcdir)/GXditview.ad
 	@echo Making $@
 	$(SHELL) $(xditview_srcdir)/ad2c $(xditview_srcdir)/GXditview.ad > $@
+endif
 
 EXTRA_DIST += \
   src/devices/xditview/ad2c \
@@ -77,6 +81,10 @@ EXTRA_DIST += \
 install-data-local: install_xditview
 uninstall-local: uninstall_xditview
 
+if WITHOUT_X11
+install_xditview:
+uninstall_xditview:
+else
 install_xditview: $(xditview_srcdir)/GXditview.ad $(xditview_srcdir)/GXditview-color.ad
 	-test -d $(DESTDIR)$(appresdir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(appresdir)
@@ -97,3 +105,4 @@ uninstall_xditview:
 	rm -f $(DESTDIR)$(appresdir)/GXditview
 	rm -f $(DESTDIR)$(appresdir)/GXditview-color
 
+endif
