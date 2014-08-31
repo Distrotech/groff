@@ -173,6 +173,16 @@ gl_LOCALCHARSET
 
 AM_CONDITIONAL([BUILD_WINSCRIPTS], [test -n "$make_winscripts"])
 
+# If X11 is not available, don't build:
+# font/devX75 
+# font/devX75-12
+# font/devX100
+# font/devX100-12
+# src/devices/xditview 
+# src/utils/xtotroff
+# src/libs/libxutil
+AM_CONDITIONAL([WITHOUT_X11], [test "x$groff_no_x" = "xyes"])
+
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
