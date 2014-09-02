@@ -1,3 +1,7 @@
+# Makefile for `font devdvi/generate'
+#
+# File position: <groff-source>/font/devdvi/generate/Makefile
+#
 # Copyright (C) 1989-2002, 2009 Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
@@ -199,3 +203,11 @@ extraclean: realclean
 	rm -f core *~ "#*"
 
 .PHONY: clean realclean extraclean all
+
+########################################################################
+# Emacs settings
+########################################################################
+#
+# Local Variables:
+# mode: makefile
+# End:
