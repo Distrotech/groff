@@ -2,7 +2,7 @@
 # Copyright (C) 1989-1995, 2001-2007, 2009, 2011-2014
 #   Free Software Foundation, Inc.
 #
-# Last update: 8 Aug 2014
+# Last update: 1 Sep 2014
 #
 # This file is part of groff.
 #
@@ -68,6 +68,8 @@ GROFF_GPINYINDIR_DEFAULT
 GROFF_GROGDIR_DEFAULT
 GROFF_PERL
 GROFF_PRINT
+GROFF_REFER
+GROFF_REFERDIR_DEFAULT
 AC_PROG_EGREP
 GROFF_PROG_YACC
 GROFF_DOC_CHECK
