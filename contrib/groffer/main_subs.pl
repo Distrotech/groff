@@ -5,10 +5,8 @@
 # Source file position: <groff-source>/contrib/groffer/subs.pl
 # Installed position: <prefix>/lib/groff/groffer/subs.pl
 
-# Copyright (C) 2006, 2009, 2014 Free Software Foundation, Inc.
+# Copyright (C) 2006-2014  Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
-
-# Last update: 5 Jul 2014
 
 # This file is part of `groffer', which is part of `groff'.
 

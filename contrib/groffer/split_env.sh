@@ -5,10 +5,8 @@
 # Source file position: <groff-source>/contrib/groffer/split_env.sh
 # Installed position: <prefix>/lib/groff/groffer/split_env.sh
 
-# Copyright (C) 2006, 2009, 2014 Free Software Foundation, Inc.
+# Copyright (C) 2006-2014 Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
-
-# Last update: 25 Feb 2014
 
 # This file is part of `groffer', which is part of `groff'.
 

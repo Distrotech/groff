@@ -5,10 +5,8 @@
 # Source file position: <groff-source>/contrib/groffer/man.pl
 # Installed position: <prefix>/lib/groff/groffer/man.pl
 
-# Copyright (C) 2006, 2009, 2011, 2014 Free Software Foundation, Inc.
+# Copyright (C) 2006-2014  Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
-
-# Last update: 25 Feb 2014
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -422,7 +420,8 @@ sub man_setup {
       $main::Man{'LANG2'} =~ s/^(..).*$/$1/;
     }
   }				# if ($lang)
-  # from now on, use only $main::Man{LANG*}, forget about $main::Opt{LANG}, $ENV{LC_*}.
+  # from now on, use only $main::Man{LANG*},
+  # forget about $main::Opt{LANG}, $ENV{LC_*}.
 
   &manpath_add_lang_sys();
 
@@ -730,3 +729,8 @@ sub whatis_setup {
 } # whatis_setup ()
 
 1;
+########################################################################
+### Emacs settings
+# Local Variables:
+# mode: CPerl
+# End:

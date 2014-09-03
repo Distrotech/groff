@@ -5,10 +5,8 @@
 # Source file position: <groff-source>/contrib/groffer/roff2.pl
 # Installed position: <prefix>/bin/roff2*
 
-# Copyright (C) 2006, 2008, 2009, 2014 Free Software Foundation, Inc.
+# Copyright (C) 2006-2014  Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
-
-# Last update: 25 Feb 2014
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -202,9 +200,9 @@ usage: $Name [option]... [--] [filespec]...
 All other options are arbitrary options of `groffer'; the options
 override the behavior of this program.
 
-`filespec's are the same as in `groffer': either the names of
-existing, readable files or `-' for standard input or a search pattern
-for man pages.  No `filespec' assumes standard input automatically.
+filespec's are the same as in `groffer': either the names of existing,
+readable files or `-' for standard input or a search pattern for man
+pages.  No `filespec' assumes standard input automatically.
 EOF
 }
 
@@ -222,3 +220,11 @@ or `-' for standard input.  No `filespec' assumes standard input
 automatically.
 EOF
 }
+
+
+1;
+########################################################################
+### Emacs settings
+# Local Variables:
+# mode: CPerl
+# End:

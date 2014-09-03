@@ -5,10 +5,8 @@
 # Source file position: <groff-source>/contrib/groffer/subs.pl
 # Installed position: <prefix>/lib/groff/groffer/subs.pl
 
-# Copyright (C) 2006, 2009, 2014 Free Software Foundation, Inc.
+# Copyright (C) 2006-2014  Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
-
-# Last update: 11 Jun 2014
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -628,10 +626,6 @@ sub version {
       $program_version = $1;
       next;
     }
-    if (/^\s*_LAST_UPDATE\s*=\s*['"]*([^'"]*)['"]*\s*;?\s*$/) {
-      $last_update = $1;
-      next;
-    }
     if (/^\s*_GROFF_VERSION_PRESET\s*=\s*['"]*([^'"]*)['"]*\s*;?\s*$/) {
       # this setting of the groff version is only used before make is run,
       # otherwise @VERSION@ will set it, see groffer.sh.
@@ -646,12 +640,8 @@ sub version {
   } else {
     $groff_version = $groff_version_preset;
   }
-  my $year = $last_update;
-  $year =~ s/^.* //;
   print <<EOF;
-groffer $program_version of $last_update (Perl version)
-is part of groff version $groff_version.
-Copyright (C) $year Free Software Foundation, Inc.
+groffer $program_version is part of groff version $groff_version.
 GNU groff and groffer come with ABSOLUTELY NO WARRANTY.
 You may redistribute copies of groff and its subprograms
 under the terms of the GNU General Public License.
