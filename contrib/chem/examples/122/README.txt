@@ -46,9 +46,7 @@ To get a suitable `groff' output run
 
 ####### License
 
-Last update: 14 Feb 2014
-
-Copyright (C) 2006, 2009, 2014 Free Software Foundation, Inc.
+Copyright (C) 2006-2014 Free Software Foundation, Inc.
 Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
 This file is part of `chem', which is part of `groff'.
