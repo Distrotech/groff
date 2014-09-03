@@ -85,6 +85,7 @@ GROFF_INSTALL_SH
 GROFF_INSTALL_INFO
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AC_PROG_MKDIR_P
 
 # use a dummy substitution if no csh hack is necessary to avoid errors
 # with non-GNU sed programs
