@@ -1,9 +1,6 @@
-    Copyright (C) 2013
-      Free Software Foundation, Inc.
+    Copyright (C) 2013-2014  Free Software Foundation, Inc.
 
     Written by Bernd Warken <groff-bernd.warken-72@web.de>
-
-    Last update: 24 Apr 2013
 
     Copying and distribution of this file, with or without modification,
     are permitted in any medium without royalty provided the copyright
@@ -37,3 +34,10 @@ With that, the program `autoconf' can be run in order to update the
 configure files and Makefile's.
 
 Now `$glilypond_dir' can be used as libdir.
+
+
+########################################################################
+### Emacs settings
+# Local Variables:
+# mode: text
+# End:

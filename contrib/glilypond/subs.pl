@@ -8,10 +8,8 @@ Subroutines for `glilypond'.
 Source file position: `<groff-source>/contrib/glilypond/subs.pl'
 Installed position: `<prefix>/lib/groff/glilypond/subs.pl'
 
-Copyright (C) 2013 Free Software Foundation, Inc.
+Copyright (C) 2013-2014  Free Software Foundation, Inc.
   Written by Bernd Warken <groff-bernd.warken-72@web.de>
-
-  Last update: 10 May 2013
 
 This file is part of `glilypond', which is part of `GNU groff'.
 
@@ -452,8 +450,7 @@ sub version { # for `--version'
   my $output = EMPTYSTRING;
   $output = "###### version:\n" if ( $Args->{'verbose'} );
   $output .= "`" . $Globals->{'prog'} . "' version `" .
-    $Legalese->{'version'} . "' of `" .
-      $Legalese->{'last_update'} . "' is part of `GNU groff'" . $end;
+    $Legalese->{'version'} . "' is part of `GNU groff'" . $end;
 
   $stdout->print($output);
 } # end sub version()
