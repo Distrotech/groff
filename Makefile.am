@@ -540,6 +540,7 @@ include $(top_srcdir)/font/devpdf/devpdf.am
 include $(top_srcdir)/font/devps/devps.am
 include $(top_srcdir)/font/devutf8/devutf8.am
 include $(top_srcdir)/font/scripts/scripts.am
+include $(top_srcdir)/man/man.am
 include $(top_srcdir)/src/include/include.am
 include $(top_srcdir)/src/libs/libbib/libbib.am
 include $(top_srcdir)/src/libs/libdriver/libdriver.am
@@ -632,7 +633,7 @@ EXTRA_DIST += \
   README.MinGW \
   arch/djgpp
 
-MOSTLYCLEANFILES += $(man1_MANS) $(man5_MANS)
+MOSTLYCLEANFILES += $(man1_MANS) $(man5_MANS) $(man7_MANS)
 
 # Rule to build .man files. The brackets around the @ are used to prevent the 
 # substitution of the variable by automake. 

@@ -1,0 +1,42 @@
+# Copyright (C) 2014
+#   Free Software Foundation, Inc.
+#
+# This file is part of `groff'
+#
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+man5_MANS += \
+  man/groff_font.n \
+  man/groff_out.n \
+  man/groff_tmac.n
+man7_MANS += \
+  man/ditroff.n \
+  man/groff_char.n \
+  man/groff_diff.n \
+  man/groff.n \
+  man/roff.n
+EXTRA_DIST += \
+  man/groff_font.man \
+  man/groff_out.man \
+  man/groff_tmac.man \
+  man/ditroff.man \
+  man/groff_char.man \
+  man/groff_diff.man \
+  man/groff.man \
+  man/roff.man
+
+# Case of out-of-source build: we must create the 'man' directory.
+BUILT_SOURCES += man
+man:
+	$(MKDIR_P) $(top_builddir)/man
