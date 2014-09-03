@@ -5,13 +5,11 @@
 # Source file position: <groff-source>/contrib/gpinyin/gpinyin.pl
 # Installed position: <prefix>/bin/gpinyin
 
-# Copyright (C) 2014
-#   Free Software Foundation, Inc.
+# Copyright (C) 2014  Free Software Foundation, Inc.
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $Latest_Update = '27 Aug 2014';
-my $version = '1.0.0';
+my $version = '1.0.1';
 
 # This file is part of `gpinyin', which is part of `groff'.
 
@@ -110,7 +108,7 @@ foreach (@ARGV) {
       q(pinyin parts in `roff' files.);
     exit;
   } elsif (/^(-v|--v|--ve|--ver|--vers|--versi|--versio|--version)$/) {
-    print q(`gpinyin' version ) . $version . ' of ' . $Latest_Update;
+    print q(`gpinyin' version ) . $version;
     exit;
   }
 }
