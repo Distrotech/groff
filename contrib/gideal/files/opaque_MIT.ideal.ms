@@ -1,3 +1,21 @@
+.\" --------------------------------------------------------------------
+.\" Legalese
+.\" --------------------------------------------------------------------
+.
+.ig
+Copyright 2014  Free Software Foundation, Inc.
+
+This file is part of `ideal', which is part of `groff', a free
+software project.
+
+You can redistribute it and/or modify it under the terms of the `GNU
+General Public License version 2' (GPL2) as published by the `Free
+Software Foundation'.
+
+The license text is available in the internet at
+<http://www.gnu.org/licenses/gpl-2.0.html>.
+..
+.
 .NH 1
 Opaque Boxes
 .PP
@@ -250,3 +268,11 @@ it is easy to specify the lines or circular arcs that remain.
 But when a spline is chopped, the guiding points of the resulting curve pieces
 are hard to determine.
 .Te
+.
+.\" --------------------------------------------------------------------
+.\" Emacs settings
+.\" --------------------------------------------------------------------
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" End:

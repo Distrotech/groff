@@ -5,12 +5,10 @@
 # Source file position: <groff-source>/contrib/gideal/gideal.pl
 # Installed position: <prefix>/bin/gideal
 
-# Copyright (C) 2014
-#   Free Software Foundation, Inc.
+# Copyright (C) 2014  Free Software Foundation, Inc.
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $Latest_Update = '6 Jul 2014';
 my $version = '0.9.6';
 
 # This file is part of `gideal', which is part of `groff'.
@@ -106,7 +104,7 @@ foreach (@ARGV) {
       q(parts in `roff' files.);
     exit;
   } elsif ( /^(-v|--v|--ve|--ver|--vers|--versi|--versio|--version)$/ ) {
-    print q(`gideal' version ) . $version . ' of ' . $Latest_Update;
+    print q(`gideal' version ) . $version;
     exit;
   }
 }
@@ -121,11 +119,11 @@ my $out_file;
   my $template = 'gideal_' . "$$" . '_XXXX';
   my $tmpdir;
   foreach ($ENV{'GROFF_TMPDIR'}, $ENV{'TMPDIR'}, $ENV{'TMP'}, $ENV{'TEMP'},
-           $ENV{'TEMPDIR'}, 'tmp', $ENV{'HOME'},
-           File::Spec->catfile($ENV{'HOME'}, 'tmp')) {
+	   $ENV{'TEMPDIR'}, 'tmp', $ENV{'HOME'},
+	   File::Spec->catfile($ENV{'HOME'}, 'tmp')) {
     if ($_ && -d $_ && -w $_) {
       eval { $tmpdir = tempdir( $template,
-                                CLEANUP => 1, DIR => "$_" ); };
+				CLEANUP => 1, DIR => "$_" ); };
       last if $tmpdir;
     }
   }
