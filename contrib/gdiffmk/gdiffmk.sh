@@ -1,5 +1,5 @@
 #! /bin/sh
-# Copyright (C) 2004, 2005, 2009 Free Software Foundation, Inc.
+# Copyright (C) 2004-2014 Free Software Foundation, Inc.
 # Written by Mike Bianchi <MBianchi@Foveal.com <mailto:MBianchi@Foveal.com>>
 
 # This file is part of the gdiffmk utility, which is part of groff.
@@ -342,3 +342,11 @@ diff -D"${label}" -- ${FILE1} ${FILE2}  |
 	sed -n "${sed_script}"
 
 # EOF
+
+
+########################################################################
+# Emacs settings
+#
+# Local Variables:
+# mode: text
+# End:
