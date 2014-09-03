@@ -1,7 +1,7 @@
 #! /bin/sh
 # shdeps.sh: Generate OS dependency fixups, for `groff' shell scripts
 #
-# Copyright (C) 2004, 2005, 2009 Free Software Foundation, Inc.
+# Copyright (C) 2004-2014 Free Software Foundation, Inc.
 #      Written by Keith Marshall (keith.d.marshall@ntlworld.com)
 #
 # Invoked only by `make', as:
