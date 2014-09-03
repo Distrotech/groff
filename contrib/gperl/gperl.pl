@@ -5,13 +5,11 @@
 # Source file position: <groff-source>/contrib/gperl/gperl.pl
 # Installed position: <prefix>/bin/gperl
 
-# Copyright (C) 2014
-#   Free Software Foundation, Inc.
+# Copyright (C) 2014  Free Software Foundation, Inc.
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $Latest_Update = '1 Aug 2014';
-my $version = '1.2.4';
+my $version = '1.2.5';
 
 # This file is part of `gperl', which is part of `groff'.
 
@@ -105,7 +103,7 @@ foreach (@ARGV) {
       q(parts in `roff' files.);
     exit;
   } elsif ( /^(-v|--v|--ve|--ver|--vers|--versi|--versio|--version)$/ ) {
-    print q(`gperl' version ) . $version . ' of ' . $Latest_Update;
+    print q(`gperl' version ) . $version;
     exit;
   }
 }
