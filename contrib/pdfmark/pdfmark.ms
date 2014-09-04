@@ -1,4 +1,4 @@
-.\" vim: ft=groff
+.\" vim: ft=groff          -*- nroff -*-
 .ig
 pdfmark.ms
 
@@ -6,7 +6,7 @@ File position: <groff-source>/contrib/pdfmark/pdfmark.ms
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004-2006, 2009, 2011 Free Software Foundation, Inc.
+Copyright (C) 2004-2014  Free Software Foundation, Inc.
 written by Keith Marshall <keith.d.marshall@ntlworld.com>
 
 Permission is granted to copy, distribute and/or modify this document

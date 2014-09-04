@@ -1,5 +1,5 @@
-.\" Copyright 2004, 2009
-.\"   Free Software Foundation, Inc.
+.\" -*- nroff -*-
+.\" Copyright 2004-2014  Free Software Foundation, Inc.
 .\"
 .\" Copying and distribution of this file, with or without modification,
 .\" are permitted in any medium without royalty provided the copyright
