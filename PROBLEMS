@@ -117,7 +117,7 @@ code snippet into the `troffrc' configuration file:
 * Processing mdoc man pages like `groff_mdoc.n' fails if I use
   `test-groff'.  Why?
 
-The mdoc package works only after installation, not with test-groff. 
+The mdoc package works only after installation, not with test-groff.
 Reason is that the macro files of mdoc get stripped off the `doc-'
 prefix before they are copied to the final destination.
 
@@ -295,20 +295,20 @@ following patch:
       $line1 .= <IN> if $line1 =~ /argv/;
       $line2 = <IN>;
 !     next if $line2 eq "'di';\n";
-  
+
       # Pull the old switcheroo.
-  
+
 --- 35,41 ----
       $line1 .= <IN> if $line1 =~ /eval/;
       $line1 .= <IN> if $line1 =~ /argv/;
       $line2 = <IN>;
 !     next if $line2 eq "'di ';\n" || $line2 eq "'di';\n";
-  
+
       # Pull the old switcheroo.
-  
+
 ***************
 *** 49,56 ****
-  
+
       print OUT $line1;
       print OUT <<EOF;
 ! 'di';
@@ -317,7 +317,7 @@ following patch:
   # $header
   #
 --- 49,58 ----
-  
+
       print OUT $line1;
       print OUT <<EOF;
 ! 'di ';
@@ -329,11 +329,11 @@ following patch:
   #
 ***************
 *** 72,85 ****
-  
+
       # These next few lines are legal in both Perl and nroff.
-  
+
 ! $null.00;                       # finish .ig
-   
+
   'di           \\" finish diversion--previous line must be blank
   .nr nl 0-1    \\" fake up transition to first page again
   .nr % 0         \\" start at page 1
@@ -344,12 +344,12 @@ following patch:
   $prog \\- whatever
   .SH SYNOPSIS
 --- 74,87 ----
-  
+
       # These next few lines are legal in both Perl and nroff.
-  
+
 ! $null.00 ;                      # finish .ig
 ! 'ec \\';
-   
+
   'di           \\" finish diversion--previous line must be blank
   .nr nl 0-1    \\" fake up transition to first page again
   .nr % 0         \\" start at page 1
@@ -372,7 +372,7 @@ and recompile groff:
 --- cplus-decl.c	Wed Jun  5 08:55:04 1991
 ***************
 *** 7951,7961 ****
-  
+
         /* At the end, call delete if that's what's requested.  */
         if (TREE_GETS_DELETE (current_class_type))
   	exprstmt = build_method_call (build1 (NOP_EXPR, TYPE_POINTER_TO (current_class_type), error_mark_node),
@@ -384,7 +384,7 @@ and recompile groff:
         else
   	exprstmt = 0;
 --- 7951,7961 ----
-  
+
         /* At the end, call delete if that's what's requested.  */
         if (TREE_GETS_DELETE (current_class_type))
   	exprstmt = build_method_call (build1 (NOP_EXPR, TYPE_POINTER_TO (current_class_type), error_mark_node),
@@ -846,7 +846,7 @@ If you're using ash as /bin/sh, you'll need the following patch.
 *** 3,9 ****
   file=$1
   shift
-  
+
 ! defs="#define $1"
   shift
   for def
@@ -854,7 +854,7 @@ If you're using ash as /bin/sh, you'll need the following patch.
 --- 3,10 ----
   file=$1
   shift
-  
+
 ! x=$1
 ! defs="#define $x"
   shift
@@ -957,6 +957,15 @@ then
 
 as usual.
 
+----------------------------------------------------------------------
+
+* Configuration on MacOS X 10.6 doesn't succeed.
+
+Configuration fails with the native clang compiler (`Apple clang
+version 1.7 (tags/Apple/clang-77) (based on LLVM 2.9svn)'), as shipped
+with developer-tools.  It works successfully with newer compilers,
+e.g., clang version 3.4 (from MacPorts) and gcc (MacPorts gcc48
+4.8.2_0) 4.8.2.
 
 ##### Emacs settings
 Local Variables:
