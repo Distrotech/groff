@@ -1,5 +1,4 @@
-.\" Copyright (C) 2006-2011
-.\"   Free Software Foundation, Inc.
+.\" Copyright (C) 2006-2014  Free Software Foundation, Inc.
 .\"      Written by Eric S. Raymond <esr@thyrsus.com>
 .\"
 .\" This file is part of groff.
