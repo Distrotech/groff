@@ -50,25 +50,13 @@ YTABC=label.cpp
 NAMEPREFIX=$(g)
 
 .PHONY: install_data
-install_data: refer $(MAN1)
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(RM) $(DESTDIR)$(bindir)/refer
-	$(INSTALL_SCRIPT) refer $(DESTDIR)$(bindir)/refer
-	-test -d $(DESTDIR)$(refer_dir) ||
-	  $(mkinstalldirs) $(DESTDIR)$(refer_dir)
-	for f in $(MAN1); do \
-	  $(RM) $(DESTDIR)$(refer_dir)/$$f; \
-	  $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(refer_dir)/$$f; \
-	done
+install_data: refer
+	-test -d $(DESTDIR)$(referdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(referdir)
 
 .PHONY: uninstall_data
 uninstall_sub:
-	$(RM) $(DESTDIR)$(bindir)/refer
-	-for f in $(MAN1); do \
-	  $(RM) $(DESTDIR)$(refer_dir)/$$f; \
-	done
-	-d=$(DESTDIR)$(refer_dir);\
-	  if test -d $$d; then rmdir $$d; fi
+	-rmdir $(DESTDIR)$(referdir)
 
 
 ########################################################################
