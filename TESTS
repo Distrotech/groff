@@ -18,6 +18,8 @@ Current status
   - Build src/devices/*
   - Build src/roff/*
   - Build font/*
+  - man files from 'man' directory installed
+  - tmac files from 'tmac' directory installed
 
 Tests
 -----
@@ -130,7 +132,6 @@ from font: font files in
   - devpdf
   - devps
   - devutf8
-
 
 In order to check and improve the dependencies, the following targets
 were built from a clean environment:
@@ -254,8 +255,22 @@ Differences with former build system:
     build system, except the fonts from devpdf which are not generated
     identically at each build.
 
+  - tmac files from 'tmac' dir are installed in
+    $(DESTDIR)/usr/local/groff/1.22.2/tmac. Some files are first
+    stripped (comments removed) at build time. Checked that they are
+    strictly identical to the one install by the original build
+    system.
+
 Diff with previous build system:
   - devcp1047 fonts are installed $(DESTDIR)/usr/local/groff/1.22.2/font
+
+TODO: 
+
+  - The original build system might uses tmac_s_prefix,
+  tmac_an_prefix, tmac_wrap and sys_tmac_prefix during the
+  installation of some tmac files but set these variables to an empty
+  value in tmac/Makefile.sub, I don't quite understand how these
+  variables could be set.
 
 2.7 make uninstall
 
@@ -269,6 +284,7 @@ Diff with previous build system:
   - $(DESTDIR)/usr/local/share/groff/1.22/
   - $(DESTDIR)/usr/local/share/groff/1.22/font
   - $(DESTDIR)/usr/local/share/groff/1.22/oldfont
+  - $(DESTDIR)/usr/local/share/groff/1.22/tmac
   - $(DESTDIR)/usr/local/share/groff/
   - $(DESTDIR)/usr/X11/lib/X11/app-defaults/GXditview and
     GXditview-color. However, GXditview.old and GXditview-color.old
