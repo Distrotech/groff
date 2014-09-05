@@ -1,0 +1,195 @@
+# Copyright (C) 1989-2007, 2009-2012, 2014
+#   Free Software Foundation, Inc.
+#      Written by James Clark (jjc@jclark.com)
+#      Automake migration by Bertrand Garrigues
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+tmac_srcdir = $(top_srcdir)/tmac
+
+man7_MANS += \
+  tmac/groff_ms.n \
+  tmac/groff_man.n \
+  tmac/groff_me.n \
+  tmac/groff_mdoc.n \
+  tmac/groff_trace.n \
+  tmac/groff_www.n
+
+TMACNORMALFILES = \
+  tmac/man.tmac \
+  tmac/mandoc.tmac \
+  tmac/andoc.tmac \
+  tmac/an-old.tmac \
+  tmac/an-ext.tmac \
+  tmac/ms.tmac \
+  tmac/me.tmac \
+  tmac/mdoc.tmac \
+  tmac/pic.tmac \
+  tmac/a4.tmac \
+  tmac/papersize.tmac \
+  tmac/62bit.tmac \
+  tmac/ec.tmac \
+  tmac/safer.tmac \
+  tmac/trace.tmac \
+  tmac/ps.tmac \
+  tmac/psold.tmac \
+  tmac/pspic.tmac \
+  tmac/psatk.tmac \
+  tmac/pdf.tmac \
+  tmac/dvi.tmac \
+  tmac/tty.tmac \
+  tmac/tty-char.tmac \
+  tmac/latin1.tmac \
+  tmac/latin2.tmac \
+  tmac/latin5.tmac \
+  tmac/latin9.tmac \
+  tmac/cp1047.tmac \
+  tmac/unicode.tmac \
+  tmac/X.tmac \
+  tmac/Xps.tmac \
+  tmac/lj4.tmac \
+  tmac/lbp.tmac \
+  tmac/html.tmac \
+  tmac/html-end.tmac \
+  tmac/devtag.tmac \
+  tmac/europs.tmac \
+  tmac/composite.tmac \
+  tmac/fallbacks.tmac \
+  tmac/eqnrc \
+  tmac/refer.tmac \
+  tmac/refer-me.tmac \
+  tmac/refer-ms.tmac \
+  tmac/troffrc \
+  tmac/troffrc-end \
+  tmac/trans.tmac \
+  tmac/hyphen.us \
+  tmac/hyphenex.us \
+  tmac/fr.tmac \
+  tmac/hyphen.fr \
+  tmac/sv.tmac \
+  tmac/hyphen.sv \
+  tmac/de.tmac \
+  tmac/den.tmac \
+  tmac/hyphen.det \
+  tmac/hyphen.den \
+  tmac/hyphenex.det \
+  tmac/cs.tmac \
+  tmac/hyphen.cs \
+  tmac/hyphenex.cs \
+  tmac/ja.tmac
+NORMALFILES = `echo $(TMACNORMALFILES) | sed -e "s|tmac/||g"`
+
+# TMACMDOCFILES and TMACSTRIPFILES are build from their unstripped version ( -u)
+TMACSPECIALFILES = tmac/an.tmac tmac/s.tmac tmac/www.tmac
+TMACSTRIPFILES = tmac/e.tmac tmac/doc.tmac tmac/doc-old.tmac
+
+# Files installed in tmacdir
+dist_tmac_DATA = $(TMACNORMALFILES) $(TMACSPECIALFILES) $(TMACSTRIPFILES)
+
+TMACMDOCFILES = \
+  tmac/doc-common \
+  tmac/doc-ditroff \
+  tmac/doc-nroff \
+  tmac/doc-syms
+MDOCFILES = `echo $(TMACMDOCFILES) | sed -e "s|tmac/||g"`
+mdocdir=$(tmacdir)/mdoc
+# Files installed in mdocdir
+nodist_mdoc_DATA = $(TMACMDOCFILES)
+
+# Installed in localtmacdir
+dist_localtmac_DATA = tmac/man.local tmac/mdoc.local
+
+MOSTLYCLEANFILES += $(TMACMDOCFILES) $(TMACSPECIALFILES) $(TMACSTRIPFILES) \
+   tmac/stamp-wrap \
+   tmac/*-wrap
+
+# FIXME
+# Original Makefile.sub forced the following variables that are
+# originally defined in the top Makefile.am. We don't use them here,
+# if they are needed custom install commands should be written
+#
+# tmac_s_prefix=
+# tmac_an_prefix=
+# tmac_wrap=
+# sys_tmac_prefix=
+
+EXTRA_DIST += \
+  tmac/fixmacros.sed \
+  tmac/groff_ms.man \
+  tmac/groff_man.man \
+  tmac/groff_me.man \
+  tmac/groff_mdoc.man \
+  tmac/groff_trace.man \
+  tmac/groff_www.man \
+  tmac/hyphenex.pl \
+  tmac/LOCALIZATION \
+  tmac/man.ultrix \
+  tmac/psfig.tmac \
+  tmac/ptx.tmac \
+  tmac/strip.sed \
+  tmac/TESTING-HINTS \
+  tmac/TODO \
+  tmac/www.tmac.in
+
+dist-hook: tmac-dist-hook
+tmac-dist-hook:
+	chmod u+w $(distdir)/tmac
+	for f in $(TMACMDOCFILES) $(TMACSTRIPFILES); do \
+	  cp -f $(top_srcdir)/$$f-u $(distdir)/tmac; \
+	done
+
+all: tmac/stamp-wrap
+
+$(TMACMDOCFILES) $(TMACSTRIPFILES): 
+	$(MKDIR_P) $(top_builddir)/tmac
+	for f in $(TMACMDOCFILES) $(TMACSTRIPFILES); do \
+	   sed -f $(tmac_srcdir)/strip.sed $(top_srcdir)/$$f-u > $(top_builddir)/$$f; \
+	done
+
+tmac/stamp-wrap:
+	$(MKDIR_P) $(top_builddir)/tmac;
+	if test -n "$(tmac_wrap)"; then \
+	  for m in ""$(tmac_wrap); do \
+	    $(RM) $(top_builddir)/tmac/$$m-wrap; \
+	    if test "$$m" = an; then \
+	      echo .do mso $(tmac_srcdir)/andoc.tmac >>$(top_builddir)/tmac/$$m-wrap; \
+	    fi; \
+	    echo .cp 1 >>$(top_builddir)/tmac/$$m-wrap; \
+	    echo .so $(sys_tmac_prefix)$$m >>$(top_builddir)/tmac/$$m-wrap; \
+	  done; \
+	fi
+	touch $@
+
+tmac/www.tmac: tmac/www.tmac.in
+	$(MKDIR_P) $(top_builddir)/tmac
+	sed -e "s;[@]PNMTOPS_NOSETPAGE[@];$(pnmtops_nosetpage);g" \
+	  $(tmac_srcdir)/www.tmac.in > $(top_builddir)/tmac/www.tmac
+
+uninstall-hook: uninstall_tmac_hook
+uninstall_tmac_hook:
+	-if test -n "$(tmac_wrap)"; then \
+	  for m in ""$(tmac_wrap); do \
+	    $(RM) $(DESTDIR)$(systemtmacdir)/$$m.tmac; \
+	  done; \
+	fi
+	if test -d $(DESTDIR)$(mdocdir); then \
+	  rmdir $(DESTDIR)$(mdocdir); \
+	fi
+	if test -d $(DESTDIR)$(tmacdir); then \
+	  rmdir $(DESTDIR)$(tmacdir); \
+	fi
+	if test -d $(DESTDIR)$(localtmacdir); then \
+	  rmdir $(DESTDIR)$(localtmacdir); \
+	fi
