@@ -1,8 +1,7 @@
 # Autoconf macros for groff.
-# Copyright (C) 1989-1995, 2001-2007, 2009, 2011, 2013, 2014
-#   Free Software Foundation, Inc.
+# Copyright (C) 1989-2014  Free Software Foundation, Inc.
 #
-# Last update: 8 Aug 2014
+# Last update: 5 Sep 2014
 #
 # This file is part of groff.
 #
@@ -1396,3 +1395,7 @@ AC_DEFUN([GROFF_GPINYINDIR_DEFAULT],
 AC_DEFUN([GROFF_GROGDIR_DEFAULT],
   grog_dir=$libprogramdir/grog
   AC_SUBST([grog_dir]))
+
+AC_DEFUN([GROFF_REFER_DEFAULT],
+  refer_dir=$libprogramdir/refer
+  AC_SUBST([refer_dir]))
