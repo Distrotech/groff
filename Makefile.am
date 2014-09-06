@@ -607,7 +607,7 @@ lib/localcharset.$(OBJEXT): lib/configmake.h
 
 # directories specific to groff
 uninstall-hook: uninstall_groffdirs
-uninstall_groffdirs: uninstall_devpdf uninstall_tmac_hook
+uninstall_groffdirs:
 	if test -d $(DESTDIR)$(datasubdir); then \
 	  rm -rf $(DESTDIR)$(fontdir); \
 	  rm -rf $(DESTDIR)$(oldfontdir); \
