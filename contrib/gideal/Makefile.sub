@@ -24,8 +24,18 @@
 ########################################################################
 
 MAN1=gideal.n
-
 MAN7=ideal.n
+
+FILES=opaque_MIT.ideal.ms \
+	test.groff \
+	README.txt
+
+LIBFILES=arc.ideal \
+	arrow.ideal \
+	dash.ideal \
+	rect.ideal \
+	wavy.ideal \
+	README.txt
 
 MOSTLYCLEANADD=gideal $(MAN1) $(MAN7)
 
@@ -39,6 +49,7 @@ gideal: gideal.pl
             -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
+	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
 	    $(srcdir)/gideal.pl >$@; \
 	chmod +x $@
@@ -48,39 +59,37 @@ install_data: gideal
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	$(RM) $(DESTDIR)$(bindir)/gideal
 	$(INSTALL_SCRIPT) gideal $(DESTDIR)$(bindir)/gideal
-	-test -d $(DESTDIR)$(datasubdir) \
-          || $(mkinstalldirs) $(DESTDIR)$(datasubdir)
-	-test -d $(DESTDIR)$(datasubdir)/ideal \
-          || $(mkinstalldirs) $(DESTDIR)$(datasubdir)/ideal
-	-test -d $(DESTDIR)$(datasubdir)/ideal/libfiles \
-          || $(mkinstalldirs) $(DESTDIR)$(datasubdir)/ideal/libfiles
-	$(RM) $(DESTDIR)$(datasubdir)/ideal/libfiles/*
-	for i in $(srcdir)/libfiles/*; do \
-	  n=`echo $$i | sed 's|$(srcdir)/libfiles/||g'`; \
-	  $(INSTALL_DATA) $$i $(DESTDIR)$(datasubdir)/ideal/libfiles/$$n; \
-	done
 	-test -d $(DESTDIR)$(exampledir) \
           || $(mkinstalldirs) $(DESTDIR)$(exampledir)
 	-test -d $(DESTDIR)$(exampledir)/ideal \
           || $(mkinstalldirs) $(DESTDIR)$(exampledir)/ideal
-	-test -d $(DESTDIR)$(exampledir)/ideal/files \
-          || $(mkinstalldirs) $(DESTDIR)$(exampledir)/ideal/files
-	$(RM) $(DESTDIR)$(exampledir)/ideal/files/*
-	for i in $(srcdir)/files/*; do \
-	  n=`echo $$i | sed 's|$(srcdir)/files/||g'`; \
-	  $(INSTALL_DATA) $$i $(DESTDIR)$(exampledir)/ideal/files/$$n; \
+	for f in $(FILES); do \
+	  $(RM) $(DESTDIR)$(exampledir)/ideal/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/files/$$f \
+	    $(DESTDIR)$(exampledir)/ideal/$$f; \
+	done
+	-test -d $(DESTDIR)$(datasubdir) \
+          || $(mkinstalldirs) $(DESTDIR)$(datasubdir)
+	-test -d $(DESTDIR)$(datasubdir)/ideal \
+          || $(mkinstalldirs) $(DESTDIR)$(datasubdir)/ideal
+	for f in $(LIBFILES); do \
+	  $(RM) $(DESTDIR)$(datasubdir)/ideal/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/libfiles/$$f \
+	    $(DESTDIR)$(datasubdir)/ideal/$$f; \
 	done
 
-
 .PHONY: uninstall_sub
-uninstall_sub:
+uninstall_sub: $
 	$(RM) $(DESTDIR)$(bindir)/gideal
 	-rmdir $(DESTDIR)$(bindir)
-	$(RM) $(DESTDIR)$(datasubdir)/ideal/files/*
-	-rmdir $(DESTDIR)$(datasubdir)/ideal/files
-	$(RM) $(DESTDIR)$(datasubdir)/ideal/libfiles/*
-	-rmdir $(DESTDIR)$(datasubdir)/ideal/libfiles
+	for f in $(LIBFILES); do \
+	  $(RM) $(DESTDIR)$(datasubdir)/ideal/$$f; \
+	done
 	-rmdir $(DESTDIR)$(datasubdir)/ideal
+	for f in $(FILES); do \
+	  $(RM) $(DESTDIR)$(exampledir)/ideal/$$f; \
+	done
+	-rmdir $(DESTDIR)$(exampledir)/ideal
 
 
 ########################################################################
