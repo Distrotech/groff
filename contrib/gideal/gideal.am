@@ -1,0 +1,79 @@
+# Automake rules for `gideal' (preprocessor for added Perl parts)
+
+# File position: <groff-source>/contrib/gideal/gideal.am
+
+# Copyright (C) 2014
+#   Free Software Foundation, Inc.
+# Written by Bernd Warken <groff-bernd.warken-72@web.de>.
+# Automake migration by Bertrand Garrigues
+
+# Last update: Aug 2014
+
+# This file is part of `gideal' which is part of `groff'.
+
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see
+# <http://www.gnu.org/licenses/gpl-2.0.html>.
+
+########################################################################
+gideal_srcdir = $(top_srcdir)/contrib/gideal
+bin_SCRIPTS += gideal
+man1_MANS += contrib/gideal/gideal.n
+man7_MANS += contrib/gideal/ideal.n
+MOSTLYCLEANFILES += gideal
+
+gideallibfilesdir = $(datasubdir)/ideal/libfiles
+dist_gideallibfiles_DATA = \
+  contrib/gideal/libfiles/README.txt  \
+  contrib/gideal/libfiles/arc.ideal \
+  contrib/gideal/libfiles/arrow.ideal \
+  contrib/gideal/libfiles/circle.ideal \
+  contrib/gideal/libfiles/dash.ideal \
+  contrib/gideal/libfiles/rect.ideal \
+  contrib/gideal/libfiles/wavy.ideal
+
+gidealfilesdir = $(exampledir)/ideal/files
+dist_gidealfiles_DATA = \
+  contrib/gideal/files/README.txt \
+  contrib/gideal/files/opaque_MIT.ideal.ms \
+  contrib/gideal/files/test.groff
+
+EXTRA_DIST += \
+  contrib/gideal/ChangeLog \
+  contrib/gideal/gideal.man \
+  contrib/gideal/gideal.pl \
+  contrib/gideal/ideal.man
+
+gideal: contrib/gideal/gideal.pl
+	sed -f "$(SH_DEPS_SED_SCRIPT)" \
+            -e "s|[@]g[@]|$(g)|g" \
+	    -e "s|[@]BINDIR[@]|$(DESTDIR)$(bindir)|g" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|g" \
+	    -e "$(SH_SCRIPT_SED_CMD)" \
+	    $(gideal_srcdir)/gideal.pl >$@; \
+	chmod +x $@
+
+uninstall_groffdirs: gideal-uninstall-hook
+gideal-uninstall-hook:
+	if test -d $(DESTDIR)$(datasubdir)/ideal; then \
+	  if test -d $(DESTDIR)$(gideallibfilesdir); then \
+	    rmdir $(DESTDIR)$(gideallibfilesdir); \
+	  fi; \
+	  rmdir $(DESTDIR)$(datasubdir)/ideal; \
+	fi
+	if test -d $(DESTDIR)$(exampledir)/ideal; then \
+	  if test -d $(DESTDIR)$(gidealfilesdir); then \
+	    rmdir $(DESTDIR)$(gidealfilesdir); \
+	  fi; \
+	  rmdir $(DESTDIR)$(exampledir)/ideal; \
+	fi

@@ -24,6 +24,7 @@ Current status
     -- chem
     -- eqn2graph
     -- gdiffmk
+    -- gideal
 
 Tests
 -----
@@ -143,8 +144,11 @@ from contrib/chem:
 from contrib/eqn2graph:
   - `eqn2graph' script
 
-from contrin/gdiffmk:
+from contrib/gdiffmk:
   - `gdiffmk' script
+
+from contrib/gideal
+  - `gideal' script
 
 In order to check and improve the dependencies, the following targets
 were built from a clean environment:
@@ -186,6 +190,7 @@ were built from a clean environment:
   - make chem
   - make eqn2graph
   - make gdiffmk
+  - make gideal
 
 2.2 make clean
 
@@ -280,6 +285,7 @@ Differences with former build system:
     -- chem
     -- eqn2graph
     -- gdiffmk
+    -- gideal
 
   - contrib/chem:
 
@@ -292,7 +298,15 @@ Differences with former build system:
     
     -- contrib/chem/README is strangely build but not installed, this
        is the behaviour on the old build system.
-    
+
+  - contrib/gideal:
+     
+    -- .ideal files installed in
+       $(DESTDIR)/usr/local/share/groff/1.22.2/ideal/libfiles/
+
+    -- example files installed in
+       $(DESTDIR)/usr/local/share/doc/groff-1.22.2/examples/ideal/files/
+
 Diff with previous build system:
   - devcp1047 fonts are installed $(DESTDIR)/usr/local/groff/1.22.2/font
 
@@ -381,6 +395,7 @@ TODO:
 
 2.9 make check
   
+  (manually called automake --add-missing to add build-aux/test-driver)
   - gdiffmk's test script is now plugged to the 'make check'
     target. The original runtests.in is renamed to runtests.sh with
     absolute paths. The new script gdiffmk_tests.sh is used to call
