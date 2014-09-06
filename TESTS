@@ -20,6 +20,7 @@ Current status
   - Build font/*
   - man files from 'man' directory installed
   - tmac files from 'tmac' directory installed
+  - Build and installation of contrib/chem
 
 Tests
 -----
@@ -133,6 +134,9 @@ from font: font files in
   - devps
   - devutf8
 
+from contrib/chem:
+  - `chem' script and 3 README files
+
 In order to check and improve the dependencies, the following targets
 were built from a clean environment:
   - make lib/libgnu.a
@@ -170,6 +174,7 @@ were built from a clean environment:
   - make grog
   - make nroff
   - make troff
+  - make chem
 
 2.2 make clean
 
@@ -180,10 +185,6 @@ The following files remain (this is expected):
   - src/include/config.h
   - src/include/stamp-h1
   - .deps directories and .dirstamp files
-
-  - .n files, afmtodit are cleaned
-  - shdeps.sed is cleaned
-  - binaries from bin_PROGRAMS are cleaned
 
 2.3 make mostlyclean
 
@@ -260,7 +261,19 @@ Differences with former build system:
     stripped (comments removed) at build time. Checked that they are
     strictly identical to the one install by the original build
     system.
+  
+  - contrib/chem:
 
+    -- chem.pic installed in
+    $(DESTDIR)/usr/local/share/groff/1.22.3/pic/chem.pic
+
+    -- other chem files installed in
+    $(DESTDIR)/usr/local/share/doc/groff-1.22.3/examples, identical to
+    the old build system.
+    
+    -- contrib/chem/README is strangely build but not installed, this
+       is the behaviour on the old build system.
+    
 Diff with previous build system:
   - devcp1047 fonts are installed $(DESTDIR)/usr/local/groff/1.22.3/font
 
@@ -272,23 +285,33 @@ TODO:
   value in tmac/Makefile.sub, I don't quite understand how these
   variables could be set.
 
+  - Add automake conditional for examples, html, and doc in `contrib'.
+
 2.7 make uninstall
 
-  Removes:
+  - Tree after uninstall:
+.
+└── usr
+    └── local
+        ├── bin
+        ├── lib
+        │   └── X11
+        │       └── app-defaults
+        └── share
+            ├── doc
+            └── man
+                ├── man1
+                ├── man5
+                └── man7
 
-  - $(DESTDIR)/usr/local/lib/charset.alias if exists
-  - $(DESTDIR)/usr/local/bin/*
-  - $(DESTDIR)/usr/local/man/man1/*
-  - $(DESTDIR)/usr/local/man/man5/*
-  - $(DESTDIR)/usr/local/share/groff/1.22.3/eign
-  - $(DESTDIR)/usr/local/share/groff/1.22.3/
-  - $(DESTDIR)/usr/local/share/groff/1.22.3/font
-  - $(DESTDIR)/usr/local/share/groff/1.22.3/oldfont
-  - $(DESTDIR)/usr/local/share/groff/1.22.3/tmac
-  - $(DESTDIR)/usr/local/share/groff/
-  - $(DESTDIR)/usr/local/lib/X11/app-defaults/GXditview and
-    GXditview-color. However, GXditview.old and GXditview-color.old
-    are not removed (this is the behaviour on the old build system)
+12 directories, 0 files
+
+  - Notes:
+    -- $(DESTDIR)/usr/local/lib/charset.alias is removed if exists
+    -- $(DESTDIR)/usr/local/lib/X11/app-defaults/GXditview and
+    GXditview-color are removed. However, GXditview.old and
+    GXditview-color.old are not removed (this is the behaviour on the
+    old build system)
   
 2.8 make dist
 
@@ -362,4 +385,3 @@ Notes
   - Gnulib: some files of src/libs/libgroff could be replaced by their
     gnulib equivalent
   - Gnulib: git-version-gen could be used
-
