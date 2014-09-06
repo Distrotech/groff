@@ -1,0 +1,106 @@
+# Automake rules for `groffer'
+
+# File position: <groff-source>/contrib/groffer/groffer.am
+
+# Copyright (C) 2001-2014
+#   Free Software Foundation, Inc.
+# Written by Werner Lemberg <wl@gnu.org> and
+# Bernd Warken <groff-bernd.warken-72@web.de>.
+# Automake migration by Bertrand Garrigues
+
+# This file is part of `groffer' which is part of `groff'.
+
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see
+# <http://www.gnu.org/licenses/gpl-2.0.html>.
+
+########################################################################
+
+groffer_srcdir = $(top_srcdir)/contrib/groffer
+# generated programs
+ROFF2PROGS = \
+  roff2dvi \
+  roff2html \
+  roff2pdf \
+  roff2ps \
+  roff2text \
+  roff2x
+
+# Generated man templates
+ROFF2MAN = \
+  contrib/groffer/roff2dvi.man \
+  contrib/groffer/roff2html.man \
+  contrib/groffer/roff2pdf.man \
+  contrib/groffer/roff2ps.man \
+  contrib/groffer/roff2text.man \
+  contrib/groffer/roff2x.man
+
+GROFFER_PERL = \
+  contrib/groffer/main_subs.pl \
+  contrib/groffer/man.pl \
+  contrib/groffer/split_env.sh \
+  contrib/groffer/subs.pl
+
+GROFFER_REST = \
+  contrib/groffer/roff2.man \
+  contrib/groffer/version.sh \
+  contrib/groffer/groffer.man \
+  contrib/groffer/groffer.pl \
+  contrib/groffer/roff2.pl
+
+EXTRA_DIST += $(GROFFER_PERL) $(GROFFER_REST) \
+  contrib/groffer/ChangeLog  \
+  contrib/groffer/README \
+  contrib/groffer/README_PERL
+
+# groffer_dir is set by a m4 macro
+grofferdir = $(groffer_dir)
+bin_SCRIPTS += groffer $(ROFF2PROGS)
+groffer_DATA = $(GROFFER_PERL) contrib/groffer/version.sh
+man1_MANS += \
+  contrib/groffer/groffer.n \
+  contrib/groffer/roff2dvi.n \
+  contrib/groffer/roff2html.n \
+  contrib/groffer/roff2pdf.n \
+  contrib/groffer/roff2ps.n \
+  contrib/groffer/roff2text.n \
+  contrib/groffer/roff2x.n
+MOSTLYCLEANFILES += $(ROFF2MAN)
+
+$(ROFF2PROGS): $(groffer_srcdir)/roff2.pl
+	cp $(groffer_srcdir)/roff2.pl $@;
+
+# we take roff2.man and replace the @ROFF2MODE@ by the type of file
+# (dvi, pdf, html etc ...)
+$(ROFF2MAN):  $(groffer_srcdir)/roff2.man
+	@$(MKDIR_P) contrib/groffer
+	FILEMODE=`echo $@ | sed 's|contrib/groffer/roff2\([a-z]\+\)\.man|\1|g'` \
+	  && sed -e 's/[@]ROFF2MODE[@]/'"$$FILEMODE"'/g' $(groffer_srcdir)/roff2.man > $@;
+
+groffer: $(GROFFER_PERL) $(GROFFER_REST) $(SH_DEPS_SED_SCRIPT)
+	echo "Using perl version of groffer."; \
+	sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	   -e "s|[@]g[@]|$(g)|g" \
+	   -e "s|[@]BINDIR[@]|$(DESTDIR)$(bindir)|g" \
+	   -e "s|[@]libdir[@]|$(DESTDIR)$(libdir)|g" \
+	   -e "s|[@]groffer_dir[@]|$(DESTDIR)$(groffer_dir)|g" \
+	   -e "s|[@]VERSION[@]|$(VERSION)|g" \
+	   -e "$(SH_SCRIPT_SED_CMD)" \
+	    $(groffer_srcdir)/groffer.pl >$@; \
+	chmod +x $@;
+
+uninstall_groffdirs: uninstall-groffer-hook
+uninstall-groffer-hook:
+	if test -d $(DESTDIR)$(grofferdir); then \
+	  rmdir $(DESTDIR)$(grofferdir); \
+	fi
