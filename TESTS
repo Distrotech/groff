@@ -331,6 +331,14 @@ TODO:
 
 2.7 make uninstall
 
+  - Note: target 'uninstall_groffdirs' is a dependency of standard
+    target uninstall-hook, and removes groff's specific directories
+    (exampledir, libprogramdir etc ...). contrib that create
+    sub-directories in these groff specific directories should also
+    add a custom rule that is a dependency of uninstall_groffdirs to
+    remove the directories it created, otherwise uninstall-hook will
+    fail du to the impossibility to remove non-empty dir.
+
   - Tree after uninstall:
 .
 └── usr

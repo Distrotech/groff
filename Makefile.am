@@ -536,6 +536,7 @@ include $(top_srcdir)/contrib/chem/chem.am
 include $(top_srcdir)/contrib/eqn2graph/eqn2graph.am
 include $(top_srcdir)/contrib/gdiffmk/gdiffmk.am
 include $(top_srcdir)/contrib/gideal/gideal.am
+include $(top_srcdir)/contrib/glilypond/glilypond.am
 include $(top_srcdir)/font/devX100/devX100.am
 include $(top_srcdir)/font/devX100-12/devX100-12.am
 include $(top_srcdir)/font/devX75/devX75.am
