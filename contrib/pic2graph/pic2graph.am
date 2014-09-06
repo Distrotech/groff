@@ -15,32 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# Makefile.sub
+# pic2graph.am
 #
-MAN1=pic2graph.n
-MOSTLYCLEANADD=pic2graph
-RM=rm -f
 
-all: pic2graph
-
-pic2graph: pic2graph.sh
-	sed -e "s|@g@|$(g)|g" \
-	    -e "s|@VERSION@|$(version)$(revision)|" \
-	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/pic2graph.sh >$@
+pic2graph_srcdir = $(top_srcdir)/contrib/pic2graph
+man1_MANS += contrib/pic2graph/pic2graph.n
+bin_SCRIPTS += pic2graph
+EXTRA_DIST += \
+  contrib/pic2graph/pic2graph.sh \
+  contrib/pic2graph/pic2graph.man
+pic2graph: $(pic2graph_srcdir)/pic2graph.sh
+	sed -e "s|[@]g[@]|$(g)|g" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|" \
+	    -e $(SH_SCRIPT_SED_CMD) $(pic2graph_srcdir)/pic2graph.sh >$@
 	chmod +x $@
-
-install_data: pic2graph
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(RM) $(DESTDIR)$(bindir)/pic2graph
-	$(INSTALL_SCRIPT) pic2graph $(DESTDIR)$(bindir)/pic2graph
-
-uninstall_sub:
-	$(RM) $(DESTDIR)$(bindir)/pic2graph
-
-
-########################################################################
-# Emacs settings
-#
-# Local Variables:
-# mode: makefile
-# End:

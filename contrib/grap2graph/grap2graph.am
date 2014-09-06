@@ -15,32 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# Makefile.sub
+# grap2graph.am
 #
-MAN1=grap2graph.n
-MOSTLYCLEANADD=grap2graph
-RM=rm -f
 
-all: grap2graph
-
-grap2graph: grap2graph.sh
-	sed -e "s|@g@|$(g)|g" \
-	    -e "s|@VERSION@|$(version)$(revision)|" \
-	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/grap2graph.sh >$@
+grap2graph_srcdir = $(top_srcdir)/contrib/grap2graph
+bin_SCRIPTS += grap2graph
+man1_MANS += contrib/grap2graph/grap2graph.n
+EXTRA_DIST += \
+  $(grap2graph_srcdir)/grap2graph.sh \
+  $(grap2graph_srcdir)/grap2graph.man
+grap2graph: $(grap2graph_srcdir)/grap2graph.sh
+	sed -e "s|[@]g[@]|$(g)|g" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|" \
+	    -e $(SH_SCRIPT_SED_CMD) $(grap2graph_srcdir)/grap2graph.sh >$@
 	chmod +x $@
-
-install_data: grap2graph
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(RM) $(DESTDIR)$(bindir)/grap2graph
-	$(INSTALL_SCRIPT) grap2graph $(DESTDIR)$(bindir)/grap2graph
-
-uninstall_sub:
-	$(RM) $(DESTDIR)$(bindir)/grap2graph
-
-########################################################################
-# Emacs settings
-########################################################################
-#
-# Local Variables:
-# mode: makefile
-# End:

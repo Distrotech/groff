@@ -540,6 +540,11 @@ include $(top_srcdir)/contrib/chem/chem.am
 include $(top_srcdir)/contrib/eqn2graph/eqn2graph.am
 include $(top_srcdir)/contrib/gdiffmk/gdiffmk.am
 include $(top_srcdir)/contrib/glilypond/glilypond.am
+include $(top_srcdir)/contrib/gperl/gperl.am
+include $(top_srcdir)/contrib/gpinyin/gpinyin.am
+include $(top_srcdir)/contrib/grap2graph/grap2graph.am
+include $(top_srcdir)/contrib/groff_filenames/groff_filenames.am
+include $(top_srcdir)/contrib/pic2graph/pic2graph.am
 include $(top_srcdir)/font/devX100/devX100.am
 include $(top_srcdir)/font/devX100-12/devX100-12.am
 include $(top_srcdir)/font/devX75/devX75.am
@@ -655,7 +660,7 @@ EXTRA_DIST += \
   README.MinGW \
   arch/djgpp
 
-MOSTLYCLEANFILES += $(man1_MANS) $(man5_MANS) $(man7_MANS)
+MOSTLYCLEANFILES += $(man1_MANS) $(man5_MANS) $(man7_MANS) $(bin_SCRIPTS)
 
 # Rule to build .man files. The brackets around the @ are used to prevent the 
 # substitution of the variable by automake. 
