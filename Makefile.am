@@ -163,7 +163,9 @@ datasubdir=$(dataprogramdir)/$(VERSION)
 # `infodir' says where to install info files.
 
 # docdir
-# `docdir' says where to install documentation files.
+# `docdir' says where to install documentation files.  The default
+# location is ${datarootdir}/doc/${PACKAGE}, but we add the version
+docdir=$(datarootdir)/doc/${PACKAGE}-$(VERSION)
 
 # `exampledir' says where to install example files.
 exampledir=$(docdir)/examples
@@ -521,6 +523,7 @@ AM_YFLAGS = -d -v
 
 include $(top_srcdir)/lib/gnulib.mk
 include $(top_srcdir)/arch/misc/misc.am
+include $(top_srcdir)/contrib/chem/chem.am
 include $(top_srcdir)/font/devX100/devX100.am
 include $(top_srcdir)/font/devX100-12/devX100-12.am
 include $(top_srcdir)/font/devX75/devX75.am
@@ -589,7 +592,7 @@ lib/localcharset.$(OBJEXT): lib/configmake.h
 
 # directories specific to groff
 uninstall-hook: uninstall_groffdirs
-uninstall_groffdirs: uninstall_devpdf
+uninstall_groffdirs: uninstall_devpdf uninstall_tmac_hook
 	if test -d $(DESTDIR)$(datasubdir); then \
 	  rm -rf $(DESTDIR)$(fontdir); \
 	  rm -rf $(DESTDIR)$(oldfontdir); \
@@ -603,6 +606,12 @@ uninstall_groffdirs: uninstall_devpdf
 	fi
 	if test -d $(DESTDIR)$(libprogramdir); then \
 	  rmdir $(DESTDIR)$(libprogramdir); \
+	fi
+	if test -d $(DESTDIR)$(docdir); then \
+	  if test -d $(DESTDIR)$(exampledir); then \
+	    rmdir $(DESTDIR)$(exampledir); \
+	  fi; \
+	  rmdir $(DESTDIR)$(docdir); \
 	fi
 
 # Other files that should be present in the distribution tarball.

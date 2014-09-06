@@ -1,0 +1,117 @@
+# Automake rules for `chem' (integration into the `groff' source tree)
+
+# File position: <groff-source>/contrib/chem/chem.am
+
+# Copyright (C) 2006, 2009, 2010, 2013-14
+#   Free Software Foundation, Inc.
+# Written by Bernd Warken <groff-bernd.warken-72@web.de>.
+# Moved to automake by Bertrand Garrigues
+
+# This file is part of `chem' which is part of `groff'.
+
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License (GPL) version 2 as
+# published by the Free Software Foundation.
+
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# The GPL2 license text is available in the internet at
+# <http://www.gnu.org/licenses/gpl-2.0.html>.
+
+########################################################################
+
+chem_srcdir = $(top_srcdir)/contrib/chem
+bin_SCRIPTS += chem
+
+# Files installed in $(datasubdir)/pic
+chempicdir = $(datasubdir)/pic
+dist_chempic_DATA = contrib/chem/chem.pic
+
+
+CHEM_GENEXAMPLES = contrib/chem/examples/README
+CHEM_EXAMPLES =  \
+  contrib/chem/examples/atp.chem \
+  contrib/chem/examples/cholesterin.chem \
+  contrib/chem/examples/ethamivan.chem \
+  contrib/chem/examples/lsd.chem \
+  contrib/chem/examples/morphine.chem \
+  contrib/chem/examples/penicillin.chem \
+  contrib/chem/examples/reserpine.chem
+
+# Files installed in $(exampledir)/chem
+chemexampledir = $(exampledir)/chem
+nodist_chemexample_DATA = $(CHEM_GENEXAMPLES)
+dist_chemexample_DATA = $(CHEM_EXAMPLES)
+
+# Files installed in $(exampledir)/chem/122. All the .chem files in 122 are 
+# lazily installed by the local install target
+chemexample122dir = $(chemexampledir)/122
+nodist_chemexample122_DATA = contrib/chem/examples/122/README
+
+EXTRA_DIST += \
+  contrib/chem/ChangeLog \
+  contrib/chem/chem.man \
+  contrib/chem/chem.pic \
+  contrib/chem/chem.pl \
+  contrib/chem/README.txt \
+  contrib/chem/examples/README.txt \
+  contrib/chem/examples/122/README.txt
+
+man1_MANS += contrib/chem/chem.n
+MOSTLYCLEANFILES += $(CHEM_GENEXAMPLES) $(nodist_chemexample122_DATA) \
+  chem \
+  contrib/chem/README
+
+# This is strangly built but not installed
+all: contrib/chem/README
+
+contrib/chem/README: $(chem_srcdir)/README.txt
+	@$(MKDIR_P) contrib/chem/
+	sed -e "s|[@]g[@]|$(g)|g" $? >$@
+
+contrib/chem/examples/README: $(chem_srcdir)/examples/README.txt
+	@$(MKDIR_P) contrib/chem/examples
+	sed -e "s|[@]g[@]|$(g)|g" $? >$@
+
+contrib/chem/examples/122/README: $(chem_srcdir)/examples/122/README.txt
+	@$(MKDIR_P) contrib/chem/examples/122
+	sed -e "s|[@]g[@]|$(g)|g" $? >$@
+
+chem: $(chem_srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
+	rm -f $@
+	sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	    -e "s|[@]g[@]|$(g)|g" \
+	    -e "s|[@]BINDIR[@]|$(DESTDIR)$(bindir)|g" \
+	    -e "s|[@]MACRODIR[@]|$(DESTDIR)$(tmacdir)|g" \
+	    -e "s|[@]PICDIR[@]|$(DESTDIR)$(datasubdir)/pic|g" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|g" \
+	    -e "$(SH_SCRIPT_SED_CMD)" \
+	    $(chem_srcdir)/chem.pl >$@
+	chmod +x $@
+
+install-data-local: install_chem_extra
+install_chem_extra:
+	-test -d $(DESTDIR)$(chemexample122dir) \
+          || $(mkinstalldirs) $(DESTDIR)$(chemexample122dir);
+	for i in $(chem_srcdir)/examples/122/*.chem; do \
+	  n=`echo $$i | sed 's|$(chem_srcdir)/examples/122/||g'`; \
+	  $(INSTALL_DATA) $$i $(DESTDIR)$(chemexample122dir)/$$n; \
+	done
+
+uninstall-local: uninstall_chem_extra
+uninstall_chem_extra:
+	rm -f $(DESTDIR)$(exampledir)/chem/122/*
+	-rmdir $(DESTDIR)$(exampledir)/chem/122
+	rm -f $(DESTDIR)$(exampledir)/chem/*
+	-rmdir $(DESTDIR)$(exampledir)/chem
+	-rmdir $(DESTDIR)$(datasubdir)/pic
+
+dist-hook: dist_chem
+dist_chem:
+	chmod u+w $(distdir)/contrib/chem/examples/122
+	for i in $(chem_srcdir)/examples/122/*.chem; do \
+	  cp -f $$i $(distdir)/contrib/chem/examples/122; \
+	done
