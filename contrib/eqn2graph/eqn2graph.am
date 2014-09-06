@@ -16,23 +16,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# Makefile.sub
+# eqn2graph.am
 #
-MAN1=eqn2graph.n
-MOSTLYCLEANADD=eqn2graph
+eqn2graph_srcdir = $(top_srcdir)/contrib/eqn2graph
+bin_SCRIPTS += eqn2graph
+man1_MANS += contrib/eqn2graph/eqn2graph.n
+EXTRA_DIST += \
+  contrib/eqn2graph/eqn2graph.man \
+  contrib/eqn2graph/eqn2graph.sh
 
-all: eqn2graph
+MOSTLYCLEANFILES += eqn2graph
 
-eqn2graph: eqn2graph.sh
-	sed -e "s|@g@|$(g)|g" \
-	    -e "s|@VERSION@|$(version)$(revision)|" \
-	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/eqn2graph.sh >$@
+eqn2graph: $(top_srcdir)/contrib/eqn2graph/eqn2graph.sh
+	sed -e "s|[@]g[@]|$(g)|g" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|" \
+	    -e $(SH_SCRIPT_SED_CMD) $(eqn2graph_srcdir)/eqn2graph.sh >$@
 	chmod +x $@
-
-install_data: eqn2graph
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/eqn2graph
-	$(INSTALL_SCRIPT) eqn2graph $(DESTDIR)$(bindir)/eqn2graph
-
-uninstall_sub:
-	rm -f $(DESTDIR)$(bindir)/eqn2graph
