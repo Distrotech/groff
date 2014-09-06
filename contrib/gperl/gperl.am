@@ -1,12 +1,13 @@
-# Makefile.sub for `gperl' (preprocessor for added Perl parts)
+# Automake rules for `gperl' (preprocessor for added Perl parts)
 
-# File position: <groff-source>/contrib/gperl/Makefile.sub
+# File position: <groff-source>/contrib/gperl/gperl.am
 
 # Copyright (C) 2014
 #   Free Software Foundation, Inc.
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
+# Automake migration by Bertrand Garrigues
 
-# Last update: 25 Feb 2014
+# Last update: Aug 2014
 
 # This file is part of `gperl' which is part of `groff'.
 
@@ -26,39 +27,19 @@
 
 ########################################################################
 
-MAN1=gperl.n
-
-MOSTLYCLEANADD=gperl $(MAN1)
-
-# not all make programs have $(RM) predefined.
-RM=rm -f
-
-all: gperl
-
-gperl: gperl.pl
+bin_SCRIPTS += gperl
+man1_MANS += contrib/gperl/gperl.n
+EXTRA_DIST += \
+  contrib/gperl/ChangeLog \
+  contrib/gperl/gperl.man \
+  contrib/gperl/gperl.pl
+gperl: $(top_srcdir)/contrib/gperl/gperl.pl shdeps.sed
+	$(RM) $@
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
-            -e "s|@g@|$(g)|g" \
-	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
-	    -e "s|@VERSION@|$(version)$(revision)|g" \
+	    -e "s|[@]g[@]|$(g)|g" \
+	    -e "s|[@]BINDIR[@]|$(DESTDIR)$(bindir)|g" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|g" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
-	    $(srcdir)/gperl.pl >$@; \
+	     $(top_srcdir)/contrib/gperl/gperl.pl >$@; \
 	chmod +x $@
 
-.PHONY: install_data
-install_data: gperl
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(RM) $(DESTDIR)$(bindir)/gperl
-	$(INSTALL_SCRIPT) gperl $(DESTDIR)$(bindir)/gperl
-
-.PHONY: uninstall_sub
-uninstall_sub:
-	$(RM) $(DESTDIR)$(bindir)/gperl
-
-
-########################################################################
-# Emacs settings
-########################################################################
-#
-# Local Variables:
-# mode: makefile
-# End:

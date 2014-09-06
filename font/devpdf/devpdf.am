@@ -127,9 +127,11 @@ mostlyclean-local: mostlyclean_devpdf_extra
 mostlyclean_devpdf_extra:
 	@echo Cleaning font/devpdf
 	rm -rf $(top_builddir)/font/devpdf/enc $(top_builddir)/font/devpdf/map;
-	for f in $(GROFF_FONT_FILES); do \
-	   rm -f $(top_builddir)/font/devpdf/$$f; \
-	done
+	if test -d $(top_builddir)/font/devpdf; then \
+	  for f in $(GROFF_FONT_FILES); do \
+	    rm -f $(top_builddir)/font/devpdf/$$f; \
+	  done; \
+	fi
 
 install-data-local: install_devpdf
 install_devpdf:

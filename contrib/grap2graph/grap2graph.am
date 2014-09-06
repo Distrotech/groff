@@ -1,4 +1,4 @@
-# Copyright (C) 2001, 2006, 2009, 2014
+# Copyright (C) 2003, 2006, 2009, 2014
 #   Free Software Foundation, Inc.
 #
 # This file is part of groff.
@@ -16,23 +16,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# Makefile.sub
+# grap2graph.am
 #
-MAN1=pic2graph.n
-MOSTLYCLEANADD=pic2graph
-
-all: pic2graph
-
-pic2graph: pic2graph.sh
-	sed -e "s|@g@|$(g)|g" \
-	    -e "s|@VERSION@|$(version)$(revision)|" \
-	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/pic2graph.sh >$@
+grap2graph_srcdir = $(top_srcdir)/contrib/grap2graph
+bin_SCRIPTS += grap2graph
+man1_MANS += contrib/grap2graph/grap2graph.n
+EXTRA_DIST += \
+  $(grap2graph_srcdir)/grap2graph.sh \
+  $(grap2graph_srcdir)/grap2graph.man
+grap2graph: $(grap2graph_srcdir)/grap2graph.sh
+	sed -e "s|[@]g[@]|$(g)|g" \
+	    -e "s|[@]VERSION[@]|$(VERSION)|" \
+	    -e $(SH_SCRIPT_SED_CMD) $(grap2graph_srcdir)/grap2graph.sh >$@
 	chmod +x $@
-
-install_data: pic2graph
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/pic2graph
-	$(INSTALL_SCRIPT) pic2graph $(DESTDIR)$(bindir)/pic2graph
-
-uninstall_sub:
-	rm -f $(DESTDIR)$(bindir)/pic2graph
