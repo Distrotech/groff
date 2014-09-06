@@ -21,9 +21,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # This file is part of GNU gdiffmk.
 
-srcdir=@srcdir@
+# abs_top_srcdir and abs_top_builddir are set by AM_TESTS_ENVIRONMENT
+# (defined in Makefile.am) when running make check
 
-command=../gdiffmk
+srcdir=${abs_top_srcdir}/contrib/gdiffmk/tests
+
+command=${abs_top_builddir}/gdiffmk
 
 #	Test the number of arguments and the first argument.
 case $#-$1 in

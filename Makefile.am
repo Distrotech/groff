@@ -518,6 +518,15 @@ man7_MANS =
 # for lex/yacc
 AM_YFLAGS = -d -v
 
+# tests launched by make check
+check_SCRIPTS =
+check_PROGRAMS =
+TESTS =
+AM_TESTS_ENVIRONMENT = \
+  abs_top_srcdir=$(abs_top_srcdir) \
+  abs_top_builddir=$(abs_top_builddir) \
+  export abs_top_srcdir abs_top_builddir;
+
 # Non-recursive makefile system. See Automake manual '7.3 An
 # Alternative Approach to Subdirectories'. We use a single Makefile.am
 # that includes other .am files, rather than using SUBDIRS.  Note that
@@ -529,6 +538,7 @@ include $(top_srcdir)/arch/mingw/mingw.am
 include $(top_srcdir)/arch/misc/misc.am
 include $(top_srcdir)/contrib/chem/chem.am
 include $(top_srcdir)/contrib/eqn2graph/eqn2graph.am
+include $(top_srcdir)/contrib/gdiffmk/gdiffmk.am
 include $(top_srcdir)/font/devX100/devX100.am
 include $(top_srcdir)/font/devX100-12/devX100-12.am
 include $(top_srcdir)/font/devX75/devX75.am
