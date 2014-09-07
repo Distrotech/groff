@@ -21,7 +21,9 @@
 # Note that this script is a quick hack and tightly bound to the current
 # groff.texinfo macro code.  Hopefully, a new texinfo version makes it
 # unnecessary.
-
+#
+# 09-2014: no more problem with texinfo 5.0 or higher
+#
 t=${TMPDIR-.}/gro$$.tmp
 
 cat $1 | sed '

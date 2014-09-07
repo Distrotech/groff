@@ -21,7 +21,7 @@ Current status
   - man files from 'man' directory installed
   - tmac files from 'tmac' directory installed
   - Build and installation of contrib
-  - Build and installation of doc, except texinfo doc
+  - Build and installation of doc, including texinfo doc
 
 Tests
 -----
@@ -179,6 +179,21 @@ from contrib/mom
 from doc
   - gnu.eps
   - html and doc files
+
+from doc, texinfo files:
+
+  - By default, only doc/groff.info is built, as GNU standards require
+    to install only info doc.
+
+  - Additional optional targets are available to build the doc in various formats:
+    -- make doc_txt
+    -- make doc_dvi
+    -- make doc_pdf
+    -- make doc_html (this will build the html in 2 directories: all
+       in 1 .html file, and 1 file per node). Note also that if
+       texinfo version is < 5.0, the resulting (mono) file will be
+       patched by fixinfo.sh
+    -- make doc_all will build all the 4 previous formats
 
 In order to check and improve the dependencies, the following targets
 were built from a clean environment:
@@ -365,6 +380,7 @@ Differences with former build system:
 
     -- webpageXX.html files
     -- picXX.html files
+    -- info file from groff.texinfo
 
 Diff with previous build system:
   - devcp1047 fonts are installed $(DESTDIR)/usr/local/groff/1.22.3/font
