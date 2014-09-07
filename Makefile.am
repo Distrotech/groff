@@ -518,6 +518,8 @@ man7_MANS =
 # for lex/yacc
 AM_YFLAGS = -d -v
 
+SUFFIXES =
+
 # tests launched by make check
 check_SCRIPTS =
 check_PROGRAMS =
@@ -526,6 +528,14 @@ AM_TESTS_ENVIRONMENT = \
   abs_top_srcdir=$(abs_top_srcdir) \
   abs_top_builddir=$(abs_top_builddir) \
   export abs_top_srcdir abs_top_builddir;
+
+# Path to binaries and flags used by contribs and doc to generated doc.
+# These may be overridden if cross-compiling.
+GROFFBIN = $(abs_top_builddir)/groff
+GROFF_BIN_PATH = $(abs_top_builddir)
+PDFMOMBIN = $(abs_top_builddir)/pdfmom
+FFLAG=-F$(abs_top_builddir)/font -F$(abs_top_srcdir)/font
+TFLAG=-M$(abs_top_builddir)/tmac -M$(abs_top_srcdir)/tmac
 
 # Non-recursive makefile system. See Automake manual '7.3 An
 # Alternative Approach to Subdirectories'. We use a single Makefile.am
@@ -545,6 +555,7 @@ include $(top_srcdir)/contrib/gpinyin/gpinyin.am
 include $(top_srcdir)/contrib/grap2graph/grap2graph.am
 include $(top_srcdir)/contrib/groff_filenames/groff_filenames.am
 include $(top_srcdir)/contrib/groffer/groffer.am
+include $(top_srcdir)/contrib/hdtbl/hdtbl.am
 include $(top_srcdir)/contrib/pic2graph/pic2graph.am
 include $(top_srcdir)/font/devX100/devX100.am
 include $(top_srcdir)/font/devX100-12/devX100-12.am
@@ -612,6 +623,17 @@ BUILT_SOURCES += defs.h
 # possible
 lib/localcharset.$(OBJEXT): lib/configmake.h
 
+# File used by contrib/hdtbl and contrib/pdfmark
+gnu.eps:
+	if test -f $(top_srcdir)/doc/gnu.eps; then \
+	  cp $(top_srcdir)/doc/gnu.eps . ; \
+	elif test -f $(top_builddir)/doc/gnu.eps; then \
+	  cp $(top_builddir)/doc/gnu.eps . ; \
+	else \
+	  xpmtoppm $(top_srcdir)/doc/gnu.xpm | pnmdepth 15 \
+	    | $(pnmtops_nosetpage) -noturn -rle >$@ ; \
+	fi
+
 # directories specific to groff
 uninstall-hook: uninstall_groffdirs
 uninstall_groffdirs:
@@ -661,7 +683,7 @@ EXTRA_DIST += \
   README.MinGW \
   arch/djgpp
 
-MOSTLYCLEANFILES += $(man1_MANS) $(man5_MANS) $(man7_MANS) $(bin_SCRIPTS)
+MOSTLYCLEANFILES += $(man1_MANS) $(man5_MANS) $(man7_MANS) $(bin_SCRIPTS) gnu.eps
 
 # Rule to build .man files. The brackets around the @ are used to prevent the 
 # substitution of the variable by automake. 
