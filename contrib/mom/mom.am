@@ -1,0 +1,154 @@
+# Copyright (C) 2002-2006, 2009, 2012-2014
+#   Free Software Foundation, Inc.
+#      Written by Werner Lemberg (wl@gnu.org)
+#      Automake migration by Bertrand Garrigues
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+mom_srcdir = $(top_srcdir)/contrib/mom
+mom_builddir = $(top_builddir)/contrib/mom
+
+# pdfmom command used to generated .pdf
+MOM_TFLAG = -M$(mom_srcdir) -M$(mom_builddir)
+MOMPDFMOM = \
+  GROFF_COMMAND_PREFIX= \
+  GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
+  PDFMOM_BIN_PATH="$(top_builddir)" \
+  $(PDFMOMBIN) $(FFLAG) $(TFLAG) $(MOM_TFLAG)
+
+man7_MANS += contrib/mom/groff_mom.n
+
+# Files installed in $(tmacdir).
+# MOMNORMALFILES are located in the source tree.
+# om.tmac is generated in the build tree from the unstripped file om.tmac-u with
+#  strip.sed
+MOMNORMALFILES = \
+  contrib/mom/mom.tmac
+MOMSTRIPFILES = \
+  contrib/mom/om.tmac
+momtmacdir = $(tmacdir)
+nodist_momtmac_DATA = $(MOMSTRIPFILES)
+dist_momtmac_DATA = $(MOMNORMALFILES)
+
+# Files installed in htmldocdir/mom
+MOMHTMLDOCFILES=\
+  contrib/mom/momdoc/stylesheet.css \
+  contrib/mom/momdoc/appendices.html \
+  contrib/mom/momdoc/color.html \
+  contrib/mom/momdoc/cover.html \
+  contrib/mom/momdoc/definitions.html \
+  contrib/mom/momdoc/docelement.html \
+  contrib/mom/momdoc/docprocessing.html \
+  contrib/mom/momdoc/goodies.html \
+  contrib/mom/momdoc/graphical.html \
+  contrib/mom/momdoc/headfootpage.html \
+  contrib/mom/momdoc/images.html \
+  contrib/mom/momdoc/inlines.html \
+  contrib/mom/momdoc/intro.html \
+  contrib/mom/momdoc/letters.html \
+  contrib/mom/momdoc/macrolist.html \
+  contrib/mom/momdoc/rectoverso.html \
+  contrib/mom/momdoc/refer.html \
+  contrib/mom/momdoc/reserved.html \
+  contrib/mom/momdoc/tables-of-contents.html \
+  contrib/mom/momdoc/toc.html \
+  contrib/mom/momdoc/typesetting.html \
+  contrib/mom/momdoc/using.html \
+  contrib/mom/momdoc/version-2.html
+momhtmldir = $(htmldocdir)/mom
+momhtml_DATA = $(MOMHTMLDOCFILES)
+
+# Files installed in $(examplesdir)/mom.  MOMEXAMPLEFILES are located
+# in the source tree, while MOMPROCESSEDEXAMPLEFILES are generated in
+# the build tree.
+MOMEXAMPLEFILES=\
+  contrib/mom/examples/letter.mom \
+  contrib/mom/examples/mom-pdf.mom \
+  contrib/mom/examples/sample_docs.mom \
+  contrib/mom/examples/typesetting.mom \
+  contrib/mom/examples/README.txt \
+  contrib/mom/examples/elvis_syntax \
+  contrib/mom/examples/elvis_syntax.new \
+  contrib/mom/examples/penguin.ps \
+  contrib/mom/examples/penguin.pdf \
+  contrib/mom/examples/mom.vim
+momexampledir = $(exampledir)/mom
+momexample_DATA = $(MOMEXAMPLEFILES)
+
+MOMPROCESSEDEXAMPLEFILES = \
+  contrib/mom/examples/letter.pdf \
+  contrib/mom/examples/mom-pdf.pdf \
+  contrib/mom/examples/sample_docs.pdf \
+  contrib/mom/examples/typesetting.pdf
+momprocessedexampledir = $(exampledir)/mom
+nodist_momprocessedexample_DATA = $(MOMPROCESSEDEXAMPLEFILES)
+
+# For this list of files we add a symlink from $(exampledir)/mom to $(pdfdocdir)
+PDFDOCFILE = mom-pdf.pdf
+
+EXTRA_DIST += $(MOMHTMLDOCFILES) $(MOMEXAMPLEFILES) \
+  contrib/mom/BUGS \
+  contrib/mom/ChangeLog \
+  contrib/mom/NEWS \
+  contrib/mom/TODO \
+  contrib/mom/copyright \
+  contrib/mom/examples \
+  contrib/mom/groff_mom.man \
+  contrib/mom/om.tmac-u
+
+MOSTLYCLEANFILES += \
+  $(MOMPROCESSEDEXAMPLEFILES) \
+  contrib/mom/om.tmac \
+  penguin.ps \
+  penguin.pdf
+
+# Rule to generated .pdf files from .mom files
+SUFFIXES += .mom .pdf
+.mom.pdf:
+	@$(MKDIR_P) `dirname $@`
+	LC_ALL=C $(MOMPDFMOM) $< >$@
+
+$(MOMPROCESSEDEXAMPLEFILES): $(MOMSTRIPFILES) $(MOMNORMALFILES) \
+  groff troff gropdf pdfmom penguin.ps penguin.pdf \
+  gnu.eps font/devpdf/build_font_files
+
+penguin.ps:
+	cp $(mom_srcdir)/examples/penguin.ps $@
+penguin.pdf:
+	cp $(mom_srcdir)/examples/penguin.pdf $@
+
+$(MOMSTRIPFILES): $(top_srcdir)/tmac/strip.sed
+	@$(MKDIR_P) `dirname $@`
+	sed -f $(top_srcdir)/tmac/strip.sed $(mom_srcdir)/`basename $@`-u > $@;
+
+install-data-hook: install_mom
+install_mom:
+	for f in $(PDFDOCFILE); do \
+	  rm -f $(DESTDIR)$(pdfdocdir)/$$f; \
+	  ln -s $(exampledir)/mom/$$f $(DESTDIR)$(pdfdocdir)/$$f; \
+	done
+
+uninstall_groffdirs: uninstall_mom
+uninstall_mom:
+	for f in $(PDFDOCFILE); do \
+	  rm -f $(DESTDIR)$(pdfdocdir)/$$f; \
+	done
+	if test -d $(DESTDIR)$(exampledir)/mom; then \
+	  rmdir $(DESTDIR)$(exampledir)/mom; \
+	fi
+	if test -d $(DESTDIR)$(htmldocdir)/mom; then \
+	  rmdir $(DESTDIR)$(htmldocdir)/mom; \
+	fi

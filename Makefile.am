@@ -554,6 +554,7 @@ include $(top_srcdir)/contrib/groff_filenames/groff_filenames.am
 include $(top_srcdir)/contrib/groffer/groffer.am
 include $(top_srcdir)/contrib/hdtbl/hdtbl.am
 include $(top_srcdir)/contrib/mm/mm.am
+include $(top_srcdir)/contrib/mom/mom.am
 include $(top_srcdir)/contrib/pdfmark/pdfmark.am
 include $(top_srcdir)/contrib/pic2graph/pic2graph.am
 include $(top_srcdir)/doc/doc.am
@@ -643,6 +644,9 @@ uninstall_groffdirs:
 	if test -d $(DESTDIR)$(docdir); then \
 	  if test -d $(DESTDIR)$(exampledir); then \
 	    rmdir $(DESTDIR)$(exampledir); \
+	  fi; \
+	  if test -d $(DESTDIR)$(htmldocdir); then \
+	    rmdir $(DESTDIR)$(htmldocdir); \
 	  fi; \
 	  rmdir $(DESTDIR)$(docdir); \
 	fi
