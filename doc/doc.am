@@ -1,3 +1,246 @@
+# Copyright (C) 2002-2007, 2009, 2011, 2013-2014
+#   Free Software Foundation, Inc.
+#      Written by Werner Lemberg <wl@gnu.org>
+#      Automake migration by Bertrand Garrigues
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+doc_srcdir = $(abs_top_srcdir)/doc
+doc_builddir = $(abs_top_builddir)/doc
+
+DOC_GROFF=\
+  sed -e "s;@VERSION@;$(VERSION);" $< \
+  | GROFF_COMMAND_PREFIX= \
+    GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
+    $(GROFFBIN) -I$(abs_top_builddir) -M $(doc_srcdir) $(TFLAG) $(FFLAG) -Upet -ww 
+
+# Other doc, installed in $(docdir)
+# Files located in the source tree
+DOCFILES= \
+  doc/meref.me \
+  doc/meintro.me \
+  doc/meintro_fr.me \
+  doc/pic.ms
+# Files generated in the build tree
+PROCESSEDDOCFILES = \
+  doc/meref.ps \
+  doc/meintro.ps \
+  doc/meintro_fr.ps \
+  doc/pic.ps
+
+otherdocdir = $(docdir)
+dist_otherdoc_DATA = $(DOCFILES)
+nodist_otherdoc_DATA = $(PROCESSEDDOCFILES)
+MOSTLYCLEANFILES += $(PROCESSEDDOCFILES)
+
+# GNU PIC html documentation, installed in $(htmldocdir)
+# Other pic*.html files are installed by the local rule
+HTMLDOCFILES = \
+  doc/pic.html
+htmlpicdir = $(htmldocdir)
+htmlpic_DATA = $(HTMLDOCFILES)
+HTMLDOCFILESALL = pic*.html
+HTMLDOCIMAGEFILES = pic*
+
+# Examples files, installed in $(exampledir)
+
+# source tree files
+EXAMPLEFILES = \
+  doc/webpage.ms \
+  doc/groff.css \
+  doc/grnexmpl.g \
+  doc/grnexmpl.me
+
+# Generated in the build tree
+PROCESSEDEXAMPLEFILES = \
+  doc/webpage.ps \
+  doc/grnexmpl.ps
+# webpage.html is generated, webpage*.html files are installed by the local rule.
+HTMLEXAMPLEFILES = doc/webpage.html
+HTMLEXAMPLEFILESALL = webpage*.html
+HTMLEXAMPLEIMAGEFILES = webpage*
+docexamplesdir = $(exampledir)
+dist_docexamples_DATA = $(EXAMPLEFILES)
+nodist_docexamples_DATA = $(HTMLEXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
+MOSTLYCLEANFILES += $(PROCESSEDEXAMPLEFILES)
+
+imagedir = img
+htmldocimagedir = $(htmldocdir)/img
+exampleimagedir = $(exampledir)/img
+
+MOSTLYCLEANFILES += doc/examples.stamp
+
+EXTRA_DIST += \
+  doc/gnu.xpm \
+  doc/fixinfo.sh \
+  doc/txi-en.tex
+
+SUFFIXES += .me .ms .ps .html .txt .texinfo .dvi .pdf .xhtml
+
+# For simplicity, we always call preconv, grn, and eqn.
+.me.txt:
+	@$(MKDIR_P) `dirname $@`
+	$(DOC_GROFF) -k -Tutf8 -ge -me >$@
+.me.ps:
+	@$(MKDIR_P) `dirname $@`
+	$(DOC_GROFF) -k -Tps -ge -me >$@
+
+.ms.html:
+	@$(MKDIR_P) `dirname $@`
+	$(DOC_GROFF) -P-p -P-b -P-I`basename $< | sed -e 's|.ms$$||'` \
+	         -P-D$(imagedir) -P-V -Thtml -ms >$@
+.ms.txt:
+	@$(MKDIR_P) `dirname $@`
+	$(DOC_GROFF) -Tascii -ms -mwww >$@
+.ms.ps:
+	@$(MKDIR_P) `dirname $@`
+	$(DOC_GROFF) -Tps -ms -mwww >$@
+
+$(PROCESSEDEXAMPLEFILES): $(bin_PROGRAMS) $(prefixexecbin_PROGRAMS) gnu.eps
+$(PROCESSEDEXAMPLEFILES): $(dist_devpsfont_DATA) $(nodist_devpsfont_DATA) $(hdtbltmac_DATA)
+$(PROCESSEDDOCFILES): $(bin_PROGRAMS) $(prefixexecbin_PROGRAMS) gnu.eps
+
+doc/pic.html: $(bin_PROGRAMS) $(prefixexecbin_PROGRAMS)
+doc/pic.html: doc/examples.stamp
+doc/pic.html: $(dist_devpsfont_DATA) $(nodist_devpsfont_DATA)
+doc/pic.html: $(doc_srcdir)/pic.ms $(devhtmlfont_DATA)
+	@$(MKDIR_P) $(doc_builddir)
+	cd $(doc_builddir) && \
+	$(DOC_GROFF) -P-p -P-I`basename $< | sed -e 's|.ms$$||'` \
+	         -P-D$(imagedir) -P-j`basename $< | sed -e 's|.ms$$||'` \
+	         -Thtml -P-V -ms > pic.html
+
+doc/examples.stamp: doc/groff.css
+	@$(MKDIR_P) $(doc_builddir)
+	test -f $(doc_builddir)/groff.css || cp $(doc_srcdir)/groff.css $(doc_builddir)
+	echo timestamp > $@
+
+doc/webpage.html: $(bin_PROGRAMS) $(prefixexecbin_PROGRAMS)
+doc/webpage.html: doc/examples.stamp $(devhtmlfont_DATA)
+doc/webpage.html: $(dist_devpsfont_DATA) $(nodist_devpsfont_DATA) 
+doc/webpage.html: $(doc_srcdir)/webpage.ms gnu.eps $(doc_srcdir)/groff.css
+	@$(MKDIR_P) doc
+	cd $(doc_builddir) && \
+	$(DOC_GROFF) -P-j`basename $< | sed -e 's|.ms$$||'` \
+	         -P-nrpb -P-I`basename $< | sed -e 's|.ms$$||'` \
+	         -P-D$(imagedir) -Thtml -ms > webpage.html
+
+doc/grnexmpl.ps: doc/grnexmpl.me doc/grnexmpl.g
+
+# Note that we remove groff.css only if out-of-source build tree
+mostlyclean-local: mostlyclean_doc
+mostlyclean_doc:
+	if test -d $(doc_builddir); then \
+	  cd $(doc_builddir) && \
+	  for f in $(HTMLDOCFILESALL); do \
+	    rm -f $$f; \
+	  done; \
+	fi
+	if test -d $(doc_builddir)/$(imagedir); then \
+	  cd $(doc_builddir)/$(imagedir) && \
+	  for f in $(HTMLDOCIMAGEFILES); do \
+	    rm -f $$f; \
+	  done; \
+	fi
+	if test $(top_builddir) != $(top_srcdir); then \
+	  rm -f $(top_builddir)/doc/groff.css; \
+	fi
+
+	if test -d $(doc_builddir); then \
+	  cd $(doc_builddir) && \
+	  for f in $(HTMLEXAMPLEFILESALL); do \
+	    rm -f $$f; \
+	  done; \
+	fi
+	if test -d $(doc_builddir)/$(imagedir); then \
+	  cd $(doc_builddir)/$(imagedir) && \
+	  for f in $(HTMLEXAMPLEIMAGEFILES); do \
+	    rm -f $$f; \
+	  done; \
+	fi
+
+install-data-hook: install_doc_htmldoc
+install_doc_htmldoc:
+	cd $(doc_builddir) && \
+	for f in `ls $(HTMLDOCFILESALL)`; do \
+	  rm -f $(DESTDIR)$(htmldocdir)/$$f; \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(htmldocdir)/$$f; \
+	done
+	-test -d $(DESTDIR)$(htmldocimagedir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(htmldocimagedir)
+	rm -f $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
+	$(INSTALL_DATA) $(doc_builddir)/$(imagedir)/$(HTMLDOCIMAGEFILES) \
+	  $(DESTDIR)$(htmldocimagedir)
+
+install-data-hook: install_doc_examples
+
+install_doc_examples: gnu.eps
+# Prefer gnu.eps in builddir over srcdir.
+	d=.; test -f "gnu.eps" || d=$(doc_srcdir); \
+	  rm -f $(DESTDIR)$(exampledir)/gnu.eps; \
+	  $(INSTALL_DATA) $$d/gnu.eps $(DESTDIR)$(exampledir)/gnu.eps
+	cd $(doc_builddir) && \
+	for f in `ls $(HTMLEXAMPLEFILESALL)`; do \
+	  rm -f $(DESTDIR)$(exampledir)/$$f; \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(exampledir)/$$f; \
+	done
+	-test -d $(DESTDIR)$(exampleimagedir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(exampleimagedir)
+	rm -f $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
+	$(INSTALL_DATA) $(doc_builddir)/$(imagedir)/$(HTMLEXAMPLEIMAGEFILES) \
+	  $(DESTDIR)$(exampleimagedir)
+
+uninstall-hook: uninstall_doc_examples uninstall_doc_htmldoc uninstall_mom
+uninstall_doc_examples:
+	-test -d $(DESTDIR)$(docexamplesdir) && \
+	cd $(DESTDIR)$(docexamplesdir) && \
+	for f in $(HTMLEXAMPLEFILESALL); do \
+	  rm -f $$f; \
+	done
+	-test -d $(DESTDIR)$(docexamplesdir)/$(imagedir) && \
+	cd $(DESTDIR)$(docexamplesdir)/$(imagedir) && \
+	for f in $(HTMLEXAMPLEIMAGEFILES); do \
+	  rm -f $$f; \
+	done
+	rm -f $(DESTDIR)$(exampledir)/gnu.eps
+	-rmdir $(DESTDIR)$(docexamplesdir)/$(imagedir)
+	-rmdir $(DESTDIR)$(docexamplesdir)
+
+uninstall_doc_htmldoc:
+	-test -d $(DESTDIR)$(htmldocdir) && \
+	cd $(DESTDIR)$(htmldocdir) && \
+	for f in $(HTMLDOCFILESALL); do \
+	  rm -f $$f; \
+	done
+	-test -d $(DESTDIR)$(htmldocdir)/$(imagedir) && \
+	cd $(DESTDIR)$(htmldocdir)/$(imagedir) && \
+	for f in $(HTMLDOCIMAGEFILES); do \
+	  rm -f $$f; \
+	done
+	-rmdir $(DESTDIR)$(htmldocdir)/$(imagedir)
+	-rmdir $(DESTDIR)$(htmldocdir)
+
+distclean-local: clean_infodoc clean_otherdoc
+maintainer-clean-local: clean_infodoc clean_otherdoc
+clean_infodoc:
+	-rm -f $(doc_builddir)/groff.info*
+clean_otherdoc:
+	-cd $(doc_builddir) && \
+	  rm -rf *.pdf *.html *.txt *.dvi *.html.mono *.t2p *.t2d
+
 # File used by contrib/hdtbl and contrib/pdfmark. It is distributed in
 # doc.eps. We try in priority to use the file in 'doc'.
 EXTRA_DIST += doc/gnu.xpm
@@ -30,4 +273,3 @@ dist-hook: dist-gnueps
 dist-gnueps:
 	chmod u+w $(distdir)/doc
 	cp -f gnu.eps $(distdir)/doc
-
