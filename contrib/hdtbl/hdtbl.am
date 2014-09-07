@@ -1,0 +1,117 @@
+# Copyright (C) 2006-2014 Free Software Foundation, Inc.
+#      Written by Werner Lemberg (wl@gnu.org)
+#      Automake migration by Bertrand Garrigues
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+hdtbl_srcdir = $(top_srcdir)/contrib/hdtbl
+hdtbl_builddir = $(top_builddir)/contrib/hdtbl
+
+man7_MANS += contrib/hdtbl/groff_hdtbl.n
+
+# Groff command used to generate .ps files
+HDTBL_TFLAG = -M$(hdtbl_srcdir) -M$(hdtbl_builddir)
+HDTLB_PFLAG=-t -p -e -U
+HDTBLGROFF = \
+  GROFF_COMMAND_PREFIX= \
+  GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
+  $(GROFFBIN) $(FFLAG) $(TFLAG) $(HDTBL_TFLAG) $(HDTLB_PFLAG)
+
+# Files installed in $(tmacdir).
+# These files are generated with `strip.sed' from their unstripped source file 
+# equivalent (e.g. hdtbl.tmac is generated from hdtbl.tmac-u)
+HDTBLSTRIPFILES = \
+  contrib/hdtbl/hdtbl.tmac \
+  contrib/hdtbl/hdmisc.tmac
+hdtbltmacdir = $(tmacdir)
+hdtbltmac_DATA = $(HDTBLSTRIPFILES)
+
+# Files installed in $(exampledir)/hdtbl.  HDTBLEXAMPLEFILES are
+# located in the source tree, while HDTBLPROCESSEDEXAMPLEFILES are
+# generated in the build tree.
+
+# These files are handled by the `.in.roff' rule.
+HDTBLGENFILES = \
+  contrib/hdtbl/examples/fonts_n.roff \
+  contrib/hdtbl/examples/fonts_x.roff
+
+HDTBLEXAMPLEFILES = \
+  contrib/hdtbl/examples/common.roff \
+  contrib/hdtbl/examples/chess_board.roff \
+  contrib/hdtbl/examples/color_boxes.roff \
+  contrib/hdtbl/examples/color_nested_tables.roff \
+  contrib/hdtbl/examples/color_table_cells.roff \
+  contrib/hdtbl/examples/color_transitions.roff \
+  contrib/hdtbl/examples/col_rowspan_colors.roff \
+  contrib/hdtbl/examples/mixed_pickles.roff \
+  contrib/hdtbl/examples/rainbow.roff \
+  contrib/hdtbl/examples/short_reference.roff
+
+HDTBLPROCESSEDEXAMPLEFILES = \
+  contrib/hdtbl/examples/chess_board.ps \
+  contrib/hdtbl/examples/color_boxes.ps \
+  contrib/hdtbl/examples/color_nested_tables.ps \
+  contrib/hdtbl/examples/color_table_cells.ps \
+  contrib/hdtbl/examples/color_transitions.ps \
+  contrib/hdtbl/examples/col_rowspan_colors.ps \
+  contrib/hdtbl/examples/fonts_n.ps \
+  contrib/hdtbl/examples/fonts_x.ps \
+  contrib/hdtbl/examples/mixed_pickles.ps \
+  contrib/hdtbl/examples/rainbow.ps \
+  contrib/hdtbl/examples/short_reference.ps
+
+hdtblexampledir = $(exampledir)/hdtbl
+dist_hdtblexample_DATA = $(HDTBLEXAMPLEFILES)
+nodist_hdtblexample_DATA = $(HDTBLGENFILES)
+nodist_hdtblexample_DATA += $(HDTBLPROCESSEDEXAMPLEFILES) gnu.eps
+$(hdtblexample_DATA): $(HDTBLSTRIPFILES)
+
+MOSTLYCLEANFILES += $(HDTBLGENFILES) $(HDTBLPROCESSEDEXAMPLEFILES) \
+  hdmisc.tmac-s hdtbl.tmac-s $(HDTBLSTRIPFILES)
+
+EXTRA_DIST += \
+  contrib/hdtbl/ChangeLog \
+  contrib/hdtbl/TODO \
+  contrib/hdtbl/groff_hdtbl.man \
+  contrib/hdtbl/hdtbl.tmac-u \
+  contrib/hdtbl/hdmisc.tmac-u \
+  contrib/hdtbl/examples \
+  $(HDTBLEXAMPLEFILES)
+
+# Rule to generate ps and roff files
+SUFFIXES += .roff .in .ps
+
+.roff.ps:
+	@$(MKDIR_P) `dirname $@`
+	$(HDTBLGROFF) -Tps -dfontpath=$(top_srcdir)/font -dsopath=$(hdtbl_srcdir)/ \
+	         -mhdtbl $< >$@
+.in.roff:
+	@$(MKDIR_P) `dirname $@`
+	sed -e "s|[@]fontdir[@]|$(fontdir)|" $< >$@
+
+
+$(HDTBLPROCESSEDEXAMPLEFILES): gnu.eps groff troff pic tbl \
+  contrib/hdtbl/examples/common.roff
+
+$(HDTBLSTRIPFILES): $(top_srcdir)/tmac/strip.sed
+	@$(MKDIR_P) `dirname $@`
+	sed -f $(top_srcdir)/tmac/strip.sed $(hdtbl_srcdir)/`basename $@`-u > $@;
+
+uninstall_groffdirs: uninstall-hdtbl-hook
+uninstall-hdtbl-hook:
+	if test -d $(DESTDIR)$(hdtblexampledir); then \
+	  rmdir $(DESTDIR)$(hdtblexampledir); \
+	fi
