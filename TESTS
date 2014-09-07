@@ -21,8 +21,6 @@ Current status
   - man files from 'man' directory installed
   - tmac files from 'tmac' directory installed
   - Build and installation of contrib, except:
-    -- mm
-    -- pdfmark
     -- mom
 
 Tests
@@ -170,6 +168,16 @@ from contrib/groffer
 from contrib/hdtbl
   - hdtbl examples and tmac files
 
+from contrib/mm
+  - .n files
+
+from contrib/pdfmark
+  - pdfmark.pdf
+  - pdfroff
+
+from doc
+  - gnu.eps
+
 In order to check and improve the dependencies, the following targets
 were built from a clean environment:
   - make lib/libgnu.a
@@ -217,6 +225,7 @@ were built from a clean environment:
   - make pic2graph
   - make glilypond
   - make groffer
+  - make contrib/pdfmark/pdfmark.pdf 
 
 2.2 make clean
 
@@ -340,6 +349,18 @@ Differences with former build system:
     -- hdtbl.tmac and hdmisc.tmac installed in 
        $(DESTDIR)/usr/local/share/groff-1.22.2/tmac
 
+  - contrib/mm
+    
+    -- tmac files in tmacdir, misc files in
+       $(DESTDIR)/usr/local/share/groff/1.22.2/tmac/mm
+
+    -- refer-mm.tmac in tmacdir
+
+  - contrib/pdfmark
+
+    -- tmac files
+    -- pdfmark.pdf
+
 Diff with previous build system:
   - devcp1047 fonts are installed $(DESTDIR)/usr/local/groff/1.22.2/font
 
@@ -435,6 +456,9 @@ TODO:
     src/preproc/pic/pic.hpp 
     src/preproc/refer/label.hpp
     src/preproc/refere/label.cpp
+    doc/gnu.eps
+
+Note: when building from a tarball, we will use doc/gnu.eps.
 
 2.9 make check
   

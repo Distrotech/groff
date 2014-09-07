@@ -1396,3 +1396,7 @@ AC_DEFUN([GROFF_GPINYINDIR_DEFAULT],
 AC_DEFUN([GROFF_GROGDIR_DEFAULT],
   grog_dir=$libprogramdir/grog
   AC_SUBST([grog_dir]))
+
+# Check for xpmtoppm, for gnu.eps generation
+AC_DEFUN([GROFF_PROG_XPMTOPPM],
+  [AC_CHECK_PROG([XPMTOPPM], [xpmtoppm], [found], [missing])])

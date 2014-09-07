@@ -1,0 +1,86 @@
+# Copyright (C) 2005, 2006, 2009, 2011, 2012-2014
+# Free Software Foundation, Inc.
+#      Written by Keith Marshall (keith.d.marshall@ntlworld.com)
+#      Automake migration by Bertrand Garrigues
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+pdfmark_srcdir = $(top_srcdir)/contrib/pdfmark
+pdfmark_builddir = $(top_builddir)/contrib/pdfmark
+
+man1_MANS += contrib/pdfmark/pdfroff.n
+
+bin_SCRIPTS += pdfroff
+
+# Files installed in $(tmacdir)
+TMACFILES = \
+  contrib/pdfmark/pdfmark.tmac \
+  contrib/pdfmark/spdf.tmac
+pdfmarktmacdir = $(tmacdir)
+dist_pdfmarktmac_DATA = $(TMACFILES)
+
+# Files installed in $(pdfdocdir)
+PDFDOCFILES = \
+  contrib/pdfmark/pdfmark.pdf
+pdfmarkpdfdocdir = $(pdfdocdir)
+dist_pdfmarkpdfdoc_DATA = $(PDFDOCFILES)
+MOSTLYCLEANFILES += $(PDFDOCFILES)
+
+EXTRA_DIST += \
+  contrib/pdfmark/cover.ms \
+  contrib/pdfmark/pdfmark.ms \
+  contrib/pdfmark/ChangeLog \
+  contrib/pdfmark/README \
+  contrib/pdfmark/PROBLEMS \
+  contrib/pdfmark/TODO \
+  contrib/pdfmark/pdfroff.man \
+  contrib/pdfmark/pdfroff.sh
+
+PDFMARK_PFLAG =-dpaper=$(PAGE) -P-p$(PAGE)
+PDFMARK_TFLAG = -M$(pdfmark_srcdir)
+PDFROFF=\
+  GROFF_TMPDIR=. \
+  GROFF_COMMAND_PREFIX= \
+  GROFF_BIN_DIR="$(GROFF_BIN_DIR)" \
+  GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
+  ./pdfroff --keep-temporary-files \
+  $(FFLAG) $(TFLAG) $(PDFMARK_TFLAG) $(PDFMARK_PFLAG)
+
+contrib/pdfmark/pdfmark.pdf: contrib/pdfmark/pdfmark.ms
+	@$(MKDIR_P) `dirname $@`
+	$(PDFROFF) -mspdf --stylesheet=$(pdfmark_srcdir)/cover.ms \
+	  $(top_srcdir)/contrib/pdfmark/pdfmark.ms >$@
+
+# The pdf files use the local script to generate.
+$(PDFDOCFILES): pdfroff groff troff gropdf 
+$(PDFDOCFILES): $(dist_devpsfont_DATA) $(nodist_devpsfont_DATA) gnu.eps
+
+pdfroff: contrib/pdfmark/pdfroff.sh $(SH_DEPS_SED_SCRIPT)
+	sed -f $(SH_DEPS_SED_SCRIPT) \
+	    -e "s|[@]VERSION[@]|$(VERSION)|" \
+	    -e "s|[@]GROFF_AWK_INTERPRETERS[@]|$(ALT_AWK_PROGS)|" \
+	    -e "s|[@]GROFF_GHOSTSCRIPT_INTERPRETERS[@]|$(ALT_GHOSTSCRIPT_PROGS)|" \
+	    -e "s|[@]GROFF_BIN_DIR[@]|$(bindir)|" $(pdfmark_srcdir)/pdfroff.sh >$@
+	chmod +x $@
+
+mostlyclean-local: mostlyclean_pdfmark
+mostlyclean_pdfmark:
+	rm -rf $(top_builddir)/pdfroff-*
+
+uninstall_groffdirs: uninstall-pdfmark-hook
+uninstall-pdfmark-hook:
+	if test -d $(DESTDIR)$(pdfmarkpdfdocdir); then \
+	  rmdir $(DESTDIR)$(pdfmarkpdfdocdir); \
+	fi
