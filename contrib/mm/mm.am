@@ -1,0 +1,106 @@
+# Copyright 1991-2014
+#   Free Software Foundation, Inc.
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# mm.am
+#
+
+mm_srcdir = $(top_srcdir)/contrib/mm
+mm_builddir = $(top_builddir)/contrib/mm
+
+bin_SCRIPTS += mmroff
+
+man1_MANS += contrib/mm/mmroff.n
+man7_MANS += \
+  contrib/mm/groff_mm.n \
+  contrib/mm/groff_mmse.n
+
+# Files installed in $(tmacdir)/mm
+MMFILES = \
+  contrib/mm/mm/0.MT \
+  contrib/mm/mm/5.MT \
+  contrib/mm/mm/4.MT \
+  contrib/mm/mm/ms.cov \
+  contrib/mm/mm/se_ms.cov
+mmdir = $(tmacdir)/mm
+dist_mm_DATA = $(MMFILES)
+
+# Files installed in $(tmacdir)
+tmacmmdir = $(tmacdir)
+dist_tmacmm_DATA = contrib/mm/refer-mm.tmac
+
+# Local configuration files with default values.
+MMLOCALE = \
+  locale \
+  se_locale
+
+EXTRA_DIST += \
+  contrib/mm/ChangeLog \
+  contrib/mm/examples \
+  contrib/mm/Makefile.sim \
+  contrib/mm/mm \
+  contrib/mm/NOTES \
+  contrib/mm/README \
+  contrib/mm/groff_mm.man \
+  contrib/mm/groff_mmse.man \
+  contrib/mm/mmroff.man \
+  contrib/mm/mmroff.pl
+
+mmroff: $(mm_srcdir)/mmroff.pl
+	sed -e 's;/usr/bin/perl;$(PERL);' $(mm_srcdir)/mmroff.pl >$@
+	chmod +x $@
+
+# Special installation rules for m.tmac, mse.tmac, mmse.tmac, mm.tmac
+# and MMLOCALE
+install-data-local: install_mm
+install_mm:
+	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
+	-test -d $(DESTDIR)$(mmdir) || $(mkinstalldirs) $(DESTDIR)$(mmdir)
+	$(RM) $(DESTDIR)$(tmacdir)/tmac.$(tmac_m_prefix)m
+	$(RM) $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)m.tmac
+	$(INSTALL_DATA) $(mm_srcdir)/m.tmac \
+	  $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)m.tmac
+	sed -e "s;^.mso m.tmac;.mso $(tmac_m_prefix)m.tmac;g" \
+	  $(mm_srcdir)/mse.tmac > $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mse.tmac
+	@sed -e "s;^.mso mse.tmac;.mso $(tmac_m_prefix)mse.tmac;g" \
+	  $(mm_srcdir)/mmse.tmac > $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mmse.tmac
+	@sed -e "s;^.mso m.tmac;.mso $(tmac_m_prefix)m.tmac;g" \
+	  $(mm_srcdir)/mm.tmac > $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mm.tmac
+	@for f in $(MMLOCALE); do \
+	  test -f $(DESTDIR)$(tmacdir)/mm/$$f \
+	    || touch $(DESTDIR)$(tmacdir)/mm/$$f; \
+	done
+uninstall-local: uninstall_mm
+uninstall_mm:
+	-for f in $(MMLOCALE); do \
+	  test -s $(DESTDIR)$(tmacdir)/mm/$$f \
+	    || $(RM) $(DESTDIR)$(tmacdir)/mm/$$f; \
+	done
+	$(RM) $(DESTDIR)$(tmacdir)/tmac.$(tmac_m_prefix)m
+	$(RM) $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)m.tmac
+	$(RM) $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mm.tmac
+	$(RM) $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mse.tmac
+	$(RM) $(DESTDIR)$(tmacdir)/$(tmac_m_prefix)mmse.tmac
+	-rmdir $(DESTDIR)$(tmacdir)/mm
+
+# Special distribution rule: we copy all .tmac files from contrib/mm
+dist-hook: dist_mm
+dist_mm:
+	chmod u+w $(distdir)/contrib/mm/
+	for i in $(mm_srcdir)/*.tmac; do \
+	  cp -f $$i $(distdir)/contrib/mm/; \
+	done
