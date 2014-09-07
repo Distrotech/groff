@@ -1347,3 +1347,7 @@ AC_DEFUN([GROFF_GROGDIR_DEFAULT],
 AC_DEFUN([GROFF_REFERDIR_DEFAULT],
   referdir=$libprogramdir/refer
   AC_SUBST([referdir]))
+
+# Check for xpmtoppm, for gnu.eps generation
+AC_DEFUN([GROFF_PROG_XPMTOPPM],
+  [AC_CHECK_PROG([XPMTOPPM], [xpmtoppm], [found], [missing])])

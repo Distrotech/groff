@@ -557,7 +557,9 @@ include $(top_srcdir)/contrib/groff_filenames/groff_filenames.am
 include $(top_srcdir)/contrib/groffer/groffer.am
 include $(top_srcdir)/contrib/hdtbl/hdtbl.am
 include $(top_srcdir)/contrib/mm/mm.am
+include $(top_srcdir)/contrib/pdfmark/pdfmark.am
 include $(top_srcdir)/contrib/pic2graph/pic2graph.am
+include $(top_srcdir)/doc/doc.am
 include $(top_srcdir)/font/devX100/devX100.am
 include $(top_srcdir)/font/devX100-12/devX100-12.am
 include $(top_srcdir)/font/devX75/devX75.am
@@ -624,17 +626,6 @@ BUILT_SOURCES += defs.h
 # possible
 lib/localcharset.$(OBJEXT): lib/configmake.h
 
-# File used by contrib/hdtbl and contrib/pdfmark
-gnu.eps:
-	if test -f $(top_srcdir)/doc/gnu.eps; then \
-	  cp $(top_srcdir)/doc/gnu.eps . ; \
-	elif test -f $(top_builddir)/doc/gnu.eps; then \
-	  cp $(top_builddir)/doc/gnu.eps . ; \
-	else \
-	  xpmtoppm $(top_srcdir)/doc/gnu.xpm | pnmdepth 15 \
-	    | $(pnmtops_nosetpage) -noturn -rle >$@ ; \
-	fi
-
 # directories specific to groff
 uninstall-hook: uninstall_groffdirs
 uninstall_groffdirs:
@@ -684,7 +675,7 @@ EXTRA_DIST += \
   README.MinGW \
   arch/djgpp
 
-MOSTLYCLEANFILES += $(man1_MANS) $(man5_MANS) $(man7_MANS) $(bin_SCRIPTS) gnu.eps
+MOSTLYCLEANFILES += $(man1_MANS) $(man5_MANS) $(man7_MANS) $(bin_SCRIPTS)
 
 # Rule to build .man files. The brackets around the @ are used to prevent the 
 # substitution of the variable by automake. 

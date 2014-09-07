@@ -1,0 +1,54 @@
+# Copyright (C) 2002-2014  Free Software Foundation, Inc.
+#      Original Makefile.sub written by Werner Lemberg <wl@gnu.org>
+#      Automake migration by 
+#      Bertrand Garrigues <bertrand.garrigues@laposte.net>
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+
+# File used by contrib/hdtbl and contrib/pdfmark. It is distributed in
+# doc.eps. We try in priority to use the file in 'doc'.
+EXTRA_DIST += doc/gnu.xpm
+MOSTLYCLEANFILES += gnu.eps
+gnu.eps:
+	echo $(XPMTOPPM)
+	if test -f $(top_srcdir)/doc/gnu.eps; then \
+	  cp $(top_srcdir)/doc/gnu.eps . ; \
+	elif test -f $(top_builddir)/doc/gnu.eps; then \
+	  cp $(top_builddir)/doc/gnu.eps . ; \
+	else \
+	  if test ""$(XPMTOPPM) != "found"; then \
+	    echo "Program xpmtoppm is missing, can't generate gnu.eps" ; \
+	    exit 1; \
+	  fi; \
+	  if test ""$(pnmtops) != "found"; then \
+	    echo "Program pnmtops is missing, can't generate gnu.eps" ; \
+	    exit 1; \
+	  fi; \
+	  if test "$(pnmtops_nosetpage)" != "pnmtops -nosetpage"; then \
+	    echo "Program pnmtops can't handle -nosetpage, can't generate gnu.eps" ; \
+	    exit 1; \
+	  fi; \
+	  xpmtoppm $(top_srcdir)/doc/gnu.xpm | pnmdepth 15 \
+	    | $(pnmtops_nosetpage) -noturn -rle >$@ ; \
+	fi
+
+# Copy gnu.eps in 'doc' directory
+dist-hook: dist-gnueps
+dist-gnueps:
+	chmod u+w $(distdir)/doc
+	cp -f gnu.eps $(distdir)/doc
+
