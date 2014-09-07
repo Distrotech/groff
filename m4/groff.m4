@@ -187,8 +187,8 @@ AC_DEFUN([GROFF_MAKEINFO],
    AC_SUBST([MAKEINFO])
    AC_SUBST([make_infodoc])
    AC_SUBST([make_install_infodoc])
-   AC_SUBST([make_uninstall_infodoc])])
-
+   AC_SUBST([make_uninstall_infodoc])
+   AC_SUBST([makeinfo_version_numeric])])
 
 # The following programs are needed for grohtml.
 
