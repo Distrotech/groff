@@ -22,6 +22,7 @@ doc_srcdir = $(abs_top_srcdir)/doc
 doc_builddir = $(abs_top_builddir)/doc
 
 DOC_GROFF=\
+  LANG=C LC_ALL=C \
   sed -e "s;@VERSION@;$(VERSION);" $< \
   | GROFF_COMMAND_PREFIX= \
     GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
@@ -233,6 +234,87 @@ uninstall_doc_htmldoc:
 	-rmdir $(DESTDIR)$(htmldocdir)/$(imagedir)
 	-rmdir $(DESTDIR)$(htmldocdir)
 
+# Texinfo doc
+#
+# Users who want to print out the groff manual are expected to have a
+# working TeX installation.  Note that texi2dvi properly honours the
+# `MAKEINFO' environment variable.
+#
+# We can't use automake's facilities because the make dist target attempts to 
+# generate a pdf version of groff.texi by invoking texi2dvi without the -e 
+# option, which is needed to build this file.
+# info_TEXINFOS = doc/groff.texi
+# doc_groff_TEXINFOS = doc/fdl.texi
+#
+# Note that GNU standards require to install only info doc.
+all: doc/groff.info
+groffinfodir = $(infodir)
+groffpdfdir = $(infodir)
+MOSTLYCLEANFILES += doc/groff.info doc/groff.info-2 doc/groff.info-2
+EXTRA_DIST += doc/groff.texi doc/fdl.texi
+doc/groff.info: $(doc_srcdir)/groff.texi
+	@$(MKDIR_P) $(doc_builddir)
+	LANG=C \
+	LC_ALL=C \
+	$(MAKEINFO) -o doc/groff.info --enable-encoding -I$(doc_srcdir) $(doc_srcdir)/groff.texi
+
+# Rules to generate various doc files from .texi files.
+.texi.txt:
+	@$(MKDIR_P) $(doc_builddir)
+	LANG=C \
+	LC_ALL=C \
+	$(MAKEINFO) --enable-encoding -I$(doc_srcdir) --plaintext -o $@ $<
+
+.texi.dvi:
+	@$(MKDIR_P) $(doc_builddir)
+	LANG=C \
+	LC_ALL=C \
+	TEXINPUTS="$(top_srcdir)/build-aux:$(TEXINPUTS)" \
+	MAKEINFO='$(MAKEINFO) -I $(doc_srcdir)' \
+	$(TEXI2DVI) -e --batch --build-dir=doc/`basename $@`.t2d -o $@ $<
+
+.texi.pdf:
+	@$(MKDIR_P) $(doc_builddir)
+	LANG=C \
+	LC_ALL=C \
+	TEXINPUTS="$(top_srcdir)/build-aux:$(TEXINPUTS)" \
+	MAKEINFO='$(MAKEINFO) -I $(doc_srcdir)' \
+	$(TEXI2DVI) -e --batch --pdf --build-dir=doc/`basename $@`.t2p -o $@ $<
+
+# This will generate both html split into several files and html doc
+# in a single file. If texinfo version < 5.0, we process the resulting
+# (mono) .html file with fixinfo.sh du to a problem with blockquote
+# closing (for example 5.6.1 Setting Registers, the 'Request'
+# blockquote is not properly closed, see fixinfo.sh for more details
+.texi.html:
+	@$(MKDIR_P) $(doc_builddir)/
+	@$(MKDIR_P) $(doc_builddir)/`basename $@`.mono/
+	LANG=C \
+	LC_ALL=C \
+	$(MAKEINFO) --html -I $(doc_srcdir) \
+	  -o doc/`basename $@`.node $<
+	LANG=C \
+	LC_ALL=C \
+	$(MAKEINFO) --html -I $(doc_srcdir) --no-split \
+	  -o doc/`basename $@`.mono/`basename $@` $<
+	if test "$(makeinfo_version_numeric)" -lt 5000; then \
+	  echo "patching $@ with fixinfo.sh"; \
+	  $(SHELL) $(doc_srcdir)/fixinfo.sh \
+	    doc/`basename $@`.mono/`basename $@`; \
+	fi
+
+# Targets to make all the doc in all formats. These doc are not built
+# by default.
+doc: doc_all
+doc_all: doc_txt dvi pdf html
+doc_txt: doc/groff.txt
+dvi: doc_dvi
+doc_dvi: doc/groff.dvi
+pdf: doc_pdf
+doc_pdf: doc/groff.pdf
+html: doc_html
+doc_html: doc/groff.html
+
 distclean-local: clean_infodoc clean_otherdoc
 maintainer-clean-local: clean_infodoc clean_otherdoc
 clean_infodoc:
@@ -240,6 +322,25 @@ clean_infodoc:
 clean_otherdoc:
 	-cd $(doc_builddir) && \
 	  rm -rf *.pdf *.html *.txt *.dvi *.html.mono *.t2p *.t2d
+
+install-data-local: install_infodoc
+install_infodoc: doc/groff.info
+	-test -d $(DESTDIR)$(infodir) || $(mkinstalldirs) $(DESTDIR)$(infodir)
+	  for p in doc/groff.info `ls doc/groff.info*`; do \
+	    f=`basename $$p`; \
+	    rm -f $(DESTDIR)$(infodir)/$$f; \
+	    $(INSTALL_DATA) $$p $(DESTDIR)$(infodir)/$$f; \
+	  done
+	$(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) \
+	  $(DESTDIR)$(infodir)/groff.info
+
+uninstall-local: uninstall_infodoc
+uninstall_infodoc:
+	-$(INSTALL_INFO) --remove --info-dir=$(DESTDIR)$(infodir) \
+	  $(DESTDIR)$(infodir)/groff.info
+	-for f in `ls $(DESTDIR)$(infodir)/groff.info*`; do \
+	  rm -f $$f; \
+	done
 
 # File used by contrib/hdtbl and contrib/pdfmark. It is distributed in
 # doc.eps. We try in priority to use the file in 'doc'.

@@ -148,7 +148,11 @@ AC_DEFUN([GROFF_DOC_CHECK],
 # We need makeinfo 4.8 or newer.
 
 AC_DEFUN([GROFF_MAKEINFO],
-  [if test $docadd_info = yes; then
+  # By default automake will set MAKEINFO to MAKEINFO = ${SHELL} <top
+  # src dir>/build-aux/missing makeinfo.As we need a more precise
+  # check of makeinfo version, we don't use it.
+  [MAKEINFO=
+   if test $docadd_info = yes; then
      missing=
      AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo])
      if test -z "$MAKEINFO"; then
@@ -195,8 +199,8 @@ AC_DEFUN([GROFF_MAKEINFO],
    AC_SUBST([MAKEINFO])
    AC_SUBST([make_infodoc])
    AC_SUBST([make_install_infodoc])
-   AC_SUBST([make_uninstall_infodoc])])
-
+   AC_SUBST([make_uninstall_infodoc])
+   AC_SUBST([makeinfo_version_numeric])])
 
 # The following programs are needed for grohtml.
 
