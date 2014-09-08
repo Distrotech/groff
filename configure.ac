@@ -183,6 +183,14 @@ gl_LOCALCHARSET
 # src/libs/libxutil
 AM_CONDITIONAL([WITHOUT_X11], [test "x$groff_no_x" = "xyes"])
 
+AM_CONDITIONAL([BUILD_INFODOC], [test -n $make_infodoc])
+AM_CONDITIONAL([BUILD_HTML], [test -n $make_htmldoc])
+AM_CONDITIONAL([BUILD_HTMLEXAMPLES], [test -n $make_htmlexamples])
+AM_CONDITIONAL([BUILD_PDFDOC], [test -n $make_pdfdoc])
+AM_CONDITIONAL([BUILD_PDFEXAMPLES], [test -n $make_pdfexamples])
+AM_CONDITIONAL([BUILD_OTHERDOC], [test -n $make_otherdoc])
+AM_CONDITIONAL([BUILD_EXAMPLES], [test -n $make_examples])
+
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 

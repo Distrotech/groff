@@ -28,6 +28,7 @@ DOC_GROFF=\
     $(GROFFBIN) -I$(abs_top_builddir) -M $(doc_srcdir) $(TFLAG) $(FFLAG) -Upet -ww 
 
 # Other doc, installed in $(docdir)
+if BUILD_OTHERDOC
 # Files located in the source tree
 DOCFILES= \
   doc/meref.me \
@@ -45,15 +46,20 @@ otherdocdir = $(docdir)
 dist_otherdoc_DATA = $(DOCFILES)
 nodist_otherdoc_DATA = $(PROCESSEDDOCFILES)
 MOSTLYCLEANFILES += $(PROCESSEDDOCFILES)
+else
+EXTRA_DIST += $(DOCFILES)
+endif
 
 # GNU PIC html documentation, installed in $(htmldocdir)
 # Other pic*.html files are installed by the local rule
+if BUILD_HTML
 HTMLDOCFILES = \
   doc/pic.html
 htmlpicdir = $(htmldocdir)
 htmlpic_DATA = $(HTMLDOCFILES)
 HTMLDOCFILESALL = pic*.html
 HTMLDOCIMAGEFILES = pic*
+endif
 
 # Examples files, installed in $(exampledir)
 
@@ -64,6 +70,7 @@ EXAMPLEFILES = \
   doc/grnexmpl.g \
   doc/grnexmpl.me
 
+if BUILD_EXAMPLES
 # Generated in the build tree
 PROCESSEDEXAMPLEFILES = \
   doc/webpage.ps \
@@ -76,6 +83,9 @@ docexamplesdir = $(exampledir)
 dist_docexamples_DATA = $(EXAMPLEFILES)
 nodist_docexamples_DATA = $(HTMLEXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
 MOSTLYCLEANFILES += $(PROCESSEDEXAMPLEFILES)
+else
+EXTRA_DIST += $(EXAMPLEFILES)
+endif
 
 imagedir = img
 htmldocimagedir = $(htmldocdir)/img
@@ -143,6 +153,7 @@ doc/grnexmpl.ps: doc/grnexmpl.me doc/grnexmpl.g
 # Note that we remove groff.css only if out-of-source build tree
 mostlyclean-local: mostlyclean_doc
 mostlyclean_doc:
+if BUILD_HTML
 	if test -d $(doc_builddir); then \
 	  cd $(doc_builddir) && \
 	  for f in $(HTMLDOCFILESALL); do \
@@ -155,10 +166,12 @@ mostlyclean_doc:
 	    rm -f $$f; \
 	  done; \
 	fi
+endif
 	if test $(top_builddir) != $(top_srcdir); then \
 	  rm -f $(top_builddir)/doc/groff.css; \
 	fi
 
+if BUILD_EXAMPLES
 	if test -d $(doc_builddir); then \
 	  cd $(doc_builddir) && \
 	  for f in $(HTMLEXAMPLEFILESALL); do \
@@ -171,9 +184,11 @@ mostlyclean_doc:
 	    rm -f $$f; \
 	  done; \
 	fi
+endif
 
 install-data-hook: install_doc_htmldoc
 install_doc_htmldoc:
+if BUILD_HTML
 	cd $(doc_builddir) && \
 	for f in `ls $(HTMLDOCFILESALL)`; do \
 	  rm -f $(DESTDIR)$(htmldocdir)/$$f; \
@@ -184,9 +199,10 @@ install_doc_htmldoc:
 	rm -f $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
 	$(INSTALL_DATA) $(doc_builddir)/$(imagedir)/$(HTMLDOCIMAGEFILES) \
 	  $(DESTDIR)$(htmldocimagedir)
+endif
 
 install-data-hook: install_doc_examples
-
+if BUILD_EXAMPLES
 install_doc_examples: gnu.eps
 # Prefer gnu.eps in builddir over srcdir.
 	d=.; test -f "gnu.eps" || d=$(doc_srcdir); \
@@ -202,9 +218,13 @@ install_doc_examples: gnu.eps
 	rm -f $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
 	$(INSTALL_DATA) $(doc_builddir)/$(imagedir)/$(HTMLEXAMPLEIMAGEFILES) \
 	  $(DESTDIR)$(exampleimagedir)
+else
+install_doc_examples:
+endif
 
 uninstall-hook: uninstall_doc_examples uninstall_doc_htmldoc uninstall_mom
 uninstall_doc_examples:
+if BUILD_EXAMPLES
 	-test -d $(DESTDIR)$(docexamplesdir) && \
 	cd $(DESTDIR)$(docexamplesdir) && \
 	for f in $(HTMLEXAMPLEFILESALL); do \
@@ -218,8 +238,10 @@ uninstall_doc_examples:
 	rm -f $(DESTDIR)$(exampledir)/gnu.eps
 	-rmdir $(DESTDIR)$(docexamplesdir)/$(imagedir)
 	-rmdir $(DESTDIR)$(docexamplesdir)
+endif
 
 uninstall_doc_htmldoc:
+if BUILD_HTML
 	-test -d $(DESTDIR)$(htmldocdir) && \
 	cd $(DESTDIR)$(htmldocdir) && \
 	for f in $(HTMLDOCFILESALL); do \
@@ -232,6 +254,7 @@ uninstall_doc_htmldoc:
 	done
 	-rmdir $(DESTDIR)$(htmldocdir)/$(imagedir)
 	-rmdir $(DESTDIR)$(htmldocdir)
+endif
 
 # Texinfo doc
 #

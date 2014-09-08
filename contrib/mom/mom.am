@@ -44,6 +44,7 @@ nodist_momtmac_DATA = $(MOMSTRIPFILES)
 dist_momtmac_DATA = $(MOMNORMALFILES)
 
 # Files installed in htmldocdir/mom
+if BUILD_HTML
 MOMHTMLDOCFILES=\
   contrib/mom/momdoc/stylesheet.css \
   contrib/mom/momdoc/appendices.html \
@@ -70,6 +71,7 @@ MOMHTMLDOCFILES=\
   contrib/mom/momdoc/version-2.html
 momhtmldir = $(htmldocdir)/mom
 momhtml_DATA = $(MOMHTMLDOCFILES)
+endif
 
 # Files installed in $(examplesdir)/mom.  MOMEXAMPLEFILES are located
 # in the source tree, while MOMPROCESSEDEXAMPLEFILES are generated in
@@ -88,6 +90,7 @@ MOMEXAMPLEFILES=\
 momexampledir = $(exampledir)/mom
 momexample_DATA = $(MOMEXAMPLEFILES)
 
+if BUILD_PDFEXAMPLES
 MOMPROCESSEDEXAMPLEFILES = \
   contrib/mom/examples/letter.pdf \
   contrib/mom/examples/mom-pdf.pdf \
@@ -95,6 +98,7 @@ MOMPROCESSEDEXAMPLEFILES = \
   contrib/mom/examples/typesetting.pdf
 momprocessedexampledir = $(exampledir)/mom
 nodist_momprocessedexample_DATA = $(MOMPROCESSEDEXAMPLEFILES)
+endif
 
 # For this list of files we add a symlink from $(exampledir)/mom to $(pdfdocdir)
 PDFDOCFILE = mom-pdf.pdf
@@ -136,10 +140,12 @@ $(MOMSTRIPFILES): $(top_srcdir)/tmac/strip.sed
 
 install-data-hook: install_mom
 install_mom:
+if BUILD_PDFEXAMPLES
 	for f in $(PDFDOCFILE); do \
 	  rm -f $(DESTDIR)$(pdfdocdir)/$$f; \
 	  ln -s $(exampledir)/mom/$$f $(DESTDIR)$(pdfdocdir)/$$f; \
 	done
+endif
 
 uninstall_groffdirs: uninstall_mom
 uninstall_mom:

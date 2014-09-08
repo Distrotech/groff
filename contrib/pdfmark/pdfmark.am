@@ -32,11 +32,15 @@ pdfmarktmacdir = $(tmacdir)
 dist_pdfmarktmac_DATA = $(TMACFILES)
 
 # Files installed in $(pdfdocdir)
+if BUILD_PDFDOC
 PDFDOCFILES = \
   contrib/pdfmark/pdfmark.pdf
 pdfmarkpdfdocdir = $(pdfdocdir)
 dist_pdfmarkpdfdoc_DATA = $(PDFDOCFILES)
 MOSTLYCLEANFILES += $(PDFDOCFILES)
+else
+EXTRA_DIST += $(PDFDOCFILES)
+endif
 
 EXTRA_DIST += \
   contrib/pdfmark/cover.ms \
