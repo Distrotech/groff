@@ -41,6 +41,7 @@ CHEM_EXAMPLES =  \
   contrib/chem/examples/penicillin.chem \
   contrib/chem/examples/reserpine.chem
 
+if BUILD_EXAMPLES
 # Files installed in $(exampledir)/chem
 chemexampledir = $(exampledir)/chem
 nodist_chemexample_DATA = $(CHEM_GENEXAMPLES)
@@ -50,7 +51,7 @@ dist_chemexample_DATA = $(CHEM_EXAMPLES)
 # lazily installed by the local install target
 chemexample122dir = $(chemexampledir)/122
 nodist_chemexample122_DATA = contrib/chem/examples/122/README
-
+endif
 EXTRA_DIST += \
   contrib/chem/ChangeLog \
   contrib/chem/chem.man \
@@ -93,20 +94,24 @@ chem: $(chem_srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
 
 install-data-local: install_chem_extra
 install_chem_extra:
+if BUILD_EXAMPLES
 	-test -d $(DESTDIR)$(chemexample122dir) \
           || $(mkinstalldirs) $(DESTDIR)$(chemexample122dir);
 	for i in $(chem_srcdir)/examples/122/*.chem; do \
 	  n=`echo $$i | sed 's|$(chem_srcdir)/examples/122/||g'`; \
 	  $(INSTALL_DATA) $$i $(DESTDIR)$(chemexample122dir)/$$n; \
 	done
+endif
 
 uninstall-local: uninstall_chem_extra
 uninstall_chem_extra:
+if BUILD_EXAMPLES
 	$(RM) $(DESTDIR)$(exampledir)/chem/122/*
 	-rmdir $(DESTDIR)$(exampledir)/chem/122
 	$(RM) $(DESTDIR)$(exampledir)/chem/*
 	-rmdir $(DESTDIR)$(exampledir)/chem
 	-rmdir $(DESTDIR)$(datasubdir)/pic
+endif
 
 dist-hook: dist_chem
 dist_chem:
