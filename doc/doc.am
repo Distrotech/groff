@@ -75,16 +75,21 @@ if BUILD_EXAMPLES
 PROCESSEDEXAMPLEFILES = \
   doc/webpage.ps \
   doc/grnexmpl.ps
+docexamplesdir = $(exampledir)
+dist_docexamples_DATA = $(EXAMPLEFILES)
+nodist_docexamples_DATA = $(PROCESSEDEXAMPLEFILES)
+MOSTLYCLEANFILES += $(PROCESSEDEXAMPLEFILES)
+else
+EXTRA_DIST += $(EXAMPLEFILES)
+endif
+
+if BUILD_HTMLEXAMPLES
 # webpage.html is generated, webpage*.html files are installed by the local rule.
 HTMLEXAMPLEFILES = doc/webpage.html
 HTMLEXAMPLEFILESALL = webpage*.html
 HTMLEXAMPLEIMAGEFILES = webpage*
-docexamplesdir = $(exampledir)
-dist_docexamples_DATA = $(EXAMPLEFILES)
-nodist_docexamples_DATA = $(HTMLEXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
-MOSTLYCLEANFILES += $(PROCESSEDEXAMPLEFILES)
-else
-EXTRA_DIST += $(EXAMPLEFILES)
+htmlexamplesdir = $(exampledir)
+nodist_htmlexamples_DATA = $(HTMLEXAMPLEFILES)
 endif
 
 imagedir = img
@@ -171,7 +176,7 @@ endif
 	  rm -f $(top_builddir)/doc/groff.css; \
 	fi
 
-if BUILD_EXAMPLES
+if BUILD_HTMLEXAMPLES
 	if test -d $(doc_builddir); then \
 	  cd $(doc_builddir) && \
 	  for f in $(HTMLEXAMPLEFILESALL); do \
@@ -202,12 +207,14 @@ if BUILD_HTML
 endif
 
 install-data-hook: install_doc_examples
-if BUILD_EXAMPLES
 install_doc_examples: gnu.eps
+if BUILD_EXAMPLES
 # Prefer gnu.eps in builddir over srcdir.
 	d=.; test -f "gnu.eps" || d=$(doc_srcdir); \
 	  rm -f $(DESTDIR)$(exampledir)/gnu.eps; \
 	  $(INSTALL_DATA) $$d/gnu.eps $(DESTDIR)$(exampledir)/gnu.eps
+endif
+if BUILD_HTMLEXAMPLES
 	cd $(doc_builddir) && \
 	for f in `ls $(HTMLEXAMPLEFILESALL)`; do \
 	  rm -f $(DESTDIR)$(exampledir)/$$f; \
@@ -218,13 +225,14 @@ install_doc_examples: gnu.eps
 	rm -f $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
 	$(INSTALL_DATA) $(doc_builddir)/$(imagedir)/$(HTMLEXAMPLEIMAGEFILES) \
 	  $(DESTDIR)$(exampleimagedir)
-else
-install_doc_examples:
 endif
 
 uninstall-hook: uninstall_doc_examples uninstall_doc_htmldoc uninstall_mom
 uninstall_doc_examples:
 if BUILD_EXAMPLES
+	rm -f $(DESTDIR)$(exampledir)/gnu.eps
+endif
+if BUILD_HTMLEXAMPLES
 	-test -d $(DESTDIR)$(docexamplesdir) && \
 	cd $(DESTDIR)$(docexamplesdir) && \
 	for f in $(HTMLEXAMPLEFILESALL); do \
@@ -235,7 +243,6 @@ if BUILD_EXAMPLES
 	for f in $(HTMLEXAMPLEIMAGEFILES); do \
 	  rm -f $$f; \
 	done
-	rm -f $(DESTDIR)$(exampledir)/gnu.eps
 	-rmdir $(DESTDIR)$(docexamplesdir)/$(imagedir)
 	-rmdir $(DESTDIR)$(docexamplesdir)
 endif
@@ -264,15 +271,24 @@ endif
 # info_TEXINFOS = doc/groff.texi
 # doc_groff_TEXINFOS = doc/fdl.texi
 #
-# Note that GNU standards require to install only info doc.
-all: doc/groff.info
+# Note that GNU standards require to install only info doc. Info doc
+# can still be disabled by passing 
+# --with-doc=<something else than info or yes> 
+# to configure
+
+all: build_infodoc
+if BUILD_INFODOC
+build_infodoc: doc/groff.info
 groffinfodir = $(infodir)
 groffpdfdir = $(infodir)
 MOSTLYCLEANFILES += doc/groff.info doc/groff.info-2 doc/groff.info-2
-EXTRA_DIST += doc/groff.texi doc/fdl.texi
 doc/groff.info: $(doc_srcdir)/groff.texi
 	@$(MKDIR_P) $(doc_builddir)
 	$(MAKEINFO) -o doc/groff.info --enable-encoding -I$(doc_srcdir) $(doc_srcdir)/groff.texi
+else
+build_infodoc:
+endif
+EXTRA_DIST += doc/groff.texi doc/fdl.texi
 
 # Rules to generate various doc files from .texi files.
 .texi.txt:
@@ -330,6 +346,7 @@ clean_otherdoc:
 	  rm -rf *.pdf *.html *.txt *.dvi *.html.mono *.t2p *.t2d
 
 install-data-local: install_infodoc
+if BUILD_INFODOC
 install_infodoc: doc/groff.info
 	-test -d $(DESTDIR)$(infodir) || $(mkinstalldirs) $(DESTDIR)$(infodir)
 	  for p in doc/groff.info `ls doc/groff.info*`; do \
@@ -339,14 +356,19 @@ install_infodoc: doc/groff.info
 	  done
 	$(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) \
 	  $(DESTDIR)$(infodir)/groff.info
+else
+install_infodoc:
+endif
 
 uninstall-local: uninstall_infodoc
 uninstall_infodoc:
+if BUILD_INFODOC
 	-$(INSTALL_INFO) --remove --info-dir=$(DESTDIR)$(infodir) \
 	  $(DESTDIR)$(infodir)/groff.info
 	-for f in `ls $(DESTDIR)$(infodir)/groff.info*`; do \
 	  rm -f $$f; \
 	done
+endif
 
 # File used by contrib/hdtbl and contrib/pdfmark. It is distributed in
 # doc.eps. We try in priority to use the file in 'doc'.
