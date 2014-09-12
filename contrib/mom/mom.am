@@ -90,8 +90,12 @@ MOMEXAMPLEFILES=\
   contrib/mom/examples/penguin.ps \
   contrib/mom/examples/penguin.pdf \
   contrib/mom/examples/mom.vim
+if BUILD_EXAMPLES
 momexampledir = $(exampledir)/mom
-momexample_DATA = $(MOMEXAMPLEFILES)
+dist_momexample_DATA = $(MOMEXAMPLEFILES)
+else
+EXTRA_DIST += $(MOMEXAMPLEFILES)
+endif
 
 if BUILD_PDFEXAMPLES
 MOMPROCESSEDEXAMPLEFILES = \

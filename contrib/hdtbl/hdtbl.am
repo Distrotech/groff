@@ -74,10 +74,12 @@ HDTBLPROCESSEDEXAMPLEFILES = \
   contrib/hdtbl/examples/short_reference.ps
 
 hdtblexampledir = $(exampledir)/hdtbl
-dist_hdtblexample_DATA = $(HDTBLEXAMPLEFILES)
-nodist_hdtblexample_DATA = $(HDTBLGENFILES)
+
 if BUILD_EXAMPLES
-nodist_hdtblexample_DATA += $(HDTBLPROCESSEDEXAMPLEFILES) gnu.eps
+dist_hdtblexample_DATA = $(HDTBLEXAMPLEFILES)
+nodist_hdtblexample_DATA = $(HDTBLGENFILES) $(HDTBLPROCESSEDEXAMPLEFILES) gnu.eps
+else
+EXTRA_DIST += $(HDTBLEXAMPLEFILES) 
 endif
 $(hdtblexample_DATA): $(HDTBLSTRIPFILES)
 
@@ -90,8 +92,7 @@ EXTRA_DIST += \
   contrib/hdtbl/groff_hdtbl.man \
   contrib/hdtbl/hdtbl.tmac-u \
   contrib/hdtbl/hdmisc.tmac-u \
-  contrib/hdtbl/examples \
-  $(HDTBLEXAMPLEFILES)
+  contrib/hdtbl/examples
 
 # Rule to generate ps and roff files
 SUFFIXES += .roff .in .ps
