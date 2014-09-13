@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-bin_PROGRAMS += pic
+prefixexecbin_PROGRAMS += pic
 pic_LDADD = libgroff.a $(LIBM)
 pic_SOURCES = \
   src/preproc/pic/pic.ypp \
@@ -36,7 +36,7 @@ pic_SOURCES = \
 pic_CPPFLAGS = $(AM_CPPFLAGS) \
   -I $(top_srcdir)/src/preproc/pic \
   -I $(top_builddir)/src/preproc/pic
-man1_MANS += src/preproc/pic/pic.n
+PREFIXMAN1 += src/preproc/pic/pic.n
 
 src/preproc/pic/pic-lex.$(OBJEXT): src/preproc/pic/pic.hpp
 EXTRA_DIST += src/preproc/pic/pic.n src/preproc/pic/TODO

@@ -252,6 +252,8 @@ The following files remain (this is expected):
   - Makefile
   - config.status
   - config.log
+  - doc/groff.info-1
+  - doc/groff.info-3
   - src/include/config.h
   - src/include/stamp-h1
   - .deps directories and .dirstamp files
@@ -313,8 +315,7 @@ Differences with former build system:
   - Programs from 'src' installed in $(DESTDIR)/usr/local/bin: 
 
   - man files from man, src are installed in
-    $(DESTDIR)/usr/local/share/man/man1, man5 and man7 (TODO:
-    remaining man files from contrib)
+    $(DESTDIR)/usr/local/share/man/man1, man5 and man7.
 
   - $(DESTDIR)/usr/local/share/groff/1.22.3/eign (from src/utils/indxbib)
 
@@ -337,8 +338,7 @@ Differences with former build system:
     strictly identical to the one install by the original build
     system.
   
-  - contrib scripts installed in $(DESTDIR)/usr/local/bin (TODO:
-    remaining contrib)
+  - contrib scripts installed in $(DESTDIR)/usr/local/bin
 
   - contrib/chem:
 
@@ -387,15 +387,11 @@ Diff with previous build system:
 
 TODO: 
 
-  - create the 'current' symlink
-
   - The original build system might uses tmac_s_prefix,
   tmac_an_prefix, tmac_wrap and sys_tmac_prefix during the
   installation of some tmac files but set these variables to an empty
   value in tmac/Makefile.sub, I don't quite understand how these
   variables could be set.
-
-  - Add automake conditional for examples, html, and doc in `contrib'.
 
   - When contrib and doc will be completed, full installation tree
     comparison with the tree installed by the old build system.  Note:
@@ -422,14 +418,14 @@ TODO:
         │       └── app-defaults
         └── share
             ├── doc
+            ├── info
+            │   └── dir
             └── man
                 ├── man1
                 ├── man5
                 └── man7
 
-12 directories, 0 files
-
-14 directories, 0 files
+13 directories, 1 file
 
   - Notes:
     -- $(DESTDIR)/usr/local/lib/charset.alias is removed if exists
@@ -452,8 +448,6 @@ TODO:
     TESTS
 
   - Missing files/directories (TODO):
-    contrib/
-    doc/
     test-groff.in
 
   - Files/directories not present in the git tree that are
@@ -557,7 +551,25 @@ in the install tree).
 
   - Note that pre-built HTML doc in contrib/mom is installed even if
     the tools needed to build html doc are not available.
- 
+
+
+3.3 Build in presence of an non-GNU Troff installation 
+
+  - To simulate the existence of a non-GNU Troff, removed any existing
+    troff, and added a dummy troff script in /usr/bin/troff that
+    contains:
+
+    #!/bin/sh
+    echo 0
+
+    and built groff as usuall.
+
+  - Programs listed in prefixexecbin_PROGRAMS, scripts listed in
+    prefixecbin_SCRIPTS and man pages listed in PREFIXMAN1 are
+    correctly installed with a 'g' prefix. All targets (clean,
+    install/uninstall, distcheck) work as usual. No diff with the old
+    build system.
+
 Notes
 -----
 
