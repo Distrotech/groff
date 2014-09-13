@@ -508,6 +508,9 @@ CLEANFILES =
 # gnulib asks to include this file
 EXTRA_DIST = gnulib_m4/gnulib-cache.m4
 FONTFILES =
+PREFIXMAN1 =
+PREFIXMAN5 =
+PREFIXMAN7 =
 man1_MANS =
 man5_MANS =
 man7_MANS =
@@ -525,6 +528,33 @@ AM_TESTS_ENVIRONMENT = \
   abs_top_srcdir=$(abs_top_srcdir) \
   abs_top_builddir=$(abs_top_builddir) \
   export abs_top_srcdir abs_top_builddir;
+
+# We use Automake's Uniform Naming Scheme.
+#
+# prefixexecbin_PROGRAMS is the list of programs that may have a
+# NAMEPREFIX if an existing non-GNU troff system was detected. 
+#
+# This is done by the m4 macro GROFF_G that checks for the presence of
+# GNU Troff built-in \n[.g] macro. If a Unix Troff binary was
+# detected, the following programs and scripts names will have a 'g'
+# prefix: chem, tbl, eqn, neqn, pic, soleimm grn, refer, lookbib,
+# troff, nroff. Also, PROG_PREFIX will be set to 'g' in the generated
+# header defs.h so that these programs could be called correctly.
+#
+# prefixexecbindir is used to temporary install these programs. They
+# are then moved to bindir during the install-exec-hook.  Same thing
+# for the scripts.
+NAMEPREFIX=$(g)
+prefixexecbin_PROGRAMS =
+prefixexecbin_SCRIPTS = 
+if USEPROGRAMPREFIX
+# We use datadir because the uninstall rule for the PROGRAMS attempt
+# to cd into prefixexecbindir, and thus if prefixexecbindir is removed
+# two consecutive uninstall would fail
+prefixexecbindir = $(datadir)
+else
+prefixexecbindir = $(bindir)
+endif
 
 # Path to binaries and flags used by contribs and doc to generated doc.
 # These may be overridden if cross-compiling.
@@ -624,6 +654,79 @@ BUILT_SOURCES += defs.h
 # possible
 lib/localcharset.$(OBJEXT): lib/configmake.h
 
+# if there is a name prefix we install the man pages by hand
+all: generate_man_files
+install-data-hook: install-prefix-man
+uninstall-hook: uninstall-prefix-man
+if USEPROGRAMPREFIX
+generate_man_files: $(PREFIXMAN1)
+install-prefix-man:
+	for f in $(PREFIXMAN1); do \
+	  manfile_final_name=`basename $$f | sed 's/n$$/1/'`; \
+	  cp -f $$f $(DESTDIR)$(man1dir)/$(NAMEPREFIX)$$manfile_final_name; \
+	done
+	for f in $(PREFIXMAN5); do \
+	  manfile_final_name=`basename $$f | sed 's/n$$/5/'`; \
+	  cp -f $$f $(DESTDIR)$(man5dir)/$(NAMEPREFIX)$$manfile_final_name; \
+	done
+	for f in $(PREFIXMAN7); do \
+	  manfile_final_name=`basename $$f | sed 's/n$$/7/'`; \
+	  cp -f $$f $(DESTDIR)$(man7dir)/$(NAMEPREFIX)$$manfile_final_name; \
+	done
+uninstall-prefix-man:
+	for f in $(PREFIXMAN1); do \
+	  manfile_final_name=`basename $$f | sed 's/n$$/1/'`; \
+	  rm -f $(DESTDIR)$(man1dir)/$(NAMEPREFIX)$$manfile_final_name; \
+	done
+	for f in $(PREFIXMAN5); do \
+	  manfile_final_name=`basename $$f | sed 's/n$$/5/'`; \
+	  rm -f $(DESTDIR)$(man5dir)/$(NAMEPREFIX)$$manfile_final_name; \
+	done
+	for f in $(PREFIXMAN7); do \
+	  manfile_final_name=`basename $$f | sed 's/n$$/7/'`; \
+	  rm -f $(DESTDIR)$(man7dir)/$(NAMEPREFIX)$$manfile_final_name; \
+	done
+else
+man1_MANS += $(PREFIXMAN1)
+man1_MANS += $(PREFIXMAN5)
+man1_MANS += $(PREFIXMAN7)
+install-prefix-man:
+uninstall-prefix-man:
+generate_man_files:
+endif
+
+# Hook to create the 'current' symlink
+install-data-hook: create_current_symlink
+create_current_symlink:
+	cd $(DESTDIR)$(dataprogramdir); \
+	  rm -f current; \
+	  $(LN_S) $(VERSION) current
+
+# Hook to move the binaries that potentially have a prefix from
+# prefixexecbindir to bindir.
+install-exec-hook: move_binaries_with_prefix
+move_binaries_with_prefix:
+if USEPROGRAMPREFIX
+	if test -n "$(NAMEPREFIX)"; then \
+	   for f in $(prefixexecbin_PROGRAMS) $(prefixexecbin_SCRIPTS); do \
+	      mv -f $(DESTDIR)$(prefixexecbindir)/$$f$(EXEEXT) \
+	         $(DESTDIR)$(bindir)/$(NAMEPREFIX)$$f$(EXEEXT); \
+	   done \
+	fi
+endif
+
+# Always create the site-font directory as a guide to the user.
+install-data-hook: install_site_font
+install_site_font:
+	-test -d $(DESTDIR)$(localfontdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(localfontdir)
+
+# Create systemtmacdir if not present
+install-data-hook: install_tmacdir
+install_tmacdir:
+	-test -d $(DESTDIR)$(systemtmacdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(systemtmacdir)
+
 # directories specific to groff
 uninstall-hook: uninstall_groffdirs
 uninstall_groffdirs:
@@ -633,12 +736,23 @@ uninstall_groffdirs:
 	  rmdir $(DESTDIR)$(datasubdir); \
 	fi
 	if test -d $(DESTDIR)$(dataprogramdir); then \
+	  if test -h $(DESTDIR)$(dataprogramdir)/current; then \
+	    rm -f $(DESTDIR)$(dataprogramdir)/current; \
+	  fi; \
+	  if test -d $(DESTDIR)$(localfontdir); then \
+	    rm -f $(DESTDIR)$(localfontdir)/*; \
+	    rmdir $(DESTDIR)$(localfontdir); \
+	  fi; \
 	  rmdir $(DESTDIR)$(dataprogramdir); \
 	fi
 	if test -d $(DESTDIR)$(grog_dir); then \
 	  rmdir $(DESTDIR)$(grog_dir); \
 	fi
 	if test -d $(DESTDIR)$(libprogramdir); then \
+	  if test -d $(DESTDIR)$(systemtmacdir); then \
+	    rm -f $(DESTDIR)$(systemtmacdir)/*; \
+	    rmdir $(DESTDIR)$(systemtmacdir); \
+	  fi; \
 	  rmdir $(DESTDIR)$(libprogramdir); \
 	fi
 	if test -d $(DESTDIR)$(docdir); then \
@@ -650,6 +764,17 @@ uninstall_groffdirs:
 	  fi; \
 	  rmdir $(DESTDIR)$(docdir); \
 	fi
+
+# Uninstall program that have a 'g' prefix
+uninstall-hook: uninstall_binaries_with_prefix 
+uninstall_binaries_with_prefix:
+if USEPROGRAMPREFIX
+	if test -n "$(NAMEPREFIX)"; then \
+	   for f in $(prefixexecbin_PROGRAMS) $(prefixexecbin_SCRIPTS); do \
+	      rm -f $(DESTDIR)$(bindir)/$(NAMEPREFIX)$$f$(EXEEXT); \
+	   done; \
+	fi
+endif
 
 # Other files that should be present in the distribution tarball.
 EXTRA_DIST += \
@@ -676,7 +801,9 @@ EXTRA_DIST += \
   README.MinGW \
   arch/djgpp
 
-MOSTLYCLEANFILES += $(man1_MANS) $(man5_MANS) $(man7_MANS) $(bin_SCRIPTS)
+MOSTLYCLEANFILES += $(prefixexecbin_SCRIPTS) $(bin_SCRIPTS) \
+  $(man1_MANS) $(man5_MANS) $(man7_MANS) \
+  $(PREFIXMAN1) $(PREFIXMAN5) $(PREFIXMAN7)
 
 # Rule to build .man files. The brackets around the @ are used to prevent the 
 # substitution of the variable by automake. 
