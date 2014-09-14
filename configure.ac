@@ -170,6 +170,7 @@ GROFF_TARGET_PATH_SEPARATOR
 GROFF_HTML_PROGRAMS
 GROFF_PDFDOC_PROGRAMS
 GROFF_PNMTOPS_NOSETPAGE
+GROFF_MAKE_RM
 gl_GLIBC21
 gl_LOCALCHARSET
 
@@ -183,6 +184,9 @@ gl_LOCALCHARSET
 # src/libs/libxutil
 AM_CONDITIONAL([WITHOUT_X11], [test "x$groff_no_x" = "xyes"])
 
+# make builtin variable RM
+AM_CONDITIONAL([MAKE_DONT_HAVE_RM], [test "x$groff_is_rm_defined" = "xno"])
+
 # Some programs have a "g" prefix if an existing groff installation is detected
 AM_CONDITIONAL([USEPROGRAMPREFIX], [test x$g = xg])
 
@@ -195,6 +199,7 @@ AM_CONDITIONAL([BUILD_OTHERDOC], [test -n "$make_otherdoc"])
 AM_CONDITIONAL([BUILD_EXAMPLES], [test -n "$make_examples"])
 
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([test-groff], [chmod +x test-groff])
 AC_OUTPUT
 
 GROFF_APPRESDIR_CHECK

@@ -564,6 +564,11 @@ PDFMOMBIN = $(abs_top_builddir)/pdfmom
 FFLAG=-F$(abs_top_builddir)/font -F$(abs_top_srcdir)/font
 TFLAG=-M$(abs_top_builddir)/tmac -M$(abs_top_srcdir)/tmac
 
+# make builtin variable RM
+if MAKE_DONT_HAVE_RM
+RM = rm -f
+endif
+
 # Non-recursive makefile system. See Automake manual '7.3 An
 # Alternative Approach to Subdirectories'. We use a single Makefile.am
 # that includes other .am files, rather than using SUBDIRS.  Note that

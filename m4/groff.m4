@@ -1402,3 +1402,18 @@ AC_DEFUN([GROFF_GROGDIR_DEFAULT],
 # Check for xpmtoppm, for gnu.eps generation
 AC_DEFUN([GROFF_PROG_XPMTOPPM],
   [AC_CHECK_PROG([XPMTOPPM], [xpmtoppm], [found], [missing])])
+
+# Check for make builtin variable RM
+AC_DEFUN([GROFF_MAKE_RM],
+  [AC_MSG_CHECKING(whether make has builtin variable RM)
+cat <<EOF > test_make_rm.mk
+all:
+	@if test -n "\$(RM)"; then \
+	   echo "yes"; \
+	else \
+	   echo "no"; \
+	fi
+EOF
+  groff_is_rm_defined=`make -sf test_make_rm.mk`
+  AC_MSG_RESULT([$groff_is_rm_defined])
+  rm -f test_make_rm.mk])
