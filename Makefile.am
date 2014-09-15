@@ -811,7 +811,8 @@ EXTRA_DIST += \
 
 MOSTLYCLEANFILES += $(prefixexecbin_SCRIPTS) $(bin_SCRIPTS) \
   $(man1_MANS) $(man5_MANS) $(man7_MANS) \
-  $(PREFIXMAN1) $(PREFIXMAN5) $(PREFIXMAN7)
+  $(PREFIXMAN1) $(PREFIXMAN5) $(PREFIXMAN7) \
+  test-groff
 
 # Rule to build .man files. The brackets around the @ are used to prevent the 
 # substitution of the variable by automake. 
