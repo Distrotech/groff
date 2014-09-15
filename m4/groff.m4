@@ -1,8 +1,6 @@
 # Autoconf macros for groff.
 # Copyright (C) 1989-2014  Free Software Foundation, Inc.
 #
-# Last update: 5 Sep 2014
-#
 # This file is part of groff.
 #
 # groff is free software; you can redistribute it and/or modify it under
