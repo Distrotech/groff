@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 tmac_srcdir = $(top_srcdir)/tmac
+tmac_builddir = $(top_builddir)/tmac
 
 man7_MANS += \
   tmac/groff_ms.n \
@@ -117,16 +118,6 @@ MOSTLYCLEANFILES += $(TMACMDOCFILES) tmac/www.tmac $(TMACSTRIPFILES) \
    tmac/stamp-wrap \
    tmac/*-wrap
 
-# FIXME
-# Original Makefile.sub forced the following variables that are
-# originally defined in the top Makefile.am. We don't use them here,
-# if they are needed custom install commands should be written
-#
-# tmac_s_prefix=
-# tmac_an_prefix=
-# tmac_wrap=
-# sys_tmac_prefix=
-
 EXTRA_DIST += \
   tmac/fixmacros.sed \
   tmac/groff_ms.man \
@@ -152,6 +143,12 @@ tmac-dist-hook:
 	  cp -f $(top_srcdir)/$$f-u $(distdir)/tmac; \
 	done
 
+
+# If an existing system tmac macro is installed (/usr/lib/tmac
+# contains tmac.anm tmac.m, tmac.s), ms and man macros are installed
+# as gs.tmac and gan.tmac, instead of s.tmac and an.tmac. Alos,
+# an.tmac, m.tmac and s.tmac files are installed in
+# <prefix>/lib/groff/site-tmac.
 all: tmac/stamp-wrap
 
 $(TMACMDOCFILES) $(TMACSTRIPFILES): 
@@ -166,7 +163,7 @@ tmac/stamp-wrap:
 	  for m in ""$(tmac_wrap); do \
 	    rm -f $(top_builddir)/tmac/$$m-wrap; \
 	    if test "$$m" = an; then \
-	      echo .do mso $(tmac_srcdir)/andoc.tmac >>$(top_builddir)/tmac/$$m-wrap; \
+	      echo .do mso andoc.tmac >>$(top_builddir)/tmac/$$m-wrap; \
 	    fi; \
 	    echo .cp 1 >>$(top_builddir)/tmac/$$m-wrap; \
 	    echo .so $(sys_tmac_prefix)$$m >>$(top_builddir)/tmac/$$m-wrap; \
@@ -179,12 +176,37 @@ tmac/www.tmac: tmac/www.tmac.in
 	sed -e "s;[@]PNMTOPS_NOSETPAGE[@];$(pnmtops_nosetpage);g" \
 	  $(tmac_srcdir)/www.tmac.in > $(top_builddir)/tmac/www.tmac
 
+install-data-local: install_tmac_wrap
+install_tmac_wrap:
+	$(MKDIR_P) $(DESTDIR)$(systemtmacdir);
+	if test -n "$(tmac_wrap)"; then \
+	  for m in ""$(tmac_wrap); do \
+	    $(INSTALL_DATA) $(tmac_builddir)/$$m-wrap \
+              $(DESTDIR)$(systemtmacdir)/$$m.tmac; \
+	  done; \
+	fi
+
+install-data-hook: install_tmac_wrap_hook
+install_tmac_wrap_hook:
+	if test -n "$(tmac_wrap)"; then \
+	  if test -f $(DESTDIR)$(tmacdir)/s.tmac; then \
+	    mv $(DESTDIR)$(tmacdir)/s.tmac \
+	      $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac; \
+	  fi; \
+	  if test -f $(DESTDIR)$(tmacdir)/an.tmac; then \
+	    mv $(DESTDIR)$(tmacdir)/an.tmac \
+	      $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac; \
+	  fi; \
+	fi
+
 uninstall_groffdirs: uninstall_tmac_hook
 uninstall_tmac_hook:
-	-if test -n "$(tmac_wrap)"; then \
+	if test -n "$(tmac_wrap)"; then \
 	  for m in ""$(tmac_wrap); do \
 	    rm -f $(DESTDIR)$(systemtmacdir)/$$m.tmac; \
 	  done; \
+	  $(RM) -f $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac; \
+	  $(RM) -f $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac; \
 	fi
 	if test -d $(DESTDIR)$(mdocdir); then \
 	  rmdir $(DESTDIR)$(mdocdir); \
