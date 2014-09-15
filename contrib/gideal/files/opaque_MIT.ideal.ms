@@ -1,3 +1,8 @@
+.\" Emacs mode: -*- nroff -*-
+.\" This file opaque_MIT.ideal.ms comes from
+.\"   http://web.mit.edu/usrdoc/ditroff/ideal.man/opaque
+.\" This heading part was added by
+.\"   Bernd Warken <groff-bernd.warken-72@web.de>.
 .NH 1
 Opaque Boxes
 .PP
