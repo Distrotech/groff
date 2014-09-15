@@ -385,13 +385,7 @@ Differences with former build system:
 Diff with previous build system:
   - devcp1047 fonts are installed $(DESTDIR)/usr/local/groff/1.22.3/font
 
-TODO: 
-
-  - The original build system might uses tmac_s_prefix,
-  tmac_an_prefix, tmac_wrap and sys_tmac_prefix during the
-  installation of some tmac files but set these variables to an empty
-  value in tmac/Makefile.sub, I don't quite understand how these
-  variables could be set.
+TODO:
 
   - When contrib and doc will be completed, full installation tree
     comparison with the tree installed by the old build system.  Note:
@@ -566,6 +560,19 @@ in the install tree).
     correctly installed with a 'g' prefix. All targets (clean,
     install/uninstall, distcheck) work as usual. No diff with the old
     build system.
+
+3.4 Build in presence of system tmac files
+ 
+  - Create 3 dummy files in /usr/lib/tmac: tmac.an, tmac.m, tmac.s, that all contain:
+
+.if
+  
+  - Build and install as usual:
+
+    -- $(DESTDIR)/usr/local/lib/groff/site-tmac/ contains 3 files: an.tmac, m.tmac, s.tmac
+    -- In $(DESTDIR)/usr/local/share/groff/1.22.3/tmac 6 files have a
+       'g' prefix: gan.tmac, gm.tmac, gmm.tmac, gmmse.tmac, gmse.tmac,
+       gs.tmac.
 
 Notes
 -----
