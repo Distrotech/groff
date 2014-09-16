@@ -1,14 +1,14 @@
-In this directory, there are stored a series of `ideal libfiles'.
-They all come from the `ideal' documentation
-     Computing Science Technical Report No. 103
-     IDEAL User’s Manual - Christopher J. Van Wyk
+103.pdf.gz:
+  CSTR #103 (Computing Science Technical Report No. 103)
 
-Therein the name of the `libfile' files does not have an extension.
-But we added the extension `.ideal' to each libfile file.
+  IDEAL User's Manual
+  Author: Christopher J. Van Wyk, December 1981.
 
-Only the libfile `arc' is lacking.  It's existence was mentioned, but
-not given.  We collected useful information and wrote a new file
-`arc.ideal'.
+  You can find a copy of this file at
+    http://cm.bell-labs.com/cm/cs/cstr/103.ps.gz
+
+  From that document, many ideal examples can be taken.  So please
+  look there for useful information.
 
 
 ########################################################################
@@ -16,7 +16,7 @@ not given.  We collected useful information and wrote a new file
 
 Copyright (C) 2014 Free Software Foundation, Inc.
 
-Written by Bernd Warken <groff-bernd.warken-72@web.de>.
+This file is written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
 This file is part of `gideal', which is part of `groff'.
 
@@ -31,8 +31,3 @@ for more details.
 
 The GPL2 license text is available in the internet at
 <http://www.gnu.org/licenses/gpl-2.0.html>.
-
-####### Emacs settings
-Local Variables:
-mode: text
-End:
