@@ -21,12 +21,15 @@
 doc_srcdir = $(abs_top_srcdir)/doc
 doc_builddir = $(abs_top_builddir)/doc
 
-DOC_GROFF=\
-  LANG=C LC_ALL=C \
-  sed -e "s;@VERSION@;$(VERSION);" $< \
-  | GROFF_COMMAND_PREFIX= \
-    GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
-    $(GROFFBIN) -I$(abs_top_builddir) -M $(doc_srcdir) $(TFLAG) $(FFLAG) -Upet -ww 
+DOC_SED = sed -e "s;@VERSION@;$(VERSION);"
+
+DOC_GROFF_ONLY=\
+  GROFF_COMMAND_PREFIX= \
+  GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
+  $(GROFFBIN) -I$(abs_top_builddir) -M $(doc_srcdir) \
+	$(TFLAG) $(FFLAG) -Upet -ww 
+
+DOC_GROFF = $(DOC_SED) $< | $(DOC_GROFF_ONLY)
 
 # Other doc, installed in $(docdir)
 if BUILD_OTHERDOC
@@ -135,8 +138,8 @@ doc/pic.html: $(dist_devpsfont_DATA) $(nodist_devpsfont_DATA)
 doc/pic.html: $(doc_srcdir)/pic.ms $(devhtmlfont_DATA)
 	@$(MKDIR_P) $(doc_builddir)
 	cd $(doc_builddir) && \
-	$(DOC_GROFF) -P-p -P-I`basename $< | sed -e 's|.ms$$||'` \
-	         -P-D$(imagedir) -P-j`basename $< | sed -e 's|.ms$$||'` \
+	$(DOC_SED) $(doc_srcdir)/pic.ms | \
+		$(DOC_GROFF_ONLY) -P-p -P-Ipic -P-D$(imagedir) -P-jpic \
 	         -Thtml -P-V -ms > pic.html
 
 doc/examples.stamp: doc/groff.css
@@ -150,8 +153,8 @@ doc/webpage.html: $(dist_devpsfont_DATA) $(nodist_devpsfont_DATA)
 doc/webpage.html: $(doc_srcdir)/webpage.ms gnu.eps $(doc_srcdir)/groff.css
 	@$(MKDIR_P) doc
 	cd $(doc_builddir) && \
-	$(DOC_GROFF) -P-j`basename $< | sed -e 's|.ms$$||'` \
-	         -P-nrpb -P-I`basename $< | sed -e 's|.ms$$||'` \
+	$(DOC_SED) $(doc_srcdir)/webpage.ms | \
+		$(DOC_GROFF_ONLY) -P-jwebpage -P-nrpb -P-Iwebpage \
 	         -P-D$(imagedir) -Thtml -ms > webpage.html
 
 doc/grnexmpl.ps: doc/grnexmpl.me doc/grnexmpl.g
