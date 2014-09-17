@@ -1,6 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2001, 2002, 2003, 2009
-     Free Software Foundation, Inc.
+/* Copyright (C) 2001-2014  Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk).
 
 This file is part of groff.
