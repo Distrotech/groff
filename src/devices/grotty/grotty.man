@@ -1,6 +1,12 @@
-.ig
-Copyright (C) 1989-2003, 2005, 2006, 2009, 2010, 2014
-  Free Software Foundation, Inc.
+.\" -*- nroff -*-
+.TH GROTTY @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+grotty \- groff driver for typewriter-like devices
+.
+.
+.\" license
+.de co
+Copyright (C) 1989-2014  Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -21,13 +27,11 @@ the original English.
 .do nr grotty_C \n[.C]
 .cp 0
 .
-.TH GROTTY @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
 .
-.SH NAME
-grotty \- groff driver for typewriter-like devices
-.
-.
+.\" --------------------------------------------------------------------
 .SH SYNOPSIS
+.\" --------------------------------------------------------------------
+.
 .B grotty
 [
 .B \-bBcdfhioruUv
@@ -42,7 +46,9 @@ It is possible to have whitespace between the
 option and its parameter.
 .
 .
+.\" --------------------------------------------------------------------
 .SH DESCRIPTION
+.\" --------------------------------------------------------------------
 .
 .B grotty
 translates the output of GNU
@@ -73,6 +79,7 @@ also causes
 to read the standard input.
 Output is written to the standard output.
 .
+.
 .LP
 By default,
 .B grotty
@@ -82,6 +89,7 @@ This makes it possible to have eight different background and
 foreground colors; additionally, bold and italic
 attributes can be used \f[BI]at the same time\f[] (by using the BI font).
 .
+.
 .LP
 The following colors are defined in
 .BR tty.tmac :
@@ -89,6 +97,7 @@ black, white, red, green, blue, yellow, magenta, cyan.
 Unknown colors are mapped to the default color (which is dependent on the
 settings of the terminal; in most cases, this is black for the foreground
 and white for the background).
+.
 .
 .LP
 Use the
@@ -109,6 +118,7 @@ At the same time, color output is disabled.
 The same effect can be achieved by setting either the
 .B GROFF_NO_SGR
 environment variable or using the `sgr' X command (see below).
+.
 .
 .LP
 For SGR support, it is necessary to use the
@@ -141,15 +151,17 @@ or use the
 .B \-P
 option of
 .B man
-to set the pager executable and its options, or modify the configuration
-file of
+to set the pager executable and its options, or modify the
+configuration file of
 .B man
 in a similar fashion.
+.
 Note that with some
 .BR man (1)
 versions, you have to use the
 .B $MANPAGER
 environment variable instead.
+.
 .
 .LP
 .BR grotty 's
@@ -177,6 +189,7 @@ since
 .B grotty
 never outputs reverse line feeds.
 .
+.
 .LP
 The font description file may contain a command
 .
@@ -200,6 +213,7 @@ This code can also be used in the
 escape sequence in
 .BR troff .
 .
+.
 .LP
 If the
 .B DESC
@@ -214,7 +228,9 @@ See the
 man page for more details.
 .
 .
+.\" --------------------------------------------------------------------
 .SH OPTIONS
+.\" --------------------------------------------------------------------
 .
 .TP
 .B \-b
@@ -327,7 +343,9 @@ isn't used.
 Print the version number.
 .
 .
+.\" --------------------------------------------------------------------
 .SH USAGE
+.\" --------------------------------------------------------------------
 .
 .B grotty
 understands a single X command produced using the
@@ -342,7 +360,9 @@ is non-zero or missing, enable SGR output (this is the default), otherwise
 use the old drawing scheme for bold and underline.
 .
 .
+.\" --------------------------------------------------------------------
 .SH ENVIRONMENT
+.\" --------------------------------------------------------------------
 .
 .TP
 .SM
@@ -366,7 +386,9 @@ and
 for more details.
 .
 .
+.\" --------------------------------------------------------------------
 .SH FILES
+.\" --------------------------------------------------------------------
 .
 .TP
 .B @FONTDIR@/devascii/DESC
@@ -440,14 +462,18 @@ Note that on EBCDIC hosts, only files for the
 device is installed.
 .
 .
+.\" --------------------------------------------------------------------
 .SH BUGS
+.\" --------------------------------------------------------------------
 .
 .LP
 .B grotty
 is intended only for simple documents.
 .
+.
 .LP
 There is no support for fractional horizontal or vertical motions.
+.
 .
 .LP
 There is no support for
@@ -455,9 +481,11 @@ There is no support for
 commands
 other than horizontal and vertical lines.
 .
+.
 .LP
 Characters above the first line (i.e.\& with a vertical position of\~0)
 cannot be printed.
+.
 .
 .LP
 Color handling is different compared to
@@ -469,7 +497,9 @@ doesn't support anyway) but changes the background color of the character
 cell, affecting all subsequent operations.
 .
 .
+.\" --------------------------------------------------------------------
 .SH "SEE ALSO"
+.\" --------------------------------------------------------------------
 .
 .BR groff (@MAN1EXT@),
 .BR @g@troff (@MAN1EXT@),
@@ -481,8 +511,12 @@ cell, affecting all subsequent operations.
 .BR man (1),
 .BR less (1)
 .
-.cp \n[grotty_C]
 .
-.\" Local Variables:
-.\" mode: nroff
-.\" End:
+.\" --------------------------------------------------------------------
+.SH COPYING
+.\" --------------------------------------------------------------------
+.
+.co
+.
+.
+.cp \n[grotty_C]
