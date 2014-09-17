@@ -1,6 +1,5 @@
 // -*- C -*-
-/* Copyright (C) 1994, 2000, 2001, 2003, 2004, 2005, 2009
-   Free Software Foundation, Inc.
+/* Copyright (C) 1994-2014  Free Software Foundation, Inc.
      Written by Francisco Andrés Verdú <pandres@dragonet.es>
 
 groff is free software; you can redistribute it and/or modify it under
