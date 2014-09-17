@@ -1,4 +1,21 @@
 # Process this file with autoconf to produce a configure script.
+#
+# Copyright (C) 1989-2014 Free Software Foundation, Inc.
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You can find the license text of GPL2 in the internet at
+# <http://www.gnu.org/licenses/gpl-2.0.txt>.
+
 AC_INIT([dummy], [0])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE
