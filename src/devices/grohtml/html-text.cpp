@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000-2005, 2007, 2009, 2011
+/* Copyright (C) 2000-2014
  * Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-text.cpp

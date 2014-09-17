@@ -1,6 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000-2007, 2009-2011
- * Free Software Foundation, Inc.
+/* Copyright (C) 2000-2014  Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote post-html.cpp
  *  but it owes a huge amount of ideas and raw code from

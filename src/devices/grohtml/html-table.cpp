@@ -1,6 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003, 2004, 2005, 2007, 2009
-*    Free Software Foundation, Inc.
+/* Copyright (C) 2002-2018  Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-table.cpp
  *

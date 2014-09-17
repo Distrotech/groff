@@ -1,6 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2003, 2004, 2005, 2009
- *   Free Software Foundation, Inc.
+/* Copyright (C) 2000-2014  Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote output.cpp
  *  but it owes a huge amount of ideas and raw code from
