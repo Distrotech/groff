@@ -1,7 +1,13 @@
 '\" p
-.ig
-Copyright (C) 1989-2000, 2001, 2003, 2004, 2006, 2008, 2009
-Free Software Foundation, Inc.
+.mso pic.tmac
+.TH @G@SOELIM @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+@g@soelim \- interpret .so requests in groff input
+.
+.
+.\" license (copying)
+.de co
+Copyright (C) 1989-2014  Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -19,17 +25,9 @@ translations approved by the Free Software Foundation instead of in
 the original English.
 ..
 .
-.mso pic.tmac
-.
-.TH @G@SOELIM @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-.
-.
-.SH NAME
-.
-@g@soelim \- interpret .so requests in groff input
-.
-.
+.\" --------------------------------------------------------------------
 .SH SYNOPSIS
+.\" --------------------------------------------------------------------
 .
 .SY @g@soelim
 .OP \-Crtv
@@ -38,13 +36,16 @@ the original English.
 .IR \|.\|.\|. ]
 .YS
 .
+.
 .PP
 It is possible to have whitespace between the
 .B \-I
 command line option and its parameter.
 .
 .
+.\" --------------------------------------------------------------------
 .SH DESCRIPTION
+.\" --------------------------------------------------------------------
 .
 .B @g@soelim
 reads
@@ -55,9 +56,11 @@ and replaces lines of the form
 .LP
 by the contents of
 .IR file .
+.
 It is useful if files included with
 .B .so
 need to be preprocessed.
+.
 Normally,
 .B @g@soelim
 should be invoked with the
@@ -65,18 +68,24 @@ should be invoked with the
 option of
 .BR groff .
 .
+.
 .PP
-To embed `\[rs]' in the file name, write `\[rs]\[rs]' or `\[rs]e'.
-To embed a space, write `\[rs]\ '.
+To embed \[oq]\[rs]\[cq] in the file name, write \[oq]\[rs]\[rs]\[cq]
+or \[oq]\[rs]e\[cq].
+.
+To embed a space, write \[oq]\[rs]\ \[cq].
+.
 Any other escape sequence in
 .I file
 makes
 .B soelim
 ignore the whole line.
 .
+.
 .PP
 Note that there must be no whitespace between the leading dot and the two
-characters `s' and `o'.
+characters \[oq]s\[cq] and \[oq]o\[cq].
+.
 Otherwise, only
 .B groff
 interprets the
@@ -86,7 +95,9 @@ request (and
 ignores it).
 .
 .
+.\" --------------------------------------------------------------------
 .SH OPTIONS
+.\" --------------------------------------------------------------------
 .
 .TP
 .B \-C
@@ -96,17 +107,21 @@ even when followed by a character other than space or newline.
 .
 .TP
 .BI \-I dir
-This option may be used to add a directory to the search path for files
-(both those on the command line and those named in
+This option may be used to add a directory to the search path for
+files (both those on the command line and those named in
 .B .so
 requests).
+.
 The search path is initialized with the current directory.
+.
 This option may be specified more than once; the directories are then
 searched in the order specified (but before the current directory).
-If you want to make the current directory be read before other directories,
-add
+.
+If you want to make the current directory be read before other
+directories, add
 .B \-I.\&
 at the appropriate place.
+.
 .IP
 No directory search is performed for files with an absolute file name.
 .
@@ -118,19 +133,22 @@ requests (for general use, with non-groff files).
 .
 .TP
 .B \-t
-Don't emit
+Don\[aq]t emit
 .B .lf
-requests but TeX comment lines (starting with `%') giving the current file
-and line number.
+requests but TeX comment lines (starting with \[oq]%\[cq]) giving the
+current file and line number.
 .
 .TP
 .B \-v
 Print the version number.
 .
 .
+.\" --------------------------------------------------------------------
 .SH USAGE
+.\" --------------------------------------------------------------------
 .
 The normal processing sequence of groff is this:
+.
 .
 .PP
 .ie t \{\
@@ -185,6 +203,7 @@ are normally read
 by
 .B troff
 (the actual formatter).
+.
 .B soelim
 is
 .I not
@@ -192,10 +211,12 @@ required for
 .B troff
 to source files.
 .
+.
 .PP
 If a file to be sourced should also be preprocessed, it must already be read
 .I before
 the input file passes through the preprocessor.
+.
 This is handled by
 .BR soelim :
 .
@@ -242,9 +263,19 @@ box invisible width 0.5 height 0.4 "output" "file"
 .\}
 .
 .
+.\" --------------------------------------------------------------------
 .SH "SEE ALSO"
+.\" --------------------------------------------------------------------
 .
 .BR groff (@MAN1EXT@)
+.
+.
+.\" --------------------------------------------------------------------
+.SH COPYING
+.\" --------------------------------------------------------------------
+.
+.co
+.
 .
 .\" Local Variables:
 .\" mode: nroff
