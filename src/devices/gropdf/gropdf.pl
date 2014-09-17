@@ -1,10 +1,8 @@
 #!@PERL@ -w
 #
 #	gropdf		: PDF post processor for groff
-#	Last update	: 15 Apr 2013
 #
-# Copyright (C) 2011-2013
-#      Free Software Foundation, Inc.
+# Copyright (C) 2011-2014  Free Software Foundation, Inc.
 #      Written by Deri James <deri@chuzzlewit.demon.co.uk>
 #
 # This file is part of groff.
@@ -3277,3 +3275,11 @@ sub do_n
     @lin=();
     PutHotSpot($xpos) if defined($mark);
 }
+
+
+1;
+########################################################################
+### Emacs settings
+# Local Variables:
+# mode: CPerl
+# End:

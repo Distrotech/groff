@@ -1,6 +1,12 @@
-.ig
-Copyright (C) 2011-2014
-  Free Software Foundation, Inc.
+.\" -*- nroff -*-
+.TH GROPDF @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+gropdf \- PDF driver for groff
+.
+.
+.\" license
+.de co
+Copyright (C) 2011-2014  Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -18,7 +24,6 @@ translations approved by the Free Software Foundation instead of in
 the original English.
 ..
 .
-.
 .\" Like TP, but if specified indent is more than half
 .\" the current line-length - indent, use the default indent.
 .de Tp
@@ -31,16 +36,9 @@ the original English.
 .  if '\\*(.T'pdf' .ft \\$1
 ..
 .
-.
-.TH GROPDF @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-.
-.
-.SH NAME
-.
-gropdf \- PDF driver for groff
-.
-.
+.\" --------------------------------------------------------------------
 .SH SYNOPSIS
+.\" --------------------------------------------------------------------
 .
 .SY gropdf
 .OP \-delvs
@@ -54,12 +52,15 @@ gropdf \- PDF driver for groff
 .IR .\|.\|. ]
 .YS
 .
+.
 .LP
 It is possible to have whitespace between a command line option and its
 parameter.
 .
 .
+.\" --------------------------------------------------------------------
 .SH DESCRIPTION
+.\" --------------------------------------------------------------------
 .
 .B gropdf
 translates the output of GNU
@@ -96,6 +97,7 @@ using
 .B \-P
 option.
 .
+.
 .LP
 See section
 .B FONT INSTALLATION
@@ -103,7 +105,9 @@ below for a guide how to install fonts for
 .BR gropdf .
 .
 .
+.\" --------------------------------------------------------------------
 .SH OPTIONS
+.\" --------------------------------------------------------------------
 .
 .TP
 .B \-d
@@ -197,6 +201,7 @@ to embed ALL fonts (even the 14 base PDF fonts).
 .B \-s
 Append a comment line to end of PDF showing statistics,
 i.e.\& number of pages in document.
+.
 Ghostscript's
 .B ps2pdf
 complains about this line if it is included, but works anyway.
@@ -210,12 +215,15 @@ normally includes a ToUnicode CMap with any font created using
 .B text.enc
 as the encoding file,
 this makes it easier to search for words which contain ligatures.
+.
 You can include your own CMap by specifying a
 .I cmapfilename
 or have no CMap at all by omitting the argument.
 .
 .
+.\" --------------------------------------------------------------------
 .SH USAGE
+.\" --------------------------------------------------------------------
 .
 The input to
 .B gropdf
@@ -224,6 +232,7 @@ must be in the format output by
 .
 This is described in
 .BR groff_out (@MAN5EXT@).
+.
 .
 .LP
 In addition, the device and font description files for the device used
@@ -235,6 +244,7 @@ The resolution must be an integer multiple of\~72 times the
 The
 .B pdf
 device uses a resolution of 72000 and a sizescale of 1000.
+.
 .
 .LP
 The device description file must contain a valid paper size; see
@@ -255,6 +265,7 @@ the standard 35 fonts supported by
 and all postscript printers, but all the fonts are available since any
 which aren't supported natively are automatically embedded in the PDF.
 .
+.
 .LP
 .B gropdf
 supports the concept of foundries, that is different versions of basically
@@ -265,6 +276,7 @@ During install a
 file controls where fonts are found and builds
 .B groff
 fonts from the files it discovers on your system.
+.
 .
 .LP
 Each font description file must contain a command
@@ -294,11 +306,13 @@ Every character in the font file must exist in the PostScript font, and
 the widths given in the font file must match the widths used
 in the PostScript font.
 .
+.
 .LP
 Note that
 .B gropdf
 is currently only able to display the first 256 glyphs in any font.
 This restriction will be lifted in a later version.
+.
 .
 .\" .LP
 .\" Note that
@@ -310,6 +324,7 @@ This restriction will be lifted in a later version.
 .\" accessed with additional encoding vectors which
 .\" .B grops
 .\" produces on the fly.
+.
 .
 .LP
 .B gropdf
@@ -352,12 +367,13 @@ The
 file itself is also searched for using this mechanism;
 currently, only the first found file in the font path is used.
 .
-Foundry names are usually a single character (such as `U' for the URW
-Foundry) or blank for the default foundry.
+Foundry names are usually a single character (such as \[oq]U\[cq] for
+the URW Foundry) or blank for the default foundry.
 .
 This default uses the same fonts as
 .B ghostscript
 uses when it embeds fonts in a PDF file.
+.
 .
 .LP
 In the default setup there are styles called
@@ -574,6 +590,7 @@ Times-BoldItalic
 .FT
 .RE
 .
+.
 .LP
 There is also the following font which is not a member of a family:
 .
@@ -585,34 +602,39 @@ ZapfChancery-MediumItalic
 .FT
 .RE
 .
+.
 .LP
 There are also some special fonts called
 .B S
-for the PS Symbol font.  The lower case greek characters are automatically
-slanted (to match the SymbolSlanted font (SS) available to postscript).
+for the PS Symbol font.
+.
+The lower case greek characters are automatically slanted (to match
+the SymbolSlanted font (SS) available to postscript).
 .
 Zapf Dingbats is available as
 .BR ZD ,
-the "hand pointing left" glyph (\[rs][lh]) is available since it
-has been defined using the \[rs]X'pdf: xrev' extension which reverses the
+the "hand pointing left" glyph (\[rs][lh]) is available since it has
+been defined using the \[rs]X'pdf: xrev' extension which reverses the
 direction of letters within words.
+.
 .
 .LP
 The default color for
 .B \[rs]m
 and
 .B \[rs]M
-is black; for colors defined in the `rgb' color space
+is black; for colors defined in the \[oq]rgb\[cq] color space
 .B setrgbcolor
-is used, for `cmy' and `cmyk'
+is used, for \[oq]cmy\[cq] and \[oq]cmyk\[cq]
 .BR setcmykcolor ,
-and for `gray'
+and for \[oq]gray\[cq]
 .BR setgray .
 .
 Note that
 .B setcmykcolor
-is a PostScript LanguageLevel\~2 command and thus not available on some
-older printers.
+is a PostScript LanguageLevel\~2 command and thus not available on
+some older printers.
+.
 .
 .LP
 .B gropdf
@@ -670,6 +692,7 @@ can be one of the following values.
 .br
 2 = Projecting square cap
 .
+.
 .LP
 .TP
 .B "\[rs]X'ps: ... pdfmark'"
@@ -679,16 +702,19 @@ macros installed by using
 .I \-m pdfmark
 or
 .I \-m mspdf
-(see documentation in `pdfmark.pdf').
+(see documentation in \[oq]pdfmark.pdf\[cq]).
+.
 A subset of these macros are installed automatically when you use
 .B \-Tpdf
-so you should not need to use `\-m pdfmark' for using most of the PDF
-functionality.
+so you should not need to use \[oq]\-m pdfmark\[cq] for using most of
+the PDF functionality.
+.
 .
 .LP
 All other
 .B ps:
 tags are silently ignored.
+.
 .
 .LP
 One
@@ -706,6 +732,7 @@ command.
 See
 .BR groff_font (@MAN5EXT@)
 for details.
+.
 This means that you can alter the page size at will within the PDF file
 being created by
 .BR gropdf .
@@ -774,17 +801,19 @@ To return to normal printing repeat the command again.
 .
 .TP
 .BI "\[rs]X'pdf: markstart " "/ANN definition" '
-The macros which support PDF Bookmarks use this call internally to start the
-definition of bookmark hotspot (user will have called
-`.pdfhref\~L' with the text which will become the `hot spot' region).
+The macros which support PDF Bookmarks use this call internally to
+start the definition of bookmark hotspot (user will have called
+\[oq].pdfhref\~L\[cq] with the text which will become the `hot spot'
+region).
 .
 Normally this is never used except from within the pdfmark macros.
 .
 .TP
 .B \[rs]X'pdf: markend'
-The macros which support PDF Bookmarks use this call internally to stop the
-definition of bookmark hotspot (user will have called
-`.pdfhref\~L' with the text which will become the `hot spot' region).
+The macros which support PDF Bookmarks use this call internally to
+stop the definition of bookmark hotspot (user will have called
+\[oq].pdfhref\~L\[cq] with the text which will become the `hot spot'
+region).
 .
 Normally this is never used except from within the pdfmark macros.
 .
@@ -792,32 +821,36 @@ Normally this is never used except from within the pdfmark macros.
 .B \[rs]X'pdf: marksuspend'
 .TQ
 .B \[rs]X'pdf: markrestart'
-If you are using page traps to produce headings, footings, etc., you need to
-use these in case a `hot spot' crosses a page boundary, otherwise any text
-output by the heading or footing macro will be marked as part of the `hot
-spot'.
+If you are using page traps to produce headings, footings, etc., you
+need to use these in case a \[oq]hot spot\[cq] crosses a page
+boundary, otherwise any text output by the heading or footing macro
+will be marked as part of the `hot spot'.
 .
-To stop this happening just place
-`.pdfmarksuspend' and `.pdfmarkrestart' at the start and end of the page trap macro,
+To stop this happening just place \[oq].pdfmarksuspend\[cq] and
+\[oq].pdfmarkrestart\[cq] at the start and end of the page trap macro,
 respectively.
 .
 (These are just convenience macros which emit the \[rs]X code.
 .
 These macros must only be used within page traps.)
 .
+.
+.\" --------------------------------------------------------------------
 .SS Importing graphics
+.\" --------------------------------------------------------------------
 .
 .B gropdf
 only supports importing other PDF files as graphics.
 .
-But that PDF file may contain any of the graphic formats supported by the PDF
-standard (such as JPEG, PNG, GIF, etc.).
+But that PDF file may contain any of the graphic formats supported by
+the PDF standard (such as JPEG, PNG, GIF, etc.).
 .
-So any application which outputs PDF can be used as an embedded file in
+So any application which outputs PDF can be used as an embedded file
+in
 .BR gropdf .
 .
-The PDF file you wish to insert must be a single page and the drawing must
-just fit inside the media size of the PDF file.
+The PDF file you wish to insert must be a single page and the drawing
+must just fit inside the media size of the PDF file.
 .
 So, in
 .BR inkscape (1)
@@ -825,17 +858,19 @@ or
 .BR gimp (1)
 (for example) make sure the canvas size just fits the image.
 .
+.
 .LP
 The PDF parser used in
 .B gropdf
-has not been rigorously tested with all possible applications which produce
-PDFs.
+has not been rigorously tested with all possible applications which
+produce PDFs.
 .
-If you find a single page PDF which fails to import properly, it is worth
-running it through the
+If you find a single page PDF which fails to import properly, it is
+worth running it through the
 .
 .BR pdftk (1)
 program by issuing the command:
+.
 .
 .RS
 .LP
@@ -845,17 +880,24 @@ program by issuing the command:
 .I newfile.pdf
 .RE
 .
+.
 .LP
 You may find that
 .I newfile.pdf
 will now load successfully.
 .
+.
+.\" --------------------------------------------------------------------
 .SS TrueType and other font formats
+.\" --------------------------------------------------------------------
 .
 .B gropdf
 does not support any other fonts except Adobe Type 1 (PFA or PFB).
 .
+.
+.\" --------------------------------------------------------------------
 .SH FONT INSTALLATION
+.\" --------------------------------------------------------------------
 .
 This section gives a summary of the above explanations; it can serve
 as a step-by-step font installation guide for
@@ -897,18 +939,18 @@ afmtodit Foo-Bar-Bold.afm map/textmap FBB
 .RE
 .
 .IP
-which converts the metric file `Foo-Bar-Bold.afm' to the groff
+which converts the metric file \[oq]Foo-Bar-Bold.afm\[cq] to the groff
 font `FBB'.
 .
-If you have a font family which comes with normal, bold, italic,
-and bold italic faces, it is recommended to use the letters
+If you have a font family which comes with normal, bold, italic, and
+bold italic faces, it is recommended to use the letters
 .BR R ,
 .BR B ,
 .BR I ,
 and
 .BR BI ,
-respectively, as postfixes in the groff font names to make groff's
-`.fam' request work.
+respectively, as postfixes in the groff font names to make groff\[aq]s
+\[oq].fam\[cq] request work.
 .
 An example is groff's built-in Times-Roman font: The font family name
 is
@@ -922,7 +964,7 @@ and
 .
 .LI
 Install both the groff font description files and the fonts in a
-`devpdf' subdirectory of the font path which groff finds.
+\[oq]devpdf\[cq] subdirectory of the font path which groff finds.
 .
 See the
 .B ENVIRONMENT
@@ -930,35 +972,39 @@ section in the
 .BR troff (@MAN1EXT@)
 man page which lists the actual value of the font path.
 .
-Note that groff doesn't use the AFM files (but it is a good idea to
+Note that groff doesn\[aq]t use the AFM files (but it is a good idea to
 store them anyway).
 .
 .LI
 Register all fonts which must be downloaded to the printer in the
-`devpdf/download' file.
+\[oq]devpdf/download\[cq] file.
 .
 Only the first occurrence of this file in the font path is read.
 .
-This means that you should copy the default `download' file to the
-first directory in your font path and add your fonts there.
+This means that you should copy the default \[oq]download\[cq] file to
+the first directory in your font path and add your fonts there.
 .
 To continue the above example we assume that the PS font name for
-Foo-Bar-Bold.pfa is `XY-Foo-Bar-Bold' (the PS font name is stored in the
+Foo-Bar-Bold.pfa is \[oq]XY-Foo-Bar-Bold\[cq] (the PS font name is
+stored in the
 .B internalname
-field in the `FBB' file) and belongs to foundry `F', thus the following
-line should be added to `download':
+field in the \[oq]FBB\[cq] file) and belongs to foundry \[oq]F\[]cq]
+thus the following line should be added to `download':
 .
 .RS
 .IP
 .B F XY-Foo-Bar-Bold Foo-Bar-Bold.pfa
 .
+.
 .LP
-Use a tab character to separate the fields, and the
-`foundry' field should be null for the default foundry.
+Use a tab character to separate the fields, and the \[oq]foundry\[cq]
+field should be null for the default foundry.
 .RE
 .
 .
+.\" --------------------------------------------------------------------
 .SH ENVIRONMENT
+.\" --------------------------------------------------------------------
 .
 .TP
 .SM
@@ -967,7 +1013,7 @@ A list of directories in which to search for the
 .BI dev name
 directory in addition to the default ones.
 .
-If, in the `download' file, the
+If, in the \[oq]download\[cq] file, the
 font file has been specified with a full path, no directories are searched.
 .
 See
@@ -977,7 +1023,9 @@ and
 for more details.
 .
 .
+.\" --------------------------------------------------------------------
 .SH FILES
+.\" --------------------------------------------------------------------
 .
 .Tp \w'\fB@FONTDIR@/devpdf/download'u+2n
 .B @FONTDIR@/devpdf/DESC
@@ -1025,7 +1073,10 @@ automatically loaded by
 .\" .
 .
 .
+.\" --------------------------------------------------------------------
 .SH "SEE ALSO"
+.\" --------------------------------------------------------------------
+.
 .ad l
 .
 .BR \%afmtodit (@MAN1EXT@),
@@ -1039,6 +1090,12 @@ automatically loaded by
 .BR \%groff_char (@MAN7EXT@),
 .BR \%groff_tmac (@MAN5EXT@)
 .
+.
+.\" --------------------------------------------------------------------
+.SH LICENSE
+.\" --------------------------------------------------------------------
+.
+.co
 .
 .
 .\" Local Variables:
