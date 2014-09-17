@@ -1,5 +1,4 @@
-/* Copyright (C) 2004, 2009
-   Free Software Foundation, Inc.
+/* Copyright (C) 2004-2014  Free Software Foundation, Inc.
      Written by: Keith Marshall (keith.d.marshall@ntlworld.com)
 
 This file is part of groff.

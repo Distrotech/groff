@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Provide relocation for macro and font files.
-   Copyright (C) 2005, 2009 Free Software Foundation, Inc.
+   Copyright (C) 2005-2014  Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU Library General Public License as published
