@@ -1,9 +1,7 @@
 #! /bin/sh
 # Emulate nroff with groff.
 #
-# Copyright (C) 1992, 1993, 1994, 1999, 2000, 2001, 2002, 2003,
-#               2004, 2005, 2007, 2009
-#   Free Software Foundation, Inc.
+# Copyright (C) 1992-2014  Free Software Foundation, Inc.
 #
 # Written by James Clark, maintained by Werner Lemberg.
 
