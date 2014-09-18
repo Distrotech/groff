@@ -1,6 +1,15 @@
-.ig
-Copyright (C) 1999-2005, 2007-2009, 2011, 2014
-Free Software Foundation, Inc.
+.\" -*- nroff -*-
+.TH GROFF_MAN @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+groff_man \- groff `man' macros to support generation of man pages
+.
+.
+.\" --------------------------------------------------------------------
+.\" Legal Terms
+.\" --------------------------------------------------------------------
+.
+.de co
+Copyright (C) 1999-2014  Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -18,18 +27,28 @@ translations approved by the Free Software Foundation instead of in
 the original English.
 ..
 .
+.de au
+This manual page was originally written for the Debian GNU/Linux
+system by
+.MT sgk@debian.org
+Susan G.\& Kleinmann
+.ME .
+
+It was corrected and updated by
+.MT wl@gnu.org
+Werner Lemberg
+.ME .
+
+The extension macros were documented (and partly designed) by
+.MT esr@thyrsus.com
+Eric S.\& Raymond
+.ME ;
+he also wrote the portability advice.
+..
 .
-.TH GROFF_MAN @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
-.
-.
-.\" ----------------------------------------------------------------
-.SH NAME
-.
-groff_man \- groff `man' macros to support generation of man pages
-.
-.
-.\" -----------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .SH SYNOPSIS
+.\" --------------------------------------------------------------------
 .
 .SY "groff\ \-man"
 .RI [ options
@@ -45,8 +64,9 @@ groff_man \- groff `man' macros to support generation of man pages
 .YS
 .
 .
-.\" -----------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .SH DESCRIPTION
+.\" --------------------------------------------------------------------
 .
 The
 .B man
@@ -60,8 +80,9 @@ This document provides a brief summary of the use of each macro in that
 package.
 .
 .
-.\" -----------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .SH OPTIONS
+.\" --------------------------------------------------------------------
 .
 The
 .B man
@@ -116,10 +137,12 @@ These values are additive; the default is\~14.
 .BI \-rIN= width
 Set body text indentation to
 .IR width .
+.
 The default is 7n for
 .IR nroff ,
 7.2n for
 .IR troff .
+.
 For
 .IR nroff ,
 this value should always be an integer multiple of unit `n' to get
@@ -151,6 +174,7 @@ program;
 direct initialization of the `LL' register should
 .I always
 be preferred to the use of such a request.
+.
 In particular, note that a `.ll\ 65n' request does
 .I not
 preserve the normal
@@ -211,8 +235,9 @@ For example, the option `\-rX2' produces the following page
 numbers: 1, 2, 2a, 2b, 2c, etc.
 .
 .
-.\" -----------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .SH USAGE
+.\" --------------------------------------------------------------------
 .
 This section describes the available macros for manual pages.
 .
@@ -234,8 +259,8 @@ After
 .BR .EX ,
 filling is disabled and the font is set to constant-width.
 .
-This is useful for formatting code, command, and
-configuration-file examples.
+This is useful for formatting code, command, and configuration-file
+examples.
 .
 The
 .B EE
@@ -469,6 +494,7 @@ The value
 may also have a string appended, e.g.\& `.pm', to indicate a specific
 subsection of the
 .IR \%man\~pages .
+.
 Both
 .I title
 and
@@ -477,12 +503,15 @@ are positioned at the left and right in the header line (with
 .I section
 in parentheses immediately appended to
 .IR title .
+.
 .I extra1
 is positioned in the middle of the footer line.
+.
 .I extra2
 is positioned at the left in the footer line (or at the left on
 even pages and at the right on odd pages if double-sided printing is
 active).
+.
 .I extra3
 is centered in the header line.
 .
@@ -599,8 +628,9 @@ and
 also cause a break but no insertion of vertical space.
 .
 .
-.\" -----------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .SH "MACROS TO SET FONTS"
+.\" --------------------------------------------------------------------
 .
 The standard font is Roman; the default text size is 10\~point.
 .
@@ -697,8 +727,9 @@ Causes the text on the same line or the text on the next input line to
 appear in a font that is one point size smaller than the default font.
 .
 .
-.\" -----------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .SH "MACROS TO DESCRIBE HYPERLINKS AND EMAIL ADDRESSES"
+.\" --------------------------------------------------------------------
 .
 The following macros are not defined on legacy Unix systems
 running classic troff.
@@ -799,12 +830,13 @@ site <http://\:randomsite.org/\:fubar>, given as an example\[rq].
 .IP
 The use of
 .B \e:
-to insert hyphenless breakpoints is a groff extension and can
-be omitted.
+to insert hyphenless breakpoints is a groff extension and can be
+omitted.
 .
 .
-.\" -----------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .SH "MACROS TO DESCRIBE COMMAND SYNOPSES"
+.\" --------------------------------------------------------------------
 .
 The following macros are not defined on legacy Unix systems
 running classic troff.
@@ -819,6 +851,7 @@ installation.
 .
 .PP
 These macros are a convenience for authors.
+.
 They also assist automated translation tools and help browsers in
 recognizing command synopses and treating them differently from
 running text.
@@ -921,8 +954,9 @@ You can insert plain text as well; this looks like the traditional
 (unornamented) syntax for a required command argument or filename.
 .
 .
-.\" -----------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .SH "MISCELLANEOUS"
+.\" --------------------------------------------------------------------
 .
 The default indentation is 7.2n in troff mode and 7n in nroff mode
 except for
@@ -934,7 +968,7 @@ which ignores indentation.
 .BI .AT " \fR[\fPsystem \fR[\fPrelease\fR]]\fP"
 Alter the footer for use with \f[CR]AT&T\f[]
 .IR \%man\~pages .
-This command exists only for compatibility; don't use it.
+This command exists only for compatibility; don\[aq]t use it.
 .
 See the
 .I groff
@@ -1072,7 +1106,7 @@ look like this:
 .
 .PP
 .RS
-.BI '\e"\  word
+.BI '\e"\  word\""
 .RE
 .
 .
@@ -1085,14 +1119,16 @@ consists of letters for the needed preprocessors: `e' for
 .BR @g@refer ,
 and `t' for
 .BR @g@tbl .
+.
 Modern implementations of the
 .B man
 program read this first line and automatically call the right
 preprocessor(s).
 .
 .
-.\" -----------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .SH "PORTABILITY AND TROFF REQUESTS"
+.\" --------------------------------------------------------------------
 .
 Since the
 .B man
@@ -1145,9 +1181,9 @@ some viewer that is important to your audience.
 If in doubt, copy the implementation onto your page.
 .
 .
-.\" -----------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .SH FILES
-.
+.\" --------------------------------------------------------------------
 .
 .TP
 .B man.tmac
@@ -1199,6 +1235,7 @@ Note that the definitions for these macros are read after the call of
 .BR TH ,
 so they will replace macros of the same names given at the beginning of
 your file.
+.
 If you must use your own definitions for these macros, they must be
 given after calling
 .BR TH .
@@ -1209,13 +1246,11 @@ given after calling
 Local changes and customizations should be put into this file.
 .
 .
-.\" -----------------------------------------------------------------
-.
+.\" --------------------------------------------------------------------
 .ad l
 .SH "SEE ALSO"
+.\" --------------------------------------------------------------------
 .
-.
-.PP
 .BR @g@tbl (@MAN1EXT@),
 .BR @g@eqn (@MAN1EXT@),
 .BR @g@refer (@MAN1EXT@),
@@ -1224,32 +1259,17 @@ Local changes and customizations should be put into this file.
 .BR groff_mdoc (7)
 .
 .
-.\" -----------------------------------------------------------------
+.\" --------------------------------------------------------------------
+.SH COPYING
+.\" --------------------------------------------------------------------
+.co
+.\" --------------------------------------------------------------------
 .SH AUTHORS
-.
-This manual page was originally written for the Debian GNU/Linux
-system by
-.MT sgk@debian.org
-Susan G.\& Kleinmann
-.ME .
+.\" --------------------------------------------------------------------
+.au
 .
 .
-.PP
-It was corrected and updated by
-.MT wl@gnu.org
-Werner Lemberg
-.ME .
-.
-.
-.PP
-The extension macros were documented (and partly designed) by
-.MT esr@thyrsus.com
-Eric S.\& Raymond
-.ME ;
-he also wrote the portability advice.
-.
-.
-.\" ----------------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .\" ### Emacs settings:
 .\" Local Variables:
 .\" mode: nroff
