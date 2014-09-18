@@ -6,8 +6,7 @@
 # Source file position: <groff-source>/src/roff/grog/subs.pl
 # Installed position: <prefix>/lib/grog/subs.pl
 
-# Copyright (C) 1993, 2006, 2009, 2011-2012, 2014
-#               Free Software Foundation, Inc.
+# Copyright (C) 1993-2014  Free Software Foundation, Inc.
 # This file was split from grog.pl and put under GPL2 by
 #               Bernd Warken <groff-bernd.warken-72@web.de>.
 # The macros for identifying the devices were taken from Ralph
@@ -29,8 +28,6 @@
 # along with this program. If not, see
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
-########################################################################
-# Last_Update = '28 Aug 2014';
 ########################################################################
 
 require v5.6;
@@ -1012,8 +1009,7 @@ EOF
 
 sub version {
   our %at_at;
-  our $Last_Update;
-  print "Perl version of GNU $Prog of $Last_Update " .
+  print "Perl version of GNU $Prog " .
     "in groff version " . $at_at{'GROFF_VERSION'};
   exit 0;
 } # sub version

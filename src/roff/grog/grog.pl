@@ -6,8 +6,7 @@
 # Source file position: <groff-source>/src/roff/grog/grog.pl
 # Installed position: <prefix>/bin/grog
 
-# Copyright (C) 1993, 2006, 2009, 2011-2012, 2014
-#               Free Software Foundation, Inc.
+# Copyright (C) 1993-2014  Free Software Foundation, Inc.
 # Written by James Clark, maintained by Werner Lemberg.
 # Rewritten with Perl by Bernd Warken <groff-bernd.warken-72@web.de>.
 # The macros for identifying the devices were taken from Ralph
@@ -29,8 +28,6 @@
 # along with this program. If not, see
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
-########################################################################
-our $Last_Update = '28 Aug 2014';
 ########################################################################
 
 require v5.6;
