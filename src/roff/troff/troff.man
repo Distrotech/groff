@@ -1,16 +1,17 @@
 '\" t
-.ig
-troff.man
+.TH @G@TROFF @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+@g@troff \- the troff processor of the groff text formatting system
+.
+.\" troff.man -> troff.1
+.
+.
+.\" Legal Terms
+.de co
+Copyright (C) 1989-2014  Free Software Foundation, Inc.
 
-This file is part of groff, the GNU roff type-setting system.
-
-Copyright (C) 1989, 2000-2003, 2007-2009, 2014
-  Free Software Foundation, Inc.
-
-written by James Clark
-
-modified by Werner Lemberg <wl@gnu.org>
-            Bernd Warken <groff-bernd.warken-72@web.de>
+This file is part of groff, the GNU roff type-setting system, which
+is a GNU free software project..
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -22,14 +23,16 @@ A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
 ..
 .
-.\" --------------------------------------------------------------------
-.\" Title
-.\" --------------------------------------------------------------------
-.
-.TH @G@TROFF @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-.SH NAME
-@g@troff \- the troff processor of the groff text formatting system
-.
+.de au
+This file was originally written by James Clark, it was modified by
+.MT wl@gnu.org
+Werner Lemberg
+.ME
+and
+.MT groff-bernd.warken-72@web.de
+Bernd Warken
+.ME .
+..
 .
 .\" --------------------------------------------------------------------
 .SH SYNOPSIS
@@ -59,10 +62,11 @@ FDL in the main directory of the groff source package.
 .
 This manual page describes the GNU version of
 .BR troff .
+.
 It is part of the groff document formatting system.
 .
-It is functionally compatible with UNIX troff, but has many extensions,
-see
+It is functionally compatible with UNIX troff, but has many
+extensions, see
 .BR \%groff_diff (@MAN7EXT@).
 Usually it should be invoked using the
 .BR groff (@MAN1EXT@)
@@ -73,6 +77,7 @@ appropriate order and with the appropriate options.
 .\" --------------------------------------------------------------------
 .SH OPTIONS
 .\" --------------------------------------------------------------------
+.
 It is possible to have whitespace between a command line option and
 its parameter.
 .
@@ -89,7 +94,7 @@ Print a backtrace with each warning or error message.
 This backtrace should help track down the cause of the error.
 .
 The line numbers given in the backtrace may not always be correct, for
-.BR @g@troff 's
+.BR @g@troff \[aq]s
 idea of line numbers gets confused by
 .B as
 or
@@ -121,8 +126,9 @@ must be a one letter name.
 .B \-E
 Inhibit all error messages of
 .BR @g@troff .
-Note that this doesn't affect messages output to standard error by macro
-packages using the
+.
+Note that this doesn\[aq]t affect messages output to standard error by
+macro packages using the
 .B tm
 or
 .B tm1
@@ -144,6 +150,7 @@ for subdirectories
 is the name of the device) and there for the
 .B DESC
 file and font files.
+.
 .I dir
 is scanned before all other font directories.
 .
@@ -154,17 +161,21 @@ processed.
 .
 .TP
 .BI \-I dir
-This option may be used to add a directory to the search path for files
-(both those on the command line and those named in
+This option may be used to add a directory to the search path for
+files (both those on the command line and those named in
 .B \&.psbb
 requests).
+.
 The search path is initialized with the current directory.
+.
 This option may be specified more than once; the directories are then
 searched in the order specified (but before the current directory).
-If you want to make the current directory be read before other directories,
-add
+.
+If you want to make the current directory be read before other
+directories, add
 .B \-I.\&
 at the appropriate place.
+.
 .IP
 No directory search is performed for files with an absolute file name.
 .
@@ -172,7 +183,8 @@ No directory search is performed for files with an absolute file name.
 .BI \-m name
 Read in the file
 .IB name .tmac\fR.
-If it isn't found, try
+.
+If it isn\[aq]t found, try
 .BI tmac. name
 instead.
 .
@@ -216,6 +228,7 @@ means print every page up to
 .IB n \-
 means print every page from
 .IR n .
+.
 .B @g@troff
 will exit after printing the last page in the list.
 .
@@ -236,7 +249,7 @@ can be any troff numeric expression.
 .
 .TP
 .B \-R
-Don't load
+Don\[aq]t load
 .B troffrc
 and
 .BR troffrc-end .
@@ -262,8 +275,8 @@ This will enable the following requests:
 .BR sy ,
 and
 .BR pi .
-For security reasons, these potentially dangerous requests are disabled
-otherwise.
+For security reasons, these potentially dangerous requests are
+disabled otherwise.
 .
 It will also add the current directory to the macro search path.
 .
@@ -275,6 +288,7 @@ Print the version number.
 .BI \-w name
 Enable warning
 .IR  name .
+.
 Available warnings are described in the section
 .I WARNINGS
 below.
@@ -290,6 +304,7 @@ options are allowed.
 .BI \-W name
 Inhibit warning
 .IR name .
+.
 Multiple
 .B \-W
 options are allowed.
@@ -478,6 +493,7 @@ Dubious syntax in numeric expressions.
 .TP
 .BR tab "\t2048"
 Inappropriate use of a tab character.
+.
 Either use of a tab character where a number was expected, or use of tab
 character in an unquoted macro argument.
 .
@@ -491,6 +507,7 @@ All warnings except
 .BR mac ,
 and
 .BR reg .
+.
 It is intended that this covers all warnings that are useful with
 traditional macro packages.
 .
@@ -508,6 +525,7 @@ All warnings.
 .B GROFF_TMAC_PATH
 A colon separated list of directories in which to search for
 macro files.
+.
 .B @g@troff
 will scan directories given in the
 .B \-M
@@ -529,6 +547,7 @@ Default device.
 A colon separated list of directories in which to search for the
 .BI dev name
 directory.
+.
 .B @g@troff
 will scan directories given in the
 .B \-F
@@ -568,6 +587,8 @@ Font file for font
 .I F
 of device
 .IR name .
+.
+.
 .P
 Note that
 .B troffrc
@@ -584,37 +605,6 @@ command line option or the
 .B GROFF_TMAC_PATH
 environment variable to add these directories to the search path if
 necessary.
-.
-.
-.\" --------------------------------------------------------------------
-.SH AUTHOR
-.\" --------------------------------------------------------------------
-.
-Copyright (C) 1989, 2001, 2002, 2003, 2007, 2008, 2009
-Free Software Foundation, Inc.
-.
-.P
-This document is distributed under the terms of the FDL (GNU Free
-Documentation License) version 1.3 or later.
-.
-You should have received a copy of the FDL on your system, it is also
-available on-line at the
-.UR http://\:www.gnu.org/\:copyleft/\:fdl.html
-GNU copyleft site
-.UE .
-This document was written by James Clark, with modifications from
-.MT wl@gnu.org
-Werner Lemberg
-.ME
-and
-.MT groff-bernd.warken-72@web.de
-Bernd Warken
-.ME .
-.
-.P
-This document is part of
-.IR groff ,
-the GNU roff distribution.
 .
 .
 .\" --------------------------------------------------------------------
@@ -635,6 +625,7 @@ A description of the
 language, including a short but complete reference of all predefined
 requests, registers, and escapes of plain
 .IR groff .
+.
 From the command line, this is called by
 .RS
 .IP
@@ -661,6 +652,7 @@ and other
 .I roff
 systems, including pointers to further related documentation.
 .
+.
 .P
 The
 .I groff info
@@ -668,6 +660,17 @@ The
 cf.\&
 .BR info (@MAN1EXT@),
 presents all groff documentation within a single document.
+.
+.
+.\" --------------------------------------------------------------------
+.SH COPYING
+.\" --------------------------------------------------------------------
+.co
+.\" --------------------------------------------------------------------
+.SH AUTHORS
+.\" --------------------------------------------------------------------
+.au
+.
 .
 .\" --------------------------------------------------------------------
 .\" Emacs variables

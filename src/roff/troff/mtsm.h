@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2003, 2004, 2009 Free Software Foundation, Inc.
+/* Copyright (C) 2003-2014 Free Software Foundation, Inc.
  *
  *  mtsm.h
  *
