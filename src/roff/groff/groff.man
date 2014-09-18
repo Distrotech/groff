@@ -1,20 +1,58 @@
-.ig
-groff.man
+.TH GROFF @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+groff \- front-end for the groff document formatting system
+.
+.\" groff.man -> groff.1
+.
+.
+.\" --------------------------------------------------------------------
+.\" Legal Terms
+.\" --------------------------------------------------------------------
+.
+.\" License
+.de co
+Copyright (C) 1989-2014  Free Software Foundation, Inc.
 
-Copyright (C) 1989, 2002-2009, 2011, 2014
-Free Software Foundation, Inc.
 Rewritten in 2002 by Bernd Warken <groff-bernd.warken-72@web.de>
+
+This document is part of groff, a free GNU software project.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
 any later version published by the Free Software Foundation; with the
-Invariant Sections being this .ig-section and AUTHOR, with no
+Invariant Sections being the macro definition or .co and .au, with no
 Front-Cover Texts, and with no Back-Cover Texts.
 
 A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
+
+It is also available in the internet at the
+.UR http://\:www.gnu.org/\:copyleft/\:fdl.html
+GNU copyleft site
+.UE .
 ..
 .
+.\" Authors
+.de au
+This document is based on the original
+.I groff
+man page written by
+.MT jjc@jclark.com
+James Clark
+.UE .
+.
+It was rewritten, enhanced, and put under the FDL license by
+Bernd Warken <groff-bernd.warken-72@web.de>.
+.
+It is maintained by
+.MT wl@gnu.org
+Werner Lemberg
+.ME .
+..
+.
+.\" --------------------------------------------------------------------
+.\" Definitons
+.\" --------------------------------------------------------------------
 .
 .\" --------------------------------------------------------------------
 .\" Environment variable
@@ -29,15 +67,6 @@ FDL in the main directory of the groff source package.
 \[oq]\\$*\[cq]
 .  ft
 ..
-.
-.\" --------------------------------------------------------------------
-.\" Title
-.\" --------------------------------------------------------------------
-.
-.TH GROFF @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-.SH NAME
-groff \- front-end for the groff document formatting system
-.
 .
 .\" --------------------------------------------------------------------
 .SH SYNOPSIS
@@ -101,6 +130,7 @@ system has all features of the classical
 .IR roff ,
 but adds many extensions.
 .
+.
 .P
 The
 .B groff
@@ -115,21 +145,21 @@ uses pipes only).
 .\" --------------------------------------------------------------------
 .SH OPTIONS
 .\" --------------------------------------------------------------------
-.P
+.
 The command line is parsed according to the usual \f[CR]GNU\f[]
 convention.
 .
 The whitespace between a command line option and its argument is
 optional.
 .
-Options can be grouped behind a single `\-' (minus character).
+Options can be grouped behind a single \[oq]\-\[cq] (minus character).
 .
 A filename of
 .B \-
 (minus character) denotes the standard input.
 .
-.P
 .
+.P
 As
 .B groff
 is a wrapper program for
@@ -210,10 +240,14 @@ requests, and
 and
 .B \eX'ps: file'
 escapes).
+.
 The current directory is always searched first.
+.
 This option may be specified more than once;
 the directories are searched in the order specified.
+.
 No directory search is performed for files specified using an absolute path.
+.
 This option implies the
 .B \-s
 option.
@@ -232,10 +266,11 @@ Implies
 .B \-k
 Preprocess with
 .BR preconv .
+.
 This is run before any other preprocessor.
 .
 Please refer to
-.BR preconv 's
+.BR preconv \[aq]s
 manual page for its behaviour if no
 .B \-K
 (or
@@ -262,6 +297,7 @@ The command that should be used for this is specified by the
 .B print
 command in the device description file, see
 .BR \%groff_font (@MAN5EXT@).
+.
 If this command is not present, the output is piped into the
 .BR lpr (1)
 program by default.
@@ -277,6 +313,7 @@ and
 Pass
 .I arg
 to the spooler program.
+.
 Several arguments should be passed with a separate
 \-L
 option each.
@@ -284,7 +321,7 @@ option each.
 Note that
 .B groff
 does not prepend
-`\-'
+\[oq]\-\[cq]
 (a minus sign) to
 .I arg
 before passing it to the spooler program.
@@ -292,7 +329,7 @@ before passing it to the spooler program.
 .
 .TP
 .B \-N
-Don't allow newlines within
+Don\[aq]t allow newlines within
 .I eqn
 delimiters.
 .
@@ -390,6 +427,7 @@ requests:
 .BR .sy ,
 and
 .BR .pi .
+.
 For security reasons, safer mode is enabled by default.
 .
 .
@@ -403,6 +441,7 @@ Preprocess with
 .BI \-T\  dev
 Set output device to
 .IR dev .
+.
 For this device,
 .B @g@troff
 generates the
@@ -414,7 +453,7 @@ see
 Then
 .B groff
 calls a postprocessor to convert
-.BR @g@troff 's
+.BR @g@troff \[aq]s
 .I intermediate output
 to its final format.
 .
@@ -498,7 +537,7 @@ mode for TTY output.
 .IP
 The following arguments select
 .B \%gxditview
-as the `postprocessor' (it is rather a viewing program):
+as the \[oq]postprocessor\[cq] (it is rather a viewing program):
 .
 .RS
 .RS
@@ -547,6 +586,7 @@ to all subprograms.
 Output the pipeline that would be run by
 .BR groff
 (as a wrapper program) on the standard output, but do not execute it.
+.
 If given more than once,
 the commands are both printed on the standard error and run.
 .
@@ -601,6 +641,7 @@ groff \-X \-P-resolution \-P100 \-man foo.1
 .B \-z
 Suppress output generated by
 .BR @g@troff .
+.
 Only error messages are printed.
 .
 .
@@ -609,6 +650,7 @@ Only error messages are printed.
 Do not automatically postprocess
 .I groff intermediate output
 in the usual manner.
+.
 This will cause the
 .B @g@troff
 .I output
@@ -708,6 +750,7 @@ Set number register.
 .BI \-w\  name
 Enable warning
 .IR name .
+.
 See
 .BR @g@troff (@MAN1EXT@)
 for names.
@@ -716,6 +759,7 @@ for names.
 .BI \-W\  name
 disable warning
 .IR name .
+.
 See
 .BR @g@troff (@MAN1EXT@)
 for names.
@@ -769,9 +813,12 @@ to format the input is controlled globally with the requests
 .BR .pl ,
 and
 .BR .ll .
+.
 See
 .BR groff_tmac (@MAN5EXT@)
-for the `papersize' macro package which provides a convenient interface.
+for the \[oq]papersize\[cq] macro package which provides a convenient
+interface.
+.
 .
 .P
 The
@@ -783,9 +830,11 @@ with the command line options
 .B \-p
 and
 .BR \-l .
+.
 See
 .BR groff_font (@MAN5EXT@)
 and the man pages of the output devices for more details.
+.
 .B groff
 uses the command line option
 .B \-P
@@ -816,12 +865,14 @@ Doing so, the sometimes tedious piping mechanism of classical
 .BR roff (@MAN7EXT@)
 can be avoided.
 .
+.
 .P
 The
 .BR grog (@MAN1EXT@)
 program can be used for guessing the correct
 .I groff
 command line to format a file.
+.
 .
 .P
 The
@@ -892,7 +943,7 @@ It is always run first before any other preprocessor.
 Besides these, there are some internal preprocessors that are
 automatically run with some devices.
 .
-These aren't visible to the user.
+These aren\[aq]t visible to the user.
 .
 .
 .\" --------------------------------------------------------------------
@@ -937,6 +988,7 @@ or
 .B mdoc
 The \f[CR]BSD\f[]-style man page format; see
 .BR \%groff_mdoc (@MAN7EXT@).
+.
 It can be specified on the command line as
 .B \-mdoc
 or
@@ -948,6 +1000,7 @@ The classical
 .I me
 document format; see
 .BR \%groff_me (@MAN7EXT@).
+.
 It can be specified on the command line as
 .B \-me
 or
@@ -959,6 +1012,7 @@ The classical
 .I mm
 document format; see
 .BR \%groff_mm (@MAN7EXT@).
+.
 It can be specified on the command line as
 .B \-mm
 or
@@ -999,6 +1053,7 @@ General concepts common to all
 programming languages are described in
 .BR roff (@MAN7EXT@).
 .
+.
 .P
 The
 .I groff
@@ -1006,6 +1061,7 @@ extensions to the classical
 .I troff
 language are documented in
 .BR \%groff_diff (@MAN7EXT@).
+.
 .
 .P
 The
@@ -1026,6 +1082,7 @@ formatter within the
 .I groff
 system is
 .BR @g@troff (@MAN1EXT@).
+.
 It provides the features of both the classical
 .I troff
 and
@@ -1044,6 +1101,7 @@ which tries to emulate classical
 .I roff
 as much as possible.
 .
+.
 .P
 There is a shell script
 .BR @g@nroff (@MAN1EXT@)
@@ -1052,6 +1110,7 @@ that emulates the behavior of classical
 .
 It tries to automatically select the proper output encoding, according to
 the current locale.
+.
 .
 .P
 The formatter program generates
@@ -1073,6 +1132,7 @@ file format.
 .
 A device is specified by the option
 .BR \-T .
+.
 The
 .I groff
 devices are as follows.
@@ -1102,7 +1162,8 @@ Text output using the ISO \%Latin-1 (ISO \%8859-1) character set; see
 .
 .TP
 .B lbp
-Output for Canon CAPSL printers (\%LBP-4 and \%LBP-8 series laser printers).
+Output for Canon CAPSL printers (\%LBP-4 and \%LBP-8 series laser
+printers).
 .
 .TP
 .B lj4
@@ -1150,6 +1211,7 @@ and
 A variant for a 12\|pt document base font is
 .BR \%X100-12 .
 .
+.
 .P
 The postprocessor to be used for a device is specified by the
 .B postpro
@@ -1185,13 +1247,15 @@ for printers compatible to the HP LaserJet\~4 and PCL5,
 for text output using various encodings, e.g., on text-oriented
 terminals or line-printers.
 .
+.
 .P
 Today, most printing or drawing hardware is handled by the operating
-system, by device drivers, or by software interfaces, usually accepting
-PostScript.
+system, by device drivers, or by software interfaces, usually
+accepting PostScript.
 .
-Consequently, there isn't an urgent need for more hardware device
+Consequently, there isn\[aq]t an urgent need for more hardware device
 postprocessors.
+.
 .
 .P
 The
@@ -1213,6 +1277,7 @@ for PostScript.
 .TP
 .BR gropdf (@MAN1EXT@)
 for PDF.
+.
 .
 .P
 Combined with the many existing free conversion tools this should
@@ -1325,8 +1390,8 @@ font metrics.
 .SH ENVIRONMENT
 .\" --------------------------------------------------------------------
 .
-Normally, the path separator in the following environment variables is the
-colon; this may vary depending on the operating system.
+Normally, the path separator in the following environment variables is
+the colon; this may vary depending on the operating system.
 .
 For example, DOS and Windows use a semicolon instead.
 .
@@ -1360,7 +1425,7 @@ but it can be anything.
 For example,
 .BR gtroff
 stood for
-.IR groff 's
+.IR groff \[aq]s
 .BR troff ,
 .BR gtbl
 for the
@@ -1382,6 +1447,7 @@ as a wrapper program internally calls
 .IB xxx troff
 instead of
 .BR troff .
+.
 This also applies to the preprocessors
 .BR eqn ,
 .BR grn ,
@@ -1409,7 +1475,7 @@ The value of this environment value is passed to the
 preprocessor to select the encoding of input files.
 .
 Setting this option implies
-.BR groff 's
+.BR groff \[aq]s
 command line option
 .B \-k
 (this is,
@@ -1448,8 +1514,8 @@ for more details.
 .
 .TP
 .EnvVar GROFF_TMAC_PATH
-A list of directories in which to search for macro files in addition to
-the default directories.
+A list of directories in which to search for macro files in addition
+to the default directories.
 .
 See
 .BR @g@troff (@MAN1EXT@)
@@ -1466,6 +1532,7 @@ If this is not set but the environment variable
 .EnvVar TMPDIR
 instead, temporary files are created in the directory
 .EnvVar $TMPDIR .
+.
 On MS-DOS and Windows\~32 platforms, the environment variables
 .EnvVar TMP
 and
@@ -1477,6 +1544,7 @@ and
 .
 Otherwise, temporary files are created in
 .BR /tmp .
+.
 The
 .BR \%@g@refer (@MAN1EXT@),
 .BR \%groffer (@MAN1EXT@),
@@ -1507,6 +1575,7 @@ The following example illustrates the power of the
 program as a wrapper around
 .BR @g@troff .
 .
+.
 .P
 To process a
 .I roff
@@ -1525,6 +1594,7 @@ had to be called by
 pic foo.me | tbl | troff \-me \-Tlatin1 | grotty
 .EE
 .
+.
 .P
 Using
 .BR groff ,
@@ -1534,6 +1604,7 @@ this pipe can be shortened to the equivalent command
 .EX
 groff \-p \-t \-me \-T latin1 foo.me
 .EE
+.
 .
 .P
 An even easier way to call this is to use
@@ -1545,6 +1616,7 @@ command (by using backquotes to specify shell command substitution)
 .EX
 \`grog \-Tlatin1 foo.me\`
 .EE
+.
 .
 .P
 The simplest way is to view the contents in an automated way by
@@ -1560,17 +1632,17 @@ groffer foo.me
 .SH BUGS
 .\" --------------------------------------------------------------------
 .
-.P
 On \f[CR]EBCDIC\f[] hosts (e.g., \f[CR]OS/390 Unix\f[]), output
 devices
 .B ascii
 and
 .B latin1
-aren't available.
+aren\[aq]t available.
 .
 Similarly, output for \f[CR]EBCDIC\f[] code page
 .B cp1047
 is not available on \f[CR]ASCII\f[] based operating systems.
+.
 .
 .P
 Report bugs to
@@ -1759,6 +1831,7 @@ is available at the
 groff development site
 .UE .
 .
+.
 .P
 Three
 .I groff
@@ -1785,6 +1858,7 @@ Details on repository access and much more can be found in the file
 at the top directory of the
 .I groff
 source package.
+.
 .
 .P
 There is a free implementation of the
@@ -1819,6 +1893,7 @@ See
 .BR info (1)
 on how to read it.
 .
+.
 .P
 Due to its complex structure, the
 .I groff
@@ -1834,16 +1909,16 @@ But there are special sections of
 .IR man-pages .
 .
 .I groff
-has man-pages in sections
+has man\-pages in sections
 .BR 1 , " 5" , and " 7" .
 .
 When there are several
-.I man-pages
+.I man\-pages
 with the same name in the same
 .I man
 section, the one with the lowest section is should as first.
 .
-The other man-pages can be shown anyway by adding the section number
+The other man\-pages can be shown anyway by adding the section number
 as argument before the man-page name.
 .
 Reading the man-page about the
@@ -1948,51 +2023,15 @@ The following utilities are available:
 .BR \%tfmtodit (@MAN1EXT@),
 .BR \%xtotroff (@MAN1EXT@).
 .
+.
+.\" --------------------------------------------------------------------
+.SH COPYING (LICENSE)
+.\" --------------------------------------------------------------------
+.co
 .\" --------------------------------------------------------------------
 .SH AUTHORS
 .\" --------------------------------------------------------------------
-.
-Copyright \(co 2014
-Free Software Foundation, Inc.
-.
-.P
-This document is distributed under the terms of the \f[CR]FDL\f[]
-(\f[CR]GNU Free Documentation License\f[]) version 1.3 or later.
-.
-You should have received a copy of the \f[CR]FDL\f[] on your system,
-it is also available on-line at the
-.UR http://\:www.gnu.org/\:copyleft/\:fdl.html
-GNU copyleft site
-.UE .
-.
-.P
-This document is based on the original
-.I groff
-man page written by
-.MT jjc@jclark.com
-James Clark
-.UE .
-.
-It was rewritten, enhanced, and put under the FDL license by
-Bernd Warken <groff-bernd.warken-72@web.de>.
-.
-It is maintained by
-.MT wl@gnu.org
-Werner Lemberg
-.ME .
-.
-.P
-.I groff
-is a \f[CR]GNU\f[] free software project.
-.
-All parts of the
-.I groff package
-are protected by \f[CR]GNU copyleft licenses\f[].
-.
-The software files are distributed under the terms of the \f[CR]GNU
-General Public License\f[] (\f[CR]GPL\f[]), while the documentation
-files mostly use the \f[CR]GNU Free Documentation License\f[]
-(\f[CR]FDL\f[]).
+.au
 .
 .
 .\" --------------------------------------------------------------------
