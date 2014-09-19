@@ -8,8 +8,26 @@ groff_tmac \- macro files in the roff typesetting system
 .\" Installed position: <prefix>/share/man/man5/groff_tmac.5
 .
 .\" --------------------------------------------------------------------
-.\" Legal Terms
+.\" Legalese
 .\" --------------------------------------------------------------------
+.
+.de co
+Copyright \[co] 2000-2014 Free Software Foundation, Inc.
+
+This file is part of groff, the GNU roff type-setting system.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Front-Cover Texts, and with no Back-Cover Texts.
+
+A copy of the Free Documentation License is included as a file called
+FDL in the main directory of the groff source package, it is also
+available on\-line at the
+.UR http://\:www.gnu.org/\:copyleft/\:fdl.html
+GNU copyleft site
+.UE .
+..
 .
 .de au
 This file was written by
@@ -22,26 +40,7 @@ Werner Lemberg
 .ME .
 ..
 .
-.de co
-Copyright (C) 2000-2014 Free Software Foundation, Inc.
-.P
-This file is part of groff, the GNU roff type-setting system.
-.P
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation; with no
-Front-Cover Texts, and with no Back-Cover Texts.
-.P
-A copy of the Free Documentation License is included as a file called
-FDL in the main directory of the groff source package, it is also
-available on-line at the
-.UR http://\:www.gnu.org/\:copyleft/\:fdl.html
-GNU copyleft site
-.UE .
-..
-.
 .ds Ellipsis \&.\|.\|.\&\"
-.
 .
 .
 .\" --------------------------------------------------------------------
@@ -54,12 +53,14 @@ type-setting system provides a set of macro packages suitable for
 special kinds of documents.
 .
 Each macro package stores its macros and definitions in a file called
-the package's
+the package\[aq]s
 .BR "tmac file" .
+.
 The name is deduced from
-.RB ` T\c
+.RB \[oq] T\c
 .IB roff MAC\c
-.IR ros '.
+.IR ros \[cq].
+.
 .
 .P
 The tmac files are normal roff source documents, except that they
@@ -87,6 +88,7 @@ same time; saying e.g.\&
 \fIsh#\fP groff \-m man \-m ms foo
 .EE
 .
+.
 .P
 or
 .
@@ -97,6 +99,7 @@ or
 .
 .P
 fails.
+.
 Exception to this is the use of man pages written with either the
 .B mdoc
 or the
@@ -132,7 +135,7 @@ man\~pages; see
 .B andoc
 .TQ
 .B mandoc
-Use this file in case you don't know whether the
+Use this file in case you don\[aq]t know whether the
 .B man
 macros or the
 .B mdoc
@@ -215,7 +218,8 @@ and ms).
 .B de.tmac
 selects hyphenation patterns for traditional orthography, and
 .B den.tmac
-does the same for the new orthography (`Recht\%schreib\%reform').
+does the same for the new orthography
+(\[oq]Recht\%schreib\%reform\[cq]).
 .
 It should be used as the last macro package on the command line.
 .
@@ -237,8 +241,8 @@ Example:
 .IP
 Note that
 .B fr.tmac
-sets the input encoding to latin-9 to get proper support of the `oe'
-ligature.
+sets the input encoding to latin-9 to get proper support of the
+\[oq]oe\[cq] ligature.
 .
 .
 .TP
@@ -272,7 +276,7 @@ specified as the first macro argument on the command line.
 .B @g@roff
 loads latin1 by default at start-up.
 .
-Note that these macro packages don't work on EBCDIC hosts.
+Note that these macro packages don\[aq]t work on EBCDIC hosts.
 .
 .
 .TP
@@ -283,7 +287,7 @@ On those platforms it is loaded automatically at start-up.
 .
 Due to different character ranges used in
 .B @g@roff
-it doesn't work on architectures which are based on ASCII.
+it doesn\[aq]t work on architectures which are based on ASCII.
 .
 .
 .P
@@ -336,7 +340,7 @@ To be used with
 .B papersize
 This macro file is already loaded at start-up by
 .B @g@troff
-so it isn't necessary to call it explicitly.
+so it isn\[aq]t necessary to call it explicitly.
 .
 It provides an interface to set the paper size on the command line with
 the option \f[B]\%\-dpaper=\f[]\,\f[I]size\f[].
@@ -389,8 +393,8 @@ preprocessor.
 .
 They center each picture.
 .
-Use it only if your macro package doesn't provide proper definitions
-for those two macros (actually, most of them already do).
+Use it only if your macro package doesn\[aq]t provide proper
+definitions for those two macros (actually, most of them already do).
 .
 .
 .TP
@@ -410,7 +414,7 @@ of the same size.
 .
 This macro file is already loaded at start-up by
 .B @g@troff
-so it isn't necessary to call it explicitly.
+so it isn\[aq]t necessary to call it explicitly.
 .
 .IP
 Syntax:
@@ -436,9 +440,9 @@ If neither a
 .I width
 nor a
 .I height
-argument is specified, the image's natural width (as given in
-the file's bounding box) or the current line length is used
-as the width, whatever is smaller.
+argument is specified, the image\[aq]s natural width (as given in the
+file\[aq]s bounding box) or the current line length is used as the
+width, whatever is smaller.
 .
 The
 .I width
@@ -477,9 +481,9 @@ option causes the graphic to be indented by\~\c
 .IP
 For use of
 .B .PSPIC
-within a diversion it is recommended to extend it with
-the following code, assuring that the diversion's width completely
-covers the image's width.
+within a diversion it is recommended to extend it with the following
+code, assuring that the diversion\[aq]s width completely covers the
+image\[aq]s width.
 .
 .RS
 .IP
@@ -541,13 +545,16 @@ Classical roff systems were designed before the conventions of the
 modern C
 .BR getopt (3)
 call evolved, and used a naming scheme for macro packages that looks
-odd to modern eyes.  Macro packages were always included with the option
+odd to modern eyes.
+.
+Macro packages were always included with the option
 .BR \-m ;
 when this option was directly followed by its argument without an
 intervening space, this looked like a long option preceded by a single
 minus \[em] a sensation in the computer stone age.
+.
 To make this invocation form work, classical troff
-macro packages used names that started with the letter `m',
+macro packages used names that started with the letter \[oq]m\[cq],
 which was omitted in the naming of the macro file.
 .
 .
@@ -566,10 +573,9 @@ for short.
 .
 .
 .P
-For similar reasons, macro packages that did not start with an `m'
-had a leading `m'
-added in the documentation and in speech; for example, the package
-corresponding to
+For similar reasons, macro packages that did not start with an
+\[oq]m\[cq] had a leading \[oq]m\[cq] added in the documentation and
+in speech; for example, the package corresponding to
 .I tmac.doc
 was called
 .I mdoc
@@ -584,7 +590,7 @@ command line option for activating this package reads
 To cope with all situations, actual versions of
 .BR groff (@MAN1EXT@)
 are smart about both naming schemes by providing two macro files
-for the inflicted macro packages; one with a leading `m'
+for the inflicted macro packages; one with a leading \[oq]m\[cq]
 the other one without it.
 .
 So in
@@ -603,9 +609,8 @@ macro package may be specified as on of the following four methods:
 .
 .
 .P
-Recent packages that do not start with `m'
-do not use an additional `m'
-in the documentation.
+Recent packages that do not start with \[oq]m\[cq] do not use an
+additional \[oq]m\[cq] in the documentation.
 .
 For example, the
 .I www
@@ -653,8 +658,7 @@ In
 .IR groff ,
 most macro packages are described in\~man pages called
 .BR groff_\f[I]name\f[] (@MAN7EXT@),
-with a leading `m'
-for the classical packages.
+with a leading \[oq]m\[cq] for the classical packages.
 .
 .
 .\" --------------------------------------------------------------------
@@ -794,22 +798,22 @@ when formatting the document.
 .
 Mostly, only the letters corresponding to the options for the
 preprocessors are recognized,
-`e'
+\[oq]e\[cq]
 (for
 .BR eqn ),
 .\" `G',
 .\" `g',
-`p`
+\[oq]p\[cq]
 (for
 .BR pic ),
-`R'
+\[oq]R\[cq]
 (for
 .BR refer ),
-`s'
+\[oq]s\[cq]
 (for
 .BR soelim ),
 and
-`t'
+\[oq]t\[cq]
 (for
 .BR tbl ).
 (see
@@ -828,7 +832,7 @@ The
 .I man
 program handles some preprocessors automatically, such that in
 man\~pages only the following characters should be used:
-`e', `p', and `t'.
+\[oq]e\[cq], \[oq]p\[cq], and \[oq]t\[cq].
 .
 .
 ..
@@ -905,7 +909,7 @@ escape sequence.
 This doubling is most important for the positional parameters.
 .
 For example, to print information on the arguments that were passed to
-the macro to the terminal, define a macro named `.print_args',
+the macro to the terminal, define a macro named \[oq].print_args\[cq],
 say.
 .
 .
@@ -942,7 +946,7 @@ arg1 arg2
 .
 .
 .P
-Let's analyze each backslash in the macro definition.
+Let\[aq]s analyze each backslash in the macro definition.
 .
 As the positional parameters and the number of arguments change
 with each call of the macro their leading backslash must be doubled,
@@ -1065,8 +1069,8 @@ almost-empty lines (this is, lines which have a leading dot
 and nothing else) for a better structuring.
 .
 .IP \(bu
-To increase readability, use groff's indentation facility for requests
-and macro calls (arbitrary whitespace after the leading dot).
+To increase readability, use groff\[aq]s indentation facility for
+requests and macro calls (arbitrary whitespace after the leading dot).
 .
 .
 .\" --------------------------------------------------------------------
@@ -1148,7 +1152,7 @@ a colon separated list of these constitutes the
 The search sequence for macro files is (in that order):
 .
 .IP \(bu
-the directories specified with troff/groff's
+the directories specified with troff/groff\[aq]s
 .B \-M
 command line option
 .

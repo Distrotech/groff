@@ -9,7 +9,7 @@ hpftodit \- create font description files for use with groff \-Tlj4
 .\" --------------------------------------------------------------------
 .
 .de co
-Copyright (C) 1994-2014  Free Software Foundation, Inc.
+Copyright \[co] 1994-2014 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -99,19 +99,19 @@ are the groff names of the character.
 .
 The values can be separated by any whitespace; the Unicode value must
 use uppercase digits A\^\(en\^F, and must be without a leading
-.CW ` 0x ',
-.CW ` u ',
+.CW \[oq] 0x \[cq],
+.CW \[oq] u \[cq],
 or
-.CW ` U+ '.
+.CW \[oq] U+ \[cq].
 Unicode values corresponding to composite glyphs are decomposed; e.g.,
-.CW ` u00C0 '
+.CW \[oq] u00C0 \[cq]
 becomes
-.CW ` u0041_0300 '.
+.CW \[oq] u0041_0300 \[cq].
 .
 The name for a glyph without a groff name may be given as
 .CW u \fIXXXX\fP
 if the glyph corresponds to a Unicode value, or as an unnamed glyph
-.CW ` --- '.
+.CW \[oq] --- \[cq].
 .
 If the given Unicode value is in the Private Use Area
 (0xE000\^\(en\^0xF8FF), the glyph is included as an unnamed glyph.
@@ -123,15 +123,15 @@ for additional information about unnamed glyphs and how to access them.
 .
 .LP
 Blank lines and lines beginning with
-.CW ` # '
+.CW \[oq] # \[cq]
 are ignored.
 .
 A
-.CW ` # '
+.CW \[oq] # \[cq]
 following one or more groff names begins a comment.
 .
 Because
-.CW ` # '
+.CW \[oq] # \[cq]
 is a valid groff name, it must appear first in a list of
 groff names if a comment is included, e.g.,
 .IP
@@ -146,7 +146,7 @@ rather than
 .CW "3   0023   sh #   # number sign"
 .LP
 which will treat the first
-.CW ` # '
+.CW \[oq] # \[cq]
 as the beginning of the comment.
 .
 .
@@ -159,7 +159,7 @@ The groff font file is written to
 if
 .I font
 is specified as
-.CW ` - ',
+.CW \[oq] - \[cq],
 the output is written to the standard output.
 .
 .
@@ -180,7 +180,7 @@ it should be listed in the
 command in the DESC file;
 if it is not special, there is no need to list it, since
 .B troff
-can automatically mount it when it's first used.
+can automatically mount it when it\[aq]s first used.
 .
 .
 .LP
@@ -207,7 +207,7 @@ file.
 A glyph with corresponding Unicode value is given the name
 .RI u XXXX ;
 a glyph without a Unicode value is included as an unnamed glyph
-\&`\-\^\-\^\-'.
+\&\[oq]\-\^\-\^\-\[cq].
 .
 A glyph with a Unicode value in the Private Use Area
 (0xE000\^\(en\^0xF8FF) also is included as an unnamed glyph.
@@ -228,7 +228,7 @@ glyphs; with the
 option, only the \(lqmathematical\(rq symbol sets
 are searched.
 .
-Nonetheless, restricting the symbol sets searched isn't very
+Nonetheless, restricting the symbol sets searched isn\[aq]t very
 selective\(emmany glyphs are placed in both regular and special fonts.
 .
 Normally, the
@@ -246,9 +246,9 @@ The information includes the values of important TFM tags, and a
 listing (by MSL number for Intellifont TFM files or by Unicode value
 for TrueType TFM files) of the glyphs included in the TFM file.
 .
-The unit of measure `DU' for some tags indicates design units; there
-are 8782 design units per em for Intellifont fonts, and 2048 design
-units per em for TrueType fonts.
+The unit of measure \[oq]DU\[cq] for some tags indicates design units;
+there are 8782 design units per em for Intellifont fonts, and 2048
+design units per em for TrueType fonts.
 .
 Note that the accessibility of a glyph depends on its inclusion in a
 symbol set; some TFM files list many glyphs but only a few symbol
@@ -314,11 +314,12 @@ option, the search order is reversed.
 .TP
 .BI \-i n
 Generate an italic correction for each character so that the
-character\[aq]s width plus the character's italic correction is equal
-to
+character\[aq]s width plus the character\[aq]s italic correction is
+equal to
 .I n
 thousandths of an em plus the amount by which the right edge of the
-character's bounding is to the right of the character's origin.
+character\[aq]s bounding is to the right of the character\[aq]s
+origin.
 .
 If this would result in a negative italic correction, use a zero italic
 correction instead.
@@ -336,7 +337,8 @@ instead.
 Also generate a left italic correction for each character equal to
 .I n
 thousandths of an em plus the amount by which the left edge of the
-character's bounding box is to the left of the character's origin.
+character\[aq]s bounding box is to the left of the character\[aq]s
+origin.
 .
 The left italic correction may be negative.
 .
@@ -365,7 +367,6 @@ Symbol mapping files
 .\" --------------------------------------------------------------------
 .SH "SEE ALSO"
 .\" --------------------------------------------------------------------
-.
 .BR groff (@MAN1EXT@),
 .BR groff_diff (@MAN1EXT@),
 .BR grolj4 (@MAN1EXT@),

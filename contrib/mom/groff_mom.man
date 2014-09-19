@@ -2,46 +2,14 @@
 .SH NAME
 groff_mom \- groff `mom' macros, `mom' is a `roff' language, part of `groff'
 .
-.SH "SYNOPSIS"
 .\" The .SH was moved to this place in order to appease `apropos'.
 .
 .\" --------------------------------------------------------------------
 .\" Legalese
 .\" --------------------------------------------------------------------
 .
-.de authors
-.P
-.B mom
-was written by
-.MT peter@schaffter.ca
-Peter Schaffter
-.ME .
-.
-.P
-.I PDF
-support was provided by
-.MT deri@chuzzlewit.demon.co.uk
-Deri James
-.ME .
-.
-.P
-The alphabetical documentation of macros and escape seqauences in this
-man-page were written by the
-.I mom
-team.
-.
-.P
-Please send bug reports to the
-.MT bug-groff@gnu.org
-groff-bug mailing list
-.ME
-or directly to the authors.
-..
-.de copyleft
-.nh
-Copyright (C) 2002-2014  Free Software Foundation, Inc.
-written by Werner Lemberg <wl@gnu.org>
-revised 2012 by Peter Schaffter <peter@schaffter.ca>
+.de co
+Copyright \[co] 2002-2014 Free Software Foundation, Inc.
 
 This file is part of groff, a free software project.
 
@@ -57,7 +25,27 @@ directory of the groff Text source package.
 Or read the man-page
 .BR gpl (1).
 You can also visit <http://www.gnu.org/licenses/>.
-.hy
+..
+.
+.de au
+mom was written by
+.MT peter@schaffter.ca
+Peter Schaffter
+.ME
+and revised by
+.MT wl@gnu.org
+Werner Lemberg
+.ME .
+
+PDF support was provided by
+.MT deri@chuzzlewit.demon.co.uk
+Deri James
+.ME .
+
+The alphabetical documentation of macros and escape seqauences in this
+man\-page were written by the
+.I mom
+team.
 ..
 .
 .\" --------------------------------------------------------------------
@@ -82,7 +70,7 @@ You can also visit <http://www.gnu.org/licenses/>.
 .  ds result \&
 .  while (\\n[.$] >= 2) \{\
 .	as result \,\f[\\$1]\\$2
-.	if !"\\$1"P" .as result \f[P]
+.	if !"\\$1"P" .as result \f[P]\""
 .	shift 2
 .  \}
 .  if (\\n[.$] = 1) .as result \,\f[\\$1]
@@ -103,7 +91,7 @@ You can also visit <http://www.gnu.org/licenses/>.
 .
 .
 .\" --------------------------------------------------------------------
-.\" SH SYNOPSIS
+.SH "SYNOPSIS"
 .\" --------------------------------------------------------------------
 .
 .SY pdfmom
@@ -1149,7 +1137,7 @@ you should do:
 .B .TAB 1
 .B .PT_SIZE 24
 .B .ALD 3p
-.B \[rs]*[RULE] \[rs]" Note that you can\[aq]t use \[rs]*[UP] or \[rs]*[DOWN] with \[rs]*[RULE]
+.B \[rs]*[RULE] \[rs]" Note that you can\[aq]t use \[rs]*[UP] or \[rs]*[DOWN] with \[rs]*[RULE]\""
 .B .RLD 3p
 .B .TQ
 .EE
@@ -3387,16 +3375,24 @@ after NEWPAGE, like this:
 .
 .
 .\" --------------------------------------------------------------------
-.SH "AUTHORS"
+.SH BUGS
 .\" --------------------------------------------------------------------
 .
-.authors
+Please send bug reports to the
+.MT bug-groff@gnu.org
+groff-bug mailing list
+.ME
+or directly to the authors.
+.
 .
 .\" --------------------------------------------------------------------
 .SH "COPYING"
 .\" --------------------------------------------------------------------
-.
-.copyleft
+.co
+.\" --------------------------------------------------------------------
+.SH "AUTHORS"
+.\" --------------------------------------------------------------------
+.au
 .
 .
 .cp \n[groff_mom_C]

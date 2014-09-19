@@ -1,6 +1,5 @@
 .\" Emacs mode: -*- nroff -*-
 .TH GROFF_FONT @MAN5EXT@ "@MDATE@" "Groff Version @VERSION@"
-.
 .SH NAME
 groff_font \- format of groff device and font description files
 .
@@ -11,20 +10,16 @@ groff_font \- format of groff device and font description files
 .
 .de co
 Copyright \(co 1989\-2014 Free Software Foundation, Inc.
-.
-.P
+
 This file is part of groff (GNU roff), which is a free software project.
-.
+
 You can redistribute it and/or modify it under the terms of the GNU
 General Public License as published by the Free Software Foundation,
 either version 2 of the License, or (at your option) any later
 version.
-.
-.P
+
 You should have received a copy of the GNU General Public License
-along with this program.
-.
-If not, see
+along with this program.  If not, see
 .UR http://www.gnu.org/licenses/gpl-2.0.html
 GPL2
 .UE .
@@ -58,8 +53,7 @@ are stored in a directory
 .BI dev name\c
 \&.
 .
-There are two types of file: a
-device description file called
+There are two types of file: a device description file called
 .B DESC
 and for each font\~\c
 .I F
@@ -132,7 +126,7 @@ but under other systems (notably cygwin) it might be set to another name.
 .BI "paperlength " n
 The physical vertical dimension of the output medium in machine units.
 .
-This isn't used by
+This isn\[aq]t used by
 .B troff
 itself but by output devices.
 .
@@ -159,7 +153,8 @@ if it holds predefined paper types.
 .
 Alternatively,
 .I string
-can be a file name (e.g.\& `/etc/papersize'); if the file can be opened,
+can be a file name (e.g.\& \[oq]/etc/papersize\[cq]); if the file can
+be opened,
 .B groff
 reads the first line and tests for the above paper sizes.
 .
@@ -173,8 +168,9 @@ Both
 .I length
 and
 .I width
-must have a unit appended; valid values are `i' for inches, `c' for
-centimeters, `p' for points, and `P' for picas.
+must have a unit appended; valid values are \[oq]i\[cq] for inches,
+\[oq]c\[cq] for centimeters, \[oq]p\[cq] for points, and \[oq]P\[cq]
+for picas.
 .
 Example:
 .BR 12c,235p .
@@ -200,7 +196,7 @@ Use
 .B papersize
 instead.
 .
-This isn't used by
+This isn\[aq]t used by
 .BR troff
 itself but by output devices.
 .
@@ -501,9 +497,10 @@ If it is exactly two characters
 it can be entered as
 .BI \[rs]( xx\fR.
 .
-Note that single-letter special characters can't be accessed as
+Note that single-letter special characters can\[aq]t be accessed as
 .BI \[rs] c\fR;
-the only exception is `\[rs]\-' which is identical to `\[rs][\-]'.
+the only exception is \[oq]\[rs]\-\[cq] which is identical to
+\[oq]\[rs][\-]\[cq].
 .
 The name
 .B \-\-\-
@@ -520,16 +517,16 @@ field gives the glyph type:
 .
 .TP
 1
-means the glyph has a descender, for example, `p';
+means the glyph has a descender, for example, \[oq]p\[cq];
 .
 .TP
 2
-means the glyph has an ascender, for example, `b';
+means the glyph has an ascender, for example, \[oq]b\[cq];
 .
 .TP
 3
 means the glyph has both an ascender and a descender, for example,
-`('.
+\[oq](\[cq].
 .
 .LP
 The
@@ -558,21 +555,23 @@ escape sequence only accepts a decimal integer.
 .LP
 The
 .I entity_name
-field gives an ASCII string identifying the glyph which the postprocessor
-uses to print that glyph.
+field gives an ASCII string identifying the glyph which the
+postprocessor uses to print that glyph.
 .
 This field is optional and is currently used by
 .B grops
-to build sub-encoding arrays for PS fonts containing more than 256 glyphs.
+to build sub-encoding arrays for PS fonts containing more than 256
+glyphs.
 .
 (It has also been used for
-.BR \%grohtml 's
-entity names but for efficiency reasons this data is now compiled directly
-into
+.BR \%grohtml \[aq]s
+entity names but for efficiency reasons this data is now compiled
+directly into
 .BR \%grohtml .)
 .
 .LP
-Anything on the line after the encoding field or `\-\-' are ignored.
+Anything on the line after the encoding field or \[oq]\-\-\[cq] are
+ignored.
 .
 .LP
 The

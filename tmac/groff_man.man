@@ -1,7 +1,7 @@
 .\" -*- nroff -*-
 .TH GROFF_MAN @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
 .SH NAME
-groff_man \- groff `man' macros to support generation of man pages
+groff_man \- groff man macros to support generation of man pages
 .
 .
 .\" --------------------------------------------------------------------
@@ -9,7 +9,7 @@ groff_man \- groff `man' macros to support generation of man pages
 .\" --------------------------------------------------------------------
 .
 .de co
-Copyright (C) 1999-2014  Free Software Foundation, Inc.
+Copyright \[co] 1999-2014 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -145,19 +145,18 @@ The default is 7n for
 .
 For
 .IR nroff ,
-this value should always be an integer multiple of unit `n' to get
-consistent indentation.
+this value should always be an integer multiple of unit \[oq]n\[cq] to
+get consistent indentation.
 .
 .
 .TP
 .BI \-rLL= line-length
 Set line length.
 .
-If this option is not given,
-the line length is set to respect any value set by a prior `.ll' request
-(which
+If this option is not given, the line length is set to respect any
+value set by a prior \[oq].ll\[cq] request (which
 .I must
-be in effect when the `.TH' macro is invoked),
+be in effect when the \[oq].TH\[cq] macro is invoked),
 if this differs from the built\-in default for the formatter;
 otherwise it defaults to 78n in
 .I nroff
@@ -167,25 +166,25 @@ mode.
 .
 .
 .IP
-Note that the use of a `.ll' request to initialize the line length
-is supported for backward compatibility with some versions of the
+Note that the use of a \[oq].ll\[cq] request to initialize the line
+length is supported for backward compatibility with some versions of
+the
 .B man
 program;
-direct initialization of the `LL' register should
+direct initialization of the \[oq]LL\[cq] register should
 .I always
 be preferred to the use of such a request.
 .
-In particular, note that a `.ll\ 65n' request does
+In particular, note that a \[oq].ll\ 65n\[cq] request does
 .I not
 preserve the normal
 .I nroff
 default line length,
 (the
 .B man
-default initialization to 78n prevails),
-whereas,
-the `\-rLL=65n' option, or an equivalent `.nr\ LL\ 65n'
-request preceding the use of the `TH' macro,
+default initialization to 78n prevails), whereas, the
+\[oq]\-rLL=65n\[cq] option, or an equivalent \[oq].nr\ LL\ 65n\[cq]
+request preceding the use of the \[oq]TH\[cq] macro,
 .I does
 set a line length of 65n.
 .
@@ -231,7 +230,7 @@ number pages as
 .IR nnn c,
 etc.
 .
-For example, the option `\-rX2' produces the following page
+For example, the option \[oq]\-rX2\[cq] produces the following page
 numbers: 1, 2, 2a, 2b, 2c, etc.
 .
 .
@@ -285,8 +284,9 @@ Set up a paragraph with hanging left indentation.
 .
 The indentation is set to
 .I nnn
-if that argument is supplied (the default unit is `n' if omitted),
-otherwise it is set to the previous indentation value specified with
+if that argument is supplied (the default unit is \[oq]n\[cq] if
+omitted), otherwise it is set to the previous indentation value
+specified with
 .BR .TP ,
 .BR .IP ,
 or
@@ -334,8 +334,9 @@ as a tag to mark its beginning.
 .
 The indentation is set to
 .I nnn
-if that argument is supplied (the default unit is `n' if omitted),
-otherwise it is set to the previous indentation value specified with
+if that argument is supplied (the default unit is \[oq]n\[cq] if
+omitted), otherwise it is set to the previous indentation value
+specified with
 .BR .TP ,
 .BR .IP ,
 or
@@ -348,13 +349,13 @@ to its default values.
 .
 .IP
 To start an indented paragraph with a particular indentation but
-without a designator, use `""' (two doublequotes) as the second
-argument.
+without a designator, use \[oq]""\[cq] (two doublequotes) as the
+second argument.
 .
 .
 .IP
 For example, the following paragraphs were all set up with bullets as
-the designator, using `.IP\ \\(bu\ 4'.
+the designator, using \[oq].IP\ \\(bu\ 4\[cq].
 .
 The whole block has been enclosed with
 .B .RS
@@ -426,7 +427,7 @@ increases the level by\~1.
 .BI .RS " \fR[\fPnnn\fR]\fP"
 This macro moves the left margin to the right by the value
 .I nnn
-if specified (default unit is `n'); otherwise it is set to the
+if specified (default unit is \[oq]n\[cq]); otherwise it is set to the
 previous indentation value specified with
 .BR .TP ,
 .BR .IP ,
@@ -491,8 +492,8 @@ which must take on a value between 1 and\~8.
 .
 The value
 .I section
-may also have a string appended, e.g.\& `.pm', to indicate a specific
-subsection of the
+may also have a string appended, e.g.\& \[oq].pm\[cq], to indicate a
+specific subsection of the
 .IR \%man\~pages .
 .
 Both
@@ -522,8 +523,8 @@ For HTML output, headers and footers are completely suppressed.
 .
 .IP
 Additionally, this macro starts a new page; the new line number is\~1
-again (except if the `\-rC1' option is given on the command line) --
-this feature is intended only for formatting multiple
+again (except if the \[oq]\-rC1\[cq] option is given on the command
+line) -- this feature is intended only for formatting multiple
 .IR \%man\~pages ;
 a single
 .I \%man\~page
@@ -538,7 +539,7 @@ Set up an indented paragraph with label.
 .
 The indentation is set to
 .I nnn
-if that argument is supplied (the default unit is `n' if omitted),
+if that argument is supplied (the default unit is \[oq]n\[cq] if omitted),
 otherwise it is set to the previous indentation value specified with
 .BR .TP ,
 .BR .IP ,
@@ -661,8 +662,8 @@ Thus
 .
 .
 .PP
-would cause `this' and `that' to appear in bold face, while `word and'
-appears in italics.
+would cause \[oq]this\[cq] and \[oq]that\[cq] to appear in bold face,
+while \[oq]word and\[cq] appears in italics.
 .RE
 .
 .
@@ -1012,9 +1013,9 @@ markup instead.
 .BI .PD " \fR[\fPnnn\fR]\fP"
 Adjust the empty space before a new paragraph or section.
 .
-The optional argument gives the amount of space (default unit is `v');
-without parameter, the value is reset to its default value (1\~line in
-nroff mode, 0.4v\~otherwise).
+The optional argument gives the amount of space (default unit is
+\[oq]v\[cq]); without parameter, the value is reset to its default
+value (1\~line in nroff mode, 0.4v\~otherwise).
 .
 This affects the macros
 .BR SH ,
@@ -1052,7 +1053,7 @@ Redefine this macro to get control of the header.
 .BI .UC " \fR[\fPversion\fR]\fP"
 Alter the footer for use with \f[CR]BSD\f[]
 .IR man\~pages .
-This command exists only for compatibility; don't use it.
+This command exists only for compatibility; don\[aq]t use it.
 .
 See the
 .I groff
@@ -1065,7 +1066,7 @@ The following strings are defined:
 .
 .TP
 .B \e*R
-The `registered' sign.
+The \[oq]registered\[cq] sign.
 .
 .
 .TP
@@ -1079,19 +1080,19 @@ Switch back to the default font size.
 .B \e*(rq
 Left and right quote.
 .
-This is equal to `\e(lq' and `\e(rq', respectively.
+This is equal to \[oq]\e(lq\[cq] and \[oq]\e(rq\\[cq], respectively.
 .
 .
 .TP
 .B \e*(HF
 The typeface used to print headings and subheadings.
 .
-The default is `B'.
+The default is \[oq]B\[cq].
 .
 .
 .TP
 .B \e*(Tm
-The `trademark' sign.
+The \[oq]trademark\[cq] sign.
 .
 .
 .PP
@@ -1113,11 +1114,11 @@ look like this:
 .PP
 Note the single space character after the double quote.
 .I word
-consists of letters for the needed preprocessors: `e' for
+consists of letters for the needed preprocessors: \[oq]e\[cq] for
 .BR @g@eqn ,
-`r' for
+\[oq]r\[cq] for
 .BR @g@refer ,
-and `t' for
+and \[oq]t\[cq] for
 .BR @g@tbl .
 .
 Modern implementations of the
@@ -1152,7 +1153,7 @@ render it to HTML.
 .
 Troff requests make implicit assumptions about things like character
 and page sizes that may break in an HTML environment; also, many of
-these viewers don't interpret the full troff vocabulary, a problem
+these viewers don\[aq]t interpret the full troff vocabulary, a problem
 that can lead to portions of your text being silently dropped.
 .
 .
@@ -1161,7 +1162,7 @@ For portability to modern viewers, it is best to write your page
 entirely in the requests described on this page.
 .
 Further, it is best to completely avoid those we have described as
-`presentation-level'
+\[oq]presentation-level\[cq]
 .RB ( .HP ,
 .BR .PD ,
 and
@@ -1195,7 +1196,7 @@ These are wrapper files to call
 .
 .TP
 .B andoc.tmac
-Use this file in case you don't know whether the
+Use this file in case you don\[aq]t know whether the
 .B man
 macros or the
 .B mdoc
@@ -1246,11 +1247,10 @@ given after calling
 Local changes and customizations should be put into this file.
 .
 .
-.\" --------------------------------------------------------------------
 .ad l
+.\" --------------------------------------------------------------------
 .SH "SEE ALSO"
 .\" --------------------------------------------------------------------
-.
 .BR @g@tbl (@MAN1EXT@),
 .BR @g@eqn (@MAN1EXT@),
 .BR @g@refer (@MAN1EXT@),

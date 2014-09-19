@@ -1,9 +1,9 @@
-.\" This file gives a small example how a web page could look like if created
-.\" with groff.
+.\" This file gives a small example how a web page could look like if
+.\" created with groff.
 .\"
 .\"
-.\" To make it work with other output devices also, we include www.tmac
-.\" directly.
+.\" To make it work with other output devices also, we include
+.\" www.tmac directly.
 .\"
 .nr PS 10
 .nr VS 12
