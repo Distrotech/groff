@@ -38,6 +38,8 @@ FONTS=TR TI TB TBI CW CWI HR HI HB HBI \
       MI S SC EX SA SB
 SPECIALFLAG=-s
 
+RM=rm -f
+
 all: $(FONTS)
 
 #### CM fonts ####
@@ -197,10 +199,10 @@ HBITC: $(srcdir)/tc.map
 clean:
 
 realclean:
-	rm -f $(FONTS)
+	$(RM) $(FONTS)
 
 extraclean: realclean
-	rm -f core *~ "#*"
+	$(RM) core *~ "#*"
 
 .PHONY: clean realclean extraclean all
 

@@ -137,6 +137,7 @@ CSRCS=\
   $(srcdir)/../snprintf/snprintf.c
 GENSRCS=\
   version.cpp
+RM=rm -f
 
 src_version=`cat $(top_srcdir)/VERSION`
 src_revision=`cat $(top_srcdir)/REVISION`
@@ -183,14 +184,14 @@ install_charset_data:
 	    > $(DESTDIR)$(libdir)/t-charset.alias; \
 	  $(INSTALL_DATA) $(DESTDIR)$(libdir)/t-charset.alias \
 	    $(DESTDIR)$(libdir)/charset.alias; \
-	  rm -f $(DESTDIR)$(libdir)/t-charset.alias; \
+	  $(RM) $(DESTDIR)$(libdir)/t-charset.alias; \
 	else \
 	  if test $(GLIBC21) = no; then \
 	    sed -f ref-add.sed charset.alias \
 	      > $(DESTDIR)$(libdir)/t-charset.alias; \
 	    $(INSTALL_DATA) $(DESTDIR)$(libdir)/t-charset.alias \
 	      $(DESTDIR)$(libdir)/charset.alias; \
-	    rm -f $(DESTDIR)$(libdir)/t-charset.alias; \
+	    $(RM) $(DESTDIR)$(libdir)/t-charset.alias; \
 	  fi; \
 	fi
 
@@ -201,17 +202,17 @@ uninstall_charset_data:
 	    > $(DESTDIR)$(libdir)/t-charset.alias; \
 	  if grep '^# Packages using this file: $$' \
 	          $(DESTDIR)$(libdir)/t-charset.alias > /dev/null; then \
-	    rm -f $(DESTDIR)$(libdir)/charset.alias; \
+	    $(RM) $(DESTDIR)$(libdir)/charset.alias; \
 	  else \
 	    $(INSTALL_DATA) $(DESTDIR)$(libdir)/t-charset.alias \
 	      $(DESTDIR)$(libdir)/charset.alias; \
 	  fi; \
-	  rm -f $(DESTDIR)$(libdir)/t-charset.alias; \
+	  $(RM) $(DESTDIR)$(libdir)/t-charset.alias; \
 	fi
 
 clean: clean_charset
 clean_charset:
-	rm -f charset.alias ref-add.sed ref-del.sed
+	$(RM) charset.alias ref-add.sed ref-del.sed
 
 ########################################################################
 # Emacs settings

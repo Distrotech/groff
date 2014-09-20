@@ -39,6 +39,8 @@ MAN1=groffer.n \
 
 MOSTLYCLEANADD=groffer $(MAN1) $(ROFF2MAN) $(ROFF2N) $(ROFF2PROGS)
 
+RM=rm -f
+
 all: groffer
 
 GROFFER_PERL=subs.pl \
@@ -71,30 +73,31 @@ groffer: $(GROFFER_PERL) $(GROFFER_REST) $(SH_DEPS_SED_SCRIPT)
 
 install_data: groffer
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/groffer
+	$(RM) $(DESTDIR)$(bindir)/groffer
 	$(INSTALL_SCRIPT) groffer $(DESTDIR)$(bindir)/groffer
 	for f in $(ROFF2PROGS); do \
-	  rm -f $(DESTDIR)$(bindir)/$$f; \
+	  $(RM) $(DESTDIR)$(bindir)/$$f; \
 	  $(INSTALL_SCRIPT) $$f $(DESTDIR)$(bindir)/$$f; \
 	done
 	-test -d $(DESTDIR)$(groffer_dir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(groffer_dir)
-	rm -f $(DESTDIR)$(groffer_dir)/version.sh
+	$(RM) $(DESTDIR)$(groffer_dir)/version.sh
 	$(INSTALL_DATA) $(srcdir)/version.sh $(DESTDIR)$(groffer_dir)/version.sh
 	for f in $(GROFFER_PERL); do \
-	  rm -f $(DESTDIR)$(groffer_dir)/$$f; \
+	  $(RM) $(DESTDIR)$(groffer_dir)/$$f; \
 	done
 	for f in $(GROFFER_PERL); do \
 	  $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(groffer_dir)/$$f; \
 	done;
 
 uninstall_sub:
-	rm -f $(DESTDIR)$(bindir)/groffer
-	-for f in $(ROFF2PROGS); do rm -f $(DESTDIR)$(bindir)/$$f; done
+	$(RM) $(DESTDIR)$(bindir)/groffer
+	-for f in $(ROFF2PROGS); do $(RM) $(DESTDIR)$(bindir)/$$f; done
 	-for f in $(GROFFER_PERL) version.sh; do \
-	  rm -f $(DESTDIR)$(groffer_dir)/$$f;\
+	  $(RM) $(DESTDIR)$(groffer_dir)/$$f;\
 	done
-	-rmdir $(DESTDIR)$(libdir)/groff/groffer
+	-test -d $(DESTDIR)$(libdir)/groff/groffer && \
+	  rmdir $(DESTDIR)$(libdir)/groff/groffer
 
 
 ########################################################################

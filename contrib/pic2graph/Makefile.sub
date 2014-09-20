@@ -19,6 +19,7 @@
 #
 MAN1=pic2graph.n
 MOSTLYCLEANADD=pic2graph
+RM=rm -f
 
 all: pic2graph
 
@@ -30,11 +31,11 @@ pic2graph: pic2graph.sh
 
 install_data: pic2graph
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/pic2graph
+	$(RM) $(DESTDIR)$(bindir)/pic2graph
 	$(INSTALL_SCRIPT) pic2graph $(DESTDIR)$(bindir)/pic2graph
 
 uninstall_sub:
-	rm -f $(DESTDIR)$(bindir)/pic2graph
+	$(RM) $(DESTDIR)$(bindir)/pic2graph
 
 
 ########################################################################

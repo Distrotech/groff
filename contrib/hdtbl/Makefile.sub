@@ -87,6 +87,8 @@ MOSTLYCLEANADD=\
   stamp-strip \
   hdmisc.tmac-s hdtbl.tmac-s
 
+RM=rm -f
+
 .SUFFIXES: .roff .in .ps
 
 .roff.ps:
@@ -119,7 +121,7 @@ examples/stamp:
 
 stamp-strip: $(STRIPFILES)
 	for f in $(STRIPFILES); do \
-	  rm -f $$f-s; \
+	  $(RM) $$f-s; \
 	  sed -f $(top_srcdir)/tmac/strip.sed $(srcdir)/$$f >$$f-s; \
 	done
 	touch $@
@@ -129,7 +131,7 @@ install_data: install_always $(make_install_examples)
 install_always: $(STRIPFILES) $(GENFILES)
 	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
 	for f in $(STRIPFILES); do \
-	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
+	  $(RM) $(DESTDIR)$(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $$f-s $(DESTDIR)$(tmacdir)/$$f; \
 	done
 
@@ -138,12 +140,12 @@ install_examples: install_always $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES) \
 	-test -d $(DESTDIR)$(exampledir)/hdtbl \
 	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)/hdtbl
 	for f in $(EXAMPLEFILES_); do \
-	  rm -f $(DESTDIR)$(exampledir)/hdtbl/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/hdtbl/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/examples/$$f \
 	    $(DESTDIR)$(exampledir)/hdtbl/$$f; \
 	done
 	for f in $(PROCESSEDEXAMPLEFILES_) $(GENFILES_); do \
-	  rm -f $(DESTDIR)$(exampledir)/hdtbl/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/hdtbl/$$f; \
 	  $(INSTALL_DATA) examples/$$f $(DESTDIR)$(exampledir)/hdtbl/$$f; \
 	done
 	$(INSTALL_DATA) gnu.eps $(DESTDIR)$(exampledir)/hdtbl/gnu.eps
@@ -151,14 +153,15 @@ install_examples: install_always $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES) \
 uninstall_sub: uninstall_always $(make_uninstall_examples)
 
 uninstall_always:
-	-for f in $(STRIPFILES); do rm -f $(DESTDIR)$(tmacdir)/$$f; done
+	-for f in $(STRIPFILES); do $(RM) $(DESTDIR)$(tmacdir)/$$f; done
 
 uninstall_examples: uninstall_always
 	-for f in $(EXAMPLEFILES_) $(PROCESSEDEXAMPLEFILES_) $(GENFILES_); do \
-	  rm -f $(DESTDIR)$(exampledir)/hdtbl/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/hdtbl/$$f; \
 	done
-	rm -f $(DESTDIR)$(exampledir)/hdtbl/gnu.eps
-	-rmdir $(DESTDIR)$(exampledir)/hdtbl
+	$(RM) $(DESTDIR)$(exampledir)/hdtbl/gnu.eps
+	-test -d $(DESTDIR)$(exampledir)/hdtbl && \
+	  rmdir $(DESTDIR)$(exampledir)/hdtbl
 
 ########################################################################
 # Emacs settings

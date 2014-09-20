@@ -34,6 +34,7 @@ CCSRCS=\
 CSRCS=\
   $(srcdir)/signal.c
 NAMEPREFIX=$(g)
+RM=rm -f
 
 install_data: $(srcdir)/eign
 	-test -d $(DESTDIR)$(datadir) \
@@ -43,17 +44,17 @@ install_data: $(srcdir)/eign
 	-test -d $(DESTDIR)$(datasubdir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(datasubdir)
 	if test -f /usr/lib/eign; then \
-	  rm -f $(DESTDIR)$(common_words_file); \
+	  $(MK) $(DESTDIR)$(common_words_file); \
 	  ln -s /usr/lib/eign $(DESTDIR)$(common_words_file) 2>/dev/null \
 	    || ln /usr/lib/eign $(DESTDIR)$(common_words_file) 2>/dev/null \
 	    || cp /usr/lib/eign $(DESTDIR)$(common_words_file); \
 	else \
-	  rm -f $(DESTDIR)$(common_words_file); \
+	  $(RM) $(DESTDIR)$(common_words_file); \
 	  $(INSTALL_DATA) $(srcdir)/eign $(DESTDIR)$(common_words_file); \
 	fi
 
 uninstall_sub:
-	rm -f $(DESTDIR)$(common_words_file)
+	$(RM) $(DESTDIR)$(common_words_file)
 
 ########################################################################
 # Emacs settings

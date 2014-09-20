@@ -2,8 +2,7 @@
 #
 # File position: <groff-source>/font/devlj4/generate/Makefile
 #
-# Copyright (C) 1994, 2002, 2003, 2004, 2009, 2014
-#   Free Software Foundation, Inc.
+# Copyright (C) 1994-2014 Free Software Foundation, Inc.
 #   Written by James Clark (jjc@jclark.com)
 #
 # This file is part of groff.
@@ -63,6 +62,8 @@ FONTS=\
   UCB UCBI UCI UCR \
   CLARENDON CORONET MARIGOLD S \
   SYMBOL WINGDINGS
+
+RM=rm -f
 
 all: $(FONTS)
 
@@ -261,9 +262,9 @@ WINGDINGS: $(AUTOFONT)/9nb00095.tfm $(WINGDINGSMAP)
 clean:
 
 realclean:
-	rm -f $(FONTS)
+	$(RM) $(FONTS)
 
 extraclean: realclean
-	rm -f core *~ "#*"
+	$(RM) core *~ "#*"
 
 .PHONY: clean realclean extraclean all

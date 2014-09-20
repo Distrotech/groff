@@ -66,22 +66,23 @@ YTABC=eqn.cpp
 YTABH=eqn_tab.h
 NAMEPREFIX=$(g)
 MOSTLYCLEANADD=neqn
+RM=rm -f
 
 all: neqn
 
 neqn: neqn.sh $(SH_DEPS_SED_SCRIPT)
-	rm -f $@
+	$(RM) $@
 	sed -e 's/@g@/$(g)/g' \
 	    -f $(SH_DEPS_SED_SCRIPT) \
 	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/neqn.sh >$@
 	chmod +x $@
 
 install_data: neqn
-	rm -f $(DESTDIR)$(bindir)/$(NAMEPREFIX)neqn
+	$(RM) $(DESTDIR)$(bindir)/$(NAMEPREFIX)neqn
 	$(INSTALL_SCRIPT) neqn $(DESTDIR)$(bindir)/$(NAMEPREFIX)neqn
 
 uninstall_sub:
-	rm -f $(DESTDIR)$(bindir)/$(NAMEPREFIX)neqn
+	$(RM) $(DESTDIR)$(bindir)/$(NAMEPREFIX)neqn
 
 ########################################################################
 # Emacs settings

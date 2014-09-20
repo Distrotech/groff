@@ -29,6 +29,8 @@ MOSTLYCLEANADD=\
   examples/README \
   examples/122/README
 
+RM=rm -f
+
 all: README chem $(MAN1) $(make_examples)
 
 README: $(srcdir)/README.txt
@@ -47,7 +49,7 @@ examples/122/README: $(srcdir)/examples/122/README.txt
 	sed -e "s|@g@|$(g)|g" $? >$@
 
 chem: $(srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
-	rm -f $@
+	$(RM) $@
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
 	    -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
@@ -61,11 +63,11 @@ chem: $(srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
 install_data: install_always $(make_install_examples)
 install_always: chem README $(srcdir)/chem.pic
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/$(g)chem
+	$(RM) $(DESTDIR)$(bindir)/$(g)chem
 	$(INSTALL_SCRIPT) chem $(DESTDIR)$(bindir)/$(g)chem
 	-test -d $(DESTDIR)$(datasubdir)/pic \
           || $(mkinstalldirs) $(DESTDIR)$(datasubdir)/pic
-	rm -f $(DESTDIR)$(datasubdir)/pic/chem.pic
+	$(RM) $(DESTDIR)$(datasubdir)/pic/chem.pic
 	$(INSTALL_DATA) $(srcdir)/chem.pic \
 	  $(DESTDIR)$(datasubdir)/pic/chem.pic
 
@@ -89,15 +91,18 @@ install_examples: install_always examples
 
 uninstall_sub: uninstall_always $(make_uninstall_examples)
 uninstall_always:
-	rm -f $(DESTDIR)$(bindir)/chem
-	rm -f $(DESTDIR)$(datasubdir)/pic/chem.pic
-	-rmdir $(DESTDIR)$(datasubdir)/pic
+	$(RM) $(DESTDIR)$(bindir)/chem
+	$(RM) $(DESTDIR)$(datasubdir)/pic/chem.pic
+	-test -d $(DESTDIR)$(datasubdir)/pic && \
+	  rmdir $(DESTDIR)$(datasubdir)/pic
 
 uninstall_examples: uninstall_always
-	rm -f $(DESTDIR)$(exampledir)/chem/122/*
-	-rmdir $(DESTDIR)$(exampledir)/chem/122
-	rm -f $(DESTDIR)$(exampledir)/chem/*
-	-rmdir $(DESTDIR)$(exampledir)/chem
+	$(RM) $(DESTDIR)$(exampledir)/chem/122/*
+	-test -d $(DESTDIR)$(exampledir)/chem/122 || \
+	  rmdir $(DESTDIR)$(exampledir)/chem/122
+	$(RM) $(DESTDIR)$(exampledir)/chem/*
+	test -d $(DESTDIR)$(exampledir)/chem && \
+	  rmdir $(DESTDIR)$(exampledir)/chem
 
 ########################################################################
 # Emacs settings

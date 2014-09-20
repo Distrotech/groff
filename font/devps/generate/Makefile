@@ -1,7 +1,6 @@
 # Location: <groff-source>/font/devps/generate/Makefile
 #
-# Copyright (C) 1989-2000, 2002, 2003, 2006, 2009, 2014
-#   Free Software Foundation, Inc.
+# Copyright (C) 1989-2014 Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
 # This file is part of groff.
@@ -57,6 +56,8 @@ TEXTENC=$(srcdir)/../text.enc
 EFLAG=-e $(TEXTENC)
 TEXTMAP=$(srcdir)/textmap
 AFMNAME=$(srcdir)/afmname
+
+RM=rm -f
 
 all: $(FONTS)
 
@@ -217,20 +218,20 @@ freeeuro.afm freeeuro.pfa: $(srcdir)/freeeuro.sfd
 	fontforge -script $(srcdir)/sfdtopfa.pe $(srcdir)/freeeuro.sfd
 
 symbol.afm: $(srcdir)/symbol.sed
-	-rm -f $@
+	$(RM) $@
 	sed -f $(srcdir)/symbol.sed `$(AFMNAME) $(afmdir)/Symbol.afm` >$@
 
 symbolsl.afm: $(srcdir)/symbolsl.awk $(srcdir)/../symbolsl.ps
-	rm -f $@ Fontmap
+	$(RM) $@ Fontmap
 	echo "/Symbol-Slanted ($(srcdir)/../symbolsl.ps) ;"  > Fontmap
 	echo "/Symbol         ($(symbolfont)) ;" >> Fontmap
 	$(PRINTAFM) Symbol-Slanted > tmp.afm
 	awk -f $(srcdir)/symbolsl.awk -v SYMAFM=`$(AFMNAME) \
 	  $(afmdir)/Symbol.afm` tmp.afm >$@
-	rm -f Fontmap tmp.afm
+	$(RM) Fontmap tmp.afm
 
 zapfdr.afm: $(srcdir)/zapfdr.sed
-	rm -f $@
+	$(RM) $@
 	sed -f $(srcdir)/zapfdr.sed \
 	  `$(AFMNAME) $(afmdir)/ZapfDingbats.afm` >$@
 
@@ -248,13 +249,13 @@ symbolmap: $(TEXTMAP) $(srcdir)/symbolchars
 	cat $(TEXTMAP) $(srcdir)/symbolchars >>$@
 
 clean:
-	rm -f symbolmap symbol.afm
+	$(RM) symbolmap symbol.afm
 
 realclean: clean
-	rm -f $(FONTS)
+	$(RM) $(FONTS)
 
 extraclean: realclean
-	rm -f core *~ "#*"
+	$(RM) core *~ "#*"
 
 .PHONY: all clean realclean extraclean
 

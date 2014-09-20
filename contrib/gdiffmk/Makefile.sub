@@ -24,6 +24,7 @@
 
 MAN1=gdiffmk.n
 MOSTLYCLEANADD=gdiffmk tests/runtests
+RM=rm -f
 
 all: gdiffmk
 
@@ -35,11 +36,11 @@ gdiffmk: gdiffmk.sh
 
 install_data: gdiffmk
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/gdiffmk
+	$(RM) $(DESTDIR)$(bindir)/gdiffmk
 	$(INSTALL_SCRIPT) gdiffmk $(DESTDIR)$(bindir)/gdiffmk
 
 uninstall_sub:
-	rm -f $(DESTDIR)$(bindir)/gdiffmk
+	$(RM) $(DESTDIR)$(bindir)/gdiffmk
 
 ########################################################################
 # Emacs settings

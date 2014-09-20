@@ -37,6 +37,8 @@ GROFF_OPTS_OUTPUT=\
 
 MOSTLYCLEANADD=groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
+RM=rm -f
+
 all: $(srcdir)/groff.cpp groff_opts.tmp $(GROFF_OPTS_OUTPUT)
 
 groff_opts.tmp: $(srcdir)/groff.cpp
@@ -50,7 +52,7 @@ groff_opts_no_arg.txt: groff_opts.tmp
 	@cat $@
 
 groff_opts_with_arg.txt: groff_opts_no_arg.txt
-	@rm -f $@
+	@(RM) $@
 	@sed "s/[`cat $?`:]//g" groff_opts.tmp > $@
 	@echo -n 'with arg: '
 	@cat $@
@@ -59,13 +61,13 @@ install_data: $(GROFF_OPTS_OUTPUT)
 	-test -d $(DESTDIR)$(libprogramdir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(libprogramdir)
 	for f in  $(GROFF_OPTS_OUTPUT); do \
-	  rm -f $(DESTDIR)$(libprogramdir)/$$f; \
+	  $(RM) $(DESTDIR)$(libprogramdir)/$$f; \
 	  $(INSTALL_SCRIPT) $$f $(DESTDIR)$(libprogramdir); \
 	done
 
 uninstall_sub:
 	-for f in $(GROFF_OPTS_OUTPUT); do \
-	  rm -f $(DESTDIR)$(libprogramdir)/$$f;\
+	  $(RM) $(DESTDIR)$(libprogramdir)/$$f;\
 	done
 # XXX This will be removed by `uninstall_dirs' in `$(top_srcdir)/Makefile.in'
 # XXX (And only from there it is successful on an empty directory)

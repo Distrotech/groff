@@ -34,9 +34,11 @@ RES=240
 CPI=10
 LPI=6
 
+RM=rm -f
+
 $(FONTS): R.proto
 	@echo Making $@
-	@rm -f $@
+	@$(RM) $@
 	@charwidth=`expr $(RES) / $(CPI)` ; \
 	 sed -e "s/^name [A-Z]*$$/name $@/" \
 	     -e \

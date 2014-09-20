@@ -108,6 +108,8 @@ MOSTLYCLEANADD=\
   examples/stamp \
   om.tmac-s
 
+RM=rm -f
+
 #.SUFFIXES: .mom .ps
 #.mom.ps:
 #	$(GROFF) -Tps -mom $< >$@
@@ -138,11 +140,11 @@ install_data: install_always \
 install_always: stamp-strip $(NORMALFILES)
 	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
 	for f in $(NORMALFILES); do \
-	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
+	  $(RM) $(DESTDIR)$(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(tmacdir)/$$f; \
 	done
 	for f in $(STRIPFILES); do \
-	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
+	  $(RM) $(DESTDIR)$(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $$f-s $(DESTDIR)$(tmacdir)/$$f; \
 	done
 
@@ -153,7 +155,7 @@ install_htmldoc: install_always $(HTMLDOCFILES)
 	-test -d $(DESTDIR)$(htmldocdir)/mom \
 	  || $(mkinstalldirs) $(DESTDIR)$(htmldocdir)/mom
 	for f in $(HTMLDOCFILES_); do \
-	  rm -f $(DESTDIR)$(htmldocdir)/mom/$$f; \
+	  $(RM) $(DESTDIR)$(htmldocdir)/mom/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/momdoc/$$f \
 	    $(DESTDIR)$(htmldocdir)/mom/$$f; \
 	done
@@ -164,26 +166,26 @@ install_examples_always: $(EXAMPLEFILES)
 	-test -d $(DESTDIR)$(exampledir)/mom \
 	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)/mom
 	for f in $(EXAMPLEFILES_); do \
-	  rm -f $(DESTDIR)$(exampledir)/mom/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/mom/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/examples/$$f \
 	    $(DESTDIR)$(exampledir)/mom/$$f; \
 	done
 
 install_pdfexamples: install_examples_always $(PROCESSEDEXAMPLEFILES)
 	for f in $(PROCESSEDEXAMPLEFILES_); do \
-	  rm -f $(DESTDIR)$(exampledir)/mom/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/mom/$$f; \
 	  $(INSTALL_DATA) examples/$$f $(DESTDIR)$(exampledir)/mom/$$f; \
 	done
 	-test -d $(DESTDIR)$(pdfdocdir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(pdfdocdir)
 	for f in $(PDFDOCFILE); do \
-	  rm -f $(DESTDIR)$(pdfdocdir)/$$f; \
+	  $(RM) $(DESTDIR)$(pdfdocdir)/$$f; \
 	  ln -s $(exampledir)/mom/$$f $(DESTDIR)$(pdfdocdir)/$$f; \
 	done
 
 stamp-strip: $(STRIPFILES)
 	for f in $(STRIPFILES); do \
-	  rm -f $$f-s; \
+	  $(RM) $$f-s; \
 	  LANG=C LC_ALL=C \
 	    sed -f $(top_srcdir)/tmac/strip.sed $(srcdir)/$$f >$$f-s; \
 	done
@@ -195,7 +197,7 @@ uninstall_sub: uninstall_always \
 
 uninstall_always:
 	-for f in $(NORMALFILES) $(STRIPFILES); do \
-	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
+	  $(RM) $(DESTDIR)$(tmacdir)/$$f; \
 	done
 
 uninstall_pdfdoc: uninstall_always
@@ -203,22 +205,24 @@ uninstall_pdfdoc: uninstall_always
 
 uninstall_htmldoc: uninstall_always
 	-for f in $(HTMLDOCFILES_); do \
-	  rm -f $(DESTDIR)$(htmldocdir)/mom/$$f; \
+	  $(RM) $(DESTDIR)$(htmldocdir)/mom/$$f; \
 	done
-	-rmdir $(DESTDIR)$(htmldocdir)/mom
+	-test -d $(DESTDIR)$(htmldocdir)/mom && \
+	  rmdir $(DESTDIR)$(htmldocdir)/mom
 
 uninstall_examples: uninstall_examples_always $(make_uninstall_pdfexamples)
-	-rmdir $(DESTDIR)$(exampledir)/mom
+	-test -d $(DESTDIR)$(exampledir)/mom && \
+	  rmdir $(DESTDIR)$(exampledir)/mom
 
 uninstall_examples_always:
 	-for f in $(EXAMPLEFILES_); do \
-	  rm -f $(DESTDIR)$(exampledir)/mom/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/mom/$$f; \
 	done
 
 uninstall_pdfexamples: uninstall_examples_always
 	-for f in $(PDFDOCFILE); do \
-	  rm -f $(DESTDIR)$(pdfdocdir)/$$f; \
+	  $(RM) $(DESTDIR)$(pdfdocdir)/$$f; \
 	done
 	-for f in $(PROCESSEDEXAMPLEFILES_); do \
-	  rm -f $(DESTDIR)$(exampledir)/mom/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/mom/$$f; \
 	done

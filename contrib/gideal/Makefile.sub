@@ -85,15 +85,18 @@ install_data: gideal
 .PHONY: uninstall_sub
 uninstall_sub: $
 	$(RM) $(DESTDIR)$(bindir)/gideal
-	-rmdir $(DESTDIR)$(bindir)
+	-test -d $(DESTDIR)$(bindir) $$ \
+	  rmdir $(DESTDIR)$(bindir)
 	for f in $(LIBFILES); do \
 	  $(RM) $(DESTDIR)$(datasubdir)/ideal/$$f; \
 	done
-	-rmdir $(DESTDIR)$(datasubdir)/ideal
+	-test -d $(DESTDIR)$(datasubdir)/ideal && \
+	  rmdir $(DESTDIR)$(datasubdir)/ideal
 	for f in $(FILES); do \
 	  $(RM) $(DESTDIR)$(exampledir)/ideal/$$f; \
 	done
-	-rmdir $(DESTDIR)$(exampledir)/ideal
+	-test -d $(DESTDIR)$(exampledir)/ideal && \
+	  rmdir $(DESTDIR)$(exampledir)/ideal
 
 
 ########################################################################

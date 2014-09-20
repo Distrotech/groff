@@ -2,11 +2,8 @@
 #
 # File position: <groff-source>/font/devpdf/Makefile.sub
 #
-# Copyright (C) 2011, 2013-2014 Free Software Foundation, Inc.
-#      Free Software Foundation, Inc.
+# Copyright (C) 2011-2014 Free Software Foundation, Inc.
 #      Written by Deri James <deri@chuzzlewit.demon.co.uk>
-#
-# Last update: 2 Sep 2014
 #
 # This file is part of groff.
 #
@@ -50,17 +47,19 @@ DISTFILES=\
   $(DEVFILES) \
   $(DEVSCRIPTS)
 
+RM=rm -f
+
 all: DESC
 
 DESC: DESC.in
-	rm -f DESC
+	$(RM) DESC
 	cat $(srcdir)/DESC.in >$(top_builddir)/font/devpdf/DESC
 	if test "$(PAGE)" = A4; then \
 	  echo "papersize a4" >>$(top_builddir)/font/devpdf/DESC; \
 	else \
 	  echo "papersize letter" >>$(top_builddir)/font/devpdf/DESC; \
 	fi
-	rm -f Foundry
+	$(RM) Foundry
 	cat $(srcdir)/Foundry.in >$(top_builddir)/font/devpdf/Foundry
 	-test -d $(top_builddir)/font/devpdf/enc \
 	  || $(mkinstalldirs) $(top_builddir)/font/devpdf/enc
@@ -77,7 +76,7 @@ DESC: DESC.in
 	cp -f $(top_srcdir)/font/devps/generate/symbolchars \
 	  $(top_builddir)/font/devpdf/map
 	-test -d util || $(mkinstalldirs) util
-	rm -f util/BuildFoundries
+	$(RM) util/BuildFoundries
 	if test -n "$(PERL)"; then \
 	  sed -f $(SH_DEPS_SED_SCRIPT) \
 	      -e "s|/usr/bin/perl|$(PERL)|" \
@@ -110,7 +109,7 @@ install_data:
 	-test -d $(DESTDIR)$(fontsubdir)/util \
 	  || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/util
 	for f in $(MOSTLYCLEANADD); do \
-	  rm -f $(DESTDIR)$(fontsubdir)/$$f; \
+	  $(RM) $(DESTDIR)$(fontsubdir)/$$f; \
 	  if test -f $$f; then \
 	    $(INSTALL_DATA) $$f $(DESTDIR)$(fontsubdir)/$$f; \
 	  else \
@@ -120,7 +119,7 @@ install_data:
 
 uninstall_sub:
 	-for f in $(MOSTLYCLEANADD); do \
-	  rm -f $(DESTDIR)$(fontsubdir)/$$f; \
+	  $(RM) $(DESTDIR)$(fontsubdir)/$$f; \
 	done
 	-d=$(DESTDIR)$(fontsubdir)/enc; \
 	  if test -d $$d; then rmdir $$d; fi

@@ -38,10 +38,12 @@ GLILYPOND_LIB=\
 
 GLILYPOND_LIB_=`echo $(GLILYPOND_LIB) | sed 's|$(srcdir)/||g'`
 
+RM=rm -f
+
 # create perl executable `glilypond', being stored into `bindir'
 
 glilypond: $(srcdir)/glilypond.pl
-	rm -f $@
+	$(RM) $@
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
 	    -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
@@ -53,21 +55,22 @@ glilypond: $(srcdir)/glilypond.pl
 install_data: glilypond $(GLILYPOND_LIB)
 	-test -d $(DESTDIR)$(bindir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/glilypond
+	$(RM) $(DESTDIR)$(bindir)/glilypond
 	$(INSTALL_SCRIPT) glilypond $(DESTDIR)$(bindir)/glilypond
 	-test -d $(DESTDIR)$(glilypond_dir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(glilypond_dir)
 	for f in $(GLILYPOND_LIB_); do \
-	  rm -f $(DESTDIR)$(glilypond_dir)/$$f; \
+	  $(RM) $(DESTDIR)$(glilypond_dir)/$$f; \
 	  $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(glilypond_dir)/$$f; \
 	done
 
 uninstall_sub:
-	rm -f $(DESTDIR)$(bindir)/glilypond
+	$(RM) $(DESTDIR)$(bindir)/glilypond
 	-for f in $(GLILYPOND_LIB_); do \
-	  rm -f $(DESTDIR)$(glilypond_dir)/$$f; \
+	  $(RM) $(DESTDIR)$(glilypond_dir)/$$f; \
 	done
-	-rmdir $(DESTDIR)$(glilypond_dir)
+	-test -d $(DESTDIR)$(glilypond_dir) && \
+	  rmdir $(DESTDIR)$(glilypond_dir)
 
 ########################################################################
 # Emacs settings

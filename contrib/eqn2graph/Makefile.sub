@@ -20,6 +20,7 @@
 #
 MAN1=eqn2graph.n
 MOSTLYCLEANADD=eqn2graph
+RM=rm -f
 
 all: eqn2graph
 
@@ -31,11 +32,11 @@ eqn2graph: eqn2graph.sh
 
 install_data: eqn2graph
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/eqn2graph
+	$(RM) $(DESTDIR)$(bindir)/eqn2graph
 	$(INSTALL_SCRIPT) eqn2graph $(DESTDIR)$(bindir)/eqn2graph
 
 uninstall_sub:
-	rm -f $(DESTDIR)$(bindir)/eqn2graph
+	$(RM) $(DESTDIR)$(bindir)/eqn2graph
 
 ########################################################################
 # Emacs settings

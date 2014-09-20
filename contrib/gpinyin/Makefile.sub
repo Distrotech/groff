@@ -57,7 +57,8 @@ install_data: gpinyin subs.pl
 uninstall_sub:
 	$(RM) $(DESTDIR)$(bindir)/gpinyin; \
         $(RM) $(DESTDIR)$(gpinyin_dir)/subs.pl; \
-	rmdir $(DESTDIR)$(gpinyin_dir)
+	-test -d $(DESTDIR)$(gpinyin_dir) && \
+	  rmdir $(DESTDIR)$(gpinyin_dir)
 
 
 ########################################################################

@@ -2,10 +2,7 @@
 
 # File position: <groff-source>/font/devps/Makefile.sub
 
-# Copyright (C) 2014
-#   Free Software Foundation, Inc.
-
-# Last update: 2 Sep 2014
+# Copyright (C) 2014 Free Software Foundation, Inc.
 
 # This file is part of `groffer' which is part of `groff'.
 
@@ -62,6 +59,8 @@ DEVSCRIPTS=$(DEVGENSCRIPTS)
 
 MOSTLYCLEANADD=DESC $(PSFILES)
 
+RM=rm -f
+
 DESC: DESC.in
 	cat $(srcdir)/DESC.in >DESC
 	echo broken $(BROKEN_SPOOLER_FLAGS) >>DESC
@@ -81,7 +80,7 @@ zapfdr.pfa: zapfdr.ps
 symbolsl.pfa: symbolsl.ps
 
 $(PSFILES):
-	rm -f $@
+	$(RM) $@
 	sed -f $(srcdir)/psstrip.sed $? >$@
 
 ########################################################################

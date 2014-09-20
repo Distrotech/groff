@@ -108,6 +108,8 @@ MOSTLYCLEANNOTSRCDIRADD=\
   groff-*.info \
   gnu.eps
 
+RM=rm -f
+
 .SUFFIXES: .me .ms .ps .html
 
 # For simplicity, we always call preconv, grn, and eqn.
@@ -178,11 +180,11 @@ install_always:
 
 install_otherdoc: install_always $(DOCFILES) $(PROCESSEDDOCFILES)
 	for f in $(DOCFILES); do \
-	  rm -f $(DESTDIR)$(docdir)/$$f; \
+	  $(RM) $(DESTDIR)$(docdir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(docdir)/$$f; \
 	done
 	for f in $(PROCESSEDDOCFILES); do \
-	  rm -f $(DESTDIR)$(docdir)/$$f; \
+	  $(RM) $(DESTDIR)$(docdir)/$$f; \
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(docdir)/$$f; \
 	done
 
@@ -193,7 +195,7 @@ install_infodoc: install_always groff.info
 	d=.; test -f "groff.info" || d=$(srcdir); \
 	  for p in $$d/groff.info `ls $$d/groff.info*`; do \
 	    f=`basename $$p`; \
-	    rm -f $(DESTDIR)$(infodir)/$$f; \
+	    $(RM) $(DESTDIR)$(infodir)/$$f; \
 	    $(INSTALL_DATA) $$p $(DESTDIR)$(infodir)/$$f; \
 	  done
 	$(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) \
@@ -203,12 +205,12 @@ install_htmldoc: install_always $(HTMLDOCFILES)
 	-test -d $(DESTDIR)$(htmldocdir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(htmldocdir)
 	for f in `ls $(HTMLDOCFILESALL)`; do \
-	  rm -f $(DESTDIR)$(htmldocdir)/$$f; \
+	  $(RM) $(DESTDIR)$(htmldocdir)/$$f; \
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(htmldocdir)/$$f; \
 	done
 	-test -d $(DESTDIR)$(htmldocimagedir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(htmldocimagedir)
-	rm -f $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
+	$(RM) $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
 	$(INSTALL_DATA) $(imagedir)/$(HTMLDOCIMAGEFILES) \
 	  $(DESTDIR)$(htmldocimagedir)
 
@@ -220,25 +222,25 @@ install_examples_always: gnu.eps $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
 	-test -d $(DESTDIR)$(exampledir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)
 	d=.; test -f "gnu.eps" || d=$(srcdir); \
-	  rm -f $(DESTDIR)$(exampledir)/gnu.eps; \
+	  $(RM) $(DESTDIR)$(exampledir)/gnu.eps; \
 	  $(INSTALL_DATA) $$d/gnu.eps $(DESTDIR)$(exampledir)/gnu.eps
 	for f in $(EXAMPLEFILES); do \
-	  rm -f $(DESTDIR)$(exampledir)/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(exampledir)/$$f; \
 	done
 	for f in $(PROCESSEDEXAMPLEFILES); do \
-	  rm -f $(DESTDIR)$(exampledir)/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/$$f; \
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(exampledir)/$$f; \
 	done
 
 install_htmlexamples: install_examples_always $(HTMLEXAMPLEFILES)
 	for f in `ls $(HTMLEXAMPLEFILESALL)`; do \
-	  rm -f $(DESTDIR)$(exampledir)/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/$$f; \
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(exampledir)/$$f; \
 	done
 	-test -d $(DESTDIR)$(exampleimagedir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(exampleimagedir)
-	rm -f $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
+	$(RM) $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
 	$(INSTALL_DATA) $(imagedir)/$(HTMLEXAMPLEIMAGEFILES) \
 	  $(DESTDIR)$(exampleimagedir)
 
@@ -248,39 +250,42 @@ uninstall_sub: uninstall_always \
 
 uninstall_always:
 	-for f in $(DOCFILES) $(PROCESSEDDOCFILES); do \
-	  rm -f $(DESTDIR)$(docdir)/$$f; \
+	  $(RM) $(DESTDIR)$(docdir)/$$f; \
 	done
 
 uninstall_infodoc: uninstall_always
 	-$(INSTALL_INFO) --remove --info-dir=$(DESTDIR)$(infodir) \
 	  $(DESTDIR)$(infodir)/groff.info
 	-for f in groff `ls groff.info*`; do \
-	  rm -f $(DESTDIR)$(infodir)/$$f; \
+	  $(RM) $(DESTDIR)$(infodir)/$$f; \
 	done
 
 uninstall_htmldoc: uninstall_always
 	-for f in `ls $(HTMLDOCFILESALL)`; do \
-	  rm -f $(DESTDIR)$(htmldocdir)/$$f; \
+	  $(RM) $(DESTDIR)$(htmldocdir)/$$f; \
 	done
-	rm -f $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
-	-rmdir $(DESTDIR)$(htmldocimagedir)
+	$(RM) $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
+	-test -d $(DESTDIR)$(htmldocimagedir) && \
+	  rmdir $(DESTDIR)$(htmldocimagedir)
 
 uninstall_examples: uninstall_always uninstall_examples_always \
 		    $(make_uninstall_htmlexamples)
-	-rmdir $(DESTDIR)$(exampledir)
+	-test -d $(DESTDIR)$(exampledir) && \
+	  rmdir $(DESTDIR)$(exampledir)
 
 uninstall_examples_always:
 	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES); do \
-	  rm -f $(DESTDIR)$(exampledir)/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/$$f; \
 	done
-	rm -f $(DESTDIR)$(exampledir)/gnu.eps
+	$(RM) $(DESTDIR)$(exampledir)/gnu.eps
 
 uninstall_htmlexamples: uninstall_examples_always
 	-for f in `ls $(HTMLEXAMPLEFILESALL)`; do \
-	  rm -f $(DESTDIR)$(exampledir)/$$f; \
+	  $(RM) $(DESTDIR)$(exampledir)/$$f; \
 	done
-	rm -f $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
-	-rmdir $(DESTDIR)$(exampleimagedir)
+	$(RM) $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
+	-test -d $(DESTDIR)$(exampleimagedir) && \
+	  rmdir $(DESTDIR)$(exampleimagedir)
 
 ########################################################################
 # Emacs settings

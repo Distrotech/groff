@@ -56,6 +56,8 @@ PDFROFF=\
   GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
   ./pdfroff --keep-temporary-files $(FFLAG) $(MFLAG) $(PFLAG)
 
+RM=rm -f
+
 .SUFFIXES: .ms .pdf
 .ms.pdf:
 	$(PDFROFF) -mspdf --stylesheet=$(srcdir)/cover.ms $< >$@
@@ -90,12 +92,12 @@ install_data: install_always $(make_install_pdfdoc)
 install_always:
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	for f in $(CMDFILES); do \
-	  rm -f $(DESTDIR)$(bindir)/$$f; \
+	  $(RM) $(DESTDIR)$(bindir)/$$f; \
 	  $(INSTALL_SCRIPT) $$f $(DESTDIR)$(bindir)/$$f; \
 	done
 	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
 	for f in $(TMACFILES); do \
-	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
+	  $(RM) $(DESTDIR)$(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(tmacdir)/$$f; \
 	done
 
@@ -103,18 +105,18 @@ install_pdfdoc: install_always
 	-test -d $(DESTDIR)$(pdfdocdir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(pdfdocdir)
 	for f in $(PDFDOCFILES); do \
-	  rm -f $(DESTDIR)$(pdfdocdir)/$$f; \
+	  $(RM) $(DESTDIR)$(pdfdocdir)/$$f; \
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(pdfdocdir)/$$f; \
 	done
 
 uninstall_sub: uninstall_always $(make_uninstall_pdfdoc)
 
 uninstall_always:
-	-for f in $(CMDFILES); do rm -f $(DESTDIR)$(bindir)/$$f; done
-	-for f in $(TMACFILES); do rm -f $(DESTDIR)$(tmacdir)/$$f; done
+	-for f in $(CMDFILES); do $(RM) $(DESTDIR)$(bindir)/$$f; done
+	-for f in $(TMACFILES); do $(RM) $(DESTDIR)$(tmacdir)/$$f; done
 
 uninstall_pdfdoc: uninstall_always
-	-for f in $(PDFDOCFILES); do rm -f $(DESTDIR)$(pdfdocdir)/$$f; done
+	-for f in $(PDFDOCFILES); do $(RM) $(DESTDIR)$(pdfdocdir)/$$f; done
 
 # Emacs settings
 ########################################################################

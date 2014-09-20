@@ -19,6 +19,7 @@
 #
 MAN1=grap2graph.n
 MOSTLYCLEANADD=grap2graph
+RM=rm -f
 
 all: grap2graph
 
@@ -30,11 +31,11 @@ grap2graph: grap2graph.sh
 
 install_data: grap2graph
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	rm -f $(DESTDIR)$(bindir)/grap2graph
+	$(RM) $(DESTDIR)$(bindir)/grap2graph
 	$(INSTALL_SCRIPT) grap2graph $(DESTDIR)$(bindir)/grap2graph
 
 uninstall_sub:
-	rm -f $(DESTDIR)$(bindir)/grap2graph
+	$(RM) $(DESTDIR)$(bindir)/grap2graph
 
 ########################################################################
 # Emacs settings

@@ -61,10 +61,11 @@ HDRS=\
   $(srcdir)/troff.h
 GENSRCS=majorminor.cpp
 NAMEPREFIX=$(g)
+RM=rm -f
 
 majorminor.cpp: $(top_srcdir)/VERSION $(top_srcdir)/REVISION
 	@echo Making $@
-	@rm -f $@
+	@$(RM) $@
 	@echo const char \*major_version = \
 	  \"`sed -e 's/^\([^.]*\)\..*$$/\1/' $(top_srcdir)/VERSION`\"\; >$@
 	@echo const char \*minor_version = \
