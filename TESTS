@@ -26,9 +26,80 @@ Current status
 Tests
 -----
 
-1. Generation of build system files
+0. Sum up of a full test pass
+-----------------------------
 
-./bootstrap
+0.1. Build
+
+  ./bootstrap
+  mkdir build
+  cd build
+  ../configure
+  make -j
+
+0.2 Install
+
+  mkdir -p ~/tmp/automake
+  make install DESTDIR=~/tmp/automake
+
+-> Comparison with the tree installed by the the reference version
+
+  make uninstall DESTDIR=~/tmp/automake
+
+-> Check what is left in the installation tree
+
+  make uninstall DESTDIR=~/tmp/automake
+
+-> Check that this same command did not fail
+
+0.3 Distcheck
+
+  mkdir -p ~/tmp/distcheck
+  make distcheck DESTDIR=~/tmp/distcheck
+
+-> Will attempt to untar the dist, make an out-of-source build, clean
+   and check that nothing is level, install, uninstall and check that
+   nothing is left in the install tree. This should not fail.
+
+0.4 Dist
+
+   make dist
+
+-> Comparison of the generated tarball with the git tree
+-> Manually build an install from the tarball and compare the
+   installation tree with the reference version's installation tree.
+
+Note that discheck checks that install does not fail, uninstall does
+not leave any file, but cannot check if a generated file that should
+not be distributed was distributed, or that files are missing in the
+installation tree.
+
+0.5 Check
+   
+  make check
+
+-> All tests should pass
+
+0.6 Clean
+
+   make mostlyclean
+
+-> Check what is left in the build tree.
+
+   make clean
+
+-> Check what is left in the build tree. This is also automatically
+   checked by 'distcheck'.
+
+   make distclean
+
+-> Check what is left in the build tree
+
+
+1. Generation of build system files
+-----------------------------------
+
+  ./bootstrap
 
 Generated the following files and directories:
   INSTALL
@@ -42,6 +113,7 @@ Generated the following files and directories:
   src/include/config.hin
 
 2. Tests of various targets
+---------------------------
 
 Tests done in 2 configurations:
 
@@ -382,15 +454,11 @@ Differences with former build system:
     -- picXX.html files
     -- info file from groff.texinfo
 
-Diff with previous build system:
+Diff with previous build system after final (full tree comparison):
   - devcp1047 fonts are installed $(DESTDIR)/usr/local/groff/1.22.3/font
-
-TODO:
-
-  - When contrib and doc will be completed, full installation tree
-    comparison with the tree installed by the old build system.  Note:
-    to ease tree comparison, it is usefull to touch all .man files in
-    order to get rid of the date difference.
+  - devpdf fonts (not identical at each build)
+  - in hdbtbl, parts of some .ps are not identical at each build.
+  - timetamp in man files or html files
 
 2.7 make uninstall
 
@@ -433,13 +501,12 @@ TODO:
   groff-1.22.3.tar.gz is generated.
 
   - Files/directories that are not distributed on purpose:
-    .gitignore
+    all .gitignore files
     .gitmodules
     bootstrap
     bootstrap.conf
     gnulib/
     README.git
-    TESTS
 
   - Files/directories not present in the git tree that are
     distributed:
@@ -482,6 +549,7 @@ in the install tree).
   - All phases now succeed
 
 3. Additional tests
+-------------------
 
 3.1 Build without X support
 
@@ -507,9 +575,6 @@ in the install tree).
        $(DESTDIR)/usr/local/share/doc/groff-1.22.3/
     -- The only texinfo documentation installed by default is:
        $(DESTDIR)/usr/local/share/info/groff.info
-
--> TODO: Check if the texinfo doc in other formats, if built, should
-   be installed.
 
   - Passing to configure option: --with-doc=no
 
@@ -563,20 +628,27 @@ in the install tree).
 
 3.4 Build in presence of system tmac files
  
-  - Create 3 dummy files in /usr/lib/tmac: tmac.an, tmac.m, tmac.s, that all contain:
+  - Create 3 dummy files in /usr/lib/tmac: tmac.an, tmac.m, tmac.s,
+    that all contain:
 
 .if
   
   - Build and install as usual:
 
-    -- $(DESTDIR)/usr/local/lib/groff/site-tmac/ contains 3 files: an.tmac, m.tmac, s.tmac
+    -- $(DESTDIR)/usr/local/lib/groff/site-tmac/ contains 3 files:
+       an.tmac, m.tmac, s.tmac.
     -- In $(DESTDIR)/usr/local/share/groff/1.22.3/tmac 6 files have a
        'g' prefix: gan.tmac, gm.tmac, gmm.tmac, gmmse.tmac, gmse.tmac,
        gs.tmac.
 
-Notes
------
+3.5 Parallel build
+
+   - Checked that usage of option -j when invoking `make' works correctly.
+
+4. Notes
+--------
 
   - Gnulib: some files of src/libs/libgroff could be replaced by their
     gnulib equivalent
+
   - Gnulib: git-version-gen could be used

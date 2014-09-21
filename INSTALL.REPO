@@ -5,31 +5,65 @@
     the copyright notice and this notice are preserved.
 
 This file contains information that supplements the generic
-installation instructions in file `INSTALL.gen'.  It is meant for
+installation instructions in file `INSTALL'.  It is meant for
 people building directly from the development repository, rather than
 a release or snapshot tarball.
 
 If you want to start compiling the `groff' system with an existing
-script `configure' you won't need the information in this file.
+script `configure' you won't need the information in this file. You
+need them only if you want to build groff from the git repository.
 
-But if you want to use the `GNU autotools' (`aclocal', `autoreconf')
-for creating the following and some more files:
+1. Initial build
+----------------
 
-    aclocal.m4
-    configure
-    Makefile
+First invoke the bootstrap script:
 
+    $ ./bootstrap
+
+This will:
+  
+  - clone the gnulib repository as a git submodule in 'gnulib', add
+    the needed gnulib sources files in 'lib', add the needed gnulib m4
+    macros in 'gnulib_m4'
+
+  - Invoke autoreconf that will call all the `GNU autotools'
+    (`aclocal', `autoconf', `automake') in the right order for
+    creating the following files:
+
+    -- INSTALL (a symlink to gnulib's INSTALL file)
+    -- Makefile.in
+    -- aclocal.m4
+    -- autom4te.cache/
+    -- build-aux/ (that contains all the helper scripts) 
+    -- configure
+    -- src/include/config.hin
+
+Note that aclocal.m4 is generated and the groff m4 macros are included
+via the acinclude.m4 file.
+  
+At this point you can invoke the `configure' script (that generates
+the `config.status' script; it is the `config.status' script generates
+the Makefile) and call 'make' to build the groff project. You can do
+it in the source tree:
+
+<<<<<<< HEAD
 To update file `aclocal.m4', run the shell command
+=======
+    $ ./configure
+    $ make
+>>>>>>> Fixes after final complete tests:
 
-    $ aclocal -I m4
+You can also build groff in an out of source build tree, which is cleaner:
 
-To recreate the files `configure' and `Makefile', use the shell
-command
+    $ mkdir build
+    $ cd build
+    $ ../configure
+    $ make
 
-    $ autoreconf -I m4
+Note that parallel build is also supported and make can be invoked
+with the -j option, which will greatly speed up the build.
 
-The option `-I m4' is necessary.  It refers to the subdirectory `m4'
-that has files with m4 macro definitions needed by the `autotools'.
+Notes:
 
 If you use an old `autoreconf' version < 2.69, there might be an error
 warning like:
@@ -44,18 +78,37 @@ warning like:
 Just ignore this.  It doesn't occur in the actual versions of
 `autoreconf'.
 
-You may even use the shell command
 
+<<<<<<< HEAD
     $ autoconf -I m4
+=======
+>>>>>>> Fixes after final complete tests:
 
-instead of `autoreconf', but that will ignore some features.  So
-`autoreconf' is better.
+2. Modification of autotools files
+----------------------------------
 
-`automake' is not used currently, however, we plan to convert the
-build system accordingly.  If you have experience in creating
-`Makefile.am' files we would be glad if you could help us in the
-conversion process.  Please contact the groff mailing list.
+Previously, when groff used `autoconf' only and not `automake', you
+had to invoke manually the autotools, depending on what you
+modified. For example, to change the file `aclocal.m4', you had to run
+the shell command 'aclocal -I m4', to recreate the files `configure'
+and `Makefile', you had to use the command 'autoreconf -I m4'.
 
+Now, as groff uses `automake', you don't need to run `autoreconf'. If
+you make some changes in Makefile.am or configure.ac, all the files
+that need to be updated will be regenerated when you execute `make'.
+
+
+
+3. Quick start on the usage of `automake' in groff
+--------------------------------------------------
+
+A little document explaining the basics of automake and its usage in
+groff is available in doc/automake.mom. It is currently not
+automatically generated, to build it:
+
+pdfmom automake.mom > automake.pdf
+
+<<<<<<< HEAD
 After the use of the `GNU autotools', the usual compilation should
 work.  If the run of `configure' produces error reports you have
 produced errors in the `autotools' modification.
@@ -64,3 +117,5 @@ produced errors in the `autotools' modification.
 Local Variables:
 mode: text
 End:
+=======
+>>>>>>> Fixes after final complete tests:
