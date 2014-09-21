@@ -47,6 +47,9 @@ hdtbltmac_DATA = $(HDTBLSTRIPFILES)
 HDTBLGENFILES = \
   contrib/hdtbl/examples/fonts_n.roff \
   contrib/hdtbl/examples/fonts_x.roff
+EXTRA_DIST += \
+  contrib/hdtbl/examples/fonts_n.in \
+  contrib/hdtbl/examples/fonts_x.in
 
 HDTBLEXAMPLEFILES = \
   contrib/hdtbl/examples/common.roff \
@@ -77,7 +80,10 @@ hdtblexampledir = $(exampledir)/hdtbl
 
 if BUILD_EXAMPLES
 dist_hdtblexample_DATA = $(HDTBLEXAMPLEFILES)
-nodist_hdtblexample_DATA = $(HDTBLGENFILES) $(HDTBLPROCESSEDEXAMPLEFILES) gnu.eps
+nodist_hdtblexample_DATA = \
+  $(HDTBLGENFILES) \
+  $(HDTBLPROCESSEDEXAMPLEFILES) \
+  gnu.eps
 else
 EXTRA_DIST += $(HDTBLEXAMPLEFILES) 
 endif
@@ -91,8 +97,7 @@ EXTRA_DIST += \
   contrib/hdtbl/TODO \
   contrib/hdtbl/groff_hdtbl.man \
   contrib/hdtbl/hdtbl.tmac-u \
-  contrib/hdtbl/hdmisc.tmac-u \
-  contrib/hdtbl/examples
+  contrib/hdtbl/hdmisc.tmac-u
 
 # Rule to generate ps and roff files
 SUFFIXES += .roff .in .ps

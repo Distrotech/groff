@@ -21,7 +21,7 @@
 doc_srcdir = $(abs_top_srcdir)/doc
 doc_builddir = $(abs_top_builddir)/doc
 
-DOC_SED = sed -e "s;@VERSION@;$(VERSION);"
+DOC_SED = sed -e "s;[@]VERSION[@];$(VERSION);"
 
 DOC_GROFF_ONLY=\
   GROFF_COMMAND_PREFIX= \
@@ -103,6 +103,7 @@ exampleimagedir = $(exampledir)/img
 MOSTLYCLEANFILES += doc/examples.stamp
 
 EXTRA_DIST += \
+  doc/automake.mom \
   doc/gnu.xpm \
   doc/fixinfo.sh \
   doc/txi-en.tex
@@ -130,6 +131,7 @@ SUFFIXES += .me .ms .ps .html .txt .texinfo .dvi .pdf .xhtml
 
 $(PROCESSEDEXAMPLEFILES): $(bin_PROGRAMS) $(prefixexecbin_PROGRAMS) gnu.eps
 $(PROCESSEDEXAMPLEFILES): $(dist_devpsfont_DATA) $(nodist_devpsfont_DATA) $(hdtbltmac_DATA)
+$(PROCESSEDEXAMPLEFILES): $(dist_tmac_DATA) $(nodist_tmac_DATA)
 $(PROCESSEDDOCFILES): $(bin_PROGRAMS) $(prefixexecbin_PROGRAMS) gnu.eps
 
 doc/pic.html: $(bin_PROGRAMS) $(prefixexecbin_PROGRAMS)

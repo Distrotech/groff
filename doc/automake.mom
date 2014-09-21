@@ -1,0 +1,675 @@
+.\" Copyright ©2014 Free Software Foundation
+.\" 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+.\"
+.\" Permission is hereby granted, free of charge, to any person
+.\" obtaining a copy of this software and associated documentation
+.\" files (the "Software"), to deal in the Software without restriction,
+.\" including, without limitation, the rights to use, copy, modify,
+.\" merge, publish, distribute, sublicense, and sell copies of
+.\" the Software, and to permit persons to whom the Software is
+.\" furnished to do so, subject to the following conditions:
+.\" 
+.\" The above copyright notice and this permission notice shall be
+.\" included in all copies, or substantial portions, of the Software;
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND,
+.\" EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+.\" OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+.\" NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+.\" HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY,
+.\" WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING
+.\" FROM, OUT OF, OR IN CONNECTION WITH, THE SOFTWARE, OR THE USE OF,
+.\" OR OTHER DEALINGS IN, THE SOFTWARE.
+.\"
+.\"  Formatted with the mom macros
+.\" .RW (reduce) and .EW (expand) control track kerning
+.\" .WS controls word spacing
+.\"  Hanging punctuation and hyphens are inserted manually
+.\"
+.TITLE "Using Automake in the Groff project"
+.AUTHOR "Bertrand Garrigues"
+.DOCTYPE    DEFAULT
+.PRINTSTYLE TYPESET
+.PAPER      LETTER
+.COPYRIGHT "Free Software Foundation 2014"
+.DOC_COVERTITLE "Using Automake in the Groff project"
+.DOC_COVER DOC_COVERTITLE
+.COVER TITLE AUTHOR DOCTYPE COPYRIGHT
+
+.HEADING_STYLE 1 NUMBER
+.HEADING_STYLE 2 NUMBER
+.HEADING_STYLE 3 NUMBER
+.HEADING_STYLE 4 NUMBER
+
+\# Table of contents
+.TOC_PADDING 2
+.SPACE_TOC_ITEMS
+.AUTO_RELOCATE_TOC
+.TOC_ENTRY_STYLE 2 FONT I
+.TOC_LEAD 14
+
+.QUOTE_INDENT 1m
+.START
+
+.PP
+This is a quick overview of how to use `automake' in the groff project,
+and is intended to help the developers and contributors to find their way
+when they have to make some changes to the sources files or to the data that are installed.
+If you need more details on `automake',
+here are some reading suggestions:
+.LIST
+.ITEM
+the Automake Manual:
+.BR
+.PDF_WWW_LINK http://www.gnu.org/software/automake/manual/automake.html.
+.ITEM
+A book by John Calcote, with good practical examples:
+.BR
+.PDF_WWW_LINK http://fsmsh.com/2753
+.ITEM
+This site, by Diego Petteno, with good practical examples too:
+.BR
+.PDF_WWW_LINK https://autotools.io/index.html
+.LIST OFF
+
+
+.HEADING 1 "Overview, the initial build"
+
+.HEADING 2 "First build"
+
+.PP
+Groff integrates the `gnulib' and uses its `bootstrap' script.
+When compiling from the git repository, you should first invoke this script:
+.QUOTE
+.CODE
+$ ./bootstrap
+.CODE OFF
+.QUOTE OFF
+This will:
+.LIST
+.ITEM
+Clone the gnulib repository as a git submodule in 'gnulib',
+add the needed gnulib sources files in `lib', 
+add the needed gnulib m4 macros in `gnulib_m4'.
+.ITEM
+Invoke autoreconf that will call all the `GNU autotools' (`aclocal', `autoheader', `autoconf', `automake')
+in the right order for creating the following files:
+.LIST DASH
+.ITEM
+INSTALL (a symlink to gnulib's INSTALL file)
+.ITEM
+Makefile.in
+.ITEM
+aclocal.m4
+.ITEM
+autom4te.cache/
+.ITEM
+build-aux/ (that contains all the helper scripts) 
+.ITEM
+configure
+.ITEM
+src/include/config.hin
+.LIST OFF
+.LIST OFF
+
+Note that aclocal.m4 is generated and the groff m4 macros are included via the acinclude.m4 file.
+
+.PP  
+At this point you can invoke the `configure' script and call `make' to build the groff project.
+You can do it in the source tree:
+.QUOTE
+.CODE
+$ ./configure
+$ make
+.CODE OFF
+.QUOTE OFF
+You can also build groff in an out of source build tree,
+which is cleaner:
+.QUOTE
+.CODE
+$ mkdir build
+$ cd build
+$ ../configure
+$ make
+.CODE OFF
+.QUOTE OFF
+Note that parallel build is also supported and make can be invoked with the -j option,
+which will greatly speed up the build.
+
+.HEADING 2 "Automake in the autotools process"
+
+.PP
+Automake's main job is to generate a Makefile.in file
+(this file is maintained manually on projects using only autoconf).
+The main file processed by `automake' is the Makefile.am file,
+which eventually generates a Makefile.
+The (simplified) process is:
+.LIST
+.ITEM
+`aclocal' generates the `aclocal.m4' file from `configure.ac' and the user-defined macros in `acinclude.m4'.
+.ITEM
+`autoheader' generates config.h.in.
+.ITEM
+`autoconf' generates the `configure' script from `aclocal.m4' and `configure.ac'
+.ITEM
+`automake' generates Makefile.in from Makefile.am and the `configure.ac' file.
+It also generates some helper scripts, on the groff project they are located in build-aux.
+.ITEM
+`configure' generates `config.status'
+.ITEM
+`config.status' generates the Makefile and config.h.
+.LIST OFF
+Finally, `autoreconf' is the program that can be used to call these various tools in the correct order.
+
+.PP
+.PP
+Automake defines a set of special variables that are used to generate various build rules in the final Makefile.
+Note however that if Automake's pre-defined rules are not enough,
+you still have the possibility to add handwritten standard `make' rules in a Makefile.am:
+these rules will be copied verbatim in the Makefile.in and then in the final Makefile.
+
+.HEADING 2 "Modification of autotools files"
+
+.PP
+Previously, when groff used `autoconf' only and not `automake',
+you had to invoke manually the autotools,
+depending on what you modified.
+For example, to change the file `aclocal.m4', you had to run the shell command 'aclocal -I m4';
+to recreate the files `configure' and `Makefile',
+you had to use the command 'autoreconf -I m4'.
+
+.PP
+Now, as groff uses `automake', you don't need to run `autoreconf'.
+If you make some changes in Makefile.am or configure.ac,
+all the files that need to be updated will be regenerated when you execute `make'.
+
+.HEADING 1 "Building a program"
+
+.HEADING 2 "A program and its source files"
+
+.PP
+Generally speaking, when using `automake' 
+you will have to write a Makefile.am file and use the variable \*[CODE]bin_PROGRAMS\*[CODE OFF]
+to declare a program that should be built, 
+and then list the sources of this program in a variable
+that starts with the name of your program and ends with \*[CODE]_SOURCES\*[CODE OFF] .
+In the groff project we have only 1 top-level Makefile.am that includes several .am files.
+
+.PP
+Take for example the build of grolbp, in src/devices/grolbp/grolbp.am. 
+The file starts with:
+.QUOTE
+.CODE
+bin_PROGRAMS += grolbp
+.CODE OFF
+.QUOTE OFF
+This says that a program named `grolbp' is added to the list of the programs that should be built. 
+Note that \*[CODE]bin_PROGRAMS\*[CODE OFF]
+is initialized to an empty string in the top-level Makefile.am, 
+which includes grolbp.am. 
+We will see later why we don't write directly
+.BR
+\*[CODE]bin_PROGRAMS = grolbp\*[CODE OFF] in a Makefile.am in the grolbp directory.
+
+Then, we list the sources of grolbp like this:
+.QUOTE
+.CODE
+.ESC_CHAR %
+grolbp_SOURCES = \
+  src/devices/grolbp/lbp.cpp \
+  src/devices/grolbp/lbp.h \
+  src/devices/grolbp/charset.h
+.ESC_CHAR \
+.CODE OFF
+.QUOTE OFF
+As you added `grolbp' to \*[CODE]bin_PROGRAMS \*[CODE OFF]
+you need to define the sources of grolbp in the variable \*[CODE]grolbp_SOURCES\*[CODE OFF] .
+If you write in another file \*[CODE]bin_PROGRAMS += foo\*[CODE OFF],
+you will list the sources of `foo'
+in \*[CODE]foo_SOURCES\*[CODE OFF] .
+
+.PP
+With these two statements, 
+the resulting generated Makefile will contain everything that is needed to 
+build, clean, install and uninstall the `grolbp' binary
+when invoking the adequate make command.
+Also, the source files listed in \*[CODE]grolbp_SOURCES\*[CODE OFF]
+will automatically be included in the distribution tarball. 
+That is why the headers are also listed in \*[CODE]grolbp_SOURCES\*[CODE OFF]: 
+it is not necessary to add them in order to correctly build `grolbp',
+but this way the headers will be distributed.
+
+.PP
+Note that:
+.LIST
+.ITEM
+The path to the files are relative to the top-level directory.
+.ITEM
+The binaries are generated in the top-level build directory.
+.ITEM
+The .o files are generated in the directory where the source files are located,
+or, in the case of an out-of-source build tree,
+in a directory that is the replication of the source tree directory.
+For example if you built groff in a `build' directory,
+lbp.o (object file from src/devices/grolbp/lbp.cpp) will be located in
+build/src/devices/grolbp/lbp.o.
+.LIST OFF
+We will also see later the reasons, this is due to the non-recursive make design.
+
+.HEADING 2 "Linking against a library"
+
+.PP
+To list which libraries grolbp needs to link against, we just write:
+.QUOTE
+.CODE
+.ESC_CHAR %
+grolbp_LDADD = $(LIBM) \
+  libdriver.a \
+  libgroff.a \
+  lib/libgnu.a
+.ESC_CHAR \
+.CODE OFF
+.QUOTE OFF
+Again, we use the variable \*[CODE]grolbp_LDADD\*[CODE OFF] because we added a program named `grolbp'.
+This will also automatically set build dependencies between `grolbp' and the libraries it needs:
+`libdriver.a' and `libgroff.a',
+that are convenience libraries built within the groff project,
+will be compiled before grolbp.
+
+.HEADING 2 "Preprocessor flags"
+
+.PP
+Preprocessor flags that are common to all the binaries are listed in
+the variable \*[CODE]AM_CPPFLAGS\*[CODE OFF] in the top-level Makefile.am.
+If a `foo' binary needs specific preprocessor flags,
+use \*[CODE]foo_CPPFLAGS\*[CODE OFF],
+for example, in src/devices/xditview/xditview.am,
+extra flags are needed to build gxditview and are added like this:
+.QUOTE
+.CODE
+.ESC_CHAR %
+gxditview_CPPFLAGS = $(AM_CPPFLAGS) $(X_CFLAGS) -Dlint \
+  -I$(top_builddir)/src/devices/xditview
+.ESC_CHAR \
+.CODE OFF
+.QUOTE OFF
+.PP
+The use of specific CPPFLAGS changes the name of the generated objects:
+the .o object files are prefixed with the name of the program.
+For example, the .o file corresponding to src/devices/xditview/device.c
+will be src/devices/xditview/gxditview-device.o.
+
+.HEADING 2 "Cleaning"
+
+.PP
+You don't need to write rules to clean the programs listed in \*[CODE]bin_PROGRAMS\*[CODE OFF],
+`automake' will write them for you.
+However, some programs might have generated sources that should be cleaned.
+In this case, you have mainly two special variables to list extra files that should be cleaned:
+.LIST
+.ITEM
+\*[CODE]MOSTLYCLEANFILES\*[CODE OFF] for files that should be cleaned by `make mostlyclean'
+.ITEM
+\*[CODE]CLEANFILES\*[CODE OFF ] for files that should be cleaned by `make clean'
+.LIST OFF
+
+.PP
+There is also the possibility to write custom rules,
+we will see that later.
+
+.HEADING 2 "Dependencies"
+
+.PP
+We have already seen that when linking against a convenience library,
+the dependencies are already created by `automake'.
+However, some dependencies still need to be manually added,
+for example when a source file includes a generated header.
+In this case, the easiest way is to add a plain-make dependency.
+For example, src/roff/groff/groff.cpp includes defs.h,
+which is a generated header.
+We just add in src/roff/groff/groff.am:
+.QUOTE
+.CODE
+src/roff/groff/groff.$(OBJEXT): defs.h
+.CODE OFF
+.QUOTE OFF
+
+.HEADING 2 "Scripts"
+
+.PP
+A part from \*[CODE]bin_PROGRAMS\*[CODE OFF],
+there is another similar special variable for scripts:
+\*[CODE]bin_SCRIPTS\*[CODE OFF] .
+The scripts listed in this variable will automatically be built
+(of course you have to provide your custom rule to build the script),
+installed and uninstalled when invoking 'make', 'make install' and 'make uninstall'.
+The main difference is that unlike the programs listed in \*[CODE]bin_PROGRAMS\*[CODE OFF],
+the scripts will not be cleaned by default.
+They are not distributed by default either.
+In the groff project, \*[CODE]bin_SCRIPTS\*[CODE OFF] are cleaned because they are added to
+\*[CODE]MOSTLYCLEANFILES\*[CODE OFF] in the top-level Makefile.am.
+
+.PP
+A simple example are the gropdf and pdfmom scripts in src/devices/gropdf/gropdf.am:
+.QUOTE
+.CODE
+.ESC_CHAR %
+bin_SCRIPTS += gropdf pdfmom
+  [...]
+gropdf: $(gropdf_dir)/gropdf.pl $(SH_DEPS_SED_SCRIPT)
+        rm -f $@
+        sed -f $(SH_DEPS_SED_SCRIPT) \
+            -e "s|[@]VERSION[@]|$(VERSION)|" \
+            -e "s|[@]PERL[@]|$(PERL)|" \
+            -e "s|[@]GROFF_FONT_DIR[@]|$(fontpath)|" \
+            -e "s|[@]RT_SEP[@]|$(RT_SEP)|" $(gropdf_dir)/gropdf.pl >$@
+        chmod +x $@
+
+pdfmom: $(gropdf_dir)/pdfmom.pl $(SH_DEPS_SED_SCRIPT)
+        rm -f $@
+        sed -f $(SH_DEPS_SED_SCRIPT) \
+            -e "s|[@]VERSION[@]|$(VERSION)|" \
+            -e "s|[@]PERL[@]|$(PERL)|" $(gropdf_dir)/pdfmom.pl >$@
+        chmod +x $@
+.ESC_CHAR \
+.CODE OFF
+.QUOTE OFF
+
+Note that in this example the '@' symbol is protected by square brackets to prevent
+the substitution of the variable by `automake'. 
+
+.HEADING 1 "Non-recursive make schema"
+
+.PP
+There are two possibilities to organize the Makefile.am of a large project,
+using a recusive or a non-recursive `make'.
+
+.HEADING 2 "1st possibility: make recursion"
+
+.PP
+A top level Makefile.am includes other Makefile.am,
+using the \*[CODE]SUBDIRS\*[CODE OFF] directive,
+and the Makefile.am of each sub-directory lists the programs that should be built.
+If we had
+chosen this type of organization, we would have a Makefile.am in
+src/devices/grolbp and in each directory that contain sources to build
+a program (tbl, eqn, troff etc ...). We would write in the top-level
+Makefile.am:
+.QUOTE
+.CODE
+.ESC_CHAR %
+SUBDIRS = src/devices/grolbp \
+  ... (and all the dir that build a program or a script)
+.ESC_CHAR \
+.CODE OFF
+.QUOTE OFF
+and in src/devices/grolbp, we would have a file Makefile.am that contains:
+.QUOTE
+.CODE
+bin_PROGRAMS = grolbp
+grolbp_SOURCES = lbp.cpp lbp.h charset.h
+.CODE OFF
+.QUOTE OFF
+.PP
+Only `grolbp' is affected to the variable \*[CODE]bin_PROGRAMS\*[CODE OFF] .
+It would be the same in, say, src/roff/troff: 
+you would have a Makefile.am with \*[CODE]bin_PROGRAMS = troff\*[CODE OFF] .
+We would have 1 generated Makefile per Makefile.am file: 
+in the build tree you will have the top-level Makefile, 
+grolbp's Makefile in src/devices/grolbp,
+troff's Makefile in src/roff/troff, and so on. 
+When calling `make' to build everything,
+make will be recursively called in all the directories that have a Makefile. 
+Thus, the paths are logically relative to the directory that contains the Makefile.am.
+
+.PP
+This approach has the disadvantage of making dependencies harder to solve: 
+each Makefile does not know the targets of the other Makfiles.
+It also makes the build slower.
+
+.HEADING 2 "Non-recursive make used by the Groff project"
+
+.PP
+The second possibility, that was chosen on groff project, 
+is to use a non-recursive make schema. 
+It is described in paragraph 7.3 of the Automake manual ("An Alternative Approach to Subdirectories"),
+based on the following parper from Peter Miller: Recursive Make Considered
+Harmful
+.PDF_WWW_LINK http://miller.emu.id.au/pmiller/books/rmch/
+
+.PP
+The idea is to have a single Makefile that contains all the rules. 
+That is why we have only a single Makefile.am in the top-level directory
+which includes all the .am files that define rules to build the various programs.
+The inclusion is done with the \*[CODE]include\*[CODE OFF] directive, not \*[CODE]SUBDIRS\*[CODE OFF] .
+Using 'include' is like copying the content of the included file into the top-level Makefile.am,
+and will not generate other Makefile.
+We first say in this top-level Makefile.am:
+.QUOTE
+.CODE 
+  bin_PROGAMS = 
+.CODE OFF
+.QUOTE OFF
+and then all the .am files that define a program to be built
+(e.g. src/devices/grolbp/grolbp.am, src/roff/troff/troff.am, and so on)
+overload this variable, 
+so that at the end, all the programs that should be built are listed in this \*[CODE]bin_PROGRAMS\*[CODE OFF] variable.
+This is the reason why all the paths in the various .am files are relative to the top-level directory:
+at the end we will have only one Makefile in the top-level directory of the build tree.
+
+.PP
+As the resulting single Makefile knows all the targets,
+the dependencies are easier to manage.
+The build is also faster, particularly when compiling a single file:
+make is called once only and the file will be instantly rebuilt,
+while on a recursive make system, make will have to be invoked in all the sub-directories.
+
+.PP
+Note also that in order to make `gnulib' work with this non-recursive schema,
+the `non-recursive-gnulib-prefix-hack' configuration should be selected in bootstrap.conf.
+
+.HEADING 1 "Installing data"
+
+.PP
+Variables that end with \*[CODE]_DATA\*[CODE OFF] are special variables used to list files that should be installed in a particular location.
+The prefix of the variables should refer to another previously defined variable that ends with a `dir' suffix.
+This varibale that ends with `dir' defines where the files should be installed.
+
+.HEADING 2 "A simple case"
+
+.PP
+For example, in font/devX100/devX100.am, we can see this:
+
+.QUOTE
+.CODE
+if !WITHOUT_X11
+devX100fontdir = $(fontdir)/devX100
+devX100font_DATA = $(DEVX100FONTS)
+endif
+
+EXTRA_DIST += $(DEVX100FONTS)
+.CODE OFF
+.QUOTE OFF
+\*[CODE]DEVX100FONTS\*[CODE OFF] is just a list font files,
+defined at the begining of devX100.am.
+\*[CODE]fontdir\*[CODE OFF] is where all the font directories are installed,
+it is defined in the top-level Makefile.am.
+The conditional \*[CODE]if !WITHOUT_X11\*[CODE OFF]
+is used to prevent the installation of these files if X11 is not available.
+
+We first define where we wants to install the devX100 fonts with:
+
+.QUOTE
+.CODE
+devX100fontdir = $(fontdir)/devX100
+.CODE OFF
+.QUOTE OFF
+Because we declared a variable ending with `dir',
+we are allowed to define \*[CODE]devX100font_DATA\*[CODE OFF]
+(you remove the `dir' suffix and add \*[CODE]_DATA\*[CODE OFF]).
+Note that wildcards are not supported in the special variable that end with \*[CODE]_DATA\*[CODE OFF].
+
+.PP
+With these two lines, `make install' will install the files listed in  \*[CODE]DEVX100FONTS \*[CODE OFF]
+and `make uninstall' will uninstall them.
+\*[CODE]devX100fontdir\*[CODE OFF] will be automatically created if missing during the installation process,
+but not removed during the uninstall.
+The complete  \*[CODE]fontdir \*[CODE OFF] is removed by a custom uninstall rule
+(uninstall_groffdirs in Makefile.am).
+
+.PP
+Because the files listed in  \*[CODE]devX100font_DATA \*[CODE OFF] are not distributed by default,
+we explicitely added them to the \*[CODE]EXTRA_DIST\*[CODE OFF] variable,
+which lists all the files that should be distributed and that are not taken into account by the default automake rules.
+.QUOTE
+.CODE
+  EXTRA_DIST += $(DEVX100FONTS)
+.CODE OFF
+.QUOTE OFF
+Another possibility would have being to add a `dist' prefix to the \*[CODE]devX100font_DATA\*[CODE OFF] variable,
+in this case the use of \*[CODE]EXTRA_DIST\*[CODE OFF] is useless
+(except of course if
+.BR
+\*[CODE]WITHOUT_X11\*[CODE OFF] is true,
+in this case we don't install the files but we still have to distribute them):
+.QUOTE
+.CODE
+if !WITHOUT_X11
+devX100fontdir = $(fontdir)/devX100
+dist_devX100font_DATA = $(DEVX100FONTS)
+else
+EXTRA_DIST += $(DEVX100FONTS)
+endif
+.CODE OFF
+.QUOTE OFF
+
+.HEADING 2 "Dealing with generated files"
+
+.PP
+In the previous example, all the font files that must be installed were already present in the source tree.
+But in some cases, you need to generate the files you intend to install.
+In this case, the files should be installed but not distributed.
+A simple way to deal with this is to add a `nodist' prefix to your \*[CODE]xxx_DATA\*[CODE OFF] variable.
+
+.PP
+For example in font/devps/devps.am, we have a list of font files already present in the source tree, 
+defined by \*[CODE]DEVPSFONTFILES\*[CODE OFF],
+and another list of font files that are generated,
+listed in the variable \*[CODE]DEVPSFONTFILES_GENERATED\*[CODE OFF] .
+They should all by installed in a `devps' directory under the fontdir.
+Thus the following three lines, where we use the `dist' and `nodist' prefixes:
+.QUOTE
+.CODE
+devpsfontdir = $(fontdir)/devps
+dist_devpsfont_DATA = $(DEVPSFONTFILES) 
+nodist_devpsfont_DATA = $(DEVPSFONTFILES_GENERATED)
+.CODE OFF
+.QUOTE OFF
+
+The generated files are not cleaned by default, thus we add:
+.QUOTE
+.CODE
+MOSTLYCLEANFILES += $(DEVPSFONTFILES_GENERATED)
+.CODE OFF
+.QUOTE OFF
+
+.HEADING 1 "Extending Automake's rules"
+
+.HEADING 2 "Local clean rules"
+
+.PP
+In most of the cases, the files that need to be cleaned are automatically determined by `automake',
+or were added to the \*[CODE]MOSTCLEANFILES\*[CODE OFF] or \*[CODE]CLEANFILES\*[CODE OFF] variables.
+However, you might need to define a specific rule to clean some files that were not added to any list.
+Automake defines a set of targets to extend the clean targets with your own rules:
+clean-local, mostlyclean-local, distclean-local or maintainerclean-local.
+An example of such extension exists in font/devpdf/devpdf.am:
+because some fonts are not explicitely listed in a \*[CODE]xxx_DATA\*[CODE OFF] variable but generated by a custom rule,
+we define an extra rule to extend the `mostlyclean' target:
+.QUOTE
+.CODE
+.ESC_CHAR %
+mostlyclean-local: mostlyclean_devpdf_extra
+mostlyclean_devpdf_extra:
+        @echo Cleaning font/devpdf
+        rm -rf $(top_builddir)/font/devpdf/enc \
+          $(top_builddir)/font/devpdf/map;
+        if test -d $(top_builddir)/font/devpdf; then \
+          for f in $(GROFF_FONT_FILES); do \
+            rm -f $(top_builddir)/font/devpdf/$$f; \
+          done; \
+        fi
+.ESC_CHAR \
+.CODE OFF
+.QUOTE OFF
+
+.HEADING 2 "Local install/uninstall rules and hooks"
+
+.PP
+Similarly to the clean rules, there are extensions to install and uninstall rules.
+They come with two flavous, local rules and hooks.
+.LIST
+.ITEM
+There are 2 rules to extend install commands:
+`install-exec-local' for binaries and  `install-data-local' for data.
+.ITEM
+There is 1 uninstall local rule: `uninstall-local'.
+.LIST OFF
+There are no garantee on the order of execution of these local rules.
+An example of local rule is the installation of GXditview.ad and GXditview-color.ad files in 
+src/devices/xditview/xditview.am:
+if theses files are already installed, the old files are first saved.
+Also, the final file that is installed is stripped from its .ad suffix.
+Thus the usage of a custom rules rather than the definition of a \*[CODE]xxx_DATA\*[CODE OFF] variable:
+.QUOTE
+.CODE
+.ESC_CHAR %
+# Custom installation of GXditview.ad and GXditview-color.ad
+install-data-local: install_xditview
+uninstall-local: uninstall_xditview
+
+[...]
+install_xditview: $(xditview_srcdir)/GXditview.ad
+        -test -d $(DESTDIR)$(appresdir) \
+          || $(mkinstalldirs) $(DESTDIR)$(appresdir)
+        if test -f $(DESTDIR)$(appresdir)/GXditview; then \
+          mv $(DESTDIR)$(appresdir)/GXditview \
+            $(DESTDIR)$(appresdir)/GXditview.old; \
+        fi
+        [...]
+        $(INSTALL_DATA) $(xditview_srcdir)/GXditview.ad \
+          $(DESTDIR)$(appresdir)/GXditview
+.ESC_CHAR \
+.CODE OFF
+.QUOTE OFF
+
+.PP
+Hooks, on the other hand, are garanteed to be executed after all the standard targets have been executed.
+.LIST
+.ITEM
+There are 2 install hooks: `install-exec-hook' and `install-data-hook'.
+.ITEM
+There is 1 uninstall hook: `unintall-hook'
+.LIST OFF
+
+.PP
+An example of hook is the `uninstall_groffdirs' rule in the top-level Makefile.am.
+This hook is used to remove all the directories specific to groff introduced by the installation process.
+Obviously it could not be a local extension of `uninstall' because the order of execution is not guaranteed.
+.QUOTE
+.CODE
+.ESC_CHAR %
+# directories specific to groff
+uninstall-hook: uninstall_groffdirs
+uninstall_groffdirs:
+        if test -d $(DESTDIR)$(datasubdir); then \
+          rm -rf $(DESTDIR)$(fontdir); \
+          rm -rf $(DESTDIR)$(oldfontdir); \
+          rmdir $(DESTDIR)$(datasubdir); \
+        fi
+        [...]
+.ESC_CHAR \
+.CODE OFF
+.QUOTE OFF
+.TOC_RV_SWITCH
+.TOC
