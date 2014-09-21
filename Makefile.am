@@ -804,7 +804,9 @@ EXTRA_DIST += \
   PROBLEMS \
   PROJECTS \
   README.MinGW \
-  arch/djgpp
+  TESTS \
+  arch/djgpp \
+  font/util/make-Rproto
 
 MOSTLYCLEANFILES += $(prefixexecbin_SCRIPTS) $(bin_SCRIPTS) \
   $(man1_MANS) $(man5_MANS) $(man7_MANS) \
