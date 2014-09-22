@@ -85,7 +85,7 @@ $(ROFF2PROGS): $(groffer_srcdir)/roff2.pl
 # (dvi, pdf, html etc ...)
 $(ROFF2MAN):  $(groffer_srcdir)/roff2.man
 	@$(MKDIR_P) contrib/groffer
-	FILEMODE=`echo $@ | sed 's|contrib/groffer/roff2\([a-z]\+\)\.man|\1|g'` \
+	FILEMODE=`echo $@ | sed 's|contrib/groffer/roff2\([a-z][a-z]*\)\.man|\1|g'` \
 	  && sed -e 's/[@]ROFF2MODE[@]/'"$$FILEMODE"'/g' $(groffer_srcdir)/roff2.man > $@;
 
 groffer: $(GROFFER_PERL) $(GROFFER_REST) $(SH_DEPS_SED_SCRIPT)
