@@ -47,7 +47,7 @@ run	Run the tests.
 	;;
 esac
 
-function TestResult {
+TestResult () {
 	if cmp -s $1 $2
 	then
 		echo $2 PASSED
