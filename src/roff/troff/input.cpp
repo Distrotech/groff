@@ -6042,40 +6042,102 @@ int parse_bounding_box(char *p, bounding_box *bb)
   return 0;
 }
 
-// This version is taken from psrm.cpp
+// This version is an adaptation of that in psrm.cpp
 
-#define PS_LINE_MAX 255
 cset white_space("\n\r \t");
 
-int ps_get_line(char *buf, FILE *fp, const char* filename)
+// Maximum input line length, for DSC conformance, and options to
+// control how it will be enforced; caller should select either of
+// DSC_LINE_MAX_IGNORED, to allow partial line collection spread
+// across multiple calls, or DSC_LINE_MAX_ENFORCE, to truncate
+// excess length lines at the DSC limit.
+//
+// Note that DSC_LINE_MAX_CHECKED is reserved for internal use by
+// ps_get_line(), and should not be specified by any caller; also,
+// handling of DSC_LINE_MAX_IGNORED is currently unimplemented.
+//
+#define DSC_LINE_MAX          255
+#define DSC_LINE_MAX_IGNORED   -1
+#define DSC_LINE_MAX_ENFORCE    0
+#define DSC_LINE_MAX_CHECKED    1
+
+// ps_get_line(): collect an input record from a PostScript file.
+//
+// Inputs:
+//   buf       pointer to caller's input buffer.
+//   fp        FILE stream pointer, whence input is read.
+//   filename  name of input file, (for diagnostic use only).
+//   dscopt    DSC_LINE_MAX_ENFORCE or DSC_LINE_MAX_IGNORED.
+//
+// Returns the number of input characters stored into caller's
+// buffer, or zero at end of input stream.
+//
+// FIXME: Currently, ps_get_line() always scans an entire line of
+// input, but returns only as much as will fit in caller's buffer;
+// the return value is always a positive integer, or zero, with no
+// way of indicating to caller, that there was more data than the
+// buffer could accommodate.  A future enhancement could mitigate
+// this, returning a negative value in the event of truncation, or
+// even allowing for piecewise retrieval of excessively long lines
+// in successive reads; (this may be necessary to properly support
+// DSC_LINE_MAX_IGNORED, which is currently unimplemented).
+//
+static
+int ps_get_line(char *buf, FILE *fp, const char* filename, int dscopt)
 {
-  int c = getc(fp);
-  if (c == EOF) {
-    buf[0] = '\0';
-    return 0;
-  }
-  int i = 0;
-  int err = 0;
-  while (c != '\r' && c != '\n' && c != EOF) {
-    if ((c < 0x1b && !white_space(c)) || c == 0x7f)
-      error("invalid input character code %1 in `%2'", int(c), filename);
-    else if (i < PS_LINE_MAX)
-      buf[i++] = c;
-    else if (!err) {
-      err = 1;
-      error("PostScript file `%1' is non-conforming "
-	    "because length of line exceeds 255", filename);
+  int c, count = 0;
+  static int lastc = EOF;
+  do {
+    // Collect input characters into caller's buffer, until we
+    // encounter a line terminator, or end of file...
+    //
+    while (((c = getc(fp)) != '\n') && (c != '\r') && (c != EOF)) {
+      if ((((lastc = c) < 0x1b) && !white_space(c)) || (c == 0x7f))
+	//
+	// ...rejecting any which may be designated as invalid.
+	//
+	error("invalid input character code %1 in `%2'", int(c), filename);
+
+      // On reading a valid input character, and when there is
+      // room in caller's buffer...
+      //
+      else if (count < DSC_LINE_MAX)
+	//
+	// ...store it.
+	//
+	buf[count++] = c;
+
+      // We have a valid input character, but it will not fit
+      // into caller's buffer; if enforcing DSC conformity...
+      //
+      else if (dscopt == DSC_LINE_MAX_ENFORCE) {
+	//
+	// ...diagnose and truncate.
+	//
+	dscopt = DSC_LINE_MAX_CHECKED;
+	error("PostScript file `%1' is non-conforming "
+	      "because length of line exceeds 255", filename);
+      }
     }
-    c = getc(fp);
-  }
-  buf[i++] = '\n';
-  buf[i] = '\0';
-  if (c == '\r') {
-    c = getc(fp);
-    if (c != EOF && c != '\n')
-      ungetc(c, fp);
-  }
-  return 1;
+    // Reading LF may be a special case: when it immediately
+    // follows a CR which terminated the preceding input line,
+    // we deem it to complete a CRLF terminator for the already
+    // collected preceding line; discard it, and restart input
+    // collection for the current line.
+    //
+  } while ((lastc == '\r') && ((lastc = c) == '\n'));
+
+  // For each collected input line, record its actual terminator,
+  // substitute our preferred LF terminator...
+  //
+  if (((lastc = c) != EOF) || (count > 0))
+    buf[count++] = '\n';
+
+  // ...and append the required C-string (NUL) terminator, before
+  // returning the actual count of input characters stored.
+  //
+  buf[count] = '\0';
+  return count;
 }
 
 inline void assign_registers(int llx, int lly, int urx, int ury)
@@ -6090,10 +6152,10 @@ void do_ps_file(FILE *fp, const char* filename)
 {
   bounding_box bb;
   int bb_at_end = 0;
-  char buf[PS_LINE_MAX];
+  char buf[2 + DSC_LINE_MAX];
   llx_reg_contents = lly_reg_contents =
     urx_reg_contents = ury_reg_contents = 0;
-  if (!ps_get_line(buf, fp, filename)) {
+  if (!ps_get_line(buf, fp, filename, DSC_LINE_MAX_ENFORCE)) {
     error("`%1' is empty", filename);
     return;
   }
@@ -6102,7 +6164,7 @@ void do_ps_file(FILE *fp, const char* filename)
 	  filename);
     return;
   }
-  while (ps_get_line(buf, fp, filename) != 0) {
+  while (ps_get_line(buf, fp, filename, DSC_LINE_MAX_ENFORCE) != 0) {
     // in header comments, `%X' (`X' any printable character except
     // whitespace) is possible too
     if (buf[0] == '%') {
@@ -6142,7 +6204,7 @@ void do_ps_file(FILE *fp, const char* filename)
 	if (fseek(fp, 0L, 0) == -1)
 	  break;
       }
-      while (ps_get_line(buf, fp, filename) != 0) {
+      while (ps_get_line(buf, fp, filename, DSC_LINE_MAX_ENFORCE) != 0) {
 	if (buf[0] == '%' && buf[1] == '%') {
 	  if (!had_trailer) {
 	    if (strncmp(buf + 2, "Trailer", 7) == 0)
