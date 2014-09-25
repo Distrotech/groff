@@ -1,23 +1,34 @@
+2014-09-25  Bernd Warken  <groff-bernd.warken-72@web.de>
+
+	* src/roff/grog/*.pl: Program more reasonable subs (functions).
+	Repair details in many places.
+
+	* this ChangeLog: Improve the breaking of Keith Marshall's entry
+	from 2014-09-24.
+
 2014-09-24  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
 	Refactor psbb line input function; avoid a buffer overrun.
 
 	* src/roff/troff/input.cpp (ps_get_line): Declare it as `static'.
-	Refactor, to avoid the overhead of character look-ahead and push-back
-	on CR stream input.  Add new `dscopt' parameter, in place of internal
-	`err' variable; update all call references, passing value of...
+	Refactor, to avoid the overhead of character look-ahead and
+	push-back on CR stream input.  Add new `dscopt' parameter, in
+	place of internal `err' variable; update all call references,
+	passing value of...
 	(DSC_LINE_MAX_ENFORCE): ...this new manifest constant; define it.
-	(DSC_LINE_MAX_IGNORED): Likewise; currently unused, but intended for
-	future use as an alternative to `DSC_LINE_MAX_ENFORCE'.
-	(DSC_LINE_MAX_CHECKED): New manifest constant; used internally only.
-	(PS_LINE_MAX): Manifest constant, renamed for notional consistency...
+	(DSC_LINE_MAX_IGNORED): Likewise; currently unused, but intended
+	for future use as an alternative to `DSC_LINE_MAX_ENFORCE'.
+	(DSC_LINE_MAX_CHECKED): New manifest constant; used internally
+	only.
+	(PS_LINE_MAX): Manifest constant, renamed for notional
+	consistency...
 	(DSC_LINE_MAX): ...to this; defined value remains as 255.
-	(do_ps_file): Increase stack allocation for `buf' char array; former
-	allocation of PS_LINE_MAX (now DSC_LINE_MAX) bytes exposed a potential
-	buffer overrun, after reading DSC_LINE_MAX bytes; two additional bytes
-	are required, to accommodate a terminating LF and NUL.  Add `dscopt'
-	parameter, with value `DSC_LINE_MAX_ENFORCE', in each of three calls
-	to `ps_get_line()'.
+	(do_ps_file): Increase stack allocation for `buf' char array;
+	former allocation of PS_LINE_MAX (now DSC_LINE_MAX) bytes exposed
+	a potential buffer overrun, after reading DSC_LINE_MAX bytes; two
+	additional bytes are required, to accommodate a terminating LF and
+	NUL.  Add `dscopt' parameter, with value `DSC_LINE_MAX_ENFORCE',
+	in each of three calls to `ps_get_line()'.
 
 2014-09-20  Bernd Warken  <groff-bernd.warken-72@web.de>
 

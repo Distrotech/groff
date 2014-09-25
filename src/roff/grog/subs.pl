@@ -10,7 +10,7 @@
 # This file was split from grog.pl and put under GPL2 by
 #               Bernd Warken <groff-bernd.warken-72@web.de>.
 # The macros for identifying the devices were taken from Ralph
-# Corderoy's `grog.sh' from 2006.
+# Corderoy's `grog.sh' of 2006.
 
 # This file is part of `grog', which is part of `groff'.
 
@@ -24,8 +24,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see
+# You can get the license text for the GNU General Public License
+# version 2 in the internet at
 # <http://www.gnu.org/licenses/gpl-2.0.html>.
 
 ########################################################################
@@ -37,7 +37,10 @@ use strict;
 
 use File::Spec;
 
-# for running programs
+# printing of hashes: my %hash = ...; print Dumper(\%hash);
+use Data::Dumper;
+
+# for running programs within Perl
 use IPC::System::Simple qw(capture capturex run runx system systemx);
 
 $\ = "\n";
@@ -54,89 +57,126 @@ my $groff_opts =
 my @Command = ();		# stores the final output
 my @Mparams = ();		# stores the options `-m*'
 my @devices = ();
-my %File_Name_Extensions = ();
 my $do_run = 0;			# run generated `groff' command
 my $pdf_with_ligatures = 0;	# `-P-y -PU' for `pdf' device
 my $with_warnings = 0;
-my $is_mmse;
 
-our $Prog;
+my $Prog = $0;
+{
+  my ($v, $d, $f) = File::Spec->splitpath($Prog);
+  $Prog = $f;
+}
+
 
 my %macros;
-my %Groff = (
-	     # preprocessors
-	     'chem' => 0,
-	     'eqn' => 0,
-	     'gperl' => 0,
-	     'grap' => 0,
-	     'grn' => 0,
-	     'gideal' => 0,
-	     'gpinyin' => 0,
-	     'lilypond' => 0,
+my %Groff =
+  (
+   # preprocessors
+   'chem' => 0,
+   'eqn' => 0,
+   'gperl' => 0,
+   'grap' => 0,
+   'grn' => 0,
+   'gideal' => 0,
+   'gpinyin' => 0,
+   'lilypond' => 0,
 
-	     'pic' => 0,
-	     'PS' => 0,		# opening for pic
-	     'PF' => 0,		# alternative opening for pic
-	     'PE' => 0,		# closing for pic
+   'pic' => 0,
+   'PS' => 0,		# opening for pic
+   'PF' => 0,		# alternative opening for pic
+   'PE' => 0,		# closing for pic
 
-	     'refer' => 0,
-	     'refer_open' => 0,
-	     'refer_close' => 0,
-	     'soelim' => 0,
-	     'tbl' => 0,
+   'refer' => 0,
+   'refer_open' => 0,
+   'refer_close' => 0,
+   'soelim' => 0,
+   'tbl' => 0,
 
-	     # tmacs
-	     'man' => 0,
-	     'mandoc' => 0,
-	     'mdoc' => 0,
-	     'mdoc_old' => 0,
-	     'me' => 0,
-	     'mm' => 0,
-	     'mom' => 0,
-	     'ms' => 0,
+   # tmacs
+#   'man' => 0,
+#   'mandoc' => 0,
+#   'mdoc' => 0,
+#   'mdoc_old' => 0,
+#   'me' => 0,
+#   'mm' => 0,
+#   'mom' => 0,
+#   'ms' => 0,
 
-	     # requests
-	     'AB' => 0,		# ms
-	     'AE' => 0,		# ms
-	     'AI' => 0,		# ms
-	     'AU' => 0,		# ms
-	     'NH' => 0,		# ms
-	     'TL' => 0,		# ms
-	     'UL' => 0,		# ms
-	     'XP' => 0,		# ms
+   # requests
+   'AB' => 0,		# ms
+   'AE' => 0,		# ms
+   'AI' => 0,		# ms
+   'AU' => 0,		# ms
+   'NH' => 0,		# ms
+   'TL' => 0,		# ms
+   'UL' => 0,		# ms
+   'XP' => 0,		# ms
 
-	     'IP' => 0,		# man and ms
-	     'LP' => 0,		# man and ms
-	     'P' => 0,		# man and ms
-	     'PP' => 0,		# man and ms
-	     'SH' => 0,		# man and ms
+   'IP' => 0,		# man and ms
+   'LP' => 0,		# man and ms
+   'P' => 0,		# man and ms
+   'PP' => 0,		# man and ms
+   'SH' => 0,		# man and ms
 
-	     'OP' => 0,		# man
-	     'SS' => 0,		# man
-	     'SY' => 0,		# man
-	     'TH' => 0,		# man
-	     'TP' => 0,		# man
-	     'UR' => 0,		# man
-	     'YS' => 0,		# man
+   'OP' => 0,		# man
+   'SS' => 0,		# man
+   'SY' => 0,		# man
+   'TH' => 0,		# man
+   'TP' => 0,		# man
+   'UR' => 0,		# man
+   'YS' => 0,		# man
 
-	     # for mdoc and mdoc-old
-	     # .Oo and .Oc for modern mdoc, only .Oo for mdoc-old
-	     'Oo' => 0,		# mdoc and mdoc-old
-	     'Oc' => 0,		# mdoc
-	     'Dd' => 0,		# mdoc
-);
+   # for mdoc and mdoc-old
+   # .Oo and .Oc for modern mdoc, only .Oo for mdoc-old
+   'Oo' => 0,		# mdoc and mdoc-old
+   'Oc' => 0,		# mdoc
+   'Dd' => 0,		# mdoc
+  ); # end of %Groff
+
+
+# for first line check
+my %preprocs_tmacs =
+  (
+   'chem' => 0,
+   'eqn' => 0,
+   'gideal' => 0,
+   'gpinyin' => 0,
+   'grap' => 0,
+   'grn' => 0,
+   'pic' => 0,
+   'refer' => 0,
+   'soelim' => 0,
+   'tbl' => 0,
+
+   'geqn' => 0,
+   'gpic' => 0,
+   'neqn' => 0,
+
+   'man' => 0,
+   'mandoc' => 0,
+   'mdoc' => 0,
+   'mdoc-old' => 0,
+   'me' => 0,
+   'mm' => 0,
+   'mom' => 0,
+   'ms' => 0,
+  );
+
+my @filespec;
+
+my $tmac_ext = '';
 
 
 ########################################################################
-# sub args_with_minus: command line arguments that are not file names
+# handle_args()
 ########################################################################
 
 sub handle_args {
-  our @filespec;			# stores inout file names
   my $double_minus = 0;
   my $was_minus = 0;
   my $was_T = 0;
   my $optarg = 0;
+  # globals: @filespec, @Command, @devices, @Mparams
 
   foreach my $arg (@ARGV) {
 
@@ -150,7 +190,8 @@ sub handle_args {
       if (-f $arg && -r $arg) {
 	push @filespec, $arg;
       } else {
-	print STDERR "grog: $arg is not a readable file.";
+	print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+	  "grog: $arg is not a readable file.";
       }
       next;
     }
@@ -160,7 +201,7 @@ sub handle_args {
       $was_T = 0;
       next;
     }
-####### sub handle_args
+####### handle_args()
 
     unless ( $arg =~ /^-/ ) { # file name, no opt, no optarg
       unless (-f $arg && -r $arg) {
@@ -198,7 +239,7 @@ sub handle_args {
       $with_warnings = 1;
       next;
     }
-####### sub handle_args
+####### handle_args()
 
     if ( $arg =~ /^--(wi|l)/ ) { # --ligatures, no exit
       # the old --with_ligatures is only kept for compatibility
@@ -234,7 +275,7 @@ sub handle_args {
 	# next arg is optarg
 	$optarg = 1;
 	next;
-####### sub handle_args
+####### handle_args()
       } elsif ( $groff_opts =~ /$opt_char/ ) {	# groff no optarg
 	push @Command, '-' . $opt_char;
 	if ( $others ) {	# $others is now an opt collection
@@ -244,18 +285,169 @@ sub handle_args {
 	# arg finished
 	next;
       } else {		# not a groff opt
-	print STDERR 'unknown argument ' . $arg;
+	print STDERR __FILE__ . ' '  . __LINE__ . ': ' .
+	  'unknown argument ' . $arg;
 	push(@Command, $arg);
 	next;
       }
     }
   }
   @filespec = ('-') unless (@filespec);
-} # sub handle_args
+} # handle_args()
+
 
 
 ########################################################################
-# sub do_first_line
+# handle_file_ext()
+########################################################################
+
+sub handle_file_ext {
+  # get tmac from file name extension
+  # output number of found single tmac
+
+  # globals: @filespec, $tmac_ext;
+
+  foreach my $file ( @filespec ) {
+    # test for each file name in the arguments
+    unless ( open(FILE, $file eq "-" ? $file : "< $file") ) {
+      print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+	"$Prog: can't open \`$file\': $!";
+      next;
+    }
+
+    next unless ( $file =~ /\./ ); # file name has no dot `.'
+
+##### handle_file_ext()
+    # get extension
+    my $ext = $file;
+    $ext =~ s/^
+	      .*
+	      \.
+	      ([^.]*)
+	      $
+	     /$1/x;
+    next unless ( $ext );
+
+##### handle_file_ext()
+    # these extensions are correct, but not based on a tmac
+    next if ( $ext =~ /^(
+			 chem|
+			 eqn|
+			 pic|
+			 tbl|
+			 ref|
+			 t|
+			 tr|
+			 g|
+			 groff|
+			 roff|
+			 www|
+			 hdtbl|
+			 grap|
+			 grn|
+			 pdfroff|
+			 pinyin
+		       )$/x );
+
+##### handle_file_ext()
+    # extensions for man tmac
+    if ( $ext =~ /^(
+		      [1-9lno]|
+		      man|
+		      n|
+		      1b
+		    )$/x ) {
+      # `man|n' from `groff' source
+      # `1b' from `heirloom'
+      # `[1-9lno]' from man-pages
+      if ( $tmac_ext && $tmac_ext ne 'man' ) {
+	# found tmac is not 'man'
+	print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+	  '2 different file name extensions found ' .
+	    $tmac_ext . ' and ' . $ext;
+	$tmac_ext = '';
+	next;
+      }
+
+##### handle_file_ext()
+      $tmac_ext = 'man';
+      next;
+    }
+
+    if ( $ext =~ /^(
+		    mandoc|
+		    mdoc|
+		    me|
+		    mm|
+		    mmse|
+		    mom|
+		    ms|
+		    $)/x ) {
+      if ( $tmac_ext && $tmac_ext ne $ext ) {
+	# found tmac is not identical to former found tmac
+##### handle_file_ext()
+	print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+	  '2 different file name extensions found ' .
+	    $tmac_ext . ' and ' . $ext;
+	$tmac_ext = '';
+	next;
+      }
+
+      $tmac_ext = $ext;
+      next;
+    }
+
+    print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+      'Unknown file name extension '. $file . '.';
+    next;
+  } # end foreach file
+
+  1;
+} # handle_file_ext()
+
+
+########################################################################
+# handle_whole_files()
+########################################################################
+
+sub handle_whole_files {
+  # globals: @filespec
+
+  foreach my $file ( @filespec ) {
+    unless ( open(FILE, $file eq "-" ? $file : "< $file") ) {
+      print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+	"$Prog: can't open \`$file\': $!";
+      next;
+    }
+    my $line = <FILE>; # get single line
+
+    unless ( defined($line) ) {
+      # empty file, go to next filearg
+      close (FILE);
+      next;
+    }
+
+    if ( $line ) {
+      chomp $line;
+      unless ( &do_first_line( $line, $file ) ) {
+	# not an option line
+	&do_line( $line, $file );
+      }
+    } else { # emptry line
+      next;
+    }
+
+    while (<FILE>) { # get lines by and by
+      chomp;
+      &do_line( $_, $file );
+    }
+    close(FILE);
+  } # end foreach
+} # handle_whole_files()
+
+
+########################################################################
+# do_first_line()
 ########################################################################
 
 # As documented for the `man' program, the first line can be
@@ -268,7 +460,9 @@ sub handle_args {
 
 sub do_first_line {
   my ( $line, $file ) = @_;
-  our %preprocs_tmacs;
+
+  # globals: %preprocs_tmacs
+
   # For a leading groff options line use only [egGjJpRst]
   if  ( $line =~ /^[.']\\"[\segGjJpRst]+&/ ) {
     # this is a groff options leading line
@@ -302,7 +496,7 @@ sub do_first_line {
     if ( $line =~ /s/ ) {
       $Groff{'soelim'}++;
     }
-####### sub do_first_line
+####### do_first_line()
     if ( $line =~ /t/ ) {
       $Groff{'tbl'}++;
     }
@@ -339,17 +533,15 @@ sub do_first_line {
   for $word ( @in ) {
     $Groff{$word}++;
   }
-} # sub do_first_line
+} # do_first_line()
 
 
 ########################################################################
-# sub do_line
+# do_line()
 ########################################################################
 
 sub do_line {
   my ( $line, $file ) = @_;
-
-  our $is_mmse = 0;
 
   return if ( $line =~ /^[.']\s*\\"/ );	# comment
 
@@ -382,7 +574,7 @@ sub do_line {
     $Groff{'soelim'}++;
     return;
   }
-####### sub do_line
+####### do_line()
 
   ######################################################################
   # macros
@@ -437,7 +629,7 @@ sub do_line {
     return;
   }
 
-####### sub do_line
+####### do_line()
 
   # pic can be opened by .PS or .PF and closed by .PE
   if ( $command =~ /^\.PS$/ ) {
@@ -472,7 +664,7 @@ sub do_line {
 
 
   ######################################################################
-  # macro packages
+  # macro package (tmac)
   ######################################################################
 
   ##########
@@ -483,7 +675,7 @@ sub do_line {
     return;
   }
 
-####### sub do_line
+####### do_line()
   # In the old version of -mdoc `Oo' is a toggle, in the new it's
   # closed by `Oc'.
   if ( $command =~ /^\.Oc$/ ) {
@@ -512,7 +704,7 @@ sub do_line {
   ##########
   # for ms
 
-####### sub do_line
+####### do_line()
   if ( $command =~ /^\.AB$/ ) {
     $Groff{'AB'}++;		# for ms
     return;
@@ -554,7 +746,7 @@ sub do_line {
     $Groff{'LP'}++;		# for man and ms
     return;
   }
-####### sub do_line
+####### do_line()
   if ( $command =~ /^\.P$/ ) {
     $Groff{'P'}++;		# for man and ms
     return;
@@ -604,7 +796,7 @@ sub do_line {
    $Groff{'YS'}++;
     return;
   }
-####### sub do_line
+####### do_line()
 
 
   ##########
@@ -644,7 +836,7 @@ sub do_line {
     }
     return;
   }
-####### sub do_line
+####### do_line()
 
   ##########
   # mom
@@ -668,71 +860,59 @@ sub do_line {
     return;
   }
 
-} # sub do_line
+} # do_line()
 
 
 ########################################################################
-# sub make_groff_line
+# sub make_groff_device
 ########################################################################
 
-sub make_groff_line {
-  our %File_Name_Extensions;
-  our $is_mmse;
-  our @filespec;			# stores inout file names
+my @m = ();
+my @preprograms = ();
+my $correct_tmac = '';
 
-  my @m = ();
-  my @preprograms = ();
+sub make_groff_device {
+  # globals: @devices
 
-  # default device when without `-T' is `ps' ($device empty)
+  # default device is empty, i.e. it is `ps' when without `-T'
+  return '' unless ( @devices );
 
-  my $device = '';
-  for my $d ( @devices ) {
-    if ( $d =~			# suitable devices
-	 /^(
-	    dvi
-	  |
-	    html
-	  |
-	    xhtml
-	  |
-	    lbp
-	  |
-	    lj4
-	  |
-	    ps
-	  |
-	    pdf
-	  |
-	    ascii
-	  |
-	    cp1047
-	  |
-	    latin1
-	  |
-	    utf8
-	  )$/x ) {
-###### sub make_groff_line
-      if ( $device ) {
-	next if ( $device eq $d );
-	print STDERR 'several different devices given: ' .
-	  $device . ' and ' .$d;
-	$device = $d;	# the last provided device is taken
-	next;
-      } else { # empty $device
-	$device = $d;
-	next;
-      }
-    } else {		# not suitable device
-      print STDERR 'not a suitable device for groff: ' . $d;
-      next;
+  for ( @devices ) {
+    print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+      $_ . ': not a suitable device'
+      unless (
+	      /^(
+		 dvi|
+		 html|
+		 xhtml|
+		 lbp|
+		 lj4|
+		 ps|
+		 pdf|
+		 ascii|
+		 cp1047|
+		 latin1|
+		 utf8
+	       )$/x );
+  }
+
+###### make_groff_device()
+  my $device = pop( @devices );
+  if ( @devices ) {
+    for ( @devices ) {
+      next if ( $_ eq $device );
+      print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+	'additional device: ' . $_;
     }
+    print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+      'device ' . $device . ' taken instead';
   }
 
-  if ( $device ) {
-    push @Command, '-T';
-    push @Command, $device;
-  }
+  return '' unless ( $device );
+  push @Command, '-T';
+  push @Command, $device;
 
+###### make_groff_device()
   if ( $device eq 'pdf' ) {
     if ( $pdf_with_ligatures ) {	# with --ligature argument
       push( @Command, '-P-y' );
@@ -749,11 +929,15 @@ EOF
       }	# end of warning
     }	# end of ligature
   }	# end of pdf device
+} # make_groff_device()
 
-###### sub make_groff_line
 
-  ##########
-  # preprocessors
+########################################################################
+# make_groff_preproc()
+########################################################################
+
+sub make_groff_preproc {
+  # globals: %Groff, @preprograms, @Command
 
   # preprocessors without `groff' option
   if ( $Groff{'lilypond'} ) {
@@ -774,110 +958,138 @@ EOF
     $Groff{'pic'} = 1;
   }
 
-###### sub make_groff_line
+###### make_groff_preproc()
   $Groff{'refer'} ||= $Groff{'refer_open'} && $Groff{'refer_close'};
 
   if ( $Groff{'chem'} || $Groff{'eqn'} ||  $Groff{'gideal'} ||
        $Groff{'grap'} || $Groff{'grn'} || $Groff{'pic'} ||
        $Groff{'refer'} || $Groff{'tbl'} ) {
-    push(@Command, '-e') if $Groff{'eqn'};
-    push(@Command, '-G') if $Groff{'grap'};
-    push(@Command, '-g') if $Groff{'grn'};
-    push(@Command, '-J') if $Groff{'gideal'};
-    push(@Command, '-j') if $Groff{'chem'};
-    push(@Command, '-p') if $Groff{'pic'};
-    push(@Command, '-R') if $Groff{'refer'};
     push(@Command, '-s') if $Groff{'soelim'};
-    push(@Command, '-t') if $Groff{'tbl'};
+
+    push(@Command, '-R') if $Groff{'refer'};
+
+    push(@Command, '-t') if $Groff{'tbl'};	# tbl before eqn
+    push(@Command, '-e') if $Groff{'eqn'};
+
+    push(@Command, '-j') if $Groff{'chem'};	# chem produces pic code
+    push(@Command, '-J') if $Groff{'gideal'};	# gideal produces pic
+    push(@Command, '-G') if $Groff{'grap'};
+    push(@Command, '-g') if $Groff{'grn'};	# gremlin files for -me
+    push(@Command, '-p') if $Groff{'pic'};
+
+  }
+} # make_groff_preproc()
+
+
+########################################################################
+# make_groff_tmac_man_ms()
+########################################################################
+
+sub make_groff_tmac_man_ms {
+  # globals: @filespec, $tmac_ext, %Groff
+
+  # `man' requests, not from `ms'
+  if ( $Groff{'SS'} || $Groff{'SY'} || $Groff{'OP'} ||
+       $Groff{'TH'} || $Groff{'TP'} || $Groff{'UR'} ) {
+    $Groff{'man'} = 1;
+    push(@m, '-man');
+
+    $tmac_ext = 'man' unless ( $tmac_ext );
+    &err('man requests found, but file name extension ' .
+	 'was: ' . $tmac_ext) unless ( $tmac_ext eq 'man' );
+    $tmac_ext = 'man';
+    return 1;	# true
   }
 
+###### make_groff_tmac_man_ms()
+  # `ms' requests, not from `man'
+  if (
+      $Groff{'1C'} || $Groff{'2C'} ||
+      $Groff{'AB'} || $Groff{'AE'} || $Groff{'AI'} || $Groff{'AU'} ||
+      $Groff{'BX'} || $Groff{'CD'} || $Groff{'DA'} || $Groff{'DE'} ||
+      $Groff{'DS'} || $Groff{'LD'} || $Groff{'ID'} || $Groff{'NH'} ||
+      $Groff{'TL'} || $Groff{'UL'} || $Groff{'XP'}
+     ) {
+    $Groff{'ms'} = 1;
+    push(@m, '-ms');
 
-  ######################################################################
-  # tmacs
-  ######################################################################
+    $tmac_ext = 'ms' unless ( $tmac_ext );
+    &err('ms requests found, but file name extension ' .
+	 'was: ' . $tmac_ext) unless ( $tmac_ext eq 'ms' );
+    $tmac_ext = 'ms';
+    return 1;	# true
+  }
 
-  ###########
-  # man or ms
+###### make_groff_tmac_man_ms()
 
-  {
-    my $is_ms = 0;
-    if ( $Groff{'P'} || $Groff{'IP'}  ||
-	 $Groff{'LP'} || $Groff{'PP'} || $Groff{'SH'} ) {
-      # man or ms
-      if ( $Groff{'SS'} ||  $Groff{'SY'} ||  $Groff{'OP'} ||
-	   $Groff{'TH'} || $Groff{'TP'} || $Groff{'UR'} ) {
-	# it is `man', because these macros are not `ms'
-	$Groff{'man'} = 1;
-	push(@m, '-man');
-      } elsif
-	(	# it must now be `ms'
-	 $Groff{'1C'} || $Groff{'2C'} ||
-	 $Groff{'AB'} || $Groff{'AE'} || $Groff{'AI'} || $Groff{'AU'} ||
-	 $Groff{'BX'} || $Groff{'CD'} || $Groff{'DA'} || $Groff{'DE'} ||
-	 $Groff{'DS'} || $Groff{'LD'} || $Groff{'ID'} || $Groff{'NH'} ||
-	 $Groff{'TL'} || $Groff{'UL'} || $Groff{'XP'}
-	) {
-	$is_ms = 1;
-###### sub make_groff_line
-      } else {	# maybe `ms'
-	print STDERR 'grog: device -ms assumed without proof.'
-	  unless ( $File_Name_Extensions{'ms'} );
-	$is_ms = 1;
-      }
-    }
-    if ( $is_ms ) {
+  # both `man' and `ms' requests
+  if ( $Groff{'P'} || $Groff{'IP'}  ||
+       $Groff{'LP'} || $Groff{'PP'} || $Groff{'SH'} ) {
+    if ( $tmac_ext eq 'man' ) {
+      $Groff{'man'} = 1;
+      push(@m, '-man');
+      return 1;	# true
+    } elsif ( $tmac_ext eq 'ms' ) {
       $Groff{'ms'} = 1;
       push(@m, '-ms');
+      return 1;	# true
     }
+    return 0;
   }
+} # make_groff_tmac_man_ms()
 
 
-  ##########
+
+########################################################################
+# make_groff_tmac_others()
+########################################################################
+
+sub make_groff_tmac_others {
+  # globals: @filespec, $tmac_ext, %Groff
+
   # mdoc
-
   if ( ( $Groff{'Oo'} && $Groff{'Oc'} ) || $Groff{'Dd'} ) {
     $Groff{'Oc'} = 0;
     $Groff{'Oo'} = 0;
     push(@m, '-mdoc');
+    return 1;	# true
   }
   if ( $Groff{'mdoc_old'} || $Groff{'Oo'} ) {
     push(@m, '-mdoc_old');
+    return 1;	# true
   }
 
-
-  ##########
   # me
-
   if ( $Groff{'me'} ) {
     push(@m, '-me');
+    return 1;	# true
   }
 
-
-  ##########
+##### make_groff_tmac_others()
   # mm and mmse
-
   if ( $Groff{'mm'} ) {
-    if ( $is_mmse ) {	# swedish mmse
-      push(@m, '-mmse');
-    } else {		# normal mm
-      push(@m, '-mm');
-    }
+    push(@m, '-mm');
+    return 1;	# true
+  }
+  if ( $Groff{'mmse'} ) {	# Swedish mm
+    push(@m, '-mmse');
+    return 1;	# true
   }
 
-
-  ##########
   # mom
-
   if ( $Groff{'mom'} ) {
     push(@m, '-mom');
+    return 1;	# true
   }
+} # make_groff_tmac_others()
 
-###### sub make_groff_line
 
-  ######################################################################
-  # create groff command
+########################################################################
+# make_groff_line_rest()
+########################################################################
 
-  my $file_args_included;	# file args now only at 1st preprog
+sub make_groff_line_rest {
+  my $file_args_included;	# file args now only at 1st preproc
   unshift @Command, 'groff';
   if ( @preprograms ) {
     my @progs;
@@ -905,10 +1117,11 @@ EOF
   # -m arguments
   my $nr_m_guessed = scalar @m;
   if ( $nr_m_guessed > 1 ) {
-    print STDERR 'More than 1 argument for -m found: ' . "@m";
+    print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+      'argument for -m found: ' . @m;
   }
 
-###### sub make_groff_line
+###### make_groff_line()
 
   my $nr_m_args = scalar @Mparams;	# m-arguments for grog
   my $last_m_arg = '';	# last provided -m option
@@ -916,8 +1129,10 @@ EOF
     # take the last given -m argument of grog call,
     # ignore other -m arguments and the found ones
     $last_m_arg = $Mparams[-1];	# take the last -m argument
-    print STDERR $Prog . ": more than 1 `-m' argument: @Mparams";
-    print STDERR 'We take the last one: ' . $last_m_arg;
+    print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+      $Prog . ": more than 1 `-m' argument: @Mparams";
+    print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+      'We take the last one: ' . $last_m_arg;
   } elsif ( $nr_m_args == 1 ) {
     $last_m_arg = $Mparams[0];
   }
@@ -935,16 +1150,19 @@ EOF
     if ( $is_equal ) {
       $final_m = $last_m_arg;
     } else {
-      print STDERR 'Provided -m argument ' . $last_m_arg .
-	' differs from guessed -m args: ' . "@m";
-      print STDERR 'The argument is taken.';
+      print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+	'Provided -m argument ' . $last_m_arg .
+	  ' differs from guessed -m args: ' . @m;
+      print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+	'The argument is taken.';
       $final_m = $last_m_arg;
     }
-###### sub make_groff_line
+###### make_groff_line()
   } else {	# no -m arg provided
     if ( $nr_m_guessed > 1 ) {
-      print STDERR 'More than 1 -m arguments were guessed: ' . "@m";
-      print STDERR 'Guessing stopped.';
+      print STDERR __FILE__ . ' ' .  __LINE__ . ': ' .
+	'More than 1 -m arguments were guessed: ' . @m;
+      print STDERR __FILE__ . ' ' .  __LINE__ . ': ' . 'Guessing stopped.';
       exit 1;
     } elsif ( $nr_m_guessed == 1 ) {
       $final_m = $m[0];
@@ -959,7 +1177,7 @@ EOF
   #########
   # execute the `groff' command here with option `--run'
   if ( $do_run ) { # with --run
-    print STDERR "@Command";
+    print STDERR __FILE__ . ' ' .  __LINE__ . ': ' . "@Command";
     my $cmd = join ' ', @Command;
     system($cmd);
   } else {
@@ -967,7 +1185,7 @@ EOF
   }
 
   exit 0;
-}	# sub &make_groff_line()
+} # make_groff_line()
 
 
 ########################################################################
@@ -1000,7 +1218,7 @@ be checked by `grog'.
 
 EOF
   exit 0;
-} # sub help
+} # help()
 
 
 ########################################################################
@@ -1012,7 +1230,7 @@ sub version {
   print "Perl version of GNU $Prog " .
     "in groff version " . $at_at{'GROFF_VERSION'};
   exit 0;
-} # sub version
+} # version()
 
 
 1;
