@@ -9,7 +9,7 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $version = '1.0.1';
+my $version = '1.0.2';
 
 # This file is part of `gpinyin', which is part of `groff'.
 

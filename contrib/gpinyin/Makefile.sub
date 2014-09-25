@@ -34,7 +34,7 @@ all: gpinyin
 
 gpinyin: gpinyin.pl
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
-            -e "s|@g@|$(g)|g" \
+	    -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
@@ -43,21 +43,21 @@ gpinyin: gpinyin.pl
 
 .PHONY: install_data
 install_data: gpinyin subs.pl
-	-test -d $(DESTDIR)$(bindir) || \
+	test -d $(DESTDIR)$(bindir) || \
 	  $(mkinstalldirs) $(DESTDIR)$(bindir); \
 	$(RM) $(DESTDIR)$(bindir)/gpinyin; \
 	$(INSTALL_SCRIPT) gpinyin $(DESTDIR)$(bindir)/gpinyin; \
-        -test -d $(DESTDIR)$(gpinyin_dir) || \
+	test -d $(DESTDIR)$(gpinyin_dir) || \
 	  $(mkinstalldirs) $(DESTDIR)$(gpinyin_dir); \
 	$(RM) $(DESTDIR)$(gpinyin_dir)/subs.pl; \
-        $(INSTALL_SCRIPT) $(srcdir)/subs.pl \
+	$(INSTALL_SCRIPT) $(srcdir)/subs.pl \
 	  $(DESTDIR)$(gpinyin_dir)/subs.pl
 
 .PHONY: uninstall_sub
 uninstall_sub:
 	$(RM) $(DESTDIR)$(bindir)/gpinyin; \
-        $(RM) $(DESTDIR)$(gpinyin_dir)/subs.pl; \
-	-test -d $(DESTDIR)$(gpinyin_dir) && \
+	$(RM) $(DESTDIR)$(gpinyin_dir)/subs.pl; \
+	test -d $(DESTDIR)$(gpinyin_dir) && \
 	  rmdir $(DESTDIR)$(gpinyin_dir)
 
 

@@ -26,7 +26,7 @@ my $Copyright = 'Copyright (C) 2006-2014 Free Software Foundation, Inc.';
 # settings
 ########################################################################
 
-my $Program_Version = '1.0.4';
+my $Program_Version = '1.0.5';
 
 # this setting of the groff version is only used before make is run,
 # otherwise @VERSION@ will set it.
