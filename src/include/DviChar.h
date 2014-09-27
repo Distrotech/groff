@@ -1,4 +1,4 @@
-// -*- C++ -*-
+/* -*- C -*- */
 /* Copyright (C) 2014  Free Software Foundation, Inc.
 
 This file is part of groff.

@@ -1,4 +1,4 @@
-// -*- C++ -*-
+/* -*- C -*- */
 /* Copyright (C) 2000-2014  Free Software Foundation, Inc.
      Written by Eli Zaretskii (eliz@is.elta.co.il)
 

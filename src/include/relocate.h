@@ -1,4 +1,4 @@
-// -*- C++ -*-
+/* -*- C -*- */
 /* Provide relocation for macro and font files.
 
    Copyright (C) 2005-2014  Free Software Foundation, Inc.
