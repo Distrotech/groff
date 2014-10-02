@@ -1230,103 +1230,25 @@ AC_DEFUN([GROFF_APPRESDIR_OPTION],
 #
 # We ignore the `XAPPLRES' and `XUSERFILESEARCHPATH' environment variables.
 #
-# The goal is to find the `root' of X11.  Under most systems this is
-# `/usr/X11/lib'.  Application default files are then in
-# `/usr/X11/lib/X11/app-defaults'.
+# By default if --with-appresdir is not used, we will install the
+# gxditview resources in $prefix/lib/X11/app-defaults.
 #
-# Based on autoconf's AC_PATH_X macro.
+# Note that if --with-appresdir was passed to `configure', no prefix is
+# added to `appresdir'.
 
 AC_DEFUN([GROFF_APPRESDIR_DEFAULT],
   [if test -z "$groff_no_x"; then
-     # Create an Imakefile, run `xmkmf', then `make'.
-     rm -f -r conftest.dir
-     if mkdir conftest.dir; then
-       cd conftest.dir
-       # Make sure to not put `make' in the Imakefile rules,
-       # since we grep it out.
-       cat >Imakefile <<'EOF'
-
-xlibdirs:
-	@echo 'groff_x_usrlibdir="${USRLIBDIR}"; groff_x_libdir="${LIBDIR}"'
-EOF
-
-       if (xmkmf) >/dev/null 2>/dev/null && test -f Makefile; then
-	 # GNU make sometimes prints "make[1]: Entering...",
-	 # which would confuse us.
-	 eval `${MAKE-make} xlibdirs 2>/dev/null | grep -v make`
-
-	 # Open Windows `xmkmf' reportedly sets LIBDIR instead of USRLIBDIR.
-	 for groff_extension in a so sl; do
-	   if test ! -f $groff_x_usrlibdir/libX11.$groff_extension &&
-	      test -f $groff_x_libdir/libX11.$groff_extension; then
-	     groff_x_usrlibdir=$groff_x_libdir
-	     break
-	   fi
-	 done
-       fi
-
-       cd ..
-       rm -f -r conftest.dir
-     fi
-
-     # In case the test with `xmkmf' wasn't successful, try a suite of
-     # standard directories.  Check `X11' before `X11Rn' because it is often
-     # a symlink to the current release.
-     groff_x_libdirs='
-       /usr/X11/lib
-       /usr/X11R6/lib
-       /usr/X11R5/lib
-       /usr/X11R4/lib
-
-       /usr/lib/X11
-       /usr/lib/X11R6
-       /usr/lib/X11R5
-       /usr/lib/X11R4
-
-       /usr/local/X11/lib
-       /usr/local/X11R6/lib
-       /usr/local/X11R5/lib
-       /usr/local/X11R4/lib
-
-       /usr/local/lib/X11
-       /usr/local/lib/X11R6
-       /usr/local/lib/X11R5
-       /usr/local/lib/X11R4
-
-       /usr/X386/lib
-       /usr/x386/lib
-       /usr/XFree86/lib/X11
-
-       /usr/lib
-       /usr/local/lib
-       /usr/unsupported/lib
-       /usr/athena/lib
-       /usr/local/x11r5/lib
-       /usr/lpp/Xamples/lib
-
-       /usr/openwin/lib
-       /usr/openwin/share/lib'
-
-     if test -z "$groff_x_usrlibdir"; then
-       # We only test whether libX11 exists.
-       for groff_dir in $groff_x_libdirs; do
-	 for groff_extension in a so sl; do
-	   if test ! -r $groff_dir/libX11.$groff_extension; then
-	     groff_x_usrlibdir=$groff_dir
-	     break 2
-	   fi
-	 done
-       done
-     fi
-
      if test "x$with_appresdir" = "x"; then
-       appresdir=$groff_x_usrlibdir/X11/app-defaults
+       if test "x$prefix" = "xNONE"; then
+         appresdir=$ac_default_prefix/lib/X11/app-defaults
+       else
+         appresdir=$prefix/lib/X11/app-defaults
+       fi
      else
        appresdir=$with_appresdir
      fi
    fi
    AC_SUBST([appresdir])])
-
 
 # Emit warning if --with-appresdir hasn't been used.
 
@@ -1334,25 +1256,27 @@ AC_DEFUN([GROFF_APPRESDIR_CHECK],
   [if test -z "$groff_no_x"; then
      if test "x$with_appresdir" = "x"; then
        AC_MSG_NOTICE([
+  The application resource files for gxditview (GXditview and
+  GXditview-color) will be installed in:
 
-  The application resource files for gxditview will be installed as
-
-    $appresdir/GXditview
-
-  and
-
-    $appresdir/GXditview-color
+    $appresdir
 
   (existing files will be saved by appending `.old' to the file
   name).
 
-  To install them into a different directory, say, `/etc/gxditview',
-  add `--with-appresdir=/etc/gxditview' to the configure script
-  command line options and rerun it.  The environment variable
-  `APPLRESDIR' must then be set to `/etc/' (note the trailing slash),
-  omitting the `gxditview' part which is automatically appended by
-  the X11 searching routines for resource files.  More details can be
-  found in the X(7) manual page.
+  To install them into a different directory, say,
+  `/etc/X11/app-defaults', add
+  `--with-appresdir=/etc/X11/app-defaults' to the configure script
+  command line options and rerun it (`prefix' value has no effect on
+  a --with-appresdir option).
+
+  If the gxditview resources are installed in a directory that is not
+  one of the default X11 resources directories (common default
+  directories are /usr/lib/X11/app-defaults,
+  /usr/share/X11/app-defaults and /etc/X11/app-defaults), you will
+  have to set the environment variable XFILESEARCHPATH to this
+  path.  More details can be found in the X(7) manual page, or in "X
+  Toolkit Intrinsics - C Language Interface manual"
        ])
      fi
    fi])

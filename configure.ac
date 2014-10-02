@@ -169,4 +169,27 @@ AC_CONFIG_FILES([contrib/gdiffmk/tests/runtests],
 AC_CONFIG_FILES([test-groff], [chmod +x test-groff])
 AC_OUTPUT
 
+echo "
+${PACKAGE_NAME} version ${PACKAGE_VERSION}
+----------------------------------------------------------------------
+ Prefix            : ${prefix}
+ Compiler          : ${CC} ${CFLAGS} ${CPPFLAGS}"
+if test "x$groff_no_x" = "xyes"; then
+echo "\
+ X11 support       : no"
+else
+echo "\
+ X11 support       : yes
+ X11 resources dir : $appresdir"
+fi
+if test "x$doc" = x; then
+echo "\
+ Doc build         : no"
+else
+echo "\
+ Doc build         : ${doc} "
+fi
+echo "\
+----------------------------------------------------------------------"
+
 GROFF_APPRESDIR_CHECK
