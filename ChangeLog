@@ -1,3 +1,21 @@
+2014-10-02  Bertrand Garrigues  <bertrand.garrigues@laposte.net>
+
+	Set default X11 resources dir to $prefix/lib/X11/app-defaults.
+
+	* Previously, X11 resources for gxditview were installed in
+	/usr/X11/lib/X11/app-defaults, no matter which prefix was set.
+	Also, the `GROFF_APPRESDIR_DEFAULT' m4 macro had a bug (failed to
+	detect properly the location of app-defaults on the system).
+
+	* Now, gxditview resources are installed in
+	appresdir=$prefix/lib/X11/app-defaults.  If `appresdir' is not a
+	standard X11 resource directory, the environment variable
+	`XFILESEARCHPATH' should be set to this path.
+
+	* The behavious of --with-appresdir is unchanded: this option can
+	still be used to set appresdir, and its value will not be modified
+	by the prefix.
+
 2014-09-27  Werner LEMBERG  <wl@gnu.org>
 
 	Set `transparent' flag for `\[cq].
