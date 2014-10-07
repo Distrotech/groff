@@ -40,17 +40,15 @@ Bernd Warken
 .SH DESCRIPTION
 .\" --------------------------------------------------------------------
 .
-.BR ideal (@MAN7EXT@)
+.I ideal
 is a
 .I roff
 language for drawing pictures.
 .
 .BR gideal (@MAN1EXT@)
-is the corresponding
+will be the corresponding
 .I groff
-preprocessor for using this language within
-.I groff files
-(to be done).
+preprocessor for using this language within groff files.
 .
 .
 .\" --------------------------------------------------------------------
@@ -60,19 +58,24 @@ preprocessor for using this language within
 Within a roff file, an
 .I ideal part
 is started with the command
-.BR .IS .
-.
-.
-.P
-this part is ended with the command
+.B .IS
+and is ended with one of the commands
 .B .IE
 or
 .BR .IF .
 .
 .
 .P
-The text between these requests is handled by the preprocessor
-.BR gideal (@MAN1EXT@).
+The text between these opening and closing requests is handled by the
+preprocessor
+.BR gideal .
+.
+By that the
+.I ideal part
+is transformed into
+.IR "pic content" ,
+which can be read with the graphical groff preprocessor
+.BR pic (@MAN1EXT@).
 .
 .
 .\" --------------------------------------------------------------------
@@ -111,35 +114,24 @@ bit about related Perl examles.
 .\" --------------------------------------------------------------------
 .
 .I libfiles
-are file written in
-.IR ideal .
-.
-Such a file can be included into a roff file with
-.I ideal parts
-by the ideal command
+were files written in
+.IR ideal ,
+that could be included into roff files with the command
 .BR ...libfile .
 .
-A
-.I libfile
-can also serve as an example.
-.
-.
-.P
-With the installation, the available
-.I libfiles
-will get into
-.B @DATASUBDIR@/ideal/libfiles
+They are now obsolete because of license problems.
 .
 .
 .\" --------------------------------------------------------------------
 .SS "Examples"
 .\" --------------------------------------------------------------------
 .
-Some
-.I roff
-files with included 
+It is planned to add some roff files with included
 .I ideal parts
-will be stored at the installation into
+as examples into the source subdirectory
+.BR files.
+.
+They will then be installed into
 .BR @EXAMPLEDIR@/ideal .
 .
 .
@@ -156,42 +148,17 @@ preprocessor in
 .
 .
 .TP
-.BR groff (@MAN1EXT@),
-.TQ
-.BR groff (@MAN7EXT@),
-.TQ
-.BR grog (@MAN1EXT@),
-.TQ
-.BR pic (@MAN1EXT@),
-.TQ
-.BR gpic (@MAN1EXT@),
-.TQ
-Information about the
-.I groff
-system.
+.BR pic (@MAN1EXT@)
+The
+.I ideal
+parts will be translated into
+.I pic
+roff language.
 .
 .
 .\" --------------------------------------------------------------------
 .SS "Documentation and Articles"
 .\" --------------------------------------------------------------------
-.
-.TP
-.B Unix8 preprocessor
-freely available documentation for the
-.IR "ideal preprocessor" .
-.
-The
-.I preprocessor
-there is called
-.BR ideal ,
-not
-.B gideal
-as in
-.IR groff .
-.br
-.UR http://man.cat-v.org/unix_8th/1/ideal
-.UE .
-.
 .
 .TP
 .B ACM articles for buying

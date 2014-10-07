@@ -23,23 +23,31 @@
 
 ########################################################################
 
+# Positions:
+# $(DESTDIR) is the `prefix', e.g. `/usr/' or `/usr/local/'
+# $(bindir) is `<prefix>/bin/'
+# $(exampledir) is `<prefix>/share/doc/groff-1.22.2/examples/ideal'
+# $(datasubdir) is `<prefix>/'
+
 MAN1=gideal.n
 MAN7=ideal.n
 
-# FILES=opaque_MIT.ideal.ms 
 
-FILES=README.txt \
-	test.groff
-
+# former `libfiles'
+# now doc/
 # LIBFILES=arc.ideal \
 #	arrow.ideal \
 #	dash.ideal \
 #	rect.ideal \
 #	wavy.ideal \
 #	README.txt
-
-LIBFILES=README.txt \
+DOC=README.txt \
 	103.pdf.gz
+
+# FILES=opaque_MIT.ideal.ms 
+# former `files/'
+EXAMPLES=README.txt \
+	test.groff
 
 MOSTLYCLEANADD=gideal $(MAN1) $(MAN7)
 
@@ -67,19 +75,19 @@ install_data: gideal
           || $(mkinstalldirs) $(DESTDIR)$(exampledir)
 	-test -d $(DESTDIR)$(exampledir)/ideal \
           || $(mkinstalldirs) $(DESTDIR)$(exampledir)/ideal
-	for f in $(FILES); do \
+	for f in $(EXAMPLES); do \
 	  $(RM) $(DESTDIR)$(exampledir)/ideal/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/files/$$f \
+	  $(INSTALL_DATA) $(srcdir)/examples/$$f \
 	    $(DESTDIR)$(exampledir)/ideal/$$f; \
 	done
-	-test -d $(DESTDIR)$(datasubdir) \
-          || $(mkinstalldirs) $(DESTDIR)$(datasubdir)
-	-test -d $(DESTDIR)$(datasubdir)/ideal \
-          || $(mkinstalldirs) $(DESTDIR)$(datasubdir)/ideal
-	for f in $(LIBFILES); do \
-	  $(RM) $(DESTDIR)$(datasubdir)/ideal/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/libfiles/$$f \
-	    $(DESTDIR)$(datasubdir)/ideal/$$f; \
+	-test -d $(DESTDIR)$(docdir) \
+          || $(mkinstalldirs) $(DESTDIR)$(docdir)
+	-test -d $(DESTDIR)$(docdir)/ideal \
+          || $(mkinstalldirs) $(DESTDIR)$(docdir)/ideal
+	for f in $(DOC); do \
+	  $(RM) $(DESTDIR)$(docdir)/ideal/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/doc/$$f \
+	    $(DESTDIR)$(docdir)/ideal/$$f; \
 	done
 
 .PHONY: uninstall_sub
@@ -87,11 +95,12 @@ uninstall_sub: $
 	$(RM) $(DESTDIR)$(bindir)/gideal
 	-test -d $(DESTDIR)$(bindir) $$ \
 	  rmdir $(DESTDIR)$(bindir)
-	for f in $(LIBFILES); do \
-	  $(RM) $(DESTDIR)$(datasubdir)/ideal/$$f; \
+
+	for f in $(DOC); do \
+	  $(RM) $(DESTDIR)$(docdir)/ideal/$$f; \
 	done
-	-test -d $(DESTDIR)$(datasubdir)/ideal && \
-	  rmdir $(DESTDIR)$(datasubdir)/ideal
+	-test -d $(DESTDIR)$(docdir)/ideal && \
+	  rmdir $(DESTDIR)$(docdir)/ideal
 	for f in $(FILES); do \
 	  $(RM) $(DESTDIR)$(exampledir)/ideal/$$f; \
 	done
