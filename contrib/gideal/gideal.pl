@@ -9,7 +9,7 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $version = '0.9.8';
+my $version = '0.9.9';
 
 # This file is part of `gideal', which is part of `groff'.
 
