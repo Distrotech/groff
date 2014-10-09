@@ -776,6 +776,15 @@ $(TARGETS):
 	@$(ENVSETUP); $(MAKE) $(MAKE_K_FLAG) do=$@ $(ALLDIRS)
 	@$(ENVSETUP); $(MAKE) $(MAKE_K_FLAG) do=$@ $(OTHERDIRS) dot
 
+clean: clean-gnulib
+clean-gnulib:
+	@$(ENVSETUP); cd src/libs/gnulib; $(MAKE) $(MAKE_K_FLAG) clean
+
+distclean: distclean-gnulib
+distclean-gnulib:
+	@$(ENVSETUP); cd src/libs/gnulib; $(MAKE) $(MAKE_K_FLAG) distclean
+	rm -rf src/libs/gnulib/autom4te.cache
+
 dot: FORCE
 	@$(ENVSETUP); \
 	$(MAKE) $(MAKE_K_FLAG) $(MDEFINES) srcdir=$(srcdir) VPATH=$(srcdir) \
