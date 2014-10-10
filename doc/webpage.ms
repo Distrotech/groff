@@ -56,36 +56,53 @@ Home of Groff (GNU Troff).
 .DC T HIS mydarkred
 is the home page for groff (\c
 .URL http://\:www.gnu.org/ GNU
-Troff).
+Troff), which is a software typesetting package
+that reads plain text mixed with formatting commands
+and produces formatted output.
 .
-Groff is a software typesetting package which reads plain text mixed with
-formatting commands and produces formatted output.
+Output may be PostScript or PDF, html,
+or ASCII/UTF8 for display at the terminal.
 .
+Formatting commands may be either low-level typesetting requests
+(\[lq]primitives\[rq]) or macros from a supplied set.
+.
+Users may also write their own macros.
+.
+All three may be combined.
+
+Present on most Unix systems owing to its long association
+with Unix manuals (manpages),
+groff is capable of producing typographically sophisticated documents
+while consuming only minimal system resources.
+
 The source code of the currently released versions of groff is
-available at the 
-.URL "http://\:groff.ffii.org/\:groff/" "FFII host (Germany)" ,
-.URL "ftp://\:ftp.gnu.org/\:gnu/\:groff/" "GNU host (USA)" ,
-and its mirrors.
+available at the
+.URL "http://\:ftp.gnu.org/\:gnu/\:groff/" "GNU host"
+and its mirrors;
+the current development version is available from a
+.URL "https://\:savannah.gnu.org/\:git/\:?group=groff" "git repository" .
 .
-The USA site also contains older, obsolete versions.
+The current version is 1.22.2 (07-Feb-2013).
+
+To view the git repository in your browser, use
+.URL "http://\:git.savannah.gnu.org/\:cgit/\:groff.git" \
+     "Savannah's cgit interface" .
 .
-Development snapshots (produced twice a day from the development repository)
-can be downloaded from
-.URL "http://\:groff.ffii.org/\:groff/\:devel" here .
+There you can also download snapshots;
+simply click on a commit entry line to get the URL.
+
+Additional contributions can be found
+.URL "http://\:groff.ffii.org/\:groff/\:contrib/" here .
 
 For a special version of groff on the Microsoft operating systems, see
-.URL "http://\:gnuwin32.sf.net/\:packages/\:groffl.htm" "Groff for Windows" .
+.URL "https://\:sf.net/\:projects/\:ezwinports/\:files/" \
+     "Groff for Windows"
+(version 1.21).
 
-Groff was originally written and maintained by James Clark, however it
+Groff was originally written and maintained by James Clark; it
 is now maintained by
 .MTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
 and
-.MTO wl@\:gnu.org "Werner Lemberg" .
-
-User issues lead:
-.MTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding" .
-.br
-Technical issues lead:
 .MTO wl@\:gnu.org "Werner Lemberg" .
 .
 .HR
@@ -97,6 +114,7 @@ The image at the top has been contributed by Imogen Mulley,
 based on a similar picture found on the
 .URL http://www.gnu.org "GNU server" .
 .
+.
 .SH
 License
 .LP
@@ -104,8 +122,7 @@ GNU troff is released under the
 .URL http://\:www.gnu.org/\:copyleft/\:gpl.html "GNU Copyright License" .
 The documentation is released under the
 .URL http://\:www.gnu.org/\:copyleft/\:fdl.html "Free Documentation License" .
-Groff is an official GNU project as defined on
-.URL http://\:savannah.gnu.org savannah .
+.
 .
 .SH
 README
@@ -135,6 +152,7 @@ compiling, installing, and running groff.
 
 The file MORE.STUFF contains information about add-on packages useful for
 groff.
+.
 .
 .SH
 Repository and FTP access
@@ -172,6 +190,7 @@ gunzip -c ../groff-\[la]version\[ra]-current.diff.gz | patch -p1
 .ft P
 .fi
 .in
+.
 .
 .SH
 Groff dependencies
@@ -217,6 +236,7 @@ So the corresponding developer packages of your system must be installed,
 otherwise groff does not install gxditview and the -TX* devices.
 In Debian, the developer packages are libxaw7-dev and libxmu-dev.
 .
+.
 .SH
 Bug reports
 .LP
@@ -227,6 +247,7 @@ all the information that it asks for.
 Even if you are not sure that something is a bug, report it using
 BUG-REPORT: this enables us to determine whether it really is a bug or
 not.
+.
 .
 .SH
 Mailing lists
