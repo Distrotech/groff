@@ -9,7 +9,7 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $version = '1.0.2';
+my $version = '1.0.3';
 
 # This file is part of `gpinyin', which is part of `groff'.
 
@@ -122,12 +122,12 @@ my $pinyin_mode = 0;	# not in Pinyin mode
 
 my @output_n =	# nroff
   (
-   '.ie n \\{',
+   '.ie n \\{\\',
   );
 
 my @output_t =	# troff
   (
-   '.el \\{',
+   '.el \\{\\',
   );
 
 foreach (<>) {	# get line from input
