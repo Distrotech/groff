@@ -9,7 +9,7 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $version = '1.0.3';
+my $version = '1.0.4';
 
 # This file is part of `gpinyin', which is part of `groff'.
 
@@ -49,10 +49,6 @@ use Cwd;
 
 # $Bin is the directory where this script is located
 use FindBin;
-
-# for running the perl parts with the `Perl' programs and getting output
-# also useful for shell programs
-use IPC::System::Simple qw(capture capturex run runx system systemx);
 
 
 ########################################################################
