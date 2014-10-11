@@ -40,9 +40,6 @@ use File::Spec;
 # printing of hashes: my %hash = ...; print Dumper(\%hash);
 use Data::Dumper;
 
-# for running programs within Perl
-use IPC::System::Simple qw(capture capturex run runx system systemx);
-
 $\ = "\n";
 
 # my $Sp = "[\\s\\n]";
