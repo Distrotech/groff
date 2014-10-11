@@ -914,10 +914,13 @@ dist:
 	done
 	for d in $(GNULIBDIRS); do \
 	  (cd tmp/$$d; \
+	   if test -f config.status; then \
+	     ./config.status; \
+	   fi; \
 	   if test -f Makefile; then \
 	     $(MAKE) distclean; \
 	   else \
-	     $(MAKE) -f $(top_builddir)/$$d/Makefile distcleanclean; \
+	     $(MAKE) -f $(top_builddir)/$$d/Makefile distclean; \
 	   fi; \
 	   rm -rf autom4te.cache); \
 	done
