@@ -6000,51 +6000,22 @@ void pipe_source()
 }
 
 // .psbb
-
+//
+// Extract bounding box limits from PostScript file, and assign
+// them to the following four gtroff registers:--
+//
 static int llx_reg_contents = 0;
 static int lly_reg_contents = 0;
 static int urx_reg_contents = 0;
 static int ury_reg_contents = 0;
 
-struct bounding_box {
-  int llx, lly, urx, ury;
-};
-
-/* Parse the argument to a %%BoundingBox comment.  Return 1 if it
-contains 4 numbers, 2 if it contains (atend), 0 otherwise. */
-
-int parse_bounding_box(char *p, bounding_box *bb)
-{
-  if (sscanf(p, "%d %d %d %d",
-	     &bb->llx, &bb->lly, &bb->urx, &bb->ury) == 4)
-    return 1;
-  else {
-    /* The Document Structuring Conventions say that the numbers
-       should be integers.  Unfortunately some broken applications
-       get this wrong. */
-    double x1, x2, x3, x4;
-    if (sscanf(p, "%lf %lf %lf %lf", &x1, &x2, &x3, &x4) == 4) {
-      bb->llx = (int)x1;
-      bb->lly = (int)x2;
-      bb->urx = (int)x3;
-      bb->ury = (int)x4;
-      return 1;
-    }
-    else {
-      for (; *p == ' ' || *p == '\t'; p++)
-	;
-      if (strncmp(p, "(atend)", 7) == 0) {
-	return 2;
-      }
-    }
-  }
-  bb->llx = bb->lly = bb->urx = bb->ury = 0;
-  return 0;
-}
-
-// This version is an adaptation of that in psrm.cpp
-
-cset white_space("\n\r \t");
+// Manifest constants to specify the status of bounding box range
+// acquisition; (note that PSBB_RANGE_IS_BAD is also suitable for
+// assignment as a default ordinate property value).
+//
+#define PSBB_RANGE_IS_BAD   0
+#define PSBB_RANGE_IS_SET   1
+#define PSBB_RANGE_AT_END   2
 
 // Maximum input line length, for DSC conformance, and options to
 // control how it will be enforced; caller should select either of
@@ -6053,15 +6024,214 @@ cset white_space("\n\r \t");
 // excess length lines at the DSC limit.
 //
 // Note that DSC_LINE_MAX_CHECKED is reserved for internal use by
-// ps_get_line(), and should not be specified by any caller; also,
-// handling of DSC_LINE_MAX_IGNORED is currently unimplemented.
+// ps_locator::get_line(), and should not be specified in any call;
+// also, handling of DSC_LINE_MAX_IGNORED, as a get_line() option,
+// is currently unimplemented.
 //
 #define DSC_LINE_MAX          255
 #define DSC_LINE_MAX_IGNORED   -1
 #define DSC_LINE_MAX_ENFORCE    0
 #define DSC_LINE_MAX_CHECKED    1
 
-// ps_get_line(): collect an input record from a PostScript file.
+// Input characters to be considered as white space, when reading
+// PostScript file comments.
+//
+cset white_space("\n\r \t");
+
+// Class psbb_locator
+//
+// This locally declared and implemented class provides the methods
+// to be used for retrieval of bounding box properties from a specified
+// PostScript or PDF file.
+//
+class psbb_locator
+{
+  public:
+    // Only the class constructor is exposed publicly; instantiation of
+    // a class object will retrieve the requisite bounding box properties
+    // from the specified file, and assign them to gtroff registers.
+    //
+    psbb_locator(const char *);
+
+  private:
+    FILE *fp;
+    const char *filename;
+    char buf[2 + DSC_LINE_MAX];
+    int llx, lly, urx, ury;
+
+    // CRLF handling hook, for get_line() function.
+    //
+    int lastc;
+
+    // Private method functions facilitate implementation of the
+    // class constructor; none are used in any other context.
+    //
+    int get_line(int);
+    inline bool get_header_comment(void);
+    inline const char *context_args(const char *);
+    inline const char *context_args(const char *, const char *);
+    inline const char *bounding_box_args(void);
+    int parse_bounding_box(const char *);
+    inline void assign_registers(void);
+    inline int skip_to_trailer(void);
+};
+
+// psbb_locator class constructor.
+//
+psbb_locator::psbb_locator(const char *fname):
+filename(fname), llx(0), lly(0), urx(0), ury(0), lastc(EOF)
+{
+  // PS files might contain non-printable characters, such as ^Z
+  // and CRs not followed by an LF, so open them in binary mode.
+  //
+  fp = include_search_path.open_file_cautious(filename, 0, FOPEN_RB);
+  if (fp) {
+    // After successfully opening the file, acquire the first
+    // line, whence we may determine the file format...
+    //
+    if (get_line(DSC_LINE_MAX_ENFORCE) == 0)
+      //
+      // ...except in the case of an empty file, which we are
+      // unable to process further.
+      //
+      error("`%1' is empty", filename);
+
+# if 0
+    else if (context_args("%PDF-")) {
+      // TODO: PDF files specify a /MediaBox, as the equivalent
+      // of %%BoundingBox; we must implement a handler for this.
+    }
+# endif
+
+    else if (context_args("%!PS-Adobe-")) {
+      //
+      // PostScript files -- strictly, we expect EPS -- should
+      // specify a %%BoundingBox comment; locate it, initially
+      // expecting to find it in the comments header...
+      //
+      const char *context = NULL;
+      while ((context == NULL) && get_header_comment()) {
+	if ((context = bounding_box_args()) != NULL) {
+
+	  // When the "%%BoundingBox" comment is found, it may simply
+	  // specify the bounding box property values, or it may defer
+	  // assignment to a similar trailer comment...
+	  //
+	  int status = parse_bounding_box(context);
+	  if (status == PSBB_RANGE_AT_END) {
+	    //
+	    // ...in which case we must locate the trailer, and search
+	    // for the appropriate specification within it.
+	    //
+	    if (skip_to_trailer() > 0) {
+	      while ((context = bounding_box_args()) == NULL
+		     && get_line(DSC_LINE_MAX_ENFORCE) > 0)
+		;
+	      if (context != NULL) {
+		//
+		// When we find a bounding box specification here...
+		//
+		if ((status = parse_bounding_box(context)) == PSBB_RANGE_AT_END)
+		  //
+		  // ...we must ensure it is not a further attempt to defer
+		  // assignment to a trailer, (which we are already parsing).
+		  //
+		  error("`(atend)' not allowed in trailer of `%1'", filename);
+	      }
+	    }
+	    else
+	      // The trailer could not be found, so there is no context in
+	      // which a trailing %%BoundingBox comment might be located.
+	      //
+	      context = NULL;
+	  }
+	  if (status == PSBB_RANGE_IS_BAD) {
+	    //
+	    // This arises when we found a %%BoundingBox comment, but
+	    // we were unable to extract a valid set of range values from
+	    // it; all we can do is diagnose this.
+	    //
+	    error("the arguments to the %%%%BoundingBox comment in `%1' are bad",
+		  filename);
+	  }
+	}
+      }
+      if (context == NULL)
+	//
+	// Conversely, this arises when no value specifying %%BoundingBox
+	// comment has been found, in any appropriate location...
+	//
+	error("%%%%BoundingBox comment not found in `%1'", filename);
+    }
+    else
+      // ...while this indicates that there was no appropriate file format
+      // identifier, on the first line of the input file.
+      //
+      error("`%1' does not conform to the Document Structuring Conventions",
+	    filename);
+
+    // Regardless of success or failure of bounding box property acquisition,
+    // we did successfully open an input file, so we must now close it...
+    //
+    fclose(fp);
+  }
+  else
+    // ...but in this case, we did not successfully open any input file.
+    //
+    error("can't open `%1': %2", filename, strerror(errno));
+
+  // Irrespective of whether or not we were able to successfully acquire the
+  // bounding box properties, we ALWAYS update the associated gtroff registers.
+  //
+  assign_registers();
+}
+
+// psbb_locator::parse_bounding_box()
+//
+// Parse the argument to a %%BoundingBox comment, returning:
+//   PSBB_RANGE_IS_SET if it contains four numbers,
+//   PSBB_RANGE_AT_END if it contains "(atend)", or
+//   PSBB_RANGE_IS_BAD otherwise.
+//
+int psbb_locator::parse_bounding_box(const char *context)
+{
+  // The Document Structuring Conventions say that the numbers
+  // should be integers.
+  //
+  int status = PSBB_RANGE_IS_SET;
+  if (sscanf(context, "%d %d %d %d", &llx, &lly, &urx, &ury) != 4) {
+    //
+    // Unfortunately some broken applications get this wrong;
+    // try to parse them as doubles instead...
+    //
+    double x1, x2, x3, x4;
+    if (sscanf(context, "%lf %lf %lf %lf", &x1, &x2, &x3, &x4) == 4) {
+      llx = (int)x1;
+      lly = (int)x2;
+      urx = (int)x3;
+      ury = (int)x4;
+    }
+    else {
+      // ...but if we can't parse four numbers, skip over any
+      // initial white space...
+      //
+      while (*context == '\x20' || *context == '\t')
+	context++;
+
+      // ...before checking for "(atend)", and setting the
+      // appropriate exit status accordingly.
+      //
+      status = (context_args("(atend)", context) == NULL)
+		 ? llx = lly = urx = ury = PSBB_RANGE_IS_BAD
+		 : PSBB_RANGE_AT_END;
+    }
+  }
+  return status;
+}
+
+// ps_locator::get_line()
+//
+// Collect an input record from a PostScript or PDF file.
 //
 // Inputs:
 //   buf       pointer to caller's input buffer.
@@ -6072,7 +6242,7 @@ cset white_space("\n\r \t");
 // Returns the number of input characters stored into caller's
 // buffer, or zero at end of input stream.
 //
-// FIXME: Currently, ps_get_line() always scans an entire line of
+// FIXME: Currently, get_line() always scans an entire line of
 // input, but returns only as much as will fit in caller's buffer;
 // the return value is always a positive integer, or zero, with no
 // way of indicating to caller, that there was more data than the
@@ -6082,11 +6252,9 @@ cset white_space("\n\r \t");
 // in successive reads; (this may be necessary to properly support
 // DSC_LINE_MAX_IGNORED, which is currently unimplemented).
 //
-static
-int ps_get_line(char *buf, FILE *fp, const char* filename, int dscopt)
+int psbb_locator::get_line(int dscopt)
 {
   int c, count = 0;
-  static int lastc = EOF;
   do {
     // Collect input characters into caller's buffer, until we
     // encounter a line terminator, or end of file...
@@ -6140,7 +6308,57 @@ int ps_get_line(char *buf, FILE *fp, const char* filename, int dscopt)
   return count;
 }
 
-inline void assign_registers(int llx, int lly, int urx, int ury)
+// psbb_locator::context_args()
+//
+// Inputs:
+//   tag   literal text to be matched at start of input line
+//
+// Returns a pointer to the trailing substring of the current
+// input line, following an initial substring matching the "tag"
+// argument, or NULL if "tag" is not matched.
+//
+inline const char *psbb_locator::context_args(const char *tag)
+{
+  return context_args(tag, buf);
+}
+
+// psbb_locator::context_args()
+//
+// Overloaded variant of the preceding function, operating on
+// an alternative input buffer, (which may represent a terminal
+// substring of the psbb_locator's primary input line buffer).
+//
+// Inputs:
+//   tag   literal text to be matched at start of buffer
+//   buf   pointer to text to be checked for "tag" match
+//
+// Returns a pointer to the trailing substring of the specified
+// text buffer, following an initial substring matching the "tag"
+// argument, or NULL if "tag" is not matched.
+//
+inline const char *psbb_locator::context_args(const char *tag, const char *buf)
+{
+  size_t len = strlen(tag);
+  return (strncmp(tag, buf, len) == 0) ? buf + len : NULL;
+}
+
+// psbb_locator::bounding_box_args()
+//
+// Returns a pointer to the arguments string, within the current
+// input line, when this represents a PostScript "%%BoundingBox:"
+// comment, or NULL otherwise.
+//
+inline const char *psbb_locator::bounding_box_args(void)
+{
+  return context_args("%%BoundingBox:");
+}
+
+// psbb_locator::assign_registers()
+//
+// Copies the bounding box properties established within the
+// class object, to the associated gtroff registers.
+//
+inline void psbb_locator::assign_registers(void)
 {
   llx_reg_contents = llx;
   lly_reg_contents = lly;
@@ -6148,114 +6366,110 @@ inline void assign_registers(int llx, int lly, int urx, int ury)
   ury_reg_contents = ury;
 }
 
-void do_ps_file(FILE *fp, const char* filename)
+// psbb_locator::get_header_comment()
+//
+// Fetch a line of PostScript input; return true if it complies with
+// the formatting requirements for header comments, and it is not an
+// "%%EndComments" line; otherwise return false.
+//
+inline bool psbb_locator::get_header_comment(void)
 {
-  bounding_box bb;
-  int bb_at_end = 0;
-  char buf[2 + DSC_LINE_MAX];
-  llx_reg_contents = lly_reg_contents =
-    urx_reg_contents = ury_reg_contents = 0;
-  if (!ps_get_line(buf, fp, filename, DSC_LINE_MAX_ENFORCE)) {
-    error("`%1' is empty", filename);
-    return;
-  }
-  if (strncmp("%!PS-Adobe-", buf, 11) != 0) {
-    error("`%1' is not conforming to the Document Structuring Conventions",
-	  filename);
-    return;
-  }
-  while (ps_get_line(buf, fp, filename, DSC_LINE_MAX_ENFORCE) != 0) {
-    // in header comments, `%X' (`X' any printable character except
-    // whitespace) is possible too
-    if (buf[0] == '%') {
-      if (strncmp(buf + 1, "%EndComments", 12) == 0)
-	break;
-      if (white_space(buf[1]))
-	break;
-    }
-    else
-      break;
-    if (strncmp(buf + 1, "%BoundingBox:", 13) == 0) {
-      int res = parse_bounding_box(buf + 14, &bb);
-      if (res == 1) {
-	assign_registers(bb.llx, bb.lly, bb.urx, bb.ury);
-	return;
-      }
-      else if (res == 2) {
-	bb_at_end = 1;
-	break;
-      }
-      else {
-	error("the arguments to the %%%%BoundingBox comment in `%1' are bad",
-	      filename);
-	return;
-      }
-    }
-  }
-  if (bb_at_end) {
-    long offset;
-    int last_try = 0;
-    // in the trailer, the last BoundingBox comment is significant
-    for (offset = 512; !last_try; offset *= 2) {
-      int had_trailer = 0;
-      int got_bb = 0;
-      if (offset > 32768 || fseek(fp, -offset, 2) == -1) {
-	last_try = 1;
-	if (fseek(fp, 0L, 0) == -1)
-	  break;
-      }
-      while (ps_get_line(buf, fp, filename, DSC_LINE_MAX_ENFORCE) != 0) {
-	if (buf[0] == '%' && buf[1] == '%') {
-	  if (!had_trailer) {
-	    if (strncmp(buf + 2, "Trailer", 7) == 0)
-	      had_trailer = 1;
-	  }
-	  else {
-	    if (strncmp(buf + 2, "BoundingBox:", 12) == 0) {
-	      int res = parse_bounding_box(buf + 14, &bb);
-	      if (res == 1)
-		got_bb = 1;
-	      else if (res == 2) {
-		error("`(atend)' not allowed in trailer of `%1'", filename);
-		return;
-	      }
-	      else {
-		error("the arguments to the %%%%BoundingBox comment in `%1' are bad",
-		      filename);
-		return;
-	      }
-	    }
-	  }
-	}
-      }
-      if (got_bb) {
-	assign_registers(bb.llx, bb.lly, bb.urx, bb.ury);
-	return;
-      }
-    }
-  }
-  error("%%%%BoundingBox comment not found in `%1'", filename);
+  return
+    // The first necessary requirement, for returning true,
+    // is that the input line is not empty, (i.e. not EOF).
+    //
+    get_line(DSC_LINE_MAX_ENFORCE) != 0
+
+    // In header comments, `%X' (`X' any printable character
+    // except whitespace) is also acceptable.
+    //
+    && (buf[0] == '%') && !white_space(buf[1])
+
+    // Finally, the input line must not say "%%EndComments".
+    //
+    && context_args("%%EndComments") == NULL;
 }
 
+// psbb_locator::skip_to_trailer()
+//
+// Reposition the PostScript input stream, such that the next get_line()
+// will retrieve the first line, if any, following a "%%Trailer" comment;
+// returns a positive integer value if the "%%Trailer" comment is found,
+// or zero if it is not.
+//
+inline int psbb_locator::skip_to_trailer(void)
+{
+  // Begin by considering a chunk of the input file starting 512 bytes
+  // before its end, and search it for a "%%Trailer" comment; if none is
+  // found, incrementally double the chunk size while it remains within
+  // a 32768L byte range, and search again...
+  //
+  for (ssize_t offset = 512L; offset > 0L; offset <<= 1) {
+    int status, failed;
+    if ((offset > 32768L) || ((failed = fseek(fp, -offset, SEEK_END)) != 0))
+      //
+      // ...ultimately resetting the offset to zero, and simply seeking
+      // to the start of the file, to terminate the cycle and do a "last
+      // ditch" search of the entire file, if any backward seek fails, or
+      // if we reach the arbitrary 32768L byte range limit.
+      //
+      failed = fseek(fp, offset = 0L, SEEK_SET);
+
+    // Following each successful seek...
+    //
+    if (!failed) {
+      //
+      // ...perform a search by reading lines from the input stream...
+      //
+      do { status = get_line(DSC_LINE_MAX_ENFORCE);
+	   //
+	   // ...until we either exhaust the available stream data, or
+	   // we have located a "%%Trailer" comment line.
+	   //
+	 } while ((status != 0) && (context_args("%%Trailer") == NULL));
+      if (status > 0)
+	//
+	// We found the "%%Trailer" comment, so we may immediately
+	// return, with the stream positioned appropriately...
+	//
+	return status;
+    }
+  }
+  // ...otherwise, we report that no "%%Trailer" comment was found.
+  //
+  return 0;
+}
+
+// ps_bbox_request()
+//
+// Handle the .psbb request.
+//
 void ps_bbox_request()
 {
+  // Parse input line, to extract file name.
+  //
   symbol nm = get_long_name(1);
   if (nm.is_null())
+    //
+    // No file name specified: ignore the entire request.
+    //
     skip_line();
   else {
+    // File name acquired: swallow the rest of the line.
+    //
     while (!tok.newline() && !tok.eof())
       tok.next();
     errno = 0;
-    // PS files might contain non-printable characters, such as ^Z
-    // and CRs not followed by an LF, so open them in binary mode.
-    FILE *fp = include_search_path.open_file_cautious(nm.contents(),
-						      0, FOPEN_RB);
-    if (fp) {
-      do_ps_file(fp, nm.contents());
-      fclose(fp);
-    }
-    else
-      error("can't open `%1': %2", nm.contents(), strerror(errno));
+
+    // Update {llx,lly,urx,ury}_reg_contents:
+    // declaring this class instance achieves this, as an
+    // intentional side effect of object construction.
+    //
+    psbb_locator do_ps_file(nm.contents());
+
+    // All done for .psbb; move on, to continue
+    // input stream processing.
+    //
     tok.next();
   }
 }
