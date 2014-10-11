@@ -9,7 +9,7 @@
 
 # Written by Bernd Warken <groff-bernd.warken-72@web.de>.
 
-my $version = '1.2.5';
+my $version = '1.2.6';
 
 # This file is part of `gperl', which is part of `groff'.
 
@@ -49,10 +49,6 @@ use Cwd;
 
 # $Bin is the directory where this script is located
 use FindBin;
-
-# for running the perl parts with the `Perl' programs and getting output
-# also useful for shell programs
-use IPC::System::Simple qw(capture capturex run runx system systemx);
 
 
 ########################################################################
@@ -193,7 +189,7 @@ foreach (<>) {
   ##########
   # run this `Perl' part, later on about storage of the result
   # array stores prints with \n
-  my @print_res = capturex('perl',  $out_file);
+  my @print_res = `perl $out_file`;
 
   # remove `stop' arg if exists
   shift @args if ( $args[0] eq 'stop' );
@@ -206,7 +202,7 @@ foreach (<>) {
   my @var_names = ();
   my @mode_names = ();
 
-  my $mode = 'ds';
+  my $mode = '.ds';
   for ( @args ) {
     if ( /^\.?ds$/ ) {
       $mode = '.ds';
