@@ -36,7 +36,8 @@ pnmtops=@pnmtops_nosetpage@
 # These may be overridden if cross-compiling.
 TROFFBIN=$(top_builddir)/src/roff/troff/troff
 GROFFBIN=$(top_builddir)/src/roff/groff/groff
-GROFF_BIN_PATH=`echo $(groff_bin_dirs) | LANG= sed -e 's|  *|:|g'`
+GROFF_BIN_PATH=`echo $(groff_bin_dirs) \
+                | LANG=C LC_ALL=C sed -e 's|  *|:|g'`
 
 # info files are distributed with the groff package, so makeinfo is
 # usually not needed (however, to build from the repo you NEED it!)
@@ -75,7 +76,8 @@ TFLAG=-M$(top_builddir)/tmac -M$(top_srcdir)/tmac
 
 TROFF=$(TROFFBIN) $(TFLAG) $(FFLAG) -ww
 GROFF=\
-  LANG= \
+  LANG=C \
+  LC_ALL=C \
   sed -e "s;@VERSION@;$(version)$(revision);" $< \
     | GROFF_COMMAND_PREFIX= \
       GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
@@ -101,13 +103,21 @@ imagedir=img
 	$(GROFF) -Tps -ms -mwww >$@
 
 .texinfo.txt:
-	LANG= $(MAKEINFO) --enable-encoding -I$(srcdir) --plaintext -o $@ $<
+	LANG=C \
+	LC_ALL=C \
+	$(MAKEINFO) --enable-encoding -I$(srcdir) --plaintext -o $@ $<
 .texinfo.dvi:
-	LANG= MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e $<
+	LANG=C \
+	LC_ALL=C \
+	MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e $<
 .texinfo.pdf:
-	LANG= MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e --pdf $<
+	LANG=C \
+	LC_ALL=C \
+	MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e --pdf $<
 .texinfo.html:
-	LANG= $(MAKEINFO) --enable-encoding -I$(srcdir) --html --no-split $< \
+	LANG=C \
+	LC_ALL=C \
+	$(MAKEINFO) --enable-encoding -I$(srcdir) --html --no-split $< \
 	  && $(SHELL) $(srcdir)/fixinfo.sh $@
 
 all: prepare_examples
@@ -137,7 +147,9 @@ webpage.ps: gnu.eps
 grnexmpl.ps: grnexmpl.me grnexmpl.g
 
 split-html:
-	LANG= $(MAKEINFO) --enable-encoding -I$(srcdir) --html groff.texinfo \
+	LANG=C \
+	LC_ALL=C \
+	$(MAKEINFO) --enable-encoding -I$(srcdir) --html groff.texinfo \
 	  && for f in groff/*; do $(SHELL) $(srcdir)/fixinfo.sh $$f; done
 
 clean:
