@@ -428,27 +428,20 @@ developing GNU and promoting software freedom.''
 
 @c a <= sign
 @c
-@c A value defined with @set is embedded into three group levels if
-@c called with @value, so we need seven \aftergroup to put \le outside
-@c of the groups -- this is necessary to get proper mathematical
-@c spacing.
+@c Since expansion of macros has changed between texinfo 4.x and 5.x,
+@c we can't define a macro but have to use @value directly.
 
 @tex
-\gdef\LEmacro{\aftergroup\aftergroup\aftergroup\aftergroup
-              \aftergroup\aftergroup\aftergroup\le}
+\gdef\LE{\le}
 @end tex
 
 @iftex
-@set LEmacro @LEmacro
+@set LE @LE
 @end iftex
 
 @ifnottex
-@set LEmacro <=
+@set LE <=
 @end ifnottex
-
-@macro LE
-@value{LEmacro}
-@end macro
 
 
 @c Special care is required with parentheses, brackets, and braces:
@@ -16195,7 +16188,7 @@ The argument@tie{}@var{n} must be an integer in the range @math{-32767}
 to 32767.
 
 @table @asis
-@item @math{0 @LE{} @var{n} @LE{} 1000}
+@item @math{0 @value{LE} @var{n} @value{LE} 1000}
 Set the color for filling solid drawing objects to a shade of gray,
 where 0 corresponds to solid white, 1000 (the default) to solid black,
 and values in between to intermediate shades of gray; this is obsoleted

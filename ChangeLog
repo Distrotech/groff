@@ -1,5 +1,17 @@
 2014-10-12  Werner LEMBERG  <wl@gnu.org>
 
+	* doc/groff.texinfo: Make PDF version compilable with makeinfo 5.x.
+
+	makeinfo 5.x handles macro expansion better, which changes the way
+	how an \LE macro (for a less-than sign) has to be defined.  However,
+	since we can't be sure that the latest version of `texinfo.tex' gets
+	used with makeinfo 5.x only, we would have to support both 4.x and
+	5.x.  No idea whether this is possible at all...  For this reason,
+	we now simply use @value directly instead of wrapping it into a
+	macro, avoiding any issues.
+
+2014-10-12  Werner LEMBERG  <wl@gnu.org>
+
 	[doc] Protect against picky `sed' programs.
 	Problem reported by Axel Kielhorn <tex@axelkielhorn.de>.
 
