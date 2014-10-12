@@ -42,8 +42,9 @@ GROFF_BIN_PATH=`echo $(groff_bin_dirs) | sed -e 's|  *|:|g'`
 # usually not needed (however, to build from the repo you NEED it!)
 MAKEINFO=@MAKEINFO@
 
-# Users who want to print out the groff manual are expected to have
-# a working TeX installation.
+# Users who want to print out the groff manual are expected to have a
+# working TeX installation.  Note that texi2dvi properly honours the
+# `MAKEINFO' environment variable.
 TEXI2DVI=texi2dvi
 
 groff_bin_dirs=\
@@ -101,9 +102,9 @@ imagedir=img
 .texinfo.txt:
 	LANG= $(MAKEINFO) --enable-encoding -I$(srcdir) --plaintext -o $@ $<
 .texinfo.dvi:
-	MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e $<
+	LANG= MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e $<
 .texinfo.pdf:
-	MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e --pdf $<
+	LANG= MAKEINFO=$(MAKEINFO) $(TEXI2DVI) -e --pdf $<
 .texinfo.html:
 	LANG= $(MAKEINFO) --enable-encoding -I$(srcdir) --html --no-split $< \
 	  && $(SHELL) $(srcdir)/fixinfo.sh $@

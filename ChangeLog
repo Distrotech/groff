@@ -1,6 +1,19 @@
 2014-10-12  Werner LEMBERG  <wl@gnu.org>
 
-	Correctly handle `MAKEINFO' environment variable.
+	[doc] Improve call to generation of `groff.pdf'.
+	Problem reported by Axel Kielhorn <tex@axelkielhorn.de>.
+
+	Since `groff.texinfo' contains latin-1 characters, some sed
+	implementations (like the one used on Mac OS 10.8) fail if called
+	with the wrong locale.  Basically, this is a `texi2dvi' bug, but we
+	can set `LANG' by ourselves to improve the situation.
+
+	* doc/Makefile.in (.texinfo.dvi, .texinfo.pdf): Set `LANG'
+	environment variable to empty string.
+
+2014-10-12  Werner LEMBERG  <wl@gnu.org>
+
+	[doc] Correctly handle `MAKEINFO' environment variable.
 	Bug introduced in commit from 2014-03-29.
 
 	* m4/groff.m4 (GROFF_MAKEINFO): Don't set MAKEINFO to empty string
