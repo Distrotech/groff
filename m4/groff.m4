@@ -139,11 +139,7 @@ AC_DEFUN([GROFF_DOC_CHECK],
 # We need makeinfo 4.8 or newer.
 
 AC_DEFUN([GROFF_MAKEINFO],
-  [make_infodoc=
-   make_install_infodoc=
-   make_uninstall_infodoc=
-   MAKEINFO=
-   if test $docadd_info = yes; then
+  [if test $docadd_info = yes; then
      missing=
      AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo])
      if test -z "$MAKEINFO"; then
@@ -177,9 +173,15 @@ AC_DEFUN([GROFF_MAKEINFO],
 `groff.texinfo' into a PDF or HTML document.])
        fi
      fi
+
      make_infodoc=infodoc
      make_install_infodoc=install_infodoc
      make_uninstall_infodoc=uninstall_infodoc
+   else
+     make_infodoc=
+     make_install_infodoc=
+     make_uninstall_infodoc=
+     MAKEINFO=
    fi
    AC_SUBST([MAKEINFO])
    AC_SUBST([make_infodoc])
