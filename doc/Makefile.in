@@ -36,7 +36,7 @@ pnmtops=@pnmtops_nosetpage@
 # These may be overridden if cross-compiling.
 TROFFBIN=$(top_builddir)/src/roff/troff/troff
 GROFFBIN=$(top_builddir)/src/roff/groff/groff
-GROFF_BIN_PATH=`echo $(groff_bin_dirs) | sed -e 's|  *|:|g'`
+GROFF_BIN_PATH=`echo $(groff_bin_dirs) | LANG= sed -e 's|  *|:|g'`
 
 # info files are distributed with the groff package, so makeinfo is
 # usually not needed (however, to build from the repo you NEED it!)
@@ -75,6 +75,7 @@ TFLAG=-M$(top_builddir)/tmac -M$(top_srcdir)/tmac
 
 TROFF=$(TROFFBIN) $(TFLAG) $(FFLAG) -ww
 GROFF=\
+  LANG= \
   sed -e "s;@VERSION@;$(version)$(revision);" $< \
     | GROFF_COMMAND_PREFIX= \
       GROFF_BIN_PATH="$(GROFF_BIN_PATH)" \
