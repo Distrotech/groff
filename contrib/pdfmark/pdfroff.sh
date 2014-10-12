@@ -581,6 +581,13 @@
 #
   $AWK '/^grohtml-info/ {print ".pdfhref Z", $2, $3, $4}' $WRKFILE >> $REFCOPY
 #
+# ... appending a dummy map reference, to ensure that at least
+# one such is always present; (this is required, to suppress any
+# further intermediate output to stderr during the "press-ready"
+# runs of groff, for PDF output file production).
+#
+  echo ".pdfhref Z 0 0 0" >> $REFCOPY
+#
 # Re-enable progress reporting, if necessary ...
 # (Missing 'awk' or 'diff' may have disabled it, to avoid display
 #  of spurious messages associated with reference resolution).
