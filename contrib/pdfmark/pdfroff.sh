@@ -588,6 +588,25 @@
 #
   echo ".pdfhref Z 0 0 0" >> $REFCOPY
 #
+# Evaluate any processing options which may have been specified
+# as a result of parsing the document source ...
+#
+  eval `$SED -n '/^ *pdfroff-option:set */s//p' $WRKFILE`
+#
+# ... (which is currently supported to enable "toc-relocation",
+# only when the document actually relies on it, and if it is not
+# explicitly disabled from the command line) ...
+#
+  if test x${toc_relocation-"auto"} != xenabled
+  then
+#
+#   ... thus we reproduce the effect of the "--no-toc-relocation"
+#   option, when no enabling request is detected in the document
+#   control stream.
+#
+    TC_DATA="" TOC_FORMAT="" BODY_FORMAT=""
+  fi
+#
 # Re-enable progress reporting, if necessary ...
 # (Missing 'awk' or 'diff' may have disabled it, to avoid display
 #  of spurious messages associated with reference resolution).
