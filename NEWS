@@ -51,6 +51,23 @@ o Another preprocessor from Bernd Warken to pretty-print Pinyin syllables like
   `guo2wang2' as `guówáng'.
 
 
+Pdfroff
+-------
+
+o The pdfroff utility script now activates its `--no-toc-relocation' option
+  by default, unless a request similar to:
+
+     .if !dpdf:href.map .tm pdfroff-option:set toc_relocation=enabled
+
+  is invoked during input file processing; (`.if !dpdf:href.map ...' ensures
+  that the effect of the `.tm' request is restricted to the document setup
+  phase of processing, when `-mpdfmark' is active).
+
+  The bundled spdf.tmac macro package, which implicitly activates `-mpdfmark'
+  for `ms' macro users, ensures that TOC relocation is appropriately enabled,
+  when the `.TC' macro is invoked.
+
+
 Macro Packages
 --------------
 
