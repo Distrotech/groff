@@ -591,7 +591,7 @@
 # Evaluate any processing options which may have been specified
 # as a result of parsing the document source ...
 #
-  eval `$SED -n '/^ *pdfroff-option:set */s//p' $WRKFILE`
+  eval `$SED -n '/^ *pdfroff-option:set */s///p' $WRKFILE`
 #
 # ... (which is currently supported to enable "toc-relocation",
 # only when the document actually relies on it, and if it is not
