@@ -108,7 +108,7 @@ and
 .HR
 .
 \s[-4]\f[I]This document was produced using
-.URL http://groff.ffii.org/ groff-\n[.x].\n[.y].\n[.Y] .
+.URL http://www.gnu.org/\:software/\:groff groff-\n[.x].\n[.y].\n[.Y] .
 .br
 The image at the top has been contributed by Imogen Mulley,
 based on a similar picture found on the
@@ -163,33 +163,6 @@ The most recent released version of groff is always available by
 The current development version of groff is available from a
 repository which you can find through the Savannah project page for groff:
 .URL http://savannah.gnu.org/projects/groff .
-
-Alternatively, you can download snapshots (which are updated twice a day).
-The complete groff source as a single file is available
-.URL http://\:groff.ffii.org/\:groff/\:devel/\:groff-current.tar.gz here .
-
-A diff file relative to groff-\[la]version\[ra], the latest official groff
-release, is available at
-
-.in 2m
-.ft C
-http://groff.ffii.org/groff/devel/groff-\[la]version\[ra]-current.diff.gz
-.ft P
-.in
-
-Assuming that groff-\[la]version\[ra].tar.gz and
-groff-\[la]version\[ra]-current.diff.gz are in the same directory, do the
-following to apply the diff file:
-
-.in 2m
-.nf
-.ft C
-tar xzvf groff-\[la]version\[ra].tar.gz
-cd groff-\[la]version\[ra]
-gunzip -c ../groff-\[la]version\[ra]-current.diff.gz | patch -p1
-.ft P
-.fi
-.in
 .
 .
 .SH
