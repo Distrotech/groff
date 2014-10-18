@@ -517,3 +517,27 @@ man7_MANS =
 # source directory.
 
 include $(top_srcdir)/lib/gnulib.mk
+
+# Other files that should be present in the distribution tarball.
+EXTRA_DIST += \
+  BUG-REPORT \
+  ChangeLog.115 \
+  ChangeLog.116 \
+  ChangeLog.117 \
+  ChangeLog.118 \
+  ChangeLog.119 \
+  ChangeLog.120 \
+  ChangeLog.121 \
+  FDL \
+  FOR-RELEASE \
+  gendef.sh \
+  INSTALL.REPO \
+  INSTALL.extra \
+  INSTALL.gen \
+  LICENSES \
+  MANIFEST \
+  mdate.sh \
+  MORE.STUFF \
+  PROBLEMS \
+  PROJECTS \
+  README.MinGW
