@@ -134,7 +134,7 @@ examples/stamp:
 	touch $@
 
 install_data: install_always \
-	      $(make_install_pdfdoc) $(make_install_htmldoc) \
+	      $(make_install_pdfdoc) $(make_install_shipped_htmldoc) \
 	      $(make_install_examples)
 
 install_always: stamp-strip $(NORMALFILES)
@@ -151,7 +151,7 @@ install_always: stamp-strip $(NORMALFILES)
 install_pdfdoc:
 # Since this uses examples/, it's in install_pdfexamples
 
-install_htmldoc: install_always $(HTMLDOCFILES)
+install_shipped_htmldoc: install_always $(HTMLDOCFILES)
 	-test -d $(DESTDIR)$(htmldocdir)/mom \
 	  || $(mkinstalldirs) $(DESTDIR)$(htmldocdir)/mom
 	for f in $(HTMLDOCFILES_); do \
@@ -159,6 +159,7 @@ install_htmldoc: install_always $(HTMLDOCFILES)
 	  $(INSTALL_DATA) $(srcdir)/momdoc/$$f \
 	    $(DESTDIR)$(htmldocdir)/mom/$$f; \
 	done
+
 
 install_examples: install_examples_always $(make_install_pdfexamples)
 
@@ -192,7 +193,7 @@ stamp-strip: $(STRIPFILES)
 	touch $@
 
 uninstall_sub: uninstall_always \
-		$(make_uninstall_pdfdoc) $(make_uninstall_htmldoc) \
+		$(make_uninstall_pdfdoc) $(make_uninstall_shipped_htmldoc) \
 		$(make_uninstall_examples)
 
 uninstall_always:
@@ -203,7 +204,7 @@ uninstall_always:
 uninstall_pdfdoc: uninstall_always
 # Since that used examples/, it's in uninstall_pdfexamples
 
-uninstall_htmldoc: uninstall_always
+uninstall_shipped_htmldoc: uninstall_always
 	-for f in $(HTMLDOCFILES_); do \
 	  $(RM) $(DESTDIR)$(htmldocdir)/mom/$$f; \
 	done

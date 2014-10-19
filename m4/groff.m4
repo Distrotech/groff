@@ -109,6 +109,13 @@ AC_DEFUN([GROFF_DOC_CHECK],
       AC_MSG_WARN([Invalid `--with-doc' argument:] $i)
     done
   fi
+  if test $docadd_html = yes; then
+   make_install_shipped_htmldoc=install_shipped_htmldoc
+   make_uninstall_shipped_htmldoc=uninstall_shipped_htmldoc
+  else
+   make_install_shipped_htmldoc=
+   make_uninstall_shipped_htmldoc=
+  fi
   if test $docadd_other = yes; then
     make_otherdoc=otherdoc
     make_install_otherdoc=install_otherdoc
@@ -128,6 +135,8 @@ AC_DEFUN([GROFF_DOC_CHECK],
     make_uninstall_examples=
   fi
   AC_SUBST([doc_dist_target_ok])
+  AC_SUBST([make_install_shipped_htmldoc])
+  AC_SUBST([make_uninstall_shipped_htmldoc])
   AC_SUBST([make_otherdoc])
   AC_SUBST([make_install_otherdoc])
   AC_SUBST([make_uninstall_otherdoc])
