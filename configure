@@ -687,6 +687,8 @@ make_examples
 make_uninstall_otherdoc
 make_install_otherdoc
 make_otherdoc
+make_uninstall_shipped_htmldoc
+make_install_shipped_htmldoc
 doc_dist_target_ok
 YACC
 DVIPRINT
@@ -6030,6 +6032,13 @@ fi
       { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Invalid \`--with-doc' argument: $i" >&5
 $as_echo "$as_me: WARNING: Invalid \`--with-doc' argument: $i" >&2;}
     done
+  fi
+  if test $docadd_html = yes; then
+   make_install_shipped_htmldoc=install_shipped_htmldoc
+   make_uninstall_shipped_htmldoc=uninstall_shipped_htmldoc
+  else
+   make_install_shipped_htmldoc=
+   make_uninstall_shipped_htmldoc=
   fi
   if test $docadd_other = yes; then
     make_otherdoc=otherdoc
