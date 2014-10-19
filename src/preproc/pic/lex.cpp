@@ -90,6 +90,11 @@ int file_input::read_line()
     lineno++;
     for (;;) {
       int c = getc(fp);
+      if (c == '\r') {
+	c = getc(fp);
+	if (c != '\n')
+	  lex_error("invalid input character code %1", '\r');
+      }
       if (c == EOF)
 	break;
       else if (invalid_input_char(c))
