@@ -32,6 +32,15 @@
 #endif
 @PRAGMA_COLUMNS@
 
+
+/*
+ * XXX: As soon as groff uses gnulib in a saner way (i.e., only a single
+ *      `config.h' file for the whole package) this file should be replaced
+ *      with an unpatched version, not containing the next #include line.
+ */
+#include "../config.h"
+
+
 #if @HAVE_WINT_T@
 /* Solaris 2.5 has a bug: <wchar.h> must be included before <wctype.h>.
    Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
