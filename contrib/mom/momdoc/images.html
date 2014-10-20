@@ -937,7 +937,7 @@ in any order, although it is advisable to put <kbd>CAPTION</kbd>,
 <kbd>SHORT_CAPTION</kbd>, and/or <kbd>LABEL</kbd> last.
 </p>
 
-<h5 class="docs" style="margin-top: 1em; text-transform: none">'H'</h5>
+<h5 id="h" class="docs" style="margin-top: 1em; text-transform: none">'H'</h5>
 
 <p>
 With the <b>H</b> argument, a table will span as many pages as
@@ -1078,6 +1078,13 @@ in
 The text of the caption must be surrounded by double-quotes.
 </p>
 
+<p>
+Please note that if your table has a caption, you must invoke
+<kbd>TS</kbd> with the <kbd>H</kbd> flag, which also entails the use
+of
+<a href="#th">TH</a>.
+</p>
+
 <h5 class="docs" style="margin-top: 1em; text-transform: none">'SHORT_CAPTION'</h5>
 
 <p>
@@ -1105,12 +1112,26 @@ which, if enabled, overrides the <kbd>LABEL</kbd> argument.
 The <b>TH</b> macro (<b>T</b>able <b>H</b>eader), which is required
 when you begin a table with <kbd>.TS H</kbd>, allows you to
 determine what goes in a table&#8217;s running header if it spans
-multiple pages.  If you place it immediately underneath your
-<kbd>tbl</kbd> formatting specifications, the last line of which
-always ends with a period (see <kbd>tbl(1)</kbd>), there will
-be no running header.  If you place it under the first row of
-<kbd>tbl</kbd> data, the first row will form the header; under the
-second row, the first and second rows form the header, and so on.
+multiple pages.  Placing <kbd>.TH</kbd> under the first row of
+<kbd>tbl</kbd> data makes the first row the header.  If placed under
+the second row, the first and second rows form the header, and so
+on.
+</p>
+
+<p>
+As there are sometimes reasons to run <kbd>.TS H</kbd> when
+you don&#8217;t, in fact, want a running header (e.g. when
+your table has a caption), you can suppress it by placing
+<kbd>.TH</kbd> immediately underneath your <kbd>tbl</kbd> formatting
+specifications, the last line of which always ends with a period
+(see <kbd>tbl(1)</kbd>).</p>
+</p>
+
+<p>
+See the
+<kbd><a href="#h">H</a></kbd>
+argument to <kbd>.TS</kbd> for examples demonstrating <kbd>.TH</kbd>
+placement.
 </p>
 
 <div class="macro-id-overline">
@@ -1390,7 +1411,7 @@ required)
 <br/>
 &nbsp;&nbsp;[ LABEL "&lt;label&gt;" ]
 <br/>
-&nbsp;&nbsp;[ LABEL_ADJUST +|-&lt;vertical adjustment&gt; ]
+&nbsp;&nbsp;[ SHIFT_LABEL +|-&lt;vertical adjustment&gt; ]
 <br/>
 &nbsp;&nbsp;[ SHORT_CAPTION "&lt;short caption&gt;" ]
 <br/>
@@ -1495,14 +1516,14 @@ Equations.  Mom provides an auto-labelling facility for equations (see
 which, if enabled, overrides the <kbd>LABEL</kbd> argument.
 </p>
 
-<h5 class="docs" style="margin-top: 1em; text-transform: none">'LABEL_ADJUST'</h5>
+<h5 class="docs" style="margin-top: 1em; text-transform: none">'SHIFT_LABEL'</h5>
 
 <p>
-<kbd>LABEL_ADJUST</kbd> allows you to raise (<kbd>-</kbd>) or lower
+<kbd>SHIFT_LABEL</kbd> allows you to raise (<kbd>-</kbd>) or lower
 (<kbd>+</kbd>) the equation label.  It&#8217;s primary use is to
 center equation labels vertically on the equation rather than flush
 with the last line.  Assuming a three-line equation,
-<kbd>.EQ&nbsp;LABEL_ADJUST&nbsp;-1v</kbd> would raise the label by
+<kbd>.EQ&nbsp;SHIFT_LABEL&nbsp;-1v</kbd> would raise the label by
 one line, thus centering it vertically on the equation.
 </p>
 
@@ -1629,27 +1650,27 @@ pdf images as &#8220;Fig. &lt;n&gt;&#8221;, and for equations as
 </p>
 
 <p>
-If you wish to change the prefix string, pass <i>both</i>
-the <kbd>PREFIX</kbd> and <kbd>SUFFIX</kbd> arguments to
-<kbd>.AUTOLABEL_&lt;type&gt;</kbd> and enter the string you wish,
-including any spaces, surrounded by double-quotes.  If no suffix is
-needed, give <kbd>SUFFIX</kbd> an empty string with two adjacent
-double-quotes.
-</p>
-
-<p>
-For example, if you are including musical excerpts
-in your document, MLA style requires that they be labelled
-&#8220;Ex. &lt;n&gt;&#8221;.  Since musical excerpts are likely to
-be scanned images (in pdf format, don&#8217;t forget), you must
-change the prefix string for pdf images:
+Use <kbd>PREFIX&nbsp;&lt;"string"&gt;</kbd> to change what comes
+before the automatic numbering.  For example, if you are including
+musical excerpts in your document, MLA style requires that they be
+labelled &#8220;Ex.&nbsp;&lt;n&gt;&#8221;.  Since musical excerpts
+are likely to be scanned images (in pdf format, don&#8217;t forget),
+you have to change the prefix string for pdf images:
 <br/>
 <span class="pre-in-pp">
-  .AUTOLABEL_IMAGES PREFIX "Ex. " SUFFIX ""
+  .AUTOLABEL_IMAGES PREFIX "Ex. "
 </span>
+If you need a suffix after the automatic numbering, use
+<kbd>SUFFIX&nbsp;&lt;"string"&gt;</kbd>, like this:
+<br/>
+<span class="pre-in-pp">
+  .AUTOLABEL_IMAGES PREFIX "(Fig. " SUFFIX ")"
+</span>
+Note that the double-quotes around the single-character SUFFIX
+string are optional.
 </p>
 
-<h4 class="docs" style="margin-top: -1em">Prefixing chapter numbers</h4>
+<h4 class="docs" style="margin-top: -.5em">Prefixing chapter numbers</h4>
 
 <p>
 If you would like mom to prefix chapter numbers to the label,
@@ -1663,8 +1684,8 @@ to invoking <kbd>AUTOLABEL_&lt;type&gt;&nbsp;PREFIX_CHAPTER</kbd>,
 you must give the chapter number after <kbd>PREFIX_CHAPTER</kbd>.
 Once done, all subsequent chapters or collated document sections
 will increment the chapter number by one automatically.  Failure to
-provide a chapter number after <kbd>PREFIX</kbd> when it is required
-will result in mom aborting with a reminder to do so.
+provide a chapter number after <kbd>PREFIX_CHAPTER</kbd> when it is
+required will result in mom aborting with a reminder to do so.
 </p>
 
 <div class="macro-id-overline">
@@ -1825,51 +1846,10 @@ explicitly named style parameters.
 By default, figures (<b>pic</b> output and pdf images) and tables
 have their captions and labels set quad left.  Sources (for tables)
 are also set quad left.  Equations have their labels set quad right,
-and their captions centered.
-</p>
-
-<p>
-The meaning of left, center, and right is fluid, depending on a
-number of factors.  Know, however, that if you pass the optional
-<kbd>ON_LL</kbd> argument to <kbd>QUAD &lt;direction&gt;</kbd>, mom
-will use the entire line length, from left to right margin, as the
-basis for quadding.
-</p>
-
-<p>
-For figures and tables, without the <kbd>ON_LL</kbd> argument,
-<kbd>LEFT</kbd>, <kbd>CENTER</kbd>, and <kbd>RIGHT</kbd> mean flush
-left, center, or right on the figure or table.
-</p>
-
-<p>
-If the figure or table is positioned left and the quad direction is
-<kbd>LEFT</kbd>, text will flow past the figure or table and break
-only when the right margin of the page is reached.  If the quad
-direction is <kbd>CENTER</kbd>, text will be centered on the figure
-or table.  If the quad direction is <kbd>RIGHT</kbd>, text will be
-quadded flush with the right margin of the figure or table.
-</p>
-
-<p>
-If the figure or table is positioned center and the quad direction
-is <kbd>CENTER</kbd>, text will be centered on the full line length.
-If the quad direction is <kbd>LEFT</kbd> or <kbd>RIGHT</kbd>, text
-will be set flush left or right on the figure or table, with the
-width of the figure or table determining the line length (unless
-<kbd>ON_LL</kbd> is given).
-</p>
-
-<p>
-If the figure or table is positioned right and the quad direction
-is <kbd>RIGHT</kbd>, text will be set flush right with the figure or
-table (which is also the right margin of the page) and will extend
-<i>to the right</i> of the figure or table over the full line length.
-If the quad direction is <kbd>LEFT</kbd>, text
-will be set flush left on the figure or table, with the
-width of the figure or table determining the line length (unless
-<kbd>ON_LL</kbd> is given).  If the quad direction is
-<kbd>CENTER</kbd>, text is centered on the figure or table.
+and their captions centered.  Regardless of the quad direction,
+captions, labels, and sources are quadded over the width of figures
+and tables unless you pass the optional <kbd>ON_LL</kbd> argument to
+<kbd>QUAD&nbsp;&lt;direction&gt;</kbd>.
 </p>
 
 <p>
