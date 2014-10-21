@@ -15673,6 +15673,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    rr #COVER
 .    rr #LAST_LEVEL
 .    rr #LEVEL
+.    if \\n[#RESTORE_PN_V_POS] \{\
+.       nr #PAGE_NUM_V_POS \\n[#RESTORE_PN_V_POS]
+.       rr #RESTORE_PN_V_POS
+.    \}
 .END
 \#
 \# NUMBER_LINES
@@ -15849,6 +15853,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       \}
 .       if \\n[#PAGE_NUM_V_POS]=2 \{\
 .          if \\n[#PAGINATE]=1 .nr #PAGINATE_WAS_ON 1
+.             nr #RESTORE_PN_V_POS \\n[#PAGE_NUM_V_POS]
 .          PAGINATION OFF
 .       \}
 .       if \\n[#HEADERS_WERE_ON] .HEADERS
@@ -15858,7 +15863,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    shift
 .    ie '\\$1'DIVIDER' \{\
 .       if \\n[#FOOTERS_WERE_ON] .FOOTERS
-.       if \\n[#PAGE_NUM_V_POS]=2 \{\
+.       if \\n[#RESTORE_PN_V_POS]=2 \{\
 .          if \\n[#PAGINATE_WAS_ON] .nr #RESTORE_PAGINATION 1
 .       \}
 .       shift
