@@ -6235,22 +6235,25 @@ y\R'#DESCENDER \\n[.cdp]'
 .          \}
 .          nr #ARG_NUM 0 1
 .          while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.             ie \\n[#TITLE_COLOR]=1 \
+.             ie \\n[#TITLE_COLOR]=1 \{\
 .                PRINT \
 \m[\\*[$TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
+.             \}
 .             el .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]
 .          \}
 .       \}
 .       el \{\
-.          ie \\n[#TITLE_COLOR]=1 \
+.          ie \\n[#TITLE_COLOR]=1 \{\
 .             PRINT \m[\\*[$TITLE_COLOR]]\\*[$CHAPTER_STRING]\m[]
+.          \}
 .          el .PRINT \\*[$CHAPTER_STRING]
 .       \}
 .    \}
 .\" Chapter string, possibly with a chapter title
 .    el \{\
-.       ie \\n[#TITLE_COLOR]=1 \
+.       ie \\n[#TITLE_COLOR]=1 \{\
 .          PRINT \m[\\*[$TITLE_COLOR]]\\*[$CHAPTER_STRING] \\*[$CHAPTER]\m[]
+.       \}
 .       el .PRINT \\*[$CHAPTER_STRING] \\*[$CHAPTER]
 .       if !'\\*[$CHAPTER_TITLE_1]'' \{\
 .          if \\n[#PRINT_STYLE]=2 \{\
@@ -6262,9 +6265,10 @@ y\R'#DESCENDER \\n[.cdp]'
 .          \}
 .          nr #ARG_NUM 0 1
 .          while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.             ie \\n[#CHAPTER_TITLE_COLOR]=1 \
+.             ie \\n[#CHAPTER_TITLE_COLOR]=1 \{\
 .                PRINT \
 \m[\\*[$CHAPTER_TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
+.             \}
 .             el .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]
 .          \}
 .          RLD \\n[#DOC_LEAD]u    \" Just looks better this way
@@ -6283,8 +6287,9 @@ y\R'#DESCENDER \\n[.cdp]'
 .    if !'\\*[$TITLE_1]'' \{\
 .       nr #ARG_NUM 0 1
 .       while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.          ie \\n[#TITLE_COLOR]=1 \
+.          ie \\n[#TITLE_COLOR]=1 \{\
 .             PRINT "\m[\\*[$TITLE_COLOR]]\\*[$TITLE_\\n[#ARG_NUM]]\m[]
+.          \}
 .          el .PRINT "\\*[$TITLE_\\n[#ARG_NUM]]
 .       \}
 .    \}
@@ -6294,8 +6299,9 @@ y\R'#DESCENDER \\n[.cdp]'
 .       ps \\*[$SUBTITLE_PT_SIZE]
 .       nr #ARG_NUM 0 1
 .       while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.          ie \\n[#SUBTITLE_COLOR]=1 \
+.          ie \\n[#SUBTITLE_COLOR]=1 \{\
 .             PRINT "\m[\\*[$SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n[#ARG_NUM]]\m[]
+.          \}
 .          el .PRINT "\\*[$SUBTITLE_\\n[#ARG_NUM]]
 .       \}
 .    \}
@@ -6303,8 +6309,9 @@ y\R'#DESCENDER \\n[.cdp]'
 .       FAMILY  \\*[$AUTHOR_FAM]
 .       FT      \\*[$AUTHOR_FT]
 .       ps \\*[$AUTHOR_PT_SIZE]
-.       ie \\n[#ATTRIBUTE_COLOR]=1 \
+.       ie \\n[#ATTRIBUTE_COLOR]=1 \{\
 .          PRINT \&\m[\\*[$ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
+.       \}
 .       el .PRINT \&\\*[$ATTRIBUTE_STRING]
 .       PRINT_AUTHORS
 .    \}
@@ -6818,9 +6825,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       el \{\
 .          nr #ARG_NUM 0 1
 .          while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.             ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \
+.             ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \{\
 .                PRINT \
 \m[\\*[$\\*[DOC_]COVER_TITLE_COLOR]]\\*[$TITLE_\\n[#ARG_NUM]]\m[]
+.             \}
 .             el \
 .                PRINT "\\*[$TITLE_\\n[#ARG_NUM]]
 .             if \\n[#ARG_NUM]>1 .as PDF_BM " \"
@@ -6844,9 +6852,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       el \{\
 .          nr #ARG_NUM 0 1
 .          while \\n[#DOCTITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.             ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \
+.             ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \{\
 .                PRINT \
 \m[\\*[$\\*[DOC_]COVER_TITLE_COLOR]]\\*[$\\*[DOC_]TITLE_\\n[#ARG_NUM]]\m[]
+.             \}
 .             el .PRINT \\*[$\\*[DOC_]TITLE_\\n[#ARG_NUM]]
 .             if \\n[#ARG_NUM]>1 .as PDF_BM " \"
 .             as PDF_BM \\*[$\\*[DOC_]TITLE_\\n[#ARG_NUM]]
@@ -6862,9 +6871,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          CAPS OFF
 .       \}
 .       el \{\
-.          ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \
+.          ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \{\
 .             PRINT \
 \m[\\*[$\\*[DOC_]COVER_TITLE_COLOR]]\\*[$CHAPTER_STRING] \\*[$CHAPTER]\m[]
+.          \}
 .          el .PRINT \\*[$CHAPTER_STRING] \\*[$CHAPTER]
 .       \}
 .       PDF_BOOKMARK 1 \
@@ -6889,9 +6899,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       el \{\
 .          nr #ARG_NUM 0 1
 .          while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.             ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \
+.             ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \{\
 .                PRINT \
 \m[\\*[$\\*[DOC_]COVER_TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
+.             \}
 .             el .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]
 .             if \\n[#ARG_NUM]>1 .as PDF_BM " \"
 .             as PDF_BM \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]
@@ -6907,9 +6918,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          CAPS OFF
 .       \}
 .       el \{\
-.          ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \
+.          ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \{\
 .             PRINT \
 \m[\\*[$\\*[DOC_]COVER_TITLE_COLOR]]\\*[$CHAPTER_STRING] \\*[$CHAPTER]\m[]
+.          \}
 .          el .PRINT \\*[$CHAPTER_STRING] \\*[$CHAPTER]
 .       \}
 .       if !'\\*[$CHAPTER_TITLE_1]'' \{\
@@ -6932,9 +6944,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             ALD \\n[.v]u/4u \"Put a little space before the chapter title
 .             nr #ARG_NUM 0 1
 .             while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \
+.                ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \{\
 .                   PRINT \
 \m[\\*[$\\*[DOC_]COVER_TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
+.                \}
 .                el .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]
 .                if \\n[#ARG_NUM]>1 .as PDF_BM " \"
 .                as PDF_BM \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]
@@ -6958,10 +6971,11 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       el \{\
 .          nr #ARG_NUM 0 1
 .          while \\n[#\\*[DOC_]COVER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.             ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \
+.             ie \\n[#\\*[DOC_]COVER_TITLE_COLOR]=1 \{\
 .                PRINT \
 \m[\\*[$\\*[DOC_]COVER_TITLE_COLOR]]\
 \\*[$\\*[DOC_]COVER_TITLE_\\n[#ARG_NUM]]\m[]
+.             \}
 .             el .PRINT \\*[$\\*[DOC_]COVER_TITLE_\\n[#ARG_NUM]]
 .             if \\n[#ARG_NUM]>1 .as PDF_BM " \"
 .             as PDF_BM \\*[$\\*[DOC_]COVER_TITLE_\\n[#ARG_NUM]]
@@ -6990,10 +7004,11 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                nr #SUBTITLES \\n[#SUBTITLE_\\*[DOC_]COVER_NUM]
 .                nr #NEXT_SUBTITLE 0 1
 .                while \\n[#SUBTITLES]>\\n[#NEXT_SUBTITLE] \{\
-.                   ie \\n[#\\*[DOC_]COVER_SUBTITLE_COLOR]=1 \
+.                   ie \\n[#\\*[DOC_]COVER_SUBTITLE_COLOR]=1 \{\
 .                      PRINT \
 \m[\\*[$\\*[DOC_]COVER_SUBTITLE_COLOR]]\
 \\*[$SUBTITLE_\\*[DOC_]COVER_\\n+[#NEXT_SUBTITLE]]\m[]
+.                   \}
 .                   el .PRINT \
 \\*[$SUBTITLE_\\*[DOC_]COVER_\\n+[#NEXT_SUBTITLE]]
 .                \}
@@ -7002,9 +7017,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                nr #SUBTITLES \\n[#SUBTITLE_NUM]
 .                nr #NEXT_SUBTITLE 0 1
 .                while \\n[#SUBTITLES]>\\n[#NEXT_SUBTITLE] \{\
-.                   ie \\n[#\\*[DOC_]COVER_SUBTITLE_COLOR]=1 \
+.                   ie \\n[#\\*[DOC_]COVER_SUBTITLE_COLOR]=1 \{\
 .                      PRINT \
 \m[\\*[$\\*[DOC_]COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n+[#NEXT_SUBTITLE]]\m[]
+.                   \}
 .                   el .PRINT \\*[$SUBTITLE_\\n+[#NEXT_SUBTITLE]]
 .                \}
 .             \}
@@ -7028,17 +7044,19 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          sp
 .       \}
 .       ie d$ATTRIBUTE_STRING_DO_CCOVER \{\
-.          ie \\n[#\\*[DOC_]COVER_ATTRIBUTE_COLOR]=1 \
+.          ie \\n[#\\*[DOC_]COVER_ATTRIBUTE_COLOR]=1 \{\
 .             PRINT \
 \&\m[\\*[$\\*[DOC_]COVER_ATTRIBUTE_COLOR]]\
 \\*[$ATTRIBUTE_STRING_\\*[DOC_]COVER]\m[]
+.          \}
 .          el .PRINT \&\\*[$ATTRIBUTE_STRING_\\*[DOC_]COVER]
 .       \}
 .       el \{\
 .          if d$ATTRIBUTE_STRING \{\
-.             ie \\n[#\\*[DOC_]COVER_ATTRIBUTE_COLOR]=1 \
+.             ie \\n[#\\*[DOC_]COVER_ATTRIBUTE_COLOR]=1 \{\
 .                PRINT \
 \&\m[\\*[$\\*[DOC_]COVER_ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
+.             \}
 .             el .PRINT \&\\*[$ATTRIBUTE_STRING]
 .          \}
 .       \}
@@ -7095,8 +7113,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          ds $COPYRIGHT \\*[$COPYRIGHT_DOCCOVER]
 .       \}
 .       QUAD \\*[$\\*[DOC_]COVER_COPYRIGHT_QUAD]
-.       ie \\n[#\\*[DOC_]COVER_COPYRIGHT_COLOR]=1 \
+.       ie \\n[#\\*[DOC_]COVER_COPYRIGHT_COLOR]=1 \{\
 .          PRINT \m[\\*[$\\*[DOC_]COVER_COPYRIGHT_COLOR]]\\*[$COPYRIGHT]\m[]
+.       \}
 .       el .PRINT \\*[$COPYRIGHT]
 .       if d$SAVED_COPYRIGHT .ds $COPYRIGHT \\*[$SAVED_COPYRIGHT]
 .    \}
