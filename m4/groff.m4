@@ -110,11 +110,11 @@ AC_DEFUN([GROFF_DOC_CHECK],
     done
   fi
   if test $docadd_html = yes; then
-   make_install_shipped_htmldoc=install_shipped_htmldoc
-   make_uninstall_shipped_htmldoc=uninstall_shipped_htmldoc
+    make_install_shipped_htmldoc=install_shipped_htmldoc
+    make_uninstall_shipped_htmldoc=uninstall_shipped_htmldoc
   else
-   make_install_shipped_htmldoc=
-   make_uninstall_shipped_htmldoc=
+    make_install_shipped_htmldoc=
+    make_uninstall_shipped_htmldoc=
   fi
   if test $docadd_other = yes; then
     make_otherdoc=otherdoc
