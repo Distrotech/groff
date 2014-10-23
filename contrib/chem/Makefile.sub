@@ -91,26 +91,25 @@ install_examples:
 	done
 
 .PHONY: install_data
-install_data: install_always install_examples
 
-#install_data: install_always $(make_install_examples)
+install_data: install_always $(make_install_examples)
 
 # uninstall_sub: uninstall_always $(make_uninstall_examples)
 
 .PHONY: uninstall_always
 uninstall_always:
-	$(RM) $(DESTDIR)$(bindir)/chem; \
-	$(RM) $(DESTDIR)$(datasubdir)/pic/chem.pic; \
-	test -d $(DESTDIR)$(datasubdir)/pic && \
+	$(RM) $(DESTDIR)$(bindir)/chem;
+	$(RM) $(DESTDIR)$(datasubdir)/pic/chem.pic;
+	-test -d $(DESTDIR)$(datasubdir)/pic && \
 	  rmdir $(DESTDIR)$(datasubdir)/pic;
 
 .PHONY: uninstall_examples
 uninstall_examples:
-	$(RM) $(DESTDIR)$(exampledir)/chem/122/*; \
-	test -d $(DESTDIR)$(exampledir)/chem/122 && \
-	  rmdir $(DESTDIR)$(exampledir)/chem/122; \
-	$(RM) $(DESTDIR)$(exampledir)/chem/*; \
-	test -d $(DESTDIR)$(exampledir)/chem && \
+	$(RM) $(DESTDIR)$(exampledir)/chem/122/*;
+	-test -d $(DESTDIR)$(exampledir)/chem/122 && \
+	  rmdir $(DESTDIR)$(exampledir)/chem/122;
+	$(RM) $(DESTDIR)$(exampledir)/chem/*;
+	-test -d $(DESTDIR)$(exampledir)/chem && \
 	  rmdir $(DESTDIR)$(exampledir)/chem;
 
 .PHONY: uninstall_sub
