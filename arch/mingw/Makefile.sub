@@ -1,0 +1,66 @@
+# Copyright (C) 2014
+#   Free Software Foundation, Inc.
+#
+# This file is part of groff.
+#
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# Makefile.sub
+#
+WINSCRIPTS=\
+  afmtodit.cmd \
+  chem.cmd \
+  gperl.cmd \
+  gpinyin.cmd \
+  grap2graph.cmd \
+  groffer.cmd \
+  grog.cmd \
+  gropdf.cmd \
+  mmroff.cmd \
+  neqn.cmd \
+  pdfmom.cmd \
+  roff2dvi.cmd \
+  roff2html.cmd \
+  roff2pdf.cmd \
+  roff2ps.cmd \
+  roff2text.cmd \
+  roff2x.cmd
+
+RM=rm -f
+
+all: $(make_winscripts)
+install_data: $(make_install_winscripts)
+uninstall_sub: $(make_uninstall_winscripts)
+
+winscripts: $(WINSCRIPTS)
+
+install_winscripts: $(WINSCRIPTS)
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	for f in $(WINSCRIPTS); do \
+	  $(RM) $(DESTDIR)$(bindir)/$$f; \
+	  $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(bindir)/$$f; \
+	done
+
+uninstall_winscripts:
+	-for f in $(WINSCRIPTS); do \
+	  $(RM) $(DESTDIR)$(bindir)/$$f; \
+	done
+
+########################################################################
+# Emacs settings
+########################################################################
+#
+# Local Variables:
+# mode: makefile
+# End:

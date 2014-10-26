@@ -68,7 +68,7 @@ AC_DEFUN([GROFF_PERL],
      AC_MSG_ERROR([perl version is too old], 1))])
 
 
-# It is possible to fine-tune generation of documenation.
+# It is possible to fine-tune generation of documentation.
 
 AC_DEFUN([GROFF_DOC_CHECK],
   [AC_ARG_WITH([doc],
@@ -989,6 +989,27 @@ AC_DEFUN([GROFF_OS390],
        AC_MSG_RESULT([no]) ;;
      esac
    fi])
+
+
+# Check whether Windows scripts like `afmtodit.cmd' should be installed.
+
+AC_DEFUN([GROFF_CMD_FILES],
+  [AC_MSG_CHECKING([whether to install .cmd wrapper scripts for Windows])
+   case "$host_os" in
+   *mingw*)
+     make_winscripts=winscripts
+     make_install_winscripts=install_winscripts
+     make_uninstall_winscripts=uninstall_winscripts
+     AC_MSG_RESULT([yes]) ;;
+   *)
+     make_winscripts=
+     make_install_winscripts=
+     make_uninstall_winscripts=
+     AC_MSG_RESULT([no]) ;;
+   esac
+   AC_SUBST([make_winscripts])
+   AC_SUBST([make_install_winscripts])
+   AC_SUBST([make_uninstall_winscripts])])
 
 
 # Check whether we need a declaration for a function.
