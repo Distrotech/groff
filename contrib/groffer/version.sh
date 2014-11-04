@@ -31,4 +31,4 @@ _PROGRAM_VERSION='2.2.5';
 # this setting of the groff version is only used before make is run,
 # otherwise @VERSION@ will set it, see groffer.sh.
 export _GROFF_VERSION_PRESET;
-_GROFF_VERSION_PRESET='1.22.2';
+_GROFF_VERSION_PRESET='1.22.3';
