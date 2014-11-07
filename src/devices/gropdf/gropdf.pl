@@ -465,7 +465,7 @@ sub GetObj
 sub PDFDate
 {
     my $dt=shift;
-    return(sprintf("D:%04d%02d%02d%02d%02d%02d% +02d'00'",$dt->[5]+1900,$dt->[4]+1,$dt->[3],$dt->[2],$dt->[1],$dt->[0],( localtime time() + 3600*( 12 - (gmtime)[2] ) )[2] - 12));
+    return(sprintf("D:%04d%02d%02d%02d%02d%02d%+03d'00'",$dt->[5]+1900,$dt->[4]+1,$dt->[3],$dt->[2],$dt->[1],$dt->[0],( localtime time() + 3600*( 12 - (gmtime)[2] ) )[2] - 12));
 }
 
 sub ToPoints
