@@ -54,6 +54,18 @@ else
 EXTRA_DIST += $(DOCFILES)
 endif
 
+# pdf doc, written in mom and therefore using contrib/mom/mom.am
+# definitions
+EXTRA_DIST += doc/automake.mom
+if BUILD_PDFDOC
+docpdfdocdir = $(pdfdocdir)
+nodist_docpdfdoc_DATA = doc/automake.pdf
+MOSTLYCLEANFILES += doc/automake.pdf
+endif
+doc/automake.pdf: doc/automake.mom \
+  groff troff gropdf pdfmom font/devpdf/build_font_files \
+  contrib/mom/om.tmac
+
 # GNU PIC html documentation, installed in $(htmldocdir)
 # Other pic*.html files are installed by the local rule
 if BUILD_HTML
@@ -103,7 +115,6 @@ exampleimagedir = $(exampledir)/img
 MOSTLYCLEANFILES += doc/examples.stamp
 
 EXTRA_DIST += \
-  doc/automake.mom \
   doc/gnu.xpm \
   doc/fixinfo.sh \
   doc/txi-en.tex
