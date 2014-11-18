@@ -767,7 +767,10 @@ sub do_x
 		}
 		elsif ($pdfmark=~m/(.+) \/OUT/)
 		{
-		    my @xwds=split(' ',"<< $1 >>");
+		    my $t=$1;
+		    $t=~s/\\\) /\\\\\) /g;
+		    $t=~s/\\e/\\\\/g;
+		    my @xwds=split(' ',"<< $t >>");
 		    my $out=ParsePDFValue(\@xwds);
 
 		    my $this=[$out,[]];
@@ -3029,6 +3032,7 @@ sub TextWid
     my $txt=shift;
     my $w=0;
     my $ck=0;
+    $txt=~s/^\\(\d\d\d)/chr($1)/e;
 
     foreach my $c (split('',$txt))
     {
