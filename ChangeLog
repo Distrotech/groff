@@ -1,3 +1,37 @@
+2014-11-18  Bertrand Garrigues  <bertrand.garrigues@laposte.net>
+
+	Automake migration and Gnulib integration.
+
+	Gnulib:
+	- Added gnulib as a git submodule.
+	- Integrated bootstrap scripts from gnulib.
+	- Gnulib m4 directory is now in `gnulib_m4', while Gnulib's .c
+	files are located in `lib'.  `gnulib_m4' and `lib' are generated
+	and distributed.
+
+	Automake:
+	- Removed Makefiles from the old build system.
+	- Converted Makefile.in into Makefile.am.
+	- Converted Makefile.sub files in all directories to a .am file.
+	- Removed configure, src/include/config.hin (now generated).
+	- Removed various helper scripts (config.guess, config.rpath...),
+	now installed by bootstrap in `build-aux'.
+	- Moved aclocal.m4 to acinclude.m4 (aclocal.m4 is now generated).
+	- Makefile in non-recursive style.
+	- Updated INSTALL.REPO (INSTALL is now a symlink to
+	gnulib/doc/INSTALL, original INSTALL file moved to INSTALL.extra)
+	- Added (empty) THANKS, AUTHORS files.
+	- Added a document on the usage of automake in groff in
+	doc/automake.pdf.
+
+	Additional features:
+	- Out-of-source build is supported.
+	- Parallel build is possible (make -j).
+	- Automatic targets from Automake: `make dist', `make distcheck'.
+	- 'make check' is available for automatic testing, gdiffmk's test
+	was plugged to this target.
+	- Auto-detect if make has builtin variable `RM'.
+
 2014-11-29  Werner LEMBERG  <wl@gnu.org>
 
 	Fix previous commit.
@@ -59,14 +93,14 @@
 	My commit '3fe78135c9fe666dadffde2a822b0535d8db6feb' introduced
 	problem in subroutine `TextWid'.  Octal char `\nnn' returns width of
 	4 char string rather than width of single character.
-	
+
 	* src/devices/gropdf/gropdf.pl: Change `TextWid' to recognise octal
 	escaped characters (\nnn).
-	  
+
 2014-11-07  Deri James  <deri@chuzzlewit.myzen.co.uk>
 
 	See bug #43555.
-	
+
 	* src/devices/gropdf/gropdf.pl: Correct Date Format.
 
 2014-11-04  Werner LEMBERG  <wl@gnu.org>
