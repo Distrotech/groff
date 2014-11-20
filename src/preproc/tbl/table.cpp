@@ -2966,7 +2966,10 @@ void set_troff_location(const char *fn, int ln)
       && strcmp(fn, last_filename) == 0)
     printfs(".lf %1\n", as_string(ln));
   else {
-    printfs(".lf %1 %2\n", as_string(ln), fn);
+    string filename(fn);
+    filename += '\0';
+    normalize_for_lf(filename);
+    printfs(".lf %1 %2\n", as_string(ln), filename.contents());
     last_filename = fn;
     location_force_filename = 0;
   }

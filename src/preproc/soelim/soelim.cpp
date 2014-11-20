@@ -17,6 +17,7 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
+#include "stringclass.h"
 #include "lib.h"
 
 #include <ctype.h>
@@ -25,7 +26,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 #include <errno.h>
 #include "errarg.h"
 #include "error.h"
-#include "stringclass.h"
 #include "nonposix.h"
 #include "searchpath.h"
 
@@ -161,6 +161,7 @@ int do_file(const char *filename)
     error("can't open `%1': %2", whole_filename.contents(), strerror(err));
     return 0;
   }
+  normalize_for_lf(whole_filename);
   current_filename = whole_filename.contents();
   current_lineno = 1;
   set_location();

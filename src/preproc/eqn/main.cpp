@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "eqn.h"
-#include "stringclass.h"
 #include "device.h"
 #include "searchpath.h"
 #include "macropath.h"
@@ -66,9 +65,12 @@ void do_file(FILE *fp, const char *filename)
 {
   string linebuf;
   string str;
+  string fn(filename);
+  fn += '\0';
+  normalize_for_lf(fn);
+  current_filename = fn.contents();
   if (output_format == troff)
-    printf(".lf 1 %s\n", filename);
-  current_filename = filename;
+    printf(".lf 1 %s\n", current_filename);
   current_lineno = 0;
   while (read_line(fp, &linebuf)) {
     if (linebuf.length() >= 4

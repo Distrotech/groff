@@ -1,3 +1,33 @@
+2014-11-10  Eli Zaretskii  <eliz@gnu.org>
+
+	Improve native Windows port.
+
+	This patch fixes two issues.
+
+	  . Handle backslashes in `.lf' arguments for MSDOS and Windows.
+	  . Fix file name quoting for the groff pipeline.
+
+	* src/preproc/soelim/soelim.cpp (do_file):
+	* src/preproc/refer/refer.cpp (do_file):
+	* src/preproc/preconv/preconv.cpp (do_file):
+	* src/preproc/pic/main.cpp (do_file):
+	* src/preproc/eqn/main.cpp (do_file): Call `normalize_for_lf' to
+	convert backslashes in the file name being processed to forward
+	slashes.
+
+	* src/include/lib.h (normalize_for_lf): Add prototype.
+
+	* src/preproc/eqn/eqn.h:
+	* src/preproc/pic/pic.h:
+	* src/preproc/refer/refer.h:
+	* src/preproc/tbl/table.h: Include stringclass.h before lib.h.
+
+	* src/libs/libgroff/lf.cpp (normalize_for_lf): New function.
+
+	* src/roff/groff/groff.cpp: Include stringclass.h before lib.h.
+	(append_arg_to_string) [_WIN32 && !__CYGWIN__]: Use only "..." for
+	quoting in native Windows builds.
+
 2014-11-18  Deri James  <deri@chuzzlewit.myzen.co.uk>
 
 	My commit '3fe78135c9fe666dadffde2a822b0535d8db6feb' introduced

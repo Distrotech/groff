@@ -19,9 +19,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <ctype.h>
 
+#include "stringclass.h"
 #include "lib.h"
 #include "cset.h"
-#include "stringclass.h"
 
 extern void change_filename(const char *);
 extern void change_lineno(int);
@@ -60,3 +60,18 @@ int interpret_lf_args(const char *p)
   change_lineno(ln);
   return 1;
 }
+
+#if defined(__MSDOS__) || (defined(_WIN32) && !defined(__CYGWIN__))
+void normalize_for_lf (string &fn)
+{
+  int fnlen = fn.length();
+  for (int i = 0; i < fnlen; i++) {
+    if (fn[i] == '\\')
+      fn[i] = '/';
+  }
+}
+#else
+void normalize_for_lf (string &)
+{
+}
+#endif

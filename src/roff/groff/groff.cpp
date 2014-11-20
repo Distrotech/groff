@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
 // A front end for groff.
 
+#include "stringclass.h"
 #include "lib.h"
 
 #include <stdlib.h>
@@ -28,7 +29,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 #include "assert.h"
 #include "errarg.h"
 #include "error.h"
-#include "stringclass.h"
 #include "cset.h"
 #include "font.h"
 #include "device.h"
@@ -701,7 +701,13 @@ void append_arg_to_string(const char *arg, string &str)
 {
   str += ' ';
   int needs_quoting = 0;
+  // Native Windows programs don't support '..' style of quoting, so
+  // always behave as if ARG included the single quote character.
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  int contains_single_quote = 1;
+#else
   int contains_single_quote = 0;
+#endif
   const char*p;
   for (p = arg; *p != '\0'; p++)
     switch (*p) {
@@ -731,10 +737,17 @@ void append_arg_to_string(const char *arg, string &str)
     str += '"';
     for (p = arg; *p != '\0'; p++)
       switch (*p) {
+#if !(defined(_WIN32) && !defined(__CYGWIN__))
       case '"':
       case '\\':
       case '$':
 	str += '\\';
+#else
+      case '"':
+      case '\\':
+	if (*p == '"' || (*p == '\\' && p[1] == '"'))
+	  str += '\\';
+#endif
 	// fall through
       default:
 	str += *p;

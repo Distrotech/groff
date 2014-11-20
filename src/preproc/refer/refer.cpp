@@ -432,8 +432,11 @@ static void do_file(const char *filename)
       return;
     }
   }
-  current_filename = filename;
-  fprintf(outfp, ".lf 1 %s\n", filename);
+  string fn(filename);
+  fn += '\0';
+  normalize_for_lf(fn);
+  current_filename = fn.contents();
+  fprintf(outfp, ".lf 1 %s\n", current_filename);
   string line;
   current_lineno = 0;
   for (;;) {

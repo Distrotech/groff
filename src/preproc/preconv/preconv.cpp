@@ -17,6 +17,7 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
+#include "stringclass.h"
 #include "lib.h"
 
 #include <assert.h>
@@ -26,7 +27,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 #include "error.h"
 #include "localcharset.h"
 #include "nonposix.h"
-#include "stringclass.h"
 
 #include <locale.h>
 
@@ -1065,8 +1065,12 @@ do_file(const char *filename)
   }
   if (debug_flag)
     fprintf(stderr, "  encoding used: `%s'\n", encoding);
-  if (!raw_flag)
-    printf(".lf 1 %s\n", filename);
+  if (!raw_flag) {
+    string fn(filename);
+    fn += '\0';
+    normalize_for_lf(fn);
+    printf(".lf 1 %s\n", fn.contents());
+  }
   int success = 1;
   // Call converter (converters write to stdout).
   if (!strcasecmp(encoding, "ISO-8859-1"))

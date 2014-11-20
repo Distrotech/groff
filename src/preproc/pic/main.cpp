@@ -309,8 +309,11 @@ void do_file(const char *filename)
       fatal("can't open `%1': %2", filename, strerror(errno));
     }
   }
-  out->set_location(filename, 1);
-  current_filename = filename;
+  string fn(filename);
+  fn += '\0';
+  normalize_for_lf(fn);
+  current_filename = fn.contents();
+  out->set_location(current_filename, 1);
   current_lineno = 1;
   enum { START, MIDDLE, HAD_DOT, HAD_P, HAD_PS, HAD_l, HAD_lf } state = START;
   for (;;) {

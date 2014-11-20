@@ -17,6 +17,7 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
+#include "stringclass.h"
 #include "lib.h"
 
 #include <math.h>
@@ -49,7 +50,6 @@ extern "C" {
 
 #include "assert.h"
 #include "cset.h"
-#include "stringclass.h"
 #include "errarg.h"
 #include "error.h"
 #include "position.h"
