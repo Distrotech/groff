@@ -1,3 +1,29 @@
+2014-11-29  Werner LEMBERG  <wl@gnu.org>
+
+	Fix previous commit.
+
+	We forgot to test whether the patch works if compiling from
+	scratch...
+
+	Problem reported by Bertrand Garrigues
+	<bertrand.garrigues@laposte.net>.
+
+	* src/include/lib.h (interpret_lf_args, normalize_for_lf): Move
+	declarations to...
+	* src/include/lf.h: This new file.
+
+	* src/libs/libgroff/lf.cpp, src/preproc/pic/pic.h,
+	src/preproc/preconv/preconv.cpp, src/preproc/refer/refer.h,
+	src/preproc/soelim/soelim.cpp, src/preproc/tbl/table.h: Include
+	`lf.h'.
+	Make `lib.h' the first included header file.
+
+	* src/preproc/eqn/eqn.h: Don't include `stringclass.h'.
+	* src/preproc/eqn/main.cpp: Include `stringclass.h' and `lf.h'.
+
+	* src/roff/groff/groff.cpp: Make `lib.h' the first included header
+	file.
+
 2014-11-10  Eli Zaretskii  <eliz@gnu.org>
 
 	Improve native Windows port.

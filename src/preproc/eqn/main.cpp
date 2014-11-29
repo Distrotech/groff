@@ -18,12 +18,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "eqn.h"
+#include "stringclass.h"
 #include "device.h"
 #include "searchpath.h"
 #include "macropath.h"
 #include "htmlhint.h"
 #include "pbox.h"
 #include "ctype.h"
+#include "lf.h"
 
 #define STARTUP_FILE "eqnrc"
 

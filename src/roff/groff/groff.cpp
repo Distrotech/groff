@@ -19,7 +19,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
 // A front end for groff.
 
-#include "stringclass.h"
 #include "lib.h"
 
 #include <stdlib.h>
@@ -29,6 +28,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 #include "assert.h"
 #include "errarg.h"
 #include "error.h"
+#include "stringclass.h"
 #include "cset.h"
 #include "font.h"
 #include "device.h"

@@ -17,7 +17,6 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "stringclass.h"
 #include "lib.h"
 
 #include <ctype.h>
@@ -26,8 +25,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 #include <errno.h>
 #include "errarg.h"
 #include "error.h"
+#include "stringclass.h"
 #include "nonposix.h"
 #include "searchpath.h"
+#include "lf.h"
 
 // The include search path initially contains only the current directory.
 static search_path include_search_path(0, 0, 0, 1);
