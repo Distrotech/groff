@@ -1,4 +1,5 @@
 .\" -*- nroff -*-      om.tmac
+.\" This one's temp, part of attempt to deal with blockquote indents.
 .ig
 Mom -- a typesetting/document-processing macro set for groff.
 
@@ -21,7 +22,7 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-Version 2.1-c_1
+Version 2.1-c_2
 ---------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
@@ -421,8 +422,10 @@ end
 \#
 .MAC DO_B_MARGIN END
 .    nr #T_MARGIN_LEAD_ADJ \\n[#LEAD]-12000
+.    ev B_MARGIN
 '    bp
 .    if !n .nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
+.    ev
 .END
 \#
 \# NEWPAGE
@@ -2063,6 +2066,11 @@ end
 .       nr #UNDERSCORE_WEIGHT_ADJ    \\n[#EN_TITLE_UNDERLINE_WEIGHT_ADJ]
 .       ds $UNDERSCORE_GAP           \\*[$EN_TITLE_UNDERLINE_GAP]
 .    \}
+.    if \\n[#FROM_TOC_HEADER]=1 \{\
+.       nr #UNDERSCORE_WEIGHT        \\n[#TOC_HEADER_UNDERLINE_WEIGHT]
+.       nr #UNDERSCORE_WEIGHT_ADJ    \\n[#TOC_HEADER_UNDERLINE_WEIGHT_ADJ]
+.       ds $UNDERSCORE_GAP           \\*[$TOC_HEADER_UNDERLINE_GAP]
+.    \}
 .    ie \\n[#NUM_ARGS]=1 \{\
 .       nr #TEXT_WIDTH \w'\\$1'
 \\$1\
@@ -2127,6 +2135,12 @@ end
 .       ds $UNDERSCORE_GAP           \\*[$EN_STRING_UNDERLINE_GAP]
 .       ds $RULE_GAP                 \\*[$EN_STRING_RULE_GAP]
 .    \}
+.    if \\n[#FROM_TOC_HEADER]=1 \{\
+.       nr #UNDERSCORE_WEIGHT        \\n[#TOC_HEADER_UNDERLINE_WEIGHT]
+.       nr #UNDERSCORE_WEIGHT_ADJ    \\n[#TOC_HEADER_UNDERLINE_WEIGHT_ADJ]
+.       ds $UNDERSCORE_GAP           \\*[$TOC_HEADER_UNDERLINE_GAP]
+.       ds $RULE_GAP                 \\*[$TOC_HEADER_RULE_GAP]
+.    \}
 .    if \\n[#NUM_ARGS]=1 \{\
 .       nr #TEXT_WIDTH \w'\\$1'
 \\$1\
@@ -2189,6 +2203,7 @@ end
 .ds $EN_STRING_RULE_GAP       2p
 .ds $EN_TITLE_UNDERLINE_GAP   2p
 .ds $RULE_GAP                 2p
+.ds $TOC_HEADER_RULE_GAP      2p
 .ds $UNDERSCORE_GAP           2p
 \#
 \# SUPERSCRIPT
@@ -3241,6 +3256,10 @@ end
 .          nr #RULE_WEIGHT     \\n[#WEIGHT]
 .          nr #RULE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
 .       \}
+.       if '\\$0'TOC_HEADER_UNDERLINE_WEIGHT' \{\
+.          nr #TOC_HEADER_UNDERLINE_WEIGHT     \\n[#WEIGHT]
+.          nr #TOC_HEADER_UNDERLINE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
 .       if '\\$0'UNDERSCORE_WEIGHT' \{\
 .          nr #UNDERSCORE_WEIGHT     \\n[#WEIGHT]
 .          nr #UNDERSCORE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
@@ -3259,6 +3278,7 @@ end
 .ALIAS FOOTER_RULE_WEIGHT                   RULE_WEIGHT
 .ALIAS FOOTNOTE_RULE_WEIGHT                 RULE_WEIGHT
 .ALIAS HEADER_RULE_WEIGHT                   RULE_WEIGHT
+.ALIAS TOC_HEADER_UNDERLINE_WEIGHT          RULE_WEIGHT
 .ALIAS UNDERSCORE_WEIGHT                    RULE_WEIGHT
 \#
 \# Default rule weights
@@ -3273,6 +3293,7 @@ end
 .nr #FOOTER_RULE_WEIGHT          500
 .nr #HEADER_RULE_WEIGHT          500
 .nr #RULE_WEIGHT                 500
+.nr #TOC_HEADER_UNDERLINE_WEIGHT 500
 .nr #UNDERSCORE_WEIGHT           500
 \#
 .nr #BIB_STRING_UNDERLINE_WEIGHT_ADJ \n[#BIB_STRING_UNDERLINE_WEIGHT]/2
@@ -3285,6 +3306,7 @@ end
 .nr #FN_RULE_WEIGHT_ADJ              \n[#FN_RULE_WEIGHT]/2
 .nr #HEADER_RULE_WEIGHT_ADJ          \n[#HEADER_RULE_WEIGHT]/2
 .nr #RULE_WEIGHT_ADJ                 \n[#RULE_WEIGHT]/2
+.nr #TOC_HEADER_UNDERLINE_WEIGHT_ADJ \n[#TOC_HEADER_UNDERLINE_WEIGHT]/2
 .nr #UNDERSCORE_WEIGHT_ADJ           \n[#UNDERSCORE_WEIGHT]/2
 \#
 \# Set default rule weight
@@ -4642,6 +4664,7 @@ y\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 .MAC AUTHOR END \"Author.  Enclose all args fully in double quotes.
+.    if \\n[#COLLATE] .nr #NEW_AUTHOR 1
 .    if '\\$1'DOC_COVER' \{\
 .       shift
 .       nr #AUTHOR_DOCCOVER_NUM 0 1
@@ -4992,6 +5015,8 @@ y\R'#DESCENDER \\n[.cdp]'
 .       ds $EN_NUMBER_FAM \\$1
 .    if '\\$0'ENDNOTE_LINENUMBER_FAMILY' \
 .       ds $EN_LN_FAM \\$1
+.    if '\\$0'ENDNOTES_HEADER_FAMILY' \
+.       ds $EN_STRING_FAM \\$1
 .    if '\\$0'ENDNOTE_STRING_FAMILY' \
 .       ds $EN_STRING_FAM \\$1
 .    if '\\$0'ENDNOTE_TITLE_FAMILY' \
@@ -5083,6 +5108,8 @@ y\R'#DESCENDER \\n[.cdp]'
 .       ds $EN_NUMBER_FT \\$1
 .    if '\\$0'ENDNOTE_LINENUMBER_FONT' \
 .       ds $EN_LN_FT \\$1
+.    if '\\$0'ENDNOTES_HEADER_FONT' \
+.       ds $EN_STRING_FT \\$1
 .    if '\\$0'ENDNOTE_STRING_FONT' \
 .       ds $EN_STRING_FT \\$1
 .    if '\\$0'ENDNOTE_TITLE_FONT' \
@@ -5160,6 +5187,8 @@ y\R'#DESCENDER \\n[.cdp]'
 .       ds $EN_NUMBER_SIZE_CHANGE \\$1
 .    if '\\$0'ENDNOTE_LINENUMBER_SIZE' \
 .       ds $EN_LN_SIZE_CHANGE \\$1
+.    if '\\$0'ENDNOTES_HEADER_SIZE' \
+.       ds $EN_STRING_SIZE_CHANGE \\$1
 .    if '\\$0'ENDNOTE_STRING_SIZE' \
 .       ds $EN_STRING_SIZE_CHANGE \\$1
 .    if '\\$0'ENDNOTE_TITLE_SIZE' \
@@ -5302,6 +5331,10 @@ y\R'#DESCENDER \\n[.cdp]'
 .       nr #DOCTYPE_COLOR 1
 .       ds $DOCTYPE_COLOR \\$1
 .    \}
+.    if '\\$0'ENDNOTES_HEADER_COLOR' \{\
+.       nr #ENDNOTE_STRING_COLOR 1
+.       ds $ENDNOTE_STRING_COLOR \\$1
+.    \}
 .    if '\\$0'ENDNOTE_STRING_COLOR' \{\
 .       nr #ENDNOTE_STRING_COLOR 1
 .       ds $ENDNOTE_STRING_COLOR \\$1
@@ -5366,6 +5399,10 @@ y\R'#DESCENDER \\n[.cdp]'
 .       nr #TITLE_COLOR 1
 .       ds $TITLE_COLOR \\$1
 .    \}
+.    if '\\$0'TOC_HEADER_COLOR' \{\
+.       nr #TOC_HEADER_COLOR 1
+.       ds $TOC_HEADER_COLOR \\$1
+.    \}
 .END
 \#
 .MAC _QUAD END
@@ -5410,6 +5447,8 @@ y\R'#DESCENDER \\n[.cdp]'
 .       if '\\*[$EN_QUAD]'C' \
 .ab \\$0 at line \\n[.c] must be set to either L or J.  Aborting \\n'[.F]'.
 .    \}
+.    if '\\$0'ENDNOTES_HEADER_QUAD' \
+.       ds $EN_STRING_QUAD \\$1
 .    if '\\$0'ENDNOTE_STRING_QUAD' \
 .       ds $EN_STRING_QUAD \\$1
 .    if '\\$0'ENDNOTE_TITLE_QUAD' \
@@ -5563,11 +5602,11 @@ y\R'#DESCENDER \\n[.cdp]'
 .    if !d $EN_FAM              .ENDNOTE_FAMILY \\*[$DOC_FAM]
 .    if !d $EN_FT               .ENDNOTE_FONT R
 .    if !d $EN_QUAD             .ENDNOTE_QUAD \\*[$DOC_QUAD]
-.    if !d $EN_STRING           .ENDNOTE_STRING "Endnotes"
-.    if !d $EN_STRING_FAM       .ENDNOTE_STRING_FAMILY \\*[$EN_FAM]
-.    if !d $EN_STRING_QUAD      .ENDNOTE_STRING_QUAD CENTER
+.    if !d $EN_STRING           .ENDNOTES_HEADER_STRING "Endnotes"
+.    if !d $EN_STRING_FAM       .ENDNOTES_HEADER_FAMILY \\*[$EN_FAM]
+.    if !d $EN_STRING_QUAD      .ENDNOTES_HEADER_QUAD CENTER
 .    if !r #EN_STRING_UNDERLINE .nr #EN_STRING_UNDERLINE 2
-.    if !r #EN_STRING_CAPS      .ENDNOTE_STRING_CAPS
+.    if !r #EN_STRING_CAPS      .ENDNOTES_HEADER_CAPS
 .    if !d $EN_TITLE \{\
 .       ie \\n[#DOC_TYPE]=2 \{\
 .          ie !'\\*[$CHAPTER_TITLE_1]'' \{\
@@ -5882,8 +5921,8 @@ y\R'#DESCENDER \\n[.cdp]'
 .       if !r #FN_AUTOLEAD    .FOOTNOTE_AUTOLEAD 2
 .\" +Endnotes
 .       if !r #EN_PS                 .ENDNOTE_PT_SIZE (\\n[#DOC_PT_SIZE]u)
-.       if !d $EN_STRING_FT          .ENDNOTE_STRING_FONT B
-.       if !d $EN_STRING_SIZE_CHANGE .ENDNOTE_STRING_SIZE +1
+.       if !d $EN_STRING_FT          .ENDNOTES_HEADER_FONT B
+.       if !d $EN_STRING_SIZE_CHANGE .ENDNOTES_HEADER_SIZE +1
 .       if !d $EN_TITLE_FT           .ENDNOTE_TITLE_FONT B
 .       if !d $EN_TITLE_SIZE_CHANGE  .ENDNOTE_TITLE_SIZE +0
 .       if !d $EN_NUMBER_FT          .ENDNOTE_NUMBER_FONT B
@@ -6206,13 +6245,16 @@ y\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    if !'\\*[$AUTHOR_1]'' \{\
-.       FAMILY  \\*[$AUTHOR_FAM]
-.       FT      \\*[$AUTHOR_FT]
-.       ps \\*[$AUTHOR_PT_SIZE]
-.       ie \\n[#ATTRIBUTE_COLOR]=1 \
-.          PRINT \&\m[\\*[$ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
-.       el .PRINT \&\\*[$ATTRIBUTE_STRING]
-.       PRINT_AUTHORS
+.       if r \\n[#NEW_AUTHOR] \{\
+.          rr #NEW_AUTHOR
+.          FAMILY  \\*[$AUTHOR_FAM]
+.          FT      \\*[$AUTHOR_FT]
+.          ps \\*[$AUTHOR_PT_SIZE]
+.          ie \\n[#ATTRIBUTE_COLOR]=1 \
+.             PRINT \&\m[\\*[$ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
+.          el .PRINT \&\\*[$ATTRIBUTE_STRING]
+.          PRINT_AUTHORS
+.       \}
 .    \}
 .    FAMILY \\*[$DOC_FAM]
 .    FT R
@@ -6335,7 +6377,7 @@ y\R'#DESCENDER \\n[.cdp]'
 \# ----------
 \# *Arguments:
 \#   TITLE | DOCTITLE | CHAPTER | CHAPTER_TITLE | CHAPTER+TITLE | COVERTITLE \
-\#   [ SUBTITLE AUTHOR DOCTYPE COPYRIGHT MISC BLANKPAGE ]
+\#   [ SUBTITLE AUTHOR DOCTYPE COPYRIGHT MISC BLANKPAGE PDF_OUTLINE_LABEL ]
 \# *Function:
 \#   Toggles the number register for each cover page element
 \#   passed as an argument.
@@ -6530,12 +6572,16 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          nr #DOCTYPE_UNDERLINE 1
 .       if '\\$0'ENDNOTE_STRING_UNDERLINE' \
 .          nr #EN_STRING_UNDERLINE 1
+.       if '\\$0'ENDNOTES_HEADER_UNDERSCORE' \
+.          nr #EN_STRING_UNDERLINE 1
 .       if '\\$0'ENDNOTE_STRING_UNDERSCORE' \
 .          nr #EN_STRING_UNDERLINE 1
 .       if '\\$0'ENDNOTE_TITLE_UNDERLINE' \
 .          nr #EN_TITLE_UNDERLINE 1
 .       if '\\$0'ENDNOTE_TITLE_UNDERSCORE' \
 .          nr #EN_TITLE_UNDERLINE 1
+.       if '\\$0'TOC_HEADER_UNDERSCORE' \
+.          nr #TOC_HEADER_UNDERLINE 1
 .    \}
 .    el \{\
 .       ie \\n[#NUM_ARGS]=1 \{\
@@ -6553,7 +6599,15 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                   DOC_COVER_UNDERLINE_WEIGHT \\$1
 .                if '\\$0'DOCTYPE_UNDERLINE' \
 .                   DOCTYPE_UNDERLINE_WEIGHT \\$1
+.                if '\\$0'ENDNOTES_HEADER_UNDERLINE' \{\
+.                   ENDNOTE_STRING_UNDERLINE_WEIGHT \\$1
+.                   nr #EN_STRING_UNDERLINE 1
+.                \}
 .                if '\\$0'ENDNOTE_STRING_UNDERLINE' \{\
+.                   ENDNOTE_STRING_UNDERLINE_WEIGHT \\$1
+.                   nr #EN_STRING_UNDERLINE 1
+.                \}
+.                if '\\$0'ENDNOTES_HEADER_UNDERSCORE' \{\
 .                   ENDNOTE_STRING_UNDERLINE_WEIGHT \\$1
 .                   nr #EN_STRING_UNDERLINE 1
 .                \}
@@ -6565,6 +6619,9 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                   ENDNOTE_TITLE_UNDERLINE_WEIGHT \\$1
 .                if '\\$0'ENDNOTE_TITLE_UNDERSCORE' \
 .                   ENDNOTE_TITLE_UNDERLINE_WEIGHT \\$1
+.                if '\\$0'TOC_HEADER_UNDERSCORE' \
+.                   TOC_HEADER_UNDERLINE_WEIGHT \\$1
+.                   nr #TOC_HEADER_UNDERLINE 1
 .             \}
 .          \}
 .          el \{\
@@ -6583,6 +6640,14 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                ie '\\$1'DOUBLE' .nr #EN_STRING_UNDERLINE 2
 .                el .nr #EN_STRING_UNDERLINE 0
 .             \}
+.             if '\\$0'ENDNOTES_HEADER_UNDERSCORE' \{\
+.                ie '\\$1'DOUBLE' .nr #EN_STRING_UNDERLINE 2
+.                el .nr #EN_STRING_UNDERLINE 0
+.             \}
+.             if '\\$0'ENDNOTE_STRING_UNDERLINE' \{\
+.                ie '\\$1'DOUBLE' .nr #EN_STRING_UNDERLINE 2
+.                el .nr #EN_STRING_UNDERLINE 0
+.             \}
 .             if '\\$0'ENDNOTE_STRING_UNDERSCORE' \{\
 .                ie '\\$1'DOUBLE' .nr #EN_STRING_UNDERLINE 2
 .                el .nr #EN_STRING_UNDERLINE 0
@@ -6594,6 +6659,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             if '\\$0'ENDNOTE_TITLE_UNDERSCORE' \{\
 .                ie '\\$1'DOUBLE' .nr #EN_TITLE_UNDERLINE 2
 .                el .nr #EN_TITLE_UNDERLINE 0
+.             \}
+.             if '\\$0'TOC_HEADER_UNDERSCORE' \{\
+.                ie '\\$1'DOUBLE' .nr #TOC_HEADER_UNDERLINE 2
+.                el .nr #TOC_HEADER_UNDERLINE 0
 .             \}
 .          \}
 .       \}
@@ -6638,6 +6707,16 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             \}
 .\" ENDNOTE_STRING_UNDERLINE and ENDNOTE_STRING_UNDERSCORE are identical
 .\" _UNDERLINE left in for backward compatibility
+.             if '\\$0'ENDNOTES_HEADER_UNDERLINE' \{\
+.                nr #EN_STRING_UNDERLINE 1
+.                if '\\$1'DOUBLE' \{\
+.                   nr #EN_STRING_UNDERLINE 2
+.                   shift
+.                \}
+.                ENDNOTE_STRING_UNDERLINE_WEIGHT \\$1
+.                if !'\\$2'' .ds $EN_STRING_UNDERLINE_GAP \\$2
+.                if !'\\$3'' .ds $EN_STRING_RULE_GAP \\$3
+.             \}
 .             if '\\$0'ENDNOTE_STRING_UNDERLINE' \{\
 .                nr #EN_STRING_UNDERLINE 1
 .                if '\\$1'DOUBLE' \{\
@@ -6658,17 +6737,25 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                if !'\\$2'' .ds $EN_STRING_UNDERLINE_GAP \\$2
 .                if !'\\$3'' .ds $EN_STRING_RULE_GAP \\$3
 .             \}
-.\" ENDNOTE_TITLE_UNDERLINE and ENDNOTE_TITLE_UNDERSCORE are identical
-.\" _UNDERLINE left in for backward compatibility
-.             if '\\$0'ENDNOTE_TITLE_UNDERLINE' \{\
-.                nr #EN_TITLE_UNDERLINE 1
-.                ENDNOTE_TITLE_UNDERLINE_WEIGHT \\$1
-.                ds $EN_TITLE_UNDERLINE_GAP \\$2
+.             if '\\$0'ENDNOTES_HEADER_UNDERSCORE' \{\
+.                nr #EN_STRING_UNDERLINE 1
+.                if '\\$1'DOUBLE' \{\
+.                   nr #EN_STRING_UNDERLINE 2
+.                   shift
+.                \}
+.                ENDNOTE_STRING_UNDERLINE_WEIGHT \\$1
+.                if !'\\$2'' .ds $EN_STRING_UNDERLINE_GAP \\$2
+.                if !'\\$3'' .ds $EN_STRING_RULE_GAP \\$3
 .             \}
-.             if '\\$0'ENDNOTE_TITLE_UNDERSCORE' \{\
-.                nr #EN_TITLE_UNDERLINE 1
-.                ENDNOTE_TITLE_UNDERLINE_WEIGHT \\$1
-.                ds $EN_TITLE_UNDERLINE_GAP \\$2
+.             if '\\$0'TOC_HEADER_UNDERSCORE' \{\
+.                nr #TOC_HEADER_UNDERLINE 1
+.                if '\\$1'DOUBLE' \{\
+.                   nr #TOC_HEADER_UNDERLINE 2
+.                   shift
+.                \}
+.                TOC_HEADER_UNDERLINE_WEIGHT \\$1
+.                if !'\\$2'' .ds $TOC_HEADER_UNDERLINE_GAP \\$2
+.                if !'\\$3'' .ds $TOC_HEADER_RULE_GAP \\$3
 .             \}
 .          \}
 .       \}
@@ -6680,10 +6767,13 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .ALIAS COVER_UNDERLINE                _UNDERLINE
 .ALIAS DOC_COVER_UNDERLINE            _UNDERLINE
 .ALIAS DOCTYPE_UNDERLINE              _UNDERLINE
+.ALIAS ENDNOTES_HEADER_UNDERLINE      _UNDERLINE
+.ALIAS ENDNOTES_HEADER_UNDERSCORE     _UNDERLINE
 .ALIAS ENDNOTE_STRING_UNDERLINE       _UNDERLINE
 .ALIAS ENDNOTE_STRING_UNDERSCORE      _UNDERLINE
 .ALIAS ENDNOTE_TITLE_UNDERLINE        _UNDERLINE
 .ALIAS ENDNOTE_TITLE_UNDERSCORE       _UNDERLINE
+.ALIAS TOC_HEADER_UNDERSCORE          _UNDERLINE
 \#
 \# COVERS - WHETHER TO PRINT
 \# -------------------------
@@ -6988,50 +7078,48 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .      nr PDFHREF.VIEW.LEADING \\n[PDFHREF.VIEW.LEADING.H]
 .      rr PDFHREF.VIEW.LEADING.H
 .    \}
-.    if !\\n[#DOC_TYPE]=2 \{\
-.       if \\n[#\\*[DOC_]COVER_SUBTITLE]=1 \{\
-.          fam \\*[$\\*[DOC_]COVER_SUBTITLE_FAM]
-.          ft  \\*[$\\*[DOC_]COVER_SUBTITLE_FT]
-.          ps  \\*[$\\*[DOC_]COVER_SUBTITLE_PT_SIZE]
-.          if \\n[#PRINT_STYLE]=1 \{\
-.             TYPEWRITER
-.             ie \\n[#SINGLE_SPACE]=0 .vs \\n[#DOC_LEAD]u/2u
-.             el .vs \\n[#DOC_LEAD]u
-.             sp
-.          \}
-.          if \\n[#\\*[DOC_]COVER]=1 \{\
-.             ie !'\\*[$SUBTITLE_\\*[DOC_]COVER_1]'' \{\
-.                nr #SUBTITLES \\n[#SUBTITLE_\\*[DOC_]COVER_NUM]
-.                nr #NEXT_SUBTITLE 0 1
-.                while \\n[#SUBTITLES]>\\n[#NEXT_SUBTITLE] \{\
-.                   ie \\n[#\\*[DOC_]COVER_SUBTITLE_COLOR]=1 \{\
-.                      PRINT \
+.    if \\n[#\\*[DOC_]COVER_SUBTITLE]=1 \{\
+.       fam \\*[$\\*[DOC_]COVER_SUBTITLE_FAM]
+.       ft  \\*[$\\*[DOC_]COVER_SUBTITLE_FT]
+.       ps  \\*[$\\*[DOC_]COVER_SUBTITLE_PT_SIZE]
+.       if \\n[#PRINT_STYLE]=1 \{\
+.          TYPEWRITER
+.          ie \\n[#SINGLE_SPACE]=0 .vs \\n[#DOC_LEAD]u/2u
+.          el .vs \\n[#DOC_LEAD]u
+.          sp
+.       \}
+.       if \\n[#\\*[DOC_]COVER]=1 \{\
+.          ie !'\\*[$SUBTITLE_\\*[DOC_]COVER_1]'' \{\
+.             nr #SUBTITLES \\n[#SUBTITLE_\\*[DOC_]COVER_NUM]
+.             nr #NEXT_SUBTITLE 0 1
+.             while \\n[#SUBTITLES]>\\n[#NEXT_SUBTITLE] \{\
+.                ie \\n[#\\*[DOC_]COVER_SUBTITLE_COLOR]=1 \{\
+.                   PRINT \
 \m[\\*[$\\*[DOC_]COVER_SUBTITLE_COLOR]]\
 \\*[$SUBTITLE_\\*[DOC_]COVER_\\n+[#NEXT_SUBTITLE]]\m[]
-.                   \}
-.                   el .PRINT \
+.                \}
+.                el .PRINT \
 \\*[$SUBTITLE_\\*[DOC_]COVER_\\n+[#NEXT_SUBTITLE]]
-.                \}
-.             \}
-.             el \{\
-.                nr #SUBTITLES \\n[#SUBTITLE_NUM]
-.                nr #NEXT_SUBTITLE 0 1
-.                while \\n[#SUBTITLES]>\\n[#NEXT_SUBTITLE] \{\
-.                   ie \\n[#\\*[DOC_]COVER_SUBTITLE_COLOR]=1 \{\
-.                      PRINT \
-\m[\\*[$\\*[DOC_]COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n+[#NEXT_SUBTITLE]]\m[]
-.                   \}
-.                   el .PRINT \\*[$SUBTITLE_\\n+[#NEXT_SUBTITLE]]
-.                \}
 .             \}
 .          \}
-.          if \\n[#PRINT_STYLE]=1 \{\
-.             if \\n[#SINGLE_SPACE]=0 .vs
+.          el \{\
+.             nr #SUBTITLES \\n[#SUBTITLE_NUM]
+.             nr #NEXT_SUBTITLE 0 1
+.             while \\n[#SUBTITLES]>\\n[#NEXT_SUBTITLE] \{\
+.                ie \\n[#\\*[DOC_]COVER_SUBTITLE_COLOR]=1 \{\
+.                   PRINT \
+\m[\\*[$\\*[DOC_]COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n+[#NEXT_SUBTITLE]]\m[]
+.                \}
+.                el .PRINT \\*[$SUBTITLE_\\n+[#NEXT_SUBTITLE]]
+.             \}
 .          \}
 .       \}
 .       if \\n[#PRINT_STYLE]=1 \{\
-.          if !r#\\*[DOC_]COVER_SUBTITLE .sp
+.          if \\n[#SINGLE_SPACE]=0 .vs
 .       \}
+.    \}
+.    if \\n[#PRINT_STYLE]=1 \{\
+.       if !r#\\*[DOC_]COVER_SUBTITLE .sp
 .    \}
 .    if \\n[#\\*[DOC_]COVER_AUTHOR]=1 \{\
 .       fam \\*[$\\*[DOC_]COVER_AUTHOR_FAM]
@@ -7353,7 +7441,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          \}
 .       \}
 .       sp |\\n[#DOCHEADER_ADVANCE]u-\\n[#DOC_LEAD]u
-.       PDF_BOOKMARK 1 \\*[$TOC_TITLE_ITEM]
+.       if !'\\*[$TOC_TITLE_ITEM]'' \
+.          PDF_BOOKMARK 1 \\*[$TOC_TITLE_ITEM]
 .       as $TOC_TITLE_ITEM \|
 .       if \\n[#PREFIX_CH_NUM] \{\
 .          rn $TOC_TITLE_ITEM $TOC_TITLE_ITEM_OLD
@@ -9955,8 +10044,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    \}
 .\" Spacing
 .    if \\n[#Q_LEAD_DIFF_CHECK] .sp -1v
-.    ie \\n[#PARAHEAD] 'br
-.    el .br
+.    br
 .    ie !\\n[#PARAHEAD] \{\
 .       if !\\n[@TOP] \{\
 .          nr #HEAD 1
@@ -10870,6 +10958,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   PP_STYLE 1 = regular paras; 2 = blockquotes, epigraphs
 \#
 .MAC PP END
+.    if \\n[defer-pp-ind-reset] \{\
+.       sp -1
+.       rr defer-pp-ind-reset
+.    \}
 .    if \\n[#DOC_TYPE]=4 \{\
 .       if !'\\n[.z]'' .di
 .       nr #TOTAL_FIELDS \\n[#FIELD]
@@ -10956,7 +11048,6 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          \}
 .       \}
 .       el \{\
-\#.          br
 .          if \\n[#PP_SPACE] \{\
 .             ie \\n[#END_QUOTE] \{\
 .                ie !'\\*[$PP_SPACE_AMOUNT]'' .ALD \\*[$PP_SPACE_AMOUNT]
@@ -10968,8 +11059,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .             el \{\
 .                if \\n[#NO_SPACE]=1 .rr #NO_SPACE
 .                if !\\n[nl]=\\n[#BASELINE_MARK] \{\
-.                ie !'\\*[$PP_SPACE_AMOUNT]'' .ALD \\*[$PP_SPACE_AMOUNT]
-.                el .sp
+.                   ie !'\\*[$PP_SPACE_AMOUNT]'' .ALD \\*[$PP_SPACE_AMOUNT]
+.                   el .sp
 .                   rr #BASELINE_MARK
 .                \}
 .             \}
@@ -11360,6 +11451,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       nr #NEXT_LN \\n[ln]
 .       nm
 .    \}
+.    if \\n[in-cutaround] .nr #PP_INDENT \\n[restore-pp-ind]/2
 .    ie '\\$1'' \{\
 .       ev BLOCKQUOTE
 .       evc 0
@@ -11367,9 +11459,16 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       nr #QUOTE    2
 .       nr #PP_STYLE 2
 .       nr #Q_PP     0
+.       if \\n[in-cutaround] \{\
+.          if '\\*[cutaround-type]'RIGHT' \{\
+.             nr reset-ll 1
+.             nr #L_LENGTH \\n[#DOC_L_LENGTH]-\\n[cutaround-width]-1v\\*[width-adj]
+.          \}
+.       \}
 .       di B_QUOTE
 .       ie !'\\*[$Q_OFFSET_VALUE]'' .ll \\n[#L_LENGTH]u-(\\*[$Q_OFFSET_VALUE]*2u)
 .       el .ll \\n[#L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.       if \\n[in-cutaround] .nr #PP_INDENT \\n[.i]+\\n[pp-ind-tmp]
 .       if \\n[#ENDNOTE] \{\
 .          if \\n[#EN_NUMBERS_ALIGN_RIGHT] \{\
 .             ie r#Q_OFFSET_VALUE \
@@ -11494,6 +11593,12 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       rr #DIVER_LN_OFF
 .    \}
 .    di
+.    if \\n[in-cutaround] \{\
+.       if \\n[dn]>\\n[.t] \{\
+.          tm1 "[mom]: Blockquote depth exceeds cutaround depth."
+.          ab Aborting at line \\n[.c].
+.       \}
+.    \}
 .    rr #IN_DIVER
 .    if \\n[#RESET_FN_COUNTERS]=2 \{\
 .       if !\\n[#FN_COUNT]=1 \{\
@@ -11506,7 +11611,6 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    nr #SAVED_FN_NUMBER \\n[#FN_NUMBER]
 .    nr #DONE_ONCE 0 1
 .    REMOVE_INDENT
-.    ev
 .    nr #Q_DEPTH (\\n[#DIVER_DEPTH]-\\n[#Q_LEAD_REAL])
 .    nr #Q_LEAD_DIFF \\n[#LEAD]-\\n[#Q_LEAD_REAL]
 .    if !\\n[.v]=\\n[#Q_LEAD_REAL] \{\
@@ -11544,8 +11648,10 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       \}
 .       el \{\
 .          ie \\n[#Q_DEPTH]<(\\n[#TRAP_DISTANCE]-1) \{\
-.             ie ((\\n[#TRAP_DISTANCE]-1)-\\n[#Q_DEPTH])<\\n[#DOC_LEAD] \
-.                Q_NOFIT
+.             ie ((\\n[#TRAP_DISTANCE]-1)-\\n[#Q_DEPTH])<\\n[#DOC_LEAD] \{\
+.                ie !\\n[in-cutaround] .Q_NOFIT
+.                el .Q_FITS
+.             \}
 .             el \{\
 .                ie (\\n[#TRAP_DISTANCE]-\\n[#DOC_LEAD])<\\n[#DOC_LEAD] .Q_NOFIT
 .                el \{\
@@ -11601,6 +11707,15 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       B_QUOTE
 .       br
 .    \}
+.    if \\n[in-cutaround] .nr #PP_INDENT \\n[pp-ind-tmp]
+.    if !\\n[ev-popped] .ev
+.    rr delay-ev-pop
+.    if \\n[reset-ll] \{\
+.       if '\\*[cutaround-type]'RIGHT' \{\
+.          ll \\n[#DOC_L_LENGTH]u
+.          rr reset-ll
+.       \}
+.    \}
 .    if \\n[#PRINT_STYLE]=1 \
 .       if !\\n[.v]=\\n[#DOC_LEAD] .SHIM
 .    if \\n[#PRINT_STYLE]=2 \{\
@@ -11628,7 +11743,8 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                   nr #DELAY_SHIM 1
 .                \}
 .                el \
-.                   if !\\n[.v]=\\n[#Q_LEAD_REAL] .SHIM
+\#.                 if !\\n[.v]=\\n[#Q_LEAD_REAL] .SHIM
+.                   SHIM
 .             \}
 .             el \{\
 .                SHIM
@@ -13349,15 +13465,18 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# *Notes:
 \#   Default is "Endnotes"
 \#
-.MAC ENDNOTE_STRING END
+.MAC ENDNOTES_HEADER_STRING END
 .    ds $EN_STRING \\$1
 .END
 \#
-.MAC ENDNOTE_STRING_ADVANCE END
+.MAC ENDNOTES_HEADER_V_POS END
 .    nr #EN_STRING_ADVANCE (\\$1)
 .END
 \#
-\# ENDNOTE STRING CAPS
+.ALIAS ENDNOTE_STRING ENDNOTES_HEADER_STRING
+.ALIAS ENDNOTE_STRING_ADVANCE ENDNOTES_HEADER_V_POS
+\#
+\# ENDNOTE HEADER CAPS
 \# -------------------
 \# *Arguments:
 \#   <none> | <anything>
@@ -13365,17 +13484,20 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#   Turns capitalization of the endnotes pages title string
 \#   "Endnotes" on or off.
 \# *Notes:
-\#   Users may want the endnotes pages title string to be in caps,
-\#   but the toc entry for endnotes in lower case.  If the argument
-\#   to ENDNOTE_STRING is in lower case and ENDNOTE_STRING_CAPS is
-\#   turned on, this is exactly what will happen.
+\#   Users may want the endnotes pages title string to be in
+\#   caps, but the toc entry for endnotes in lower case.  If the
+\#   argument to ENDNOTES_HEADER_STRING is in lower case and
+\#   ENDNOTES_HEADER_CAPS is turned on, this is exactly what will
+\#   happen.
 \#
 \#   Default is on.
 \#
-.MAC ENDNOTE_STRING_CAPS END
+.MAC ENDNOTES_HEADER_CAPS END
 .   ie '\\$1'' .nr #EN_STRING_CAPS 1
 .   el .nr #EN_STRING_CAPS 0
 .END
+\#
+.ALIAS ENDNOTE_STRING_CAPS ENDNOTES_HEADER_CAPS
 \#
 \# ENDNOTE TITLE
 \# -------------
@@ -14573,6 +14695,38 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    ds $TOC_HEADER_STRING \\$1
 .END
 \#
+\# TOC HEADER CAPS
+\# ---------------
+\# *Arguments:
+\#   <none> | <anything>
+\# *Function:
+\#   Turns capitalization of the toc title string on or off.
+\# *Notes:
+\#   Users may want the the toc title string to be in
+\#   caps, but the page header to be in lower case.  If the
+\#   argument to TOC_HEADER_STRING is in lower case and
+\#   TOC_HEADER_CAPS is turned on, this is exactly what will
+\#   happen.
+\#
+.MAC TOC_HEADER_CAPS END
+.   ie '\\$1'' .nr #TOC_STRING_CAPS 1
+.   el .nr #TOC_STRING_CAPS 0
+.END
+\#
+\# TOC VERTICAL PLACEMENT
+\# ----------------------
+\# *Argument:
+\#   <distance from page top>
+\# *Function:
+\#   Creates register #TOC_HEADER_V_POS.
+\# *Notes:
+\#   Default is same as normal docheader position.
+\#
+.MAC TOC_HEADER_V_POS END
+.    nr #TOC_HEADER_V_POS (u;\\$1)
+.END
+\#
+\#
 \# TOC POINT SIZE
 \# --------------
 \# *Argument:
@@ -14784,7 +14938,9 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    rm $HDRFTR_CENTER_OLD
 .    rm $HDRFTR_CENTER_NEW
 .    rr #COLLATED_DOC
-.    DOCHEADER OFF \\n[#T_MARGIN]u-\\n[#DOC_LEAD]u
+.    ie \\n[#TOC_HEADER_V_POS] \
+.      DOCHEADER OFF \\n[#TOC_HEADER_V_POS]u-\\n[#DOC_LEAD]u 
+.    el .DOCHEADER OFF \\n[#T_MARGIN]u-\\n[#DOC_LEAD]u
 .    if !r #TOC_START_PAGENUM .nr #TOC_START_PAGENUM 1
 .       PAGENUMBER \\n[#TOC_START_PAGENUM]
 .    if \\n[#LINENUMBERS]=2 .nr #LINENUMBERS 3
@@ -14800,13 +14956,27 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       FAMILY  \\*[$TOC_HEADER_FAM]
 .       FT      \\*[$TOC_HEADER_FT]
 .       ps \\n[#TOC_PS]u\\*[$TOC_HEADER_SIZE_CHANGE]
+.       if \\n[#TOC_HEADER_COLOR]=1 \{\
+.          COLOR \\*[$TOC_HEADER_COLOR]
+.          EOL
+.       \}
 .    \}
-.    ie \\n[#PRINT_STYLE]=1 \{\
-.       CAPS
+.    QUAD \\*[$TOC_HEADER_QUAD]
+.    if \\n[#TOC_STRING_CAPS] .CAPS
+.    if \\n[#PRINT_STYLE]=1 \{\
 .       UNDERSCORE 3p "\\*[$TOC_HEADER_STRING]"
-.       CAPS      OFF
 .    \}
-.    el .PRINT \\*[$TOC_HEADER_STRING]
+.    if \\n[#PRINT_STYLE]=2 \{\
+.       ie \\n[#TOC_HEADER_UNDERLINE] \{\
+.          nr #FROM_TOC_HEADER 1
+.          ie \\n[#TOC_HEADER_UNDERLINE]=2 \
+.             UNDERSCORE2 \\*[$TOC_UNDERLINE_GAP] \\*[$TOC_RULE_GAP] "\\*[$TOC_HEADER_STRING]"
+.          el .UNDERSCORE "\\*[$TOC_HEADER_STRING]"
+.          rr #FROM_TOC_HEADER
+.       \}
+.       el .PRINT \\*[$TOC_HEADER_STRING]
+.    \}
+.    CAPS OFF
 .    sp
 .    nf
 .    TOC_ENTRIES
@@ -16890,6 +17060,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   ENDNOTE_FAMILY                   _FAMILY
 .ALIAS   ENDNOTE_NUMBER_FAMILY            _FAMILY
 .ALIAS   ENDNOTE_LINENUMBER_FAMILY        _FAMILY
+.ALIAS   ENDNOTES_HEADER_FAMILY           _FAMILY
 .ALIAS   ENDNOTE_STRING_FAMILY            _FAMILY
 .ALIAS   ENDNOTE_TITLE_FAMILY             _FAMILY
 .ALIAS   EPIGRAPH_FAMILY                  _FAMILY
@@ -16931,6 +17102,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   ENDNOTE_FONT                   _FONT
 .ALIAS   ENDNOTE_NUMBER_FONT            _FONT
 .ALIAS   ENDNOTE_LINENUMBER_FONT        _FONT
+.ALIAS   ENDNOTES_HEADER_FONT           _FONT
 .ALIAS   ENDNOTE_STRING_FONT            _FONT
 .ALIAS   ENDNOTE_TITLE_FONT             _FONT
 .ALIAS   EPIGRAPH_FONT                  _FONT
@@ -16967,6 +17139,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   DOCTYPE_SIZE                   _SIZE
 .ALIAS   ENDNOTE_NUMBER_SIZE            _SIZE
 .ALIAS   ENDNOTE_LINENUMBER_SIZE        _SIZE
+.ALIAS   ENDNOTES_HEADER_SIZE           _SIZE
 .ALIAS   ENDNOTE_STRING_SIZE            _SIZE
 .ALIAS   ENDNOTE_TITLE_SIZE             _SIZE
 .ALIAS   EPIGRAPH_SIZE                  _SIZE
@@ -17008,6 +17181,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   DOC_COVER_TITLE_COLOR           _COLOR
 .ALIAS   DOCHEADER_COLOR                 _COLOR
 .ALIAS   DOCTYPE_COLOR                   _COLOR
+.ALIAS   ENDNOTES_HEADER_COLOR           _COLOR
 .ALIAS   ENDNOTE_STRING_COLOR            _COLOR
 .ALIAS   EPIGRAPH_COLOR                  _COLOR
 .ALIAS   FINIS_COLOR                     _COLOR
@@ -17024,6 +17198,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   SECTION_COLOR                   _COLOR
 .ALIAS   SUBTITLE_COLOR                  _COLOR
 .ALIAS   TITLE_COLOR                     _COLOR
+.ALIAS   TOC_HEADER_COLOR                _COLOR
 \#
 .ALIAS   BIBLIOGRAPHY_QUAD          _QUAD
 .ALIAS   BIBLIOGRAPHY_STRING_QUAD   _QUAD
@@ -17037,6 +17212,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   DOCHEADER_QUAD             _QUAD
 .ALIAS   DOC_QUAD                   _QUAD
 .ALIAS   ENDNOTE_QUAD               _QUAD
+.ALIAS   ENDNOTES_HEADER_QUAD       _QUAD
 .ALIAS   ENDNOTE_STRING_QUAD        _QUAD
 .ALIAS   ENDNOTE_TITLE_QUAD         _QUAD
 .ALIAS   EPIGRAPH_QUAD              _QUAD
@@ -18182,8 +18358,11 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u
 .       \}
 .       el \{\
-.          ch FOOTER 0+\\n[pre-tbl-vfp]u
-.          ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u
+.          if \\n[pre-tbl-vfp] \{\
+.            ch FOOTER 0+\\n[pre-tbl-vfp]u
+.            ch FN_OVERFLOW_TRAP -\\n[#FN_OVERFLOW_TRAP_POS]u
+.            rr pre-tbl-vfp
+.          \}
 .       \}
 .    \}
 .    if !'\\$1'' \{\
@@ -20852,7 +21031,7 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .MAC PDF_TARGET END
 .    ds ARG_1 \\$1
 .    shift
-.    pdfhref M -N \\*[ARG_1] -- \\$*
+.    pdfhref M -N \\*[ARG_1] -E -- \\$*
 .    if '\\*[.T]'ps' .if !dpdf:href.map .tm gropdf-info:href \\*[ARG_1] \\$*
 .END
 \#
