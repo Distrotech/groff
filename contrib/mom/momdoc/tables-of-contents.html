@@ -580,6 +580,26 @@ example
 </span>
 </p>
 
+<h5 id="toc-header-style" class="docs" style="margin-top: 1em; text-transform: none;">Header string vertical placement</h5>
+
+<div id="toc-header-v-pos" class="box-macro-args" style="margin-top: 1em">
+Macro: <b>TOC_HEADER_V_POS</b> <kbd class="macro-args">&lt;distance from top of page&gt;</kbd>
+</div>
+<p class="requires">
+&bull;&nbsp;Requires a <a href="definitions.html#unitofmeasure">unit of measure</a>
+</p>
+
+<p>
+Normally, the TOC header string falls at the same vertical position
+as the
+<a href="definitions.html#docheader">docheader</a>.
+If you&#8217;d like it to fall at a different position, say 2 inches, use
+<br/>
+<span class="pre-in-pp">
+  .TOC_HEADER_V_POS 2i
+</span>
+</p>
+
 <h5 id="toc-header-style" class="docs" style="margin-top: -.5em; text-transform: none;">Header string control macros and defaults</h5>
 
 <div class="defaults-container" style="margin-top: 1em; padding-bottom: 8px;">
@@ -592,10 +612,101 @@ See
 .TOC_HEADER_FONT    default = bold
 .TOC_HEADER_SIZE    default = +4
 .TOC_HEADER_QUAD    default = left
+.TOC_HEADER_COLOR   default = black
 </span>
 </div>
 
-<h4 id="toc-style" class="docs" style="margin-top: -1em;">4. Entries and reference page numbers style</h4>
+<!-- -TOC_HEADER_CAPS- -->
+
+<h5 id="toc-header-caps" class="docs" style="margin-top: -1.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Header (first-page title) capitalization</h5>
+
+<div class="box-macro-args">
+Macro: <b>TOC_HEADER_CAPS</b> <kbd class="macro-args">toggle</kbd>
+</div>
+
+<p>
+Invoked by itself, <kbd>.TOC_HEADER_CAPS</kbd> will automatically
+capitalize the the table of contents first-page title.  Invoked with
+any other argument, the macro disables automatic capitalization of
+the title.
+</p>
+
+<p>
+You may want the table of contents first-page title to be in caps,
+but the title in subsequent page headers to be in caps/lower case.
+If the argument to
+<kbd><a href="#endnotes-header-string">TOC_HEADER_STRING</a></kbd>
+is in caps/lower case and TOC_HEADER_CAPS is on, this is exactly
+what will happen.
+</p>
+
+<p>
+Mom&#8217;s default is not to capitalize the table of contents
+first-page title string.
+</p>
+
+<!--- TOC_HEADER_UNDERSCORE- -->
+
+<h5 id="toc-header-underscore" class="docs" style="margin-top: -.25em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Header (first-page title) underscoring</h5>
+
+<div class="box-macro-args">
+Macro: <b>TOC_HEADER_UNDERSCORE</b> <kbd class="macro-args">[DOUBLE] [&lt;underscore weight&gt; [&lt;underscore gap&gt; [&lt;distance between double rules]]] | &lt;none&gt; | &lt;anything&gt;</kbd>
+</div>
+
+<p class="requires">
+&bull;&nbsp;The argument
+<span style="font-style: normal"><kbd>&lt;underscore weight&gt;</kbd></span>
+must not have the
+<a href="definitions.html#unitofmeasure">unit of measure</a>,
+<span style="font-style: normal;"><kbd>p</kbd></span>,
+appended to it; all other arguments require a unit of measure
+</p>
+
+<p>
+Invoked without an argument, <kbd>.TOC_HEADER_UNDERSCORE</kbd>
+will place a single rule underneath the table of contents
+first-page title.  Invoked with the argument, <kbd>DOUBLE</kbd>,
+TOC_HEADER_UNDERSCORE will double-underscore the title.  Invoked
+with any other non-numeric argument, (eg <kbd>OFF, NO, X</kbd>,
+etc.) the macro disables underscoring of the title.
+</p>
+
+<p>
+In addition, you can use TOC_HEADER_UNDERSCORE to control the
+weight of the underscore rule(s), the gap between the title and the
+underscore, and, in the case of double-underscores, the distance
+between the two rules.
+</p>
+
+<p>
+Some examples:
+<br/>
+<span class="pre-in-pp">
+  .TOC_HEADER_UNDERSCORE 1
+      - turn underscoring on; set the rule weight to 1 point
+
+  .TOC_HEADER_UNDERSCORE 1 3p
+      - turn underscoring on; set the rule weight to 1 point; set
+        the gap between the title and the underscore to 3 points
+  
+  .TOC_HEADER_UNDERSCORE DOUBLE .75 3p
+      - turn double-underscoring on; set the rule weight to 3/4 of
+        a point; set the gap between the title and the upper
+        underscore to 3 points; leave the gap between the upper
+        and the lower underunderscore at the default
+  
+  .TOC_HEADER_UNDERSCORE DOUBLE 1.5 1.5p 1.5p
+      - turn double-underscoring on; set the rule weight to 1-1/2
+        points; set the gap between the title and the upper
+        underscore to 1-1/2 points; set the gap between the upper
+        and the lower underscore to 1-1/2 points
+</span>
+Note, from the above, that in all instances, underscoring (single
+or double) is enabled whenever TOC_HEADER_UNDERSCORE is used in
+this way.
+</p>
+
+<h4 id="toc-style" class="docs" style="margin-top: -.5em;">4. Entries and reference page numbers style</h4>
 
 <p>
 &#8220;Entries&#8221; refers to the hierarchical arrangement of
@@ -679,7 +790,8 @@ The default is zero.
 
 <p>
 <kbd>CAPS</kbd> instructs mom to capitalize title entries.
-Capitalization may be enabled or disabled on a per-title basis.
+Capitalization may be enabled or disabled on a per-entry-level
+basis.
 </p>
 
 <p>

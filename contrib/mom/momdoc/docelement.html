@@ -469,11 +469,24 @@ or
 
 <div class="box-tip">
 <p class="tip">
-<span class="tip">Tip:</span>
+<span class="tip">Tips on vertical spacing around epigraphs:</span>
+If you wish to change the vertical position of an epigraph with
+<a href="typesetting.html#space">SPACE</a>/
+<a href="typesetting.html#ald">ALD</a>/
+<a href="typesetting.html#rld">RLD</a>,
+do so before invoking <kbd>.EPIGRAPH</kbd>, like this:
+<br/>
+<span class="pre-in-pp">
+  .SP -6p
+  .EPIGRAPH
+  A notable quote.
+  .EPIGRAPH OFF
+</span>
 If you&#8217;re setting a document in
 <a href="docprocessing.html#columns">columns</a>
-and you&#8217;d like to add or subtract space after the epigraph,
-the place to do it is inside the epigraph, like this:
+and you&#8217;d like to add or subtract space <i>after</i> the
+epigraph, which is centered over the top of both columns, the place
+to do it is inside the epigraph, like this:
 <br/>
 <span class="pre-in-pp">
   .EPIGRAPH
@@ -1925,6 +1938,31 @@ or below as is necessary to balance the page to the bottom margin.
 This behaviour can be changed with the control macro
 <a href="#always-fullspace-quotes">ALWAYS_FULLSPACE_QUOTES</a>.
 </p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="tip">Tips on vertical spacing around quotes:</span>
+If you wish to adjust the spacing before or after a quote or blockquote
+manually (with
+<a href="typesetting.html#space">SPACE</a>/
+<a href="typesetting.html#ald">ALD</a>/
+<a href="typesetting.html#rld">RLD</a>),
+do so <i>outside</i> the <kbd>.QUOTE</kbd> or <kbd>.BLOCKQUOTE</kbd>,
+like this:
+<br/>
+<span class="pre-in-pp">
+  .SP -3p
+  .QUOTE
+  Candy is dandy
+  But liquor is quicker.
+  .QUOTE OFF
+  .SP -3p
+</span>
+</p>
+</div>
+
+
+
 
 <div class="box-tip">
 <h2 id="quote-spacing-notes" class="docs" style="padding-top: 9px; font-size: 100%;">Further notes on quote spacing</h2>
@@ -4711,13 +4749,13 @@ appearance of endnotes pages, set them up prior to
     <li><a href="#endnotes-hdrftr-center">Header/footer centre string when doctype is CHAPTER</a></li>
     <li><a href="#endnotes-allows-headers">Allow headers on endnotes pages</a></li>
   </ul></li>
-  <li><a href="#endnotes-main-title"><b>Endnotes' first-page title control</b></a>
+  <li><a href="#endnotes-header"><b>Endnotes header (first-page title) control</b></a>
   <ul style="margin-left: -.5em;">
-    <li><a href="#endnote-string">Title string</a></li>
-    <li><a href="#endnote-string-control">Title string control macros and defaults</a></li>
-    <li><a href="#endnote-string-placement">Title string placement</a></li>
-    <li><a href="#endnote-string-underline">Title string underscoring</a></li>
-    <li><a href="#endnote-string-caps">Title string capitalization</a></li>
+    <li><a href="#endnotes-header-string">Header string</a></li>
+    <li><a href="#endnotes-header-string-control">Header string control macros and defaults</a></li>
+    <li><a href="#endnotes-header-placement">Header string placement</a></li>
+    <li><a href="#endnotes-header-underscore">Header string underscoring</a></li>
+    <li><a href="#endnotes-header-caps">Header string capitalization</a></li>
   </ul></li>
   <li><a href="#endnotes-doc-title"><b>Endnotes document-identification string control</b></a>
   <ul style="margin-left: -.5em;">
@@ -5200,30 +5238,34 @@ ENDNOTES_ALLOWS_FOOTERS OFF.
 </p>
 </div>
 
-<h4 id="endnotes-main-title" class="docs">4. Endnotes' first-page title control</h4>
+<h4 id="endnotes-header" class="docs">4. Endnotes header (first-page title) control</h4>
 
-<!-- -ENDNOTE_STRING- -->
+<!-- -ENDNOTES_HEADER_STRING- -->
 
-<h5 id="endnote-string" class="docs" style="margin-top: 1em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Title string</h5>
+<h5 id="endnotes-header-string" class="docs" style="margin-top: 1em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Header (first-page title) string</h5>
 
 <div class="box-macro-args">
-Macro: <b>ENDNOTE_STRING</b> <kbd class="macro-args">&quot;&lt;head to print at the top of endnotes&gt;&quot;</kbd>
+Macro: <b>ENDNOTES_HEADER_STRING</b> <kbd class="macro-args">&quot;&lt;title to print at the top of endnotes&gt;&quot;</kbd>
 </div>
+
+<p class="alias" style="margin-bottom: 0;">
+<i>Alias:</i> <b>ENDNOTE_STRING</b> (for compatibility with older documents)
+</p>
 
 <p>
 By default, mom prints the word &#8220;ENDNOTES&#8221; as a head
 at the top of the first page of endnotes.  If you want her to
-print something else, invoke <kbd>.ENDNOTE_STRING</kbd> with the
-endnotes-page head you want, surrounded by double-quotes.  If you
-don&#8217;t want a head at the top of the first endnotes-page,
-invoke <kbd>.ENDNOTE_STRING</kbd> with a blank argument (either two
-double-quotes side by side&mdash;<kbd>&quot;&quot;</kbd>&mdash;or no
-argument at all).
+print something else, invoke <kbd>.ENDNOTES_HEADER_STRING</kbd>
+with the endnotes-page head you want, surrounded by double-quotes.
+If you don&#8217;t want a head at the top of the first
+endnotes-page, invoke <kbd>.ENDNOTES_HEADER_STRING</kbd>
+with a blank argument (either two double-quotes side by
+side&mdash;<kbd>&quot;&quot;</kbd>&mdash;or no argument at all).
 </p>
 
-<!-- -ENDNOTE_STRING_CONTROL- -->
+<!-- -ENDNOTES_HEADER_CONTROL- -->
 
-<h5 id="endnote-string-control" class="docs" style="margin-top: -.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Title control macros and defaults</h5>
+<h5 id="endnotes-header-string-control" class="docs" style="margin-top: -.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Header (first-page title) control macros and defaults</h5>
 
 <div class="defaults-container" style="padding-bottom: 8px;">
 <p class="defaults" style="padding-top: 6px;">
@@ -5231,26 +5273,35 @@ See
 <a href="#control-macro-args">Arguments to the control macros</a>.
 </p>
 <span class="pre defaults">
-.ENDNOTE_STRING_FAMILY  default = prevailing document family
-.ENDNOTE_STRING_FONT    default = bold
-.ENDNOTE_STRING_SIZE*   default = +1
-.ENDNOTE_STRING_QUAD    default = centred
-.ENDNOTE_STRING_COLOR   default = black
+.ENDNOTES_HEADER_FAMILY  default = prevailing document family
+.ENDNOTES_HEADER_FONT    default = bold
+.ENDNOTES_HEADER_SIZE*   default = +1
+.ENDNOTES_HEADER_QUAD    default = centred
+.ENDNOTES_HEADER_COLOR   default = black
 
 *Relative to the size of the endnotes text (set with ENDNOTE_PT_SIZE)
 </span>
 </div>
 
-<!-- -ENDNOTE_STRING_ADVANCE- -->
+<p style="margin-top: -2em">
+<b>Note:</b> <i>For compatibility with older documents, these macros are aliased
+as</i> <kbd>.ENDNOTE_STRING_&lt;SPEC&gt;</kbd>, e.g. <kbd>.ENDNOTE_STRING_FAMILY</kbd>.
+</p>
 
-<h5 id="endnote-string-placement" class="docs" style="margin-top: -1em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Title string placement</h5>
+<!-- -ENDNOTES_HEADER_V_POS- -->
+
+<h5 id="endnotes-header-placement" class="docs" style="margin-top: -.25em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Header (first-page title) placement</h5>
 
 <div class="box-macro-args">
-Macro: <b>ENDNOTE_STRING_ADVANCE</b> <kbd class="macro-args">&lt;distance from top of page&gt;</kbd>
+Macro: <b>ENDNOTES_HEADER_V_POS</b> <kbd class="macro-args">&lt;distance from top of page&gt;</kbd>
 </div>
 
 <p class="requires">
 &bull;&nbsp;Argument requires a <a href="definitions.html#unitofmeasure">unit of measusure</a>
+</p>
+
+<p class="alias" style="margin-top: -1em; margin-bottom: 0;">
+<i>Alias:</i> <b>ENDNOTE_STRING_ADVANCE</b> (for compatibility with older documents)
 </p>
 
 <p>
@@ -5261,7 +5312,7 @@ that is used for the start of
 <a href="definitions.html#running">running text</a>.
 If you&#8217;d prefer another location, higher or lower on the page
 (thereby also raising or lowering the starting position of the
-endnotes themselves), invoke <kbd>.ENDNOTE_STRING_ADVANCE</kbd> with
+endnotes themselves), invoke <kbd>.ENDNOTES_HEADER_V_POS</kbd> with
 an argument stating the distance from the top edge of the page at
 which you&#8217;d like the title placed.
 </p>
@@ -5272,20 +5323,23 @@ to appear 1-1/2 inches from the top edge of the page, you&#8217;d tell
 mom about it like this:
 <br/>
 <span class="pre-in-pp">
-  .ENDNOTE_STRING_ADVANCE 1.5i
+  .ENDNOTES_HEADER_V_POS 1.5i
 </span>
 </p>
 
-<!-- -ENDNOTE_STRING_UNDERLINE- -->
+<!--- ENDNOTES_HEADER_UNDERSCORE --->
 
-<h5 id="endnote-string-underline" class="docs" style="margin-top: -1em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Title string underscoring</h5>
+<h5 id="endnotes-header-underscore" class="docs" style="margin-top: -1em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Header (first-page title) underscoring</h5>
 
 <div class="box-macro-args">
-Macro: <b>ENDNOTE_STRING_UNDERSCORE</b> <kbd class="macro-args">[DOUBLE] [&lt;underscore weight&gt; [&lt;underscore gap&gt; [&lt;distance between double rules]]] | &lt;none&gt; | &lt;anything&gt;</kbd>
+Macro: <b>ENDNOTES_HEADER_UNDERSCORE</b> <kbd class="macro-args">[DOUBLE] [&lt;underscore weight&gt; [&lt;underscore gap&gt; [&lt;distance between double rules]]] | &lt;none&gt; | &lt;anything&gt;</kbd>
 </div>
 
 <p class="alias" style="margin-bottom: 0;">
-<i>Alias:</i> <b>ENDNOTE_STRING_UNDERLINE</b>
+<i>Alias:</i> <b>ENDNOTES_HEADER_UNDERLINE</b>.
+<i>(For compatibility with older documents, also
+aliased as</i> <b>ENDNOTE_STRING_UNDERSCORE</b> <i>and</i>
+<b>ENDNOTE_STRING_UNDERLINE</b>.)
 </p>
 
 <p class="requires">
@@ -5298,16 +5352,16 @@ appended to it; all other arguments require a unit of measure
 </p>
 
 <p>
-Invoked without an argument, <kbd>.ENDNOTE_STRING_UNDERSCORE</kbd>
+Invoked without an argument, <kbd>.ENDNOTES_HEADER_UNDERSCORE</kbd>
 will place a single rule underneath the endnotes page title.  Invoked
-with the argument, <kbd>DOUBLE</kbd>, ENDNOTE_STRING_UNDERSCORE will
+with the argument, <kbd>DOUBLE</kbd>, ENDNOTES_HEADER_UNDERSCORE will
 double-underscore the title.  Invoked with any other non-numeric
 argument, (eg <kbd>OFF, NO, X</kbd>, etc.) the macro disables
 underscoring of the title.
 </p>
 
 <p>
-In addition, you can use ENDNOTE_STRING_UNDERSCORE to control the
+In addition, you can use ENDNOTES_HEADER_UNDERSCORE to control the
 weight of the underscore rule(s), the gap between the title and the
 underscore, and, in the case of double-underscores, the distance
 between the two rules.
@@ -5317,27 +5371,27 @@ between the two rules.
 Some examples:
 <br/>
 <span class="pre-in-pp">
-  .ENDNOTE_STRING_UNDERSCORE 1
+  .ENDNOTES_HEADER_UNDERSCORE 1
       - turn underscoring on; set the rule weight to 1 point
 
-  .ENDNOTE_STRING_UNDERSCORE 1 3p
+  .ENDNOTES_HEADER_UNDERSCORE 1 3p
       - turn underscoring on; set the rule weight to 1 point; set
         the gap between the title and the underscore to 3 points
   
-  .ENDNOTE_STRING_UNDERSCORE DOUBLE .75 3p
+  .ENDNOTES_HEADER_UNDERSCORE DOUBLE .75 3p
       - turn double-underscoring on; set the rule weight to 3/4 of
         a point; set the gap between the title and the upper
         underscore to 3 points; leave the gap between the upper
         and the lower underunderscore at the default
   
-  .ENDNOTE_STRING_UNDERSCORE DOUBLE 1.5 1.5p 1.5p
+  .ENDNOTES_HEADER_UNDERSCORE DOUBLE 1.5 1.5p 1.5p
       - turn double-underscoring on; set the rule weight to 1-1/2
         points; set the gap between the title and the upper
         underscore to 1-1/2 points; set the gap between the upper
         and the lower underscore to 1-1/2 points
 </span>
 Note, from the above, that in all instances, underscoring (single
-or double) is enabled whenever ENDNOTE_STRING_UNDERSCORE is used in
+or double) is enabled whenever ENDNOTES_HEADER_UNDERSCORE is used in
 this way.
 </p>
 
@@ -5347,16 +5401,20 @@ rules placed 2 points apart and 2 points below the baseline of the
 title.
 </p>
 
-<!-- -ENDNOTE_STRING_CAPS- -->
+<!-- -ENDNOTES_HEADER_CAPS- -->
 
-<h5 id="endnote-string-caps" class="docs" style="margin-top: -.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Title string capitalization</h5>
+<h5 id="endnotes-header-caps" class="docs" style="margin-top: -.5em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Header (first-page title) capitalization</h5>
 
 <div class="box-macro-args">
-Macro: <b>ENDNOTE_STRING_CAPS</b> <kbd class="macro-args">toggle</kbd>
+Macro: <b>ENDNOTES_HEADER_CAPS</b> <kbd class="macro-args">toggle</kbd>
 </div>
 
+<p class="alias" style="margin-bottom: 0;">
+<i>Alias:</i> <b>ENDNOTE_STRING_CAPS</b> (for compatibility with older documents)
+</p>
+
 <p>
-Invoked by itself, <kbd>.ENDNOTE_STRING_CAPS</kbd> will
+Invoked by itself, <kbd>.ENDNOTES_HEADER_CAPS</kbd> will
 automatically capitalize the endnotes-page title.  Invoked with any
 other argument, the macro disables automatic capitalization of the
 title.
@@ -5366,8 +5424,8 @@ title.
 If you&#8217;re generating a table of contents, you may want the
 endnotes pages title to be in caps, but the toc entry in caps/lower
 case.  If the argument to
-<kbd><a href="#endnote-string">ENDNOTE_STRING</a></kbd>
-is in caps/lower case and ENDNOTE_STRING_CAPS is on, this is exactly
+<kbd><a href="#endnotes-header-string">ENDNOTES_HEADER_STRING</a></kbd>
+is in caps/lower case and ENDNOTES_HEADER_CAPS is on, this is exactly
 what will happen.
 </p>
 
