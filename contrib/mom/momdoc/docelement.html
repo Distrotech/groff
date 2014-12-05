@@ -1987,8 +1987,8 @@ which, by and large, processes text on a line-per-line basis.)
 
 <p>
 If you don&#8217;t want the behaviour described above (ie you
-don&#8217;t want mom shimming 
-quotes and blockquotes), issue the macro
+don&#8217;t want mom shimming quotes and blockquotes), issue the
+macro
 <br/>
 <span class="pre-in-pp">
   .NO_SHIM
@@ -1996,6 +1996,17 @@ quotes and blockquotes), issue the macro
 in the style sheet section of your document (ie after PRINTSTYLE but
 before START), which will disable shimming globally, or on a
 per-instance basis prior to <kbd>.QUOTE</kbd> or <kbd>.BLOCKQUOTE</kbd>.
+</p>
+
+<p>
+If you set the leading of
+<a href="#quote-autolead">quotes</a>
+or
+<a href="#blockquote-autolead">blockquotes</a>
+to a value other than the one used in paragraphs, mom will apply
+shimming <i>after</i> the quote, whether or not <kbd>.NO_SHIM</kbd>
+is enabled.  This is the only way mom can guarantee that the
+difference in leading will not result in uneven bottom margins.
 </p>
 
 <p>
@@ -2094,7 +2105,7 @@ See
 .QUOTE_FAMILY   default = prevailing document family; default is Times Roman
 .QUOTE_FONT     default = italic; underlined in TYPEWRITE
 .QUOTE_SIZE     default = +0 (ie same size as paragraph text)
-.QUOTE_AUTOLEAD default = none; leading of quotes is the same as paragraphs
+<a id="quote-autolead">.QUOTE_AUTOLEAD default = none; leading of quotes is the same as paragraphs </a>
 .QUOTE_COLOR    default = black
 .QUOTE_INDENT  (see below, "Quote indent")
 </span>
@@ -2286,7 +2297,7 @@ See
 .BLOCKQUOTE_FAMILY   default = prevailing document family; default is Times Roman
 .BLOCKQUOTE_FONT     default = roman
 .BLOCKQUOTE_SIZE     default = -1 (point)
-.BLOCKQUOTE_AUTOLEAD default = none; leading of blockquotes is the same as paragraphs
+<a id="blockquote-autolead">.BLOCKQUOTE_AUTOLEAD default = none; leading of blockquotes is the same as paragraphs</a>
 .BLOCKQUOTE_COLOR    default = black
 .BLOCKQUOTE_QUAD     default = left
 .BLOCKQUOTE_INDENT  (see below)
