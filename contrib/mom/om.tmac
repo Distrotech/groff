@@ -423,7 +423,7 @@ end
 .MAC DO_B_MARGIN END
 .    nr #T_MARGIN_LEAD_ADJ \\n[#LEAD]-12000
 .    ev B_MARGIN
-'    bp
+'    sp |\\n[.p]u
 .    if !n .nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
 .    ev
 .END
@@ -2203,6 +2203,7 @@ end
 .ds $EN_STRING_RULE_GAP       2p
 .ds $EN_TITLE_UNDERLINE_GAP   2p
 .ds $RULE_GAP                 2p
+.ds $TOC_HEADER_UNDERLINE_GAP 2p
 .ds $TOC_HEADER_RULE_GAP      2p
 .ds $UNDERSCORE_GAP           2p
 \#
@@ -4664,7 +4665,7 @@ y\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 .MAC AUTHOR END \"Author.  Enclose all args fully in double quotes.
-.    if \\n[#COLLATE] .nr #NEW_AUTHOR 1
+.    nr #NEW_AUTHOR 1
 .    if '\\$1'DOC_COVER' \{\
 .       shift
 .       nr #AUTHOR_DOCCOVER_NUM 0 1
@@ -6245,7 +6246,7 @@ y\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    if !'\\*[$AUTHOR_1]'' \{\
-.       if r \\n[#NEW_AUTHOR] \{\
+.       if \\n[#NEW_AUTHOR] \{\
 .          rr #NEW_AUTHOR
 .          FAMILY  \\*[$AUTHOR_FAM]
 .          FT      \\*[$AUTHOR_FT]
@@ -7962,7 +7963,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          el .PROCESS_SHIM
 .       \}
 .       el .PROCESS_SHIM
-'       sp \\n[#SHIM]u
+.       if !\\n[#CALCULATE_ONLY] 'sp \\n[#SHIM]u
 .       rr #CURRENT_V_POS
 .    \}
 .END
@@ -10958,6 +10959,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 \#   PP_STYLE 1 = regular paras; 2 = blockquotes, epigraphs
 \#
 .MAC PP END
+.    br
 .    if \\n[defer-pp-ind-reset] \{\
 .       sp -1
 .       rr defer-pp-ind-reset
@@ -11611,18 +11613,19 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .    nr #SAVED_FN_NUMBER \\n[#FN_NUMBER]
 .    nr #DONE_ONCE 0 1
 .    REMOVE_INDENT
-.    nr #Q_DEPTH (\\n[#DIVER_DEPTH]-\\n[#Q_LEAD_REAL])
+.    ev
+.    nr #Q_DEPTH (\\n[#DIVER_DEPTH])
 .    nr #Q_LEAD_DIFF \\n[#LEAD]-\\n[#Q_LEAD_REAL]
 .    if !\\n[.v]=\\n[#Q_LEAD_REAL] \{\
-.       SILENT
-.       br
-.       nf
-.       nr #CURRENT_V_POS \
-\\n[nl]+\\n[#Q_LEAD_DIFF]+(\\n[#DIVER_DEPTH]-\\n[#Q_DEPTH_REAL])
-.       SHIM
-.       SILENT OFF
-.       nr #Q_SPACE_ADJ \\n[#SHIM]/2
-.       nr #TRAP \\n[.t]-1
+.       if !\\n[#NO_SHIM] \{\
+.          br
+.          nr #CALCULATE_ONLY 1
+.          nr #CURRENT_V_POS \\n[nl]+\\n[#Q_DEPTH]-\\n[#Q_LEAD_DIFF]u
+.          SHIM
+.          rr #CALCULATE_ONLY
+.          nr #Q_SPACE_ADJ (\\n[#SHIM]/2)
+.          nr #TRAP \\n[.t]-1
+.       \}
 .    \}
 .    if \\n[#ENDNOTE] \{\
 .       nr #RESET_QUOTE_SPACING \\n[#FULLSPACE_QUOTES]
@@ -11708,13 +11711,17 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .       br
 .    \}
 .    if \\n[in-cutaround] .nr #PP_INDENT \\n[pp-ind-tmp]
-.    if !\\n[ev-popped] .ev
+\#.    if !\\n[ev-popped] .ev \! Needed once cutarounds are implemented
 .    rr delay-ev-pop
 .    if \\n[reset-ll] \{\
 .       if '\\*[cutaround-type]'RIGHT' \{\
 .          ll \\n[#DOC_L_LENGTH]u
 .          rr reset-ll
 .       \}
+.    \}
+.    if \\n[#NO_SHIM]=1 \{\
+.       nr #RESTORE_NO_SHIM 1
+.       rr #NO_SHIM
 .    \}
 .    if \\n[#PRINT_STYLE]=1 \
 .       if !\\n[.v]=\\n[#DOC_LEAD] .SHIM
@@ -11736,15 +11743,14 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                ie \\n[#ENDNOTE] .ALD \\n[#EN_LEAD]u
 .                el .ALD \\n[#DOC_LEAD]u
 .             \}
-.             el .ALD (\\n[#DOC_LEAD]/2)u
+.             el .SHIM
 .             ie \\n[#Q_FITS] \{\
 .                ie (\\n[#Q_TOP]=\\n[#PAGE_TOP]):(\\n[@TOP]=1) \{\
 .                   nr #Q_AT_TOP 1
 .                   nr #DELAY_SHIM 1
 .                \}
 .                el \
-\#.                 if !\\n[.v]=\\n[#Q_LEAD_REAL] .SHIM
-.                   SHIM
+.                   if !\\n[.v]=\\n[#Q_LEAD_REAL] .SHIM
 .             \}
 .             el \{\
 .                SHIM
@@ -11763,6 +11769,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .          \}
 .       \}
 .    \}
+.    if \\n[#RESTORE_NO_SHIM] .nr #NO_SHIM 1
 .    rr #Q_SPACE_ADJ
 .    if \\n[#LINENUMBERS]=2 \{\
 .       nr #LINENUMBERS 1
@@ -11849,7 +11856,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                \}
 .                rm Q_TEMP
 .             \}
-.             el .ALD (\\n[#DOC_LEAD]u/2u)+\\n[#Q_SPACE_ADJ]u
+.             el .ALD \\n[#DOC_LEAD]u/2u
 .          \}
 .       \}
 .       if \\n[#DIVER_FN]=2 .rr #DIVER_FN
@@ -14979,6 +14986,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    CAPS OFF
 .    sp
 .    nf
+.    gcolor
 .    TOC_ENTRIES
 .    rr #TOC
 .    if \\n[#LINENUMBERS]=3 \{\
