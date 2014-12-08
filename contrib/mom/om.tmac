@@ -422,8 +422,10 @@ end
 \#
 .MAC DO_B_MARGIN END
 .    nr #T_MARGIN_LEAD_ADJ \\n[#LEAD]-12000
+.    if !\\n[#DOCS] .vpt 0
 .    ev B_MARGIN
 '    sp |\\n[.p]u
+.    if !\\n[#DOCS] .vpt
 .    if !n .nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
 .    ev
 .END
@@ -11743,7 +11745,7 @@ $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .                ie \\n[#ENDNOTE] .ALD \\n[#EN_LEAD]u
 .                el .ALD \\n[#DOC_LEAD]u
 .             \}
-.             el .SHIM
+.             el .ALD \\n[#DOC_LEAD]u/2u
 .             ie \\n[#Q_FITS] \{\
 .                ie (\\n[#Q_TOP]=\\n[#PAGE_TOP]):(\\n[@TOP]=1) \{\
 .                   nr #Q_AT_TOP 1
@@ -16290,8 +16292,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       vpt
 .    \}
 .    if \\n[#NUM_ARGS]>0 \{\
-.    nr loop-count 0 1
-.    nr loop-counter \\n[#NUM_ARGS]
+.       nr loop-count 0 1
+.       nr loop-counter \\n[#NUM_ARGS]
 .       while \\n+[loop-count]<=\\n[loop-counter] \{\
 .          if '\\$1'FORCE' \{\
 .             nr #FORCE 1
@@ -16378,15 +16380,16 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          rr @TOP
 .       \}
 .       nf
-.       if \\n[float*tbl] \
+.       if \\n[float*tbl] \{\
 .          if (\\n[#MLA]=1)&(\\n[tbl@source]=0) \
 .             chop FLOAT*DIV
 .          if \\n[nl]=\\n[#PAGE_TOP] \{\
 .             if \\n[tbl*have-caption] \{\
 .                ie !\\n[#MLA] .sp \\n[tbl*caption-lead-diff]u
 .                el \{\
-.                ch RR_@TOP
-.                sp \\n[tbl*label-lead-diff]u-.5v
+.                   ch RR_@TOP
+.                   sp \\n[tbl*label-lead-diff]u-.5v
+.                \}
 .             \}
 .          \}
 .       \}
@@ -21126,10 +21129,12 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .          nr float*no-shim 1
 .       \}
 .    \}
-.    ds pdf-img*label-sffx-tmp \\*[pdf-img*label-sffx]
-.    substring pdf-img*label-sffx-tmp -1
-.    if '\\*[pdf-img*label-sffx-tmp]'.' \
-.       if \\n[pdf-img*caption-after-label]=0 .chop pdf-img*label-sffx
+.    if !'\\*[pdf-img*label-sffx]'' \{\
+.       ds pdf-img*label-sffx-tmp \\*[pdf-img*label-sffx]
+.       substring pdf-img*label-sffx-tmp -1
+.       if '\\*[pdf-img*label-sffx-tmp]'.' \
+.          if \\n[pdf-img*caption-after-label]=0 .chop pdf-img*label-sffx
+.    \}
 .    PDF_TARGET fig:\\n+[lists*target]
 .    if '\\*[pdf-img:pos]'-C' \
 .       nr pdf-img:ind (\\n[.ll]-\\n[ind-pre-img]-\\n[pdf-img:width])/2
