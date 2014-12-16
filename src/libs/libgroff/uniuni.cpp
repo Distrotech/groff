@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
 // This code has been algorithmically derived from the file
-// UnicodeData.txt, version 4.1.0, available from unicode.org,
-// on 2005-12-09.
+// UnicodeData.txt, version 7.0.0, available from unicode.org,
+// on 2014-12-16.
 
 #include "lib.h"
 #include "stringclass.h"
@@ -446,6 +446,17 @@ struct S {
   { "0FAC", "20FAB_0FB7" },
   { "0FB9", "20F90_0FB5" },
   { "1026", "21025_102E" },
+  { "1B06", "21B05_1B35" },
+  { "1B08", "21B07_1B35" },
+  { "1B0A", "21B09_1B35" },
+  { "1B0C", "21B0B_1B35" },
+  { "1B0E", "21B0D_1B35" },
+  { "1B12", "21B11_1B35" },
+  { "1B3B", "21B3A_1B35" },
+  { "1B3D", "21B3C_1B35" },
+  { "1B40", "21B3E_1B35" },
+  { "1B41", "21B3F_1B35" },
+  { "1B43", "21B42_1B35" },
   { "1E00", "20041_0325" },
   { "1E01", "20061_0325" },
   { "1E02", "20042_0307" },
@@ -1320,6 +1331,8 @@ struct S {
   { "FA2B", "198FC" },
   { "FA2C", "19928" },
   { "FA2D", "19DB4" },
+  { "FA2E", "190DE" },
+  { "FA2F", "196B7" },
   { "FA30", "14FAE" },
   { "FA31", "150E7" },
   { "FA32", "1514D" },
@@ -1379,6 +1392,9 @@ struct S {
   { "FA68", "196E3" },
   { "FA69", "197FF" },
   { "FA6A", "1983B" },
+  { "FA6B", "16075" },
+  { "FA6C", "1242EE" },
+  { "FA6D", "18218" },
   { "FA70", "14E26" },
   { "FA71", "151B5" },
   { "FA72", "15168" },
@@ -1519,6 +1535,18 @@ struct S {
   { "FB4C", "205D1_05BF" },
   { "FB4D", "205DB_05BF" },
   { "FB4E", "205E4_05BF" },
+  { "1109A", "211099_110BA" },
+  { "1109C", "21109B_110BA" },
+  { "110AB", "2110A5_110BA" },
+  { "1112E", "211131_11127" },
+  { "1112F", "211132_11127" },
+  { "1134B", "211347_1133E" },
+  { "1134C", "211347_11357" },
+  { "114BB", "2114B9_114BA" },
+  { "114BC", "2114B9_114B0" },
+  { "114BE", "2114B9_114BD" },
+  { "115BA", "2115B8_115AF" },
+  { "115BB", "2115B9_115AF" },
   { "1D15E", "21D157_1D165" },
   { "1D15F", "21D158_1D165" },
   { "1D160", "31D158_1D165_1D16E" },
