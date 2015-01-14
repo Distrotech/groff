@@ -20,14 +20,15 @@ files with pdfmom(1).
 
     pdfmom letter.mom > letter.pdf
     pdfmom mom-pdf.mom > mom-pdf.pdf
+    pdfmom -k mon_premier_doc.mom > mon_premier_doc.pdf
     pdfmom sample_docs.mom > sample_docs.pdf
     pdfmom typesetting.mom > typesetting.pdf
 
 The files themselves
 --------------------
 
-All are set up for US letter papersize except mom-pdf.mom, which
-uses A4.
+All are set up for US letter papersize except mom-pdf.mom and
+mon_premier_doc.mom, which uses A4.
 
 ***typesetting.mom**
 
@@ -63,6 +64,21 @@ the file.
 
 This is just the tutorial example from the momdocs, ready for
 previewing.
+
+***mon_premier_doc.mom***
+
+The file, mon_premier_doc.mom, is a simple example in French showing
+the use of common elements: section headings, paragraphs, lists, table
+of contents and clickable links.  It should be generated with option -k
+as there are some accented letters.
+
+A few settings were also changed for this French document:
+ATTRIBUTE_STRING is used to replace "by" by "par" in the document
+header (where the title and the author are displayed).
+TOC_HEADER_STRING is used to modity the Table of Content title to
+"Table des matières". And finally, INDENT_FIRST_PARAS is used to
+indent the first paragraph of a section -- this is the usual
+convention in French typesetting.
 
 ***mom-pdf.mom***
 
