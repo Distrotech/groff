@@ -55,7 +55,7 @@ fonctionnalités PDF de mom dont l'écriture d'une ébauche de nouvelle
 ou des liens cliquables dans une table des matières.
 
 Le dernier exemple démontre, par un texte séparé en deux colonnes, la
-souplesse de mom pour la coneption de document.
+souplesse de mom pour la conception de document.
 
 Le PRINTSTYLE de ce fichier est TYPESET et vous donne une idée du
 comportement par défaut de mom pour la composition typographique de
@@ -68,7 +68,7 @@ début du fichier.
 
 ***letter.mom***
 
-Ceci est simplement l'exemple du turorial de momdocs, prêt à être vu.
+Ceci est simplement l'exemple du tutorial de momdocs, prêt à être vu.
 
 ***mon_premier_doc.mom***
 
