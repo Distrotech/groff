@@ -19,7 +19,7 @@ Je n'ai pas inclu les PDF parce que je voulais conserver l'archive mom
 aussi petite que possible. Pour générer les PDF, traitez les fichiers
 avec pdfmom(1).
 
-    pdfmom letter.mom > letter.pdf
+    pdfmom -k letter.mom > letter.pdf
     pdfmom mom-pdf.mom > mom-pdf.pdf
     pdfmom -k mon_premier_doc.mom > mon_premier_doc.pdf
     pdfmom sample_docs.mom > sample_docs.pdf

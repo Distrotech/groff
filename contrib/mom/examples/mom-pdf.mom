@@ -1,5 +1,5 @@
 .\" -*- nroff -*-
-.\" Copyright (C) 2012-2014  Free Software Foundation, Inc.
+.\" Copyright (C) 2012-2015  Free Software Foundation, Inc.
 .\"
 .\" This file is part of mom, which is part of groff, a free software
 .\" project.
@@ -8,68 +8,92 @@
 .\" GNU General Public License as published by the "Free Software
  \" Foundation", version\~2.
 .\"
-.\" The license text is available in the internet at
+.\" The license text is available on the internet at
 .\" <http://www.gnu.org/licenses/gpl-2.0.html>
 .\"
-.PAPER	    A4
+.PAPER A4
 .\" Reference macros (metadata)
 .TITLE     "Producing PDFs" "with groff and mom"
 .PDF_TITLE "\*[$TITLE]
-.AUTHOR    "\v'-.5v'\*[UP 4p]Deri James" \
-           "\v'-.5v'\*[UP 8p]and" \
-           "\v'-.5v'\*[UP 11p]Peter Schaffter"
-.MISC      "This file is part of groff." \
-           ".sp .25v" \
-           "groff is free software; you can redistribute it" \
-           "and\*[FU3]/or modify it under the terms of the GNU" \
-           "General Public License as published by the" \
-           "Free Software Foundation, either version 3" \
-           "of the License, or (at your option) any later" \
-           "version." \
-           ".sp .25v" \
-           "You should have received a copy of the GNU" \
-           "General Public License along with this program." \
-           "If not, see:" \
-           ".sp .25v" \
-           ".IL 2P" \
-           ".PDF_WWW_LINK http://www.gnu.org/licenses/" \
-           ".IQ CLEAR"
-.COPYRIGHT "20\*[BU3]1\*[BU2]2 Free Software Foundation
+.COPYRIGHT "20\*[BU3]1\*[BU2]5 Free Software Foundation
+.AUTHOR "Deri James" "\*[UP .5p]and" "Peter Schaffter"
+.\" Cover author style
+.COVER_AUTHOR_STYLE \
+  LEAD 15 \
+  SPACE -.5v
+.\" Docheader author style
+.AUTHOR_STYLE \
+ LEAD 14 \
+ SPACE -.75
 .ATTRIBUTE_STRING ""  \" Don't print 'by'
+.\"
 .PDF_BOOKMARKS_OPEN 2
-.\" Cover and page header
-.COVER       TITLE AUTHOR COPYRIGHT MISC
-.HEADER_LEFT "James, Schaffter"
-.\" Page, style, formatting
+.\" Formatting style, margins
 .PRINTSTYLE TYPESET
 .L_MARGIN   2.5c
 .R_MARGIN   2.5c
 .B_MARGIN   2.5c
-.\"
+.\" General defaults
 .FAM      H
 .FT       R
 .PT_SIZE  10.5
 .AUTOLEAD 3
-.PARA_INDENT 0  \" Because we're spacing paragraphs.
+.PARA_INDENT 0  \" No indent because we're spacing paragraphs.
+.\" Copyright notice
+.COVERTEXT
+.SP .5v
+.QUAD CENTER
+.HY off
+.IB 8P
+This file is part of groff.
+.SP .5v
+Groff is free software.  You can redistribute it
+and\*[FU3]/or modify it under the terms of the GNU
+General Public License as published by the
+Free Software Foundation, either version 3
+of the License, or (at your option) any later
+version.
+.SP .5v
+You should have received a copy of the GNU
+General Public License along with this program.
+If not, see:
+.SP .25v
+.PDF_WWW_LINK http://www.gnu.org/licenses/
+.IQ CLEAR
+.HY
+.COVERTEXT end
+.\" Cover and page header
+.COVER TITLE AUTHOR COPYRIGHT COVERTEXT
+.HEADER_LEFT "James, Schaffter"
 .\"
 .COVER_LEAD     +3.5
 .DOCHEADER_LEAD +3.5
 .\" Color for code snippets
 .NEWCOLOUR dark-grey RGB #343434
 .\" Make QUOTE look like CODE
-.QUOTE_FAMILY C
-.QUOTE_FONT   B
-.QUOTE_SIZE   +1.5
-.QUOTE_COLOR  dark-grey
-.QUOTE_INDENT 9p
+.QUOTE_STYLE \
+  FAMILY C \
+  FONT   B \
+  SIZE   +1.5 \
+  COLOR  dark-grey \
+  INDENT 9p
 .\"
-.CODE_FONT  B
-.CODE_SIZE  115
-.CODE_COLOR dark-grey
-.CONDENSE   87
+.CODE_STYLE \
+  FONT  B \
+  SIZE  115 \
+  COLOR dark-grey
+.CONDENSE 87 \" Condense percentage used in COD
 .\"
-.HEADING_STYLE 1 NUMBER FONT B SIZE +1 BASELINE_ADJUST \n[.v]/5
-.HEADING_STYLE 2 NUMBER FONT I SIZE +.25 BASELINE_ADJUST \n[.v]/5
+.HEADING_STYLE 1 \
+  NUMBER \
+  FONT B \
+  SIZE +1 \
+  BASELINE_ADJUST \n[.v]/5
+.HEADING_STYLE 2 \
+  NUMBER \
+  FONT I \
+  SIZE +.25 \
+  BASELINE_ADJUST \n[.v]/5
 .\"
 .FOOTNOTE_SIZE -1
 .\" Character definitions for program names, opts, etc.
@@ -119,10 +143,11 @@
 .TOC_ENTRY_STYLE 2 FONT I
 .TOC_LEAD 14
 .\"
-.DOCHEADER_ADVANCE 5c \" Begin this distance down from top of page
+.DOCHEADER_ADVANCE 5c \" Begin docheader this distance down from top of page
 .\"
 .START
 .\"
+.SP .5c
 .HEADING 1 NAMED intro "Introduction"
 .PP
 .RW .12
@@ -198,6 +223,7 @@ Furthermore, \*[cod]NAMED\|<id>\*[codx] stores the text of the
 heading for use later on when linking to it (see
 .PDF_LINK internal SUFFIX ). +
 If headings are being numbered, the heading number is prepended.
+.NO_SHIM off
 .HEADING 2 NAMED target  "Creating destination points at arbitrary locations"
 .PP
 Any part of a document can be a link destination, not just headings.
@@ -209,6 +235,7 @@ just above the table in the source file.  As with
 \*[cod]HEADING\*[codx], \*[cod]<id>\*[codx] is any unique name.
 \*[cod]<text>\*[codx] is optional. \*[cod]<id>\*[codx] can now be linked
 to from anywhere in the document.
+.sp 2.5p
 .HEADING 2 NAMED internal "Creating internal links"
 .PP
 Internal links are clickable text areas that allow you to jump to
