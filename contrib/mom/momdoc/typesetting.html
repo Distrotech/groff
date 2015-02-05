@@ -2,7 +2,7 @@
 <!--
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004-2014 Free Software Foundation, Inc.
+Copyright (C) 2004-2015 Free Software Foundation, Inc.
 Written by Peter Schaffter (peter@schaffter.ca).
 
 Permission is granted to copy, distribute and/or modify this document
@@ -2590,6 +2590,11 @@ large patches of type in a faked font look typographically cheap.
     <li><a href="#extend">EXTEND</a> &ndash; percentage for pseudo-extended type</li>
     <li><a href="#ext-inline">\*[EXT]</a> &ndash; inline escape for pseudo-extending</li>
   </ul></li>
+  <li>Smallcaps
+  <ul style="list-style: none; margin-left: -1em;">
+    <li><a href="#smallcaps">SMALLCAPS</a> &ndash; enable smallcaps</li>
+    <li><a href="#smallcaps-style">SMALLCAPS_STYLE</a> &ndash; size, weight, and width of smallcaps</li>
+  </ul></li>
 </ul>
 </div>
 
@@ -2933,10 +2938,7 @@ embedded in text lines, like this:
 </span>
 <kbd>\*[EXT]</kbd> remains in effect until you turn it off with
 <kbd>\*[EXTX]</kbd>.
-</p>
-
-<div class="box-important">
-<p class="tip">
+</p> <div class="box-important"> <p class="tip">
 <span class="important">IMPORTANT:</span> You must turn
 <kbd>\*[EXT]</kbd> off before making any changes to the point size
 of your type, either via the
@@ -2957,6 +2959,108 @@ with
 mom ignores <kbd>\*[EXT]</kbd> requests.
 </p>
 </div>
+
+<!-- SMALLCAPS -->
+
+<div class="macro-id-overline">
+<h3 id="smallcaps" class="macro-id">Smallcaps</h3>
+</div>
+
+<div class="box-macro-args">
+Macro: <b>SMALLCAPS</b> <kbd class="macro-args">&lt;toggle&gt;</kbd>
+</div>
+
+<p>
+To begin setting type in pseudo-smallcaps, simply invoke
+<kbd>.SMALLCAPS</kbd>.  When you no longer want them, invoke
+<kbd>SMALLCAPS&nbsp;OFF</kbd> (or <kbd>END</kbd>, <kbd>STOP</kbd>,
+<kbd>DONE</kbd>, etc).  If you are currently in a
+<a href="definitions.html#filled">no-fill mode</a>,
+(i.e. <kbd>.LEFT</kbd>, <kbd>.CENTER</kbd>, or <kbd>.RIGHT</kbd>)
+and you want the smallcaps to continue on the same line,
+append a <kbd>\c</kbd> to the line, like this
+<br/>
+<span class="pre-in-pp">
+  A line of type\c
+  .SMALLCAPS
+  with a few words in smallcaps.
+  .SMALLCAPS OFF
+</span>
+The line preceding <kbd>.SMALLCAPS OFF</kbd> should also have a
+<kbd>\c</kbd> appended to it if you wish it to continue unbroken.
+</p>
+
+<div class="box-tip">
+<p class="tip-top">
+<span class="note">Note:</span>
+SMALLCAPS does not have an inline equivalent to
+<a href="inlines.html#uc-lc"><kbd>\*[UC]</kbd> / <kbd>\*[LC]</kbd></a>.
+Furthermore, if you&#8217;re using the
+<a href="docprocessing.html#docprocessing">document processing macros</a>
+with
+<a href="docprocessing.html#printstyle">PRINTSTYLE TYPEWRITE</a>,
+mom ignores SMALLCAPS.
+</p>
+
+<p class="tip-bottom">
+Additionally, be aware that no automatic
+<a href="definitions.html#kern">kerning</a>
+takes place while pseudo-smallcaps are in effect.
+</p>
+</div>
+
+<div class="macro-id-overline">
+<h3 id="smallcaps-style" class="macro-id">Set size, weight, and width of smallcaps</h3>
+</div>
+
+<div class="box-macro-args">
+Macro: <b>SMALLCAPS_STYLE</b> <kbd class="macro-args">SIZE &lt;percentage&gt; WEIGHT_ADJ &lt;percentage&gt; EXTEND &lt;percentage&gt;</kbd>
+</div>
+
+<p>
+True smallcaps are not a font effect, but, like designer cuts of
+bold, condensed, and extended, actual fonts provided with some
+families.  It is highly recommended that you acquire real smallcaps
+fonts rather than relying on mom's pseudo version.
+</p>
+
+<p>
+To achieve a reasonable facsimile of designer-cut small fonts, mom
+needs to know the percentage of regular caps at a given point size
+by which to reduce the small caps.  To make adjustments for the
+difference in weight and width of the smaller caps, she also needs
+to know by how much to embolden (&#8220;fatten&#8221;) the
+smallcaps, and by how much to increase their width.
+</p>
+
+<p>
+All three arguments to SMALLCAPS_STYLE reflect a
+percentage of the point size in effect when
+<a href="#smallcaps">SMALLCAPS</a>
+is invoked.  Mom&#8217;s defaults for pseudo-smallcaps are:
+<br/>
+<span class="pre-in-pp">
+  SIZE       = 74%
+  WEIGHT_ADJ = .3%
+  EXTEND     = 5%
+</span>
+To change any or all of the defaults, you might enter
+<br/>
+<span class="pre-in-pp">
+  .SMALLCAPS_STYLE SIZE 80 WEIGHT_ADJ .25 EXTEND 3
+</span>
+or, more readably,
+<br/>
+<span class="pre-in-pp">
+  .SMALLCAPS_STYLE 
+  SIZE 80 \
+  WEIGHT_ADJ .25 \
+  EXTEND 3
+</span>
+Note that you do not have to give SMALLCAPS_STYLE all three
+arguments, and that the arguments may be entered in any order.  Any
+arguments you omit will remain at their former value.
+</p>
 
 <div class="rule-short" style="margin-bottom: 24px;"><hr/></div>
 

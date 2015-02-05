@@ -2,7 +2,7 @@
 <!--
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004-2014 Free Software Foundation, Inc.
+Copyright (C) 2004-2015 Free Software Foundation, Inc.
 Written by Peter Schaffter (peter@schaffter.ca).
 
 Permission is granted to copy, distribute and/or modify this document
@@ -54,8 +54,9 @@ FDL in the main directory of the groff source package.
     <li><a href="#headings">2.3 Headings</a></li>
     <li><a href="#margin-notes">2.4 Margin notes</a></li>
     <li><a href="#floats">2.5 Floats</a></li>
-    <li><a href="#table-of-contents">2.5 Table of contents</a></li>
+    <li><a href="#table-of-contents">2.5 Tables of contents</a></li>
   </ul></li>
+  <li><a href="#v2.1-changes">Version 2.1 changes</a></li>
   <li><a href="#pdfmom">The <strong>pdfmom</strong> wrapper around groff</a></li>
   <li><a href="#install-font">The <strong>install-font.sh</strong> script</a></li>
 </ol>
@@ -276,7 +277,7 @@ top of the next page.  An <kbd>ADJUST</kbd> argument to FLOAT allows
 for optical centering.
 </p>
 
-<h3 id="table-of-contents" class="docs">2.6. Table of contents</h3>
+<h3 id="table-of-contents" class="docs">2.6. Tables of contents</h3>
 
 <p>
 The default look of the Table of Contents has been overhauled to
@@ -321,7 +322,52 @@ the mom source file is processed with
 <a href="pdfmom"><strong>pdfmom</strong></a>.
 </p>
 
-<h2 id="pdfmom" class="docs">3. pdfmom</h2>
+<h2 id="v2.1-changes" class="docs">3. Version 2.1 changes</h2>
+
+<p>
+Version 2.1 adds these features:
+</p>
+<ul style="margin-top: -.5em; width: 90%">
+  <li>expansion of cover, docheader, page header, and heading
+  control macros to permit caps, smallcaps, color, and
+  underscoring</li>
+  <li>the ability to style every element appearing in docheaders and
+  automatically-generated cover/title pages separately</li>
+  <li>macros to place images on cover/title pages</li>
+  <li>a new macro, COVERTEXT, that allows adding text (e.g. an
+  Abstract) to automatically-generated cover/title pages or to
+  create cover/title pages entirely by hand</li>
+  <li>separate indent control macros for QUOTES and BLOCKQUOTES</li>
+  <li>pseudo-smallcaps, including a control macro to choose the
+  size, weight, and width of the small caps</li>
+  <li>new &lt;element&gt;_STYLE macros that allow setting
+  parameters for &lt;element&gt; with a single macro using
+  keyword/value pairs</li>
+</ul>
+
+<p>
+The following changes have been made:
+</p>
+
+<ul style="margin-top: -.5em; width: 90%">
+  <li>MISC_AUTOLEAD (including COVER_MISC_AUTOLEAD and
+  DOC_COVER_MISC_AUTOLEAD) has been replaced in favour of MISC_LEAD,
+  which takes an absolute leading value, rather than one derived
+  from the point size</li>
+  <li>COVER_UNDERLINE and DOC_COVER_UNDERLINE have been
+  removed in favour of COVER_DOCTYPE_UNDERLINE and
+  DOC_COVER_DOCTYPE_UNDERLINE</li>
+  <li>DOCTYPE NAMED &lt;string&gt; no longer accepts a color
+  argument; setting the color for &lt;string&gt; is accomplished with
+  DOCTYPE_COLOR &lt;color&gt;; in addition, the string now has a
+  complete set of control macros</li>
+  <li>default underscoring of the DOCTYPE NAMED string has been
+  removed, both in the docheader and on cover/title pages</li>
+  <li>no cover/title page data persists, however formatting for the
+  elements on them does</li>
+</ul>
+
+<h2 id="pdfmom" class="docs">4. pdfmom</h2>
 
 <p>
 Deri James has provided <strong>pdfmom</strong>, a wrapper around
@@ -339,7 +385,7 @@ recognizes PDF images that have been embedded with
 <a href="images.html#pdf-image"><kbd>PDF_IMAGE</kbd></a>.
 </p>
 
-<h2 id="install-font" class="docs">4. install-font.sh</h2>
+<h2 id="install-font" class="docs">5. install-font.sh</h2>
 
 <p>
 A bash script, <strong>install-font.sh</strong>, has been posted at the

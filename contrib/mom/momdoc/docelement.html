@@ -2,7 +2,7 @@
 <!--
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004-2014 Free Software Foundation, Inc.
+Copyright (C) 2004-2015 Free Software Foundation, Inc.
 Written by Peter Schaffter (peter@schaffter.ca).
 
 Permission is granted to copy, distribute and/or modify this document
@@ -53,6 +53,7 @@ FDL in the main directory of the groff source package.
       <li><a href="#quad">quad/justification</a></li>
       <li><a href="#underline">underline style, rule weight</a></li>
     </ul></li>
+    <li><a href="#grouping">Grouping control macros</a></li>
   </ul></li>
 </ul>
 </div>
@@ -369,7 +370,20 @@ Control macros that end in _QUAD take the same arguments as
 If mom gives the option to underline a document element, the weight
 of the underline and its distance from the
 <a href="definitions.html#baseline">baseline</a>
-are controlled by macros that end in _UNDERLINE.
+are controlled by macros that end in _UNDERSCORE or _UNDERLINE.
+These macros take the following arguments:
+<br/>
+<span class="pre-in-pp">
+  DOUBLE     - double underscore
+  &lt;weight&gt;   - the underscore weight (in points, no unit of measure required
+  &lt;distance&gt; - distance from baseline (unit of measure required)
+  &lt;rule gap&gt; - distance between double underscore rules (unit of measure required_
+</span>
+<kbd>DOUBLE</kbd> by itself will double-underscore the element.  The
+remaining arguments must be entered in the order given.  You may not
+skip over any of them, which means that if you only wish to change
+<kbd>&lt;rule gap&gt;</kbd>, you must still enter a
+<kbd>&lt;weight&gt;</kbd> and <kbd>&lt;distance&gt;</kbd> argument.
 </p>
 
 <p>
@@ -384,6 +398,49 @@ The weight argument to _UNDERLINE macros is the same as the argument
 to
 <a href="inlines.html#rule-weight">RULE_WEIGHT</a>,
 as is the argument to _RULE_WEIGHT macros.
+</p>
+
+<h3 id="grouping" class="docs">Grouping control macros</h3>
+
+<p>
+As of version 2.1, it is possible to group control macros for a
+particular tag into a single <kbd>_STYLE</kbd> macro.  For example,
+rather than setting the family, size, and indent of 
+<a href="#blockquote-intro">BLOCKQUOTES</a>
+with
+<br/>
+<span class="pre-in-pp">
+  .BLOCKQUOTE_FAMILY H
+  .BLOCKQUOTE_SIZE -2
+  .BLOCKQUOTE_INDENT 4P
+</span>
+you can enter the same style parameter changes with
+<br/>
+<span class="pre-in-pp">
+  .BLOCKQUOTE_STYLE \
+  FAMILY H \
+  SIZE -2 \
+  INDENT 4P
+</span>
+<kbd>_STYLE</kbd> macros use &#8220;keyword/value&#8221; pairs
+(<kbd>FAMILY</kbd> is a keyword, <kbd>H</kbd> is a value), and may
+be entered entirely on one line, or, as the example shows, broken
+into several readable lines using the backslash.  The macro itself
+and all but the last keyword/value pair require the backslash if
+using this style.
+</p>
+
+<p>
+Not all the control macros for a particular tag may be available
+with a <kbd>_STYLE</kbd> macro.  Generally speaking, though, if a
+tag has control macros for
+<br/>
+<span class="pre-in-pp">
+  FAMILY FONT SIZE LEAD AUTOLEAD
+  QUAD INDENT
+  COLOR CAPS SMALLCAPS UNDERLINE/UNDERSCORE
+</span>
+those parameters may be used within a <kbd>_STYLE</kbd> macro.
 </p>
 
 <div class="rule-short"><hr/></div>
@@ -506,6 +563,10 @@ resulting in unbalanced columns.
 <p class="defaults">
 See
 <a href="#control-macro-args">Arguments to the control macros</a>.
+<br/>
+The following EPIGRAPH control macros may also be
+<a href="#grouping">grouped</a>
+using EPIGRAPH_STYLE.
 </p>
 
 <span class="pre defaults">
@@ -514,10 +575,7 @@ See
 .EPIGRAPH_SIZE      default = -1.5 (points)
 .EPIGRAPH_COLOR     default = black
 .EPIGRAPH_AUTOLEAD  default = 2 points
-
 (The next two apply to &#8220;block&#8221; style epigraphs only)
-
-.EPIGRAPH_QUAD      default = same as paragraphs
 .EPIGRAPH_INDENT*  (see Note on EPIGRAPH_INDENT, below)
 
 *Indent here refers to the indent from both the left and right margins
@@ -679,8 +737,11 @@ and
 The PP macro being so important, and representing, as it were, the
 basis of everything that goes on in a document, its control is
 managed in a manner somewhat different from other document element
-tags.
+tags.  As a result, the control macros for PP may not be
+<a href="#grouping">grouped</a>
+within a <kbd>_STYLE</kbd> macro.
 </p>
+
 <ol style="margin-top: .5em; padding-bottom: .5em;">
   <li><a href="#pp-family">Family control</a></li>
   <li><a href="#pp-font">Font control</a></li>
@@ -1283,6 +1344,7 @@ which may be given in any order:
   UNDERSCORE  &lt;weight&gt; &lt;gap&gt; | NO_UNDERSCORE \
   UNDERSCORE2 &lt;weight&gt; &lt;gap1&gt; &lt;gap2&gt; | NO_UNDERSCORE2 \
   CAPS | NO_CAPS \
+  SMALLCAPS | NO_SMALLCAPS \
   BASELINE_ADJUST &lt;amount to raise heading from the baseline&gt; \
   SPACE_AFTER | NO_SPACE_AFTER \
   NUMBER | NO_NUMBER
@@ -1961,9 +2023,6 @@ like this:
 </p>
 </div>
 
-
-
-
 <div class="box-tip">
 <h2 id="quote-spacing-notes" class="docs" style="padding-top: 9px; font-size: 100%;">Further notes on quote spacing</h2>
 
@@ -2068,10 +2127,10 @@ Macro: <b>QUOTE</b> <kbd class="macro-args">toggle</kbd>
 </div>
 
 <p>
-QUOTE is a toggle macro.  To begin a section
-of quoted text, invoke it with no argument, then type in your
-quote.  When you&#8217;re finished, invoke <kbd>.QUOTE</kbd> with any
-argument (eg <kbd>OFF, END, X, Q</kbd>...) to turn it off.  Example:
+QUOTE is a toggle macro.  To begin a section of quoted text, invoke
+it with no argument, then type in your quote.  When you&#8217;re
+finished, invoke <kbd>.QUOTE</kbd> with any argument (eg <kbd>OFF,
+END, X, Q</kbd>...) to turn it off.  Example:
 <br/>
 <span class="pre-in-pp">
   .QUOTE
@@ -2085,6 +2144,7 @@ argument (eg <kbd>OFF, END, X, Q</kbd>...) to turn it off.  Example:
 </p>
 
 <div class="defaults-container" style="background-color: #ded4bd; border: none;">
+
 <h3 id="quote-control" class="docs defaults">QUOTE control macros and defaults</h3>
 
 <ol style="margin-top: .5em; padding-bottom: .5em;">
@@ -2100,7 +2160,17 @@ argument (eg <kbd>OFF, END, X, Q</kbd>...) to turn it off.  Example:
 <p class="defaults" style="padding-top: 6px;">
 See
 <a href="#control-macro-args">Arguments to the control macros</a>.
+<br/>
+The following QUOTE control macros may also be
+<a href="#grouping">grouped</a>
+using QUOTE_STYLE.  If you do so, <kbd>QUOTE_LEFT</kbd>, <kbd>QUOTE_CENTER</kbd>,
+and <kbd>QUOTE_RIGHT</kbd> must be entered as:
+<br/>
+<kbd>&nbsp;&nbsp;&nbsp;QUAD LEFT</kbd><br/>
+<kbd>&nbsp;&nbsp;&nbsp;QUAD CENTER</kbd><br/>
+<kbd>&nbsp;&nbsp;&nbsp;QUAD RIGHT</kbd>
 </p>
+
 <span class="pre defaults">
 .QUOTE_FAMILY   default = prevailing document family; default is Times Roman
 .QUOTE_FONT     default = italic; underlined in TYPEWRITE
@@ -2108,6 +2178,9 @@ See
 <a id="quote-autolead">.QUOTE_AUTOLEAD default = none; leading of quotes is the same as paragraphs </a>
 .QUOTE_COLOR    default = black
 .QUOTE_INDENT  (see below, "Quote indent")
+.QUOTE_LEFT    -+  Quad direction of quote.
+.QUOTE_CENTER   |  LEFT observes QUOTE_INDENT;
+.QUOTE_RIGHT   -+  CENTER and RIGHT do not
 </span>
 </div>
 
@@ -2135,18 +2208,12 @@ and 1 (for
 </p>
 
 <div class="box-tip">
-<p class="tip-top">
+<p class="tip">
 <span class="note">Note:</span>
 If your PARA_INDENT is 0 (ie no indenting of the first line of
 paragraphs), you <i>must</i> set a QUOTE_INDENT yourself, with a
 unit of measure appended to the argument. Mom has no default for
 QUOTE_INDENT if paragraph first lines are not being indented.
-</p>
-
-<p class="tip-bottom">
-<span class="note">Additional note:</span>
-QUOTE_INDENT also sets the indent for
-<a href="#blockquote">blockquotes</a>.
 </p>
 </div>
 
@@ -2240,7 +2307,7 @@ to control it.)
 </div>
 
 <div class="box-macro-args">
-Macro: <b>BLOCKQUOTE</b> <kbd class="macro-args">toggle</kbd>
+Macro: <b>BLOCKQUOTE</b> <kbd class="macro-args">&lt;toggle&gt;</kbd>
 </div>
 
 <p class="alias" style="margin-bottom: 0;">
@@ -2292,6 +2359,10 @@ tag, as well as in any of the control macros that begin or end with
 <p class="defaults" style="padding-top: 6px;">
 See
 <a href="#control-macro-args">Arguments to the control macros</a>.
+<br/>
+The following BLOCKQUOTE control macros may also be
+<a href="#grouping">grouped</a>
+using BLOCKQUOTE_STYLE.
 </p>
 <span class="pre defaults">
 .BLOCKQUOTE_FAMILY   default = prevailing document family; default is Times Roman
@@ -2329,18 +2400,12 @@ and 1 (for
 </p>
 
 <div class="box-tip">
-<p class="tip-top">
+<p class="tip">
 <span class="note">Note:</span>
 If your PARA_INDENT is 0 (ie no indenting of the first line of
 paragraphs), you <i>must</i> set a BLOCKQUOTE_INDENT yourself, with
 a unit of measure appended to the argument.  Mom has no default for
 BLOCKQUOTE_INDENT if paragraph first lines are not being indented.
-</p>
-
-<p class="tip-bottom">
-<span class="note">Additional note:</span>
-BLOCKQUOTE_INDENT also sets the indent for
-<a href="#quote">quotes</a>.
 </p>
 </div>
 
@@ -2555,6 +2620,10 @@ still need to be introduced with <kbd>\&</kbd>, as in this example:
 <p class="defaults" style="padding-top: 6px;">
 See
 <a href="#control-macro-args">Arguments to the control macros</a>.
+<br/>
+The following CODE control macros may also be
+<a href="#grouping">grouped</a>
+using CODE_STYLE.
 </p>
 <span class="pre defaults">
 .CODE_FAMILY  default = Courier
@@ -2984,7 +3053,12 @@ but rather
 <div class="defaults-container" style="background-color: #ded4bd; border: none;">
 <h3 id="list-control" class="docs defaults">LIST control macros and defaults</h3>
 
-<ol style="margin-top: .5em; padding-bottom: .5em;">
+<p style="margin-top: 0; margin-left: .5em">
+LIST control macros may not be
+<a href="#grouping">grouped</a>.
+</p>
+
+<ol style="margin-top: -.5em; padding-left: 1.5em; padding-bottom: .5em;">
   <li><a href="#shift-list">Indenting lists (SHIFT_LIST)</a></li>
   <li><a href="#reset-list">Resetting an initialized list&#8217;s enumerator (RESET_LIST)</a></li>
   <li><a href="#pad-list-digits">Padding digit enumerators (PAD_LIST_DIGITS)</a></li>
@@ -3426,8 +3500,9 @@ desired result.
 
 <ol style="margin-top: .5em; padding-bottom: .5em;">
   <li><a href="#number-lines-general">Family/font/size/colour</a></li>
+  <li><a href="#number-lines-per-section">Reset line numbering after COLLATE</a></li>
   <li><a href="#number-quote-lines">Line numbering control for quotes and blockquotes</a>
-  <ul>
+  <ul style="padding-left: 1em">
     <li><a href="#number-quote-lines-global">Including QUOTEs and BLOCKQUOTEs in the line numbering scheme</a></li>
     <li><a href="#number-quote-lines-selective">Selectively enabling line numbering for QUOTEs and BLOCKQUOTEs</a></li>
     <li><a href="#number-quote-lines-gutter">Changing the line number gutter for QUOTEs and BLOCKQUOTEs</a></li>
@@ -3442,6 +3517,10 @@ desired result.
 <p class="defaults" style="padding-top: 6px;">
 See
 <a href="#control-macro-args">Arguments to the control macros</a>.
+<br/>
+The following NUMBER_LINES control macros may also be
+<a href="#grouping">grouped</a>
+using LINENUMBER_STYLE.
 </p>
 <span class="pre defaults">
 .LINENUMBER_FAMILY default = prevailing family or document family; default is Times Roman
@@ -3451,7 +3530,22 @@ See
 </span>
 </div>
 
-<h4 id="number-quote-lines" class="docs" style="margin-top: -1.75em;">2. Line numbering control macros for QUOTE and BLOCKQUOTE</h4>
+<h4 id="number-lines-per-section" class="docs" style="margin-top: -1.75em;">2. Reset line numbering after COLLATE</h4>
+
+<p>
+After
+<a href="rectoverso.html#collate">COLLATE</a>,
+line numbering continues from where it left off.  If you would like
+each chapter or major document section to begin its line numbering
+at &#8220;1&#8221;, invoke
+<span class="pre-in-pp">
+  .NUMBER_LINES_PER_SECTION
+</span>
+after
+<a href="#number-lines"><kbd>.NUMBER_LINES</kbd></a>.
+</p>
+
+<h4 id="number-quote-lines" class="docs" style="margin-top: 0em;">3. Line numbering control macros for QUOTE and BLOCKQUOTE</h4>
 
 <h5 id="number-quote-lines-global" class="docs" style="font-size: 87%">&bull;&nbsp;Including QUOTEs and BLOCKQUOTEs in the line numbering scheme</h5>
 
@@ -4042,6 +4136,10 @@ should be entered normally.
 <p class="defaults" style="padding-top: 6px;">
 See
 <a href="#control-macro-args">Arguments to the control macros</a>.
+<br/>
+The following FOOTNOTE control macros may also be
+<a href="#grouping">grouped</a>
+using FOOTNOTE_STYLE.
 </p>
 <span class="pre defaults">
 .FOOTNOTE_FAMILY    default = prevailing document family; default is Times Roman
@@ -4772,7 +4870,6 @@ appearance of endnotes pages, set them up prior to
   <ul style="margin-left: -.5em;">
     <li><a href="#endnote-title">Document-identification string(s)</a></li>
     <li><a href="#endnote-title-control">Document-identification string control macros and defaults</a></li>
-    <li><a href="#endnote-title-underscore">Document-identification string underscoring</a></li>
   </ul></li>
   <li><a href="#endnotes-numbering"><b>Endnotes referencing style</b></a>
   <ul style="margin-left: -.5em;">
@@ -4796,6 +4893,10 @@ appearance of endnotes pages, set them up prior to
 <p class="defaults" style="padding-top: 6px;">
 See
 <a href="#control-macro-args">Arguments to the control macros</a>.
+<br/>
+The following ENDNOTE control macros may also be
+<a href="#grouping">grouped</a>
+using ENDNOTE_STYLE.
 </p>
 <span class="pre defaults">
 .ENDNOTE_FAMILY    default = prevailing document family; default is Times Roman
@@ -5282,7 +5383,16 @@ side&mdash;<kbd>&quot;&quot;</kbd>&mdash;or no argument at all).
 <p class="defaults" style="padding-top: 6px;">
 See
 <a href="#control-macro-args">Arguments to the control macros</a>.
+<br/>
+The following ENDNOTES_HEADER control macros may also be
+<a href="#grouping">grouped</a>
+using ENDNOTES_HEADER_STYLE.
 </p>
+
+<p style="margin-top: .5em; margin-bottom: 0; margin-left: .5em">
+Please note that &#8220;_HEADER_&#8221;, here, refers to the title
+that appears at the top of the first endnotes page, not to the page
+headers of subsequent endnotes pages.
 <span class="pre defaults">
 .ENDNOTES_HEADER_FAMILY  default = prevailing document family
 .ENDNOTES_HEADER_FONT    default = bold
@@ -5292,6 +5402,7 @@ See
 
 *Relative to the size of the endnotes text (set with ENDNOTE_PT_SIZE)
 </span>
+</p>
 </div>
 
 <p style="margin-top: -2em">
@@ -5393,7 +5504,7 @@ Some examples:
       - turn double-underscoring on; set the rule weight to 3/4 of
         a point; set the gap between the title and the upper
         underscore to 3 points; leave the gap between the upper
-        and the lower underunderscore at the default
+        and the lower underscore at the default
   
   .ENDNOTES_HEADER_UNDERSCORE DOUBLE 1.5 1.5p 1.5p
       - turn double-underscoring on; set the rule weight to 1-1/2
@@ -5481,86 +5592,24 @@ included in the endnotes redundant.
 <p class="defaults" style="padding-top: 6px;">
 See
 <a href="#control-macro-args">Arguments to the control macros</a>.
+<br/>
+The following ENDNOTE_TITLE_STYLE control macros may also be
+<a href="#grouping">grouped</a>
+using ENDNOTE_TITLE_STYLE_STYLE.
 </p>
 <span class="pre defaults">
-.ENDNOTE_TITLE_FAMILY  default = prevailing document family; default is Times Roman
-.ENDNOTE_TITLE_FONT    default = bold
-.ENDNOTE_TITLE_SIZE*   default = 0
-.ENDNOTE_TITLE_QUAD    default = left
+.ENDNOTE_TITLE_FAMILY default = prevailing document family; default is Times Roman
+.ENDNOTE_TITLE_FONT   default = bold
+.ENDNOTE_TITLE_SIZE*  default = 0
+.ENDNOTE_TITLE_COLOR  default = black
+.ENDNOTE_TITLE_QUAD   default = left
+.ENDNOTE_TITLE_CAPS
+.ENDNOTE_TITLE_SMALLCAPS
+.ENDNOTE_TITLE_UNDERSCORE default = single underscore 
 
 *Relative to the size of the endnotes text (set with ENDNOTE_PT_SIZE)
 </span>
 </div>
-
-<!-- -ENDNOTE_TITLE_UNDERLINE- -->
-
-<h5 id="endnote-title-underscore" class="docs" style="margin-top: -1.25em; margin-bottom: .5em; margin-left: .5em;">&bull;&nbsp;Endnotes document-identification underscoring</h5>
-
-<div class="box-macro-args">
-Macro: <b>ENDNOTE_TITLE_UNDERSCORE</b> <kbd class="macro-args">[DOUBLE] [&lt;underline weight&gt; [&lt;underline gap&gt; [&lt;distance between double rules]]] | &lt;none&gt; | &lt;anything&gt;</kbd>
-</div>
-
-<p class="alias" style="margin-bottom: 0;">
-<i>Alias:</i> <b>ENDNOTE_TITLE_UNDERLINE</b>
-</p>
-
-<p class="requires">
-&bull;&nbsp;The argument
-<span style="font-style: normal"><kbd>&lt;underscore weight&gt;</kbd></span>
-must not have the
-<a href="definitions.html#unitofmeasure">unit of measure</a>,
-<span style="font-style: normal;"><kbd>p</kbd></span>,
-appended to it; all other arguments require a unit of measure
-</p>
-
-<p>
-Invoked without an argument, <kbd>.ENDNOTE_TITLE_UNDERSCORE</kbd>
-will place a single rule underneath the document identification
-string.  Invoked with the argument <kbd>DOUBLE</kbd>,
-ENDNOTE_TITLE_UNDERSCORE will double-underscore the string.  Invoked
-with any other non-numeric argument, (eg <kbd>OFF, NO, X</kbd>,
-etc.) the macro disables underscoring of the string.
-</p>
-
-<p>
-In addition, you can use ENDNOTE_TITLE_UNDERSCORE to control the
-weight of the underscore rule(s), the gap between the title and the
-underscore, and, in the case of double-underscores, the distance
-between the two rules.
-</p>
-
-<p>
-Some examples:
-<br/>
-<span class="pre-in-pp">
-  .ENDNOTE_TITLE_UNDERSCORE 1
-      - turn underscoring on; set the rule weight to 1 point
-
-  .ENDNOTE_TITLE_UNDERSCORE 1 3p
-      - turn underscoring on; set the rule weight to 1 point; set
-        the gap between the string and the underscore to 3 points
-  
-  .ENDNOTE_TITLE_UNDERSCORE DOUBLE .75 3p
-      - turn double-underscoring on; set the rule weight to 3 points
-  
-  .ENDNOTE_TITLE_UNDERSCORE DOUBLE 1.5 1.5p 1.5p
-      - turn double-underscoring on; set the rule weight to 1-1/2
-        points; set the gap between the string and the upper
-        underscore to 1-1/2 points; set the gap between the upper
-        and the lower underscore to 1-1/2 points
-</span>
-</p>
-
-<p>
-Note, from the above, that in all instances, underscoring (single or
-double) is enabled whenever ENDNOTE_TITLE_UNDERSCORE is used in this
-way.
-</p>
-
-<p>
-Mom&#8217;s default is to single-underscore the string with a
-1/2-point rule placed 2 points below its baseline.
-</p>
 
 <!-- -ENDNOTE_NUMBERING- -->
 
@@ -6236,11 +6285,12 @@ etc) exits the current margin note.
 
 <ul style="margin-left: -.5em;">
   <li><a href="#finis">Tag: FINIS</a></li>
-  <li>FINIS control macros
+  <li><a href="#finis-control">FINIS control macros</a>
   <ul style="margin-left: -1.25em;">
     <li><a href="#finis-string">Changing the FINIS string</a></li>
     <li><a href="#finis-string-caps">Automatic capitalization of the FINIS string</a></li>
     <li><a href="#finis-color">Changing the FINIS colour</a></li>
+    <li><a href="#finis-no-dashes">Removing the dashes around FINIS</a></li>
   </ul></li>
 </ul>
 
@@ -6312,7 +6362,15 @@ two lines of your document file, like this:
 
 <h3 id="finis-control" class="docs" style="margin-bottom: -1em">Finis contol macros</h3>
 
-<h4 id="finis-string" class="docs">Changing the FINIS string</h4>
+<p>
+Since FINIS is only used once in a document, it has few control
+macros.  It is expected that you will make changes to style
+parameters such as family, font, and size with
+<a href="definitions.html#inlines">inline escapes</a>
+in the FINIS string itself (see below).  
+</p>
+
+<h4 id="finis-string" class="docs" style="margin-top: -.5em">Changing the FINIS string</h4>
 
 <p>
 By default, FINIS prints the word, END, between
@@ -6379,6 +6437,19 @@ use the
 in the argument passed to FINIS, only the text will be in the
 new colour; the em-dashes will be in the default document colour
 (usually black).
+</p>
+
+<!-- -FINIS DASHES- -->
+
+<h4 id="finis-no-dashes" class="docs">Removing the dashes around FINIS</h4>
+
+<p>
+If you don&#8217;t want the dashes around the FINIS string, you can
+remove them with
+<br/>
+<span class="pre-in-pp">
+  .FINIS_NO_DASHES
+</span>
 </p>
 
 <div class="rule-long"><hr/></div>

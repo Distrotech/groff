@@ -2,7 +2,7 @@
 <!--
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2004-2014 Free Software Foundation, Inc.
+Copyright (C) 2004-2015 Free Software Foundation, Inc.
 Written by Peter Schaffter (peter@schaffter.ca).
 
 Permission is granted to copy, distribute and/or modify this document
@@ -81,11 +81,24 @@ class="header-link" href="#setup">Preliminary document setup</a></h3>
     <li><a href="#printstyle">PRINTSTYLE</a></li>
     <li><a href="#copystyle">COPYSTYLE</a></li>
   </ul></li>
+  <li><a href="cover.html"><b>Cover pages</b></a>
+  <li><a href="#docheader"><b>Managing the document header</b></a>
+  <ul class="toc-docproc">
+    <li><a href="#docheader">DOCHEADER</a></li>
+    <li><a href="#docheader-control">Docheader control</a>
+    <ul class="toc-docproc">
+      <li><a href="#docheader-desc">Docheader description</a></li>
+      <li><a href="#index-docheader-control">Macro list</a></li>
+    </ul></li>
+  </ul></li>
 </ul>
 <h3 class="toc toc-docproc-header"><a class="header-link" href="#start-macro">Initiate document processing</a></h3>
 <ul class="toc-docproc" style="margin-top: .5em;">
   <li><a href="#start"><b>The START macro</b></a></li>
 </ul>
+</div>
+<div class="mini-toc-col-2">
+<br/>
 <h3 class="toc toc-docproc-header"><a class="header-link" href="#style-before-start">Establishing type and formatting<br/><span style="display: block; margin-top: -.3em;">parameters before START</span></a></h3>
 <ul class="toc-docproc" style="margin-top: .5em;">
   <li><a href="#type-before-start"><b>Behaviour of the typesetting macros before START</b></a>
@@ -94,25 +107,13 @@ class="header-link" href="#setup">Preliminary document setup</a></h3>
     <li><a href="#color">Initializing colours</a></li>
   </ul></li>
 </ul>
-</div>
-<div class="mini-toc-col-2" style="margin-top: -1em;">
-<br/>
-<ul class="toc-docproc" style="margin-top: .5em;">
+<ul class="toc-docproc" style="margin-top: -1em">
   <li><a href="#doc-lead-adjust"><b>Adjust linespacing to fill pages</b></a>
   <ul class="toc-docproc">
     <li><a href="#doc-lead-adjust">DOC_LEAD_ADJUST</a></li>
     <li><a href="#shim">SHIM</a> &ndash; get document leading back on track
     <ul class="toc-docproc">
       <li><a href="#automatic-shimming">Automatic shimming (headings, etc)</a></li>
-    </ul></li>
-  </ul></li>
-  <li><a href="#docheader"><b>Managing the document header</b></a>
-  <ul class="toc-docproc">
-    <li><a href="#docheader">DOCHEADER</a></li>
-    <li><a href="#docheader-control">Docheader control</a>
-    <ul class="toc-docproc">
-      <li><a href="#docheader-desc">Docheader description</a></li>
-      <li><a href="#index-docheader-control">Macro list</a></li>
     </ul></li>
   </ul></li>
   <li><a href="#columns-intro"><b>Setting documents in columns</b></a>
@@ -146,11 +147,11 @@ class="header-link" href="#setup">Preliminary document setup</a></h3>
     </ul></li>
   </ul></li>
 </ul>
-<h3 class="toc toc-docproc-header"><a class="header-link" href="#terminating">Terminating a document</a></h3>
 </div>
+<h3 style="margin-top: -.5em; text-align: center; text-transform: uppercase; font-size: 95%;"><a class="header-link" href="#terminating">Terminating a document</a></h3>
 </div>
 
-<div class="rule-short"><br/><hr/></div>
+<div class="rule-short" style="margin-top: -1.75em"><br/><hr/></div>
 
 <!-- ==================================================================== -->
 
@@ -832,7 +833,7 @@ the title of each article or entitled section), and appears
 
 <p>
 Moreover, DOCTITLE does not appear in the
-<a href="definitions.html#pdfoutline">PDF outline </a>,
+<a href="definitions.html#pdfoutline">PDF outline</a>,
 as its presence in window title would make it redundant.
 </p>
 
@@ -1255,7 +1256,7 @@ you must enclose the argument in double-quotes.
 <p>
 You may, if you wish, invoke <kbd>.REVISION</kbd> without an
 argument, in which case, no revision number will be printed beside
-&quot;Rev.&quot; in headers or footers.
+&#8220;Rev.&#8221; in headers or footers.
 </p>
 
 <!-- -REVISION_STRING- -->
@@ -1487,7 +1488,7 @@ Macro: <b>PDF_TITLE</b> <kbd class="macro-args">&quot;&lt;pdf viewer window titl
 
 <p>
 Except for
-<a href="#doctitle">DOCTITLE</a>,
+<a href="#doc-title">DOCTITLE</a>,
 mom does not, by default, provide PDF viewers with a document title.
 You may set one, if you like, with PDF_TITLE.
 </p>
@@ -1509,9 +1510,6 @@ and revision information in the headers) or a final copy.
 <h3 id="index-docstyle" class="macro-list">Docstyle macros</h3>
 <ul class="macro-list">
   <li><a href="#doctype">DOCTYPE</a>
-  <ul style="margin-left: -.5em; list-style-type: disc;"> 
-    <li><a href="#doctype-underline">DOCTYPE_UNDERLINE</a> &ndash; how to control DOCTYPE <kbd>NAMED</kbd> underlining</li>      
-  </ul></li>
   <li><a href="#printstyle">PRINTSTYLE</a> &ndash; non-optional macro required for document processing
   <ul style="margin-left: -.5em; list-style-type: disc;">
     <li><a href="#typeset-defaults">Defaults for PRINTSTYLE TYPESET</a></li>
@@ -1603,100 +1601,21 @@ as well as in page headers.
 for how mom outputs each part of the page header.)
 </p>
 
-<p>
-Additionally, if you wish the name of this particular kind of
-document to be coloured, you can pass DOCTYPE <kbd>NAMED</kbd> a
-third (optional) argument: the name of a colour pre-defined (or
-&#8220;initialized&#8221;) with
-<a href="color.html#newcolor">NEWCOLOR</a>
-or
-<a href="color.html#xcolor">XCOLOR</a>.
-For example, if you have a doctype named &#8220;Warning&#8221;,
-and you&#8217;d like &#8220;Warning&#8221; to be in red, assuming you&#8217;ve
-pre-defined (or &#8220;initialized&#8221;) the color, red, this is
-what the DOCTYPE entry would look like:
+<div class="box-tip">
+<p id="copystyle-note" class="tip">
+<span class="note">Note: version 2.1 change</span>
 <br/>
-<span class="pre">
-  .DOCTYPE NAMED "Warning" red
-</span>
-</p>
-
-<div class="box-tip" style="margin-top: 1.5em;">
-<h3 id="doctype-underline" class="docs control">How to control DOCTYPE NAMED underlining</h3>
-
-<p style="tip">
-By default, the string passed to DOCTYPE <kbd>NAMED</kbd> is
-underlined in the docheader, and on document-cover pages and cover
-(&#8220;title&#8221;) pages.  (See the
-<a href="cover.html#intro">Introduction to covers</a>
-for the difference between &#8220;doc cover&#8221; and
-&#8220;cover&#8221; pages.)
-</p>
-
-<p>
-You can use the macro DOCTYPE_UNDERLINE to set the weight of
-the underline and its distance from where the doctype-name appears
-in the docheader (doc covers and covers handle underlining of the
-doctype-name differently; see
-<a href="cover.html#cover-underline">COVER_UNDERLINE</a>),
-or simply toggle doctype underlining on or off.  Mom&#8217;s default
-is to underline the doctype-name.
-</p>
-
-<p>
-The order of arguments is <kbd>weight</kbd>, optionally followed by
-<kbd>gap</kbd>, where &#8220;gap&#8221; is the distance from the
-<a href="definitions.html#baseline">baseline</a>
-of the doctype-name to the underline.
-</p>
-
-<p>
-The <kbd>weight</kbd> argument is given in points, or fractions
-thereof, and must not have the
-<a href="definitions.html#unitofmeasure">unit of measure</a>,
-<kbd>p</kbd>, appended.  Like
-<a href="inlines.html#rule-weight">RULE_WEIGHT</a>,
-weights must be greater than 0 and less than 100.  Mom&#8217;s
-default for DOCTYPE <kbd>NAMED</kbd> underlining is 1/2 point.
-</p>
-
-<p>
-The <kbd>gap</kbd> argument can be given using any unit of measure,
-and must have the unit of measure appended to the argument.
-The distance of the gap is measured from the baseline of the
-DOCTYPE <kbd>NAMED</kbd> name to the upper edge of the underline.
-Mom&#8217;s default gap for named-doctype underlining is 2 points.
-</p>
-
-<p>
-As an example, suppose you want the doctype-name underlined in the
-docheader with a 2-point rule separated from the doctype-name by 3
-points.  The way to accomplish it is:
-<br/>
-<span class="pre-in-pp">
-  .DOCTYPE_UNDERLINE 2 3p
-</span>
-If you wanted the same thing, but were content with mom&#8217;s
-default gap of 2 points,
-<br/>
-<span class="pre-in-pp">
-  .DOCTYPE_UNDERLINE 2
-</span>
-would do the trick.
-</p>
-
-<p>
-If you merely want to toggle the underlining of
-the doctype-name in docheaders on or off, invoke
-<kbd>.DOCTYPE_UNDERLINE</kbd> by itself to turn the underlining on,
-or <kbd>.DOCTYPE_UNDERLINE&nbsp;OFF</kbd> (or NO, X, etc.)
-</p>
-
-<p class="tip-bottom">
-Please note that if you supply a weight to DOCTYPE_UNDERLINE, and
-optionally a gap, you also turn the underlining of the doctype-name
-in docheaders on; if this is not what you want, you must turn the
-underlining off manually afterwards.
+<kbd>DOCTYPE NAMED "string"</kbd> no longer accepts a color argument
+after <kbd>"string"</kbd>.  Setting the color of the string is now
+done with <kbd>DOCTYPE_COLOR &lt;color&gt;</kbd>.  Default
+underscoring of <kbd>"string"</kbd> in the docheader and on covers
+has been removed.  Use <kbd>DOCTYPE_UNDERLINE</kbd>,
+<kbd>DOC_COVER_DOCTYPE_UNDERLINE</kbd> and/or
+<kbd>COVER_DOCTYPE_UNDERLINE</kbd> to re-enable it.  All three
+take the same arguments listed in the
+<a href="docelement.html#underline">Underline style, rule weight</a>
+section of
+<a href="docelement.html#control-macro-args">Arguments to the control macros</a>.
 </p>
 </div>
 
@@ -2556,22 +2475,16 @@ edge of the paper to the
 of the first line of type.
 </p>
 
-<div class="box-tip">
-<p class="tip">
-<span class="tip">Tip:</span>
-Since no document processing happens until you invoke
-<a href="#start"><kbd>.START</kbd></a>&mdash;including
-anything to do with docheaders&mdash;you can
-typeset your own docheader prior to START (if
-you don&#8217;t like the way mom does things) and use
-<kbd>.DOCHEADER&nbsp;OFF</kbd> with its optional distance
-argument to ensure that the body of your document starts where
-you want.  You can even insert a PDF or PostScript image file (see
-<a href="images.html#pspic">PSPIC</a>).
-and
-<a href="images.html#pdf-image">PDF_IMAGE</a>).
+<p>
+With <kbd>DOCHEADER OFF</kbd>, it is possible to create your own
+custom docheaders (after
+<a href="#start">START</a>)
+using mom&#8217;s typesetting macros.  It is recommended that if you
+do create a custom docheader, you make
+<a href="docprocessing.html#shim"><kbd>.SHIM</kbd></a>
+the last macro before the first item of your document (for
+example, <kbd>.PP</kbd> or <kbd>.HEADING 1</kbd>.  PP...)
 </p>
-</div>
 
 <!-- DOCHEADER CONTROL -->
 
@@ -2599,8 +2512,7 @@ A typeset docheader has the following characteristics:
       by        medium italic, same size as running text
    Author(s)    medium italic, same size as running text
 
-(Document type) bold italic, underscored, 3 points larger than running text
-
+(Document type) bold italic, 3 points larger than running text
 </span>
 </div>
 
@@ -2613,7 +2525,6 @@ is <kbd>CHAPTER</kbd>,
 <span class="pre" style="color: #302419;">
  Chapter &lt;n&gt;   bold, 4 points larger than running text
 Chapter Title  bold italic, 4 points larger than running text
-
 </span>
 </div>
 
@@ -2624,7 +2535,6 @@ is the prevailing family of the whole document.  Title, subtitle,
 author and document type are what you supply with the
 <a href="#reference-macros">reference macros</a>.
 Any you leave out will not appear; mom will compensate:
-
 </p>
 
 <div class="box-tip">
@@ -2633,44 +2543,48 @@ Any you leave out will not appear; mom will compensate:
 If your DOCTYPE is <kbd>CHAPTER</kbd> and you have both &#8220;Chapter
 &lt;n&gt;&#8221; and a &#8220;Chapter Title&#8221; (as above), mom
 inserts a small amount of whitespace between them, equal to
-one-quarter of the <a href="definitions.html#leading">leading</a> in
-effect.  If this doesn&#8217;t suit you, you can alter the space by
-including the
-<a href="definitions.html#inlines">inline escapes</a>,
-<a href="inlines.html#up"><kbd>\*[UP]</kbd></a>
-or
-<a href="inlines.html#down"><kbd>\*[DOWN]</kbd></a>,
-in the argument you pass to
-<a href="#chapter-title">CHAPTER_TITLE</a>,
-like this:
-<br/>
-<span class="pre-in-pp" style="margin-bottom: -1em;">
-  .CHAPTER_TITLE "\*[DOWN 2p]Why Not Patent Calculus?"
-</span>
-or
-<span class="pre-in-pp" style="margin-top: -.5em;">
-  .CHAPTER_TITLE "\*[UP 2p]Why Not Patent Calculus?"
-</span>
+one-quarter of the
+<a href="definitions.html#leading">leading</a>
+in effect.  If this doesn&#8217;t suit you, you can remove or alter
+the space with
+<a href="#space-before">CHAPTER_TITLE_SPACE_BEFORE</a>.
 </p>
 </div>
 
 <div class="macro-list-container">
 <h3 id="index-docheader-control" class="macro-list">Docheader control</h3>
-<ol class="macro-list">
-  <li><a href="#change-start">Change the starting position of the docheader</a></li>
-  <li><a href="#docheader-quad">Change quad direction the entire docheader</a></li>
-  <li><a href="#docheader-family">Change the family of the entire docheader</a></li>
-  <li><a href="#change-family">Change the family of individual docheader elements</a></li>
-  <li><a href="#change-font">Change the font of individual docheader elements</a></li>
-  <li><a href="#change-size">Adjust the size of docheader elements</a></li>
-  <li><a href="#adjust-leading">Adjust the docheader leading</a></li>
-  <li><a href="#docheader-color">Change the colour of the entire docheader</a></li>
-  <li><a href="#change-color">Change the colour of the individual docheader elements</a></li>
-  <li><a href="#change-attribute">Change the attribution string (&#8220;by&#8221;)</a></li>
-</ol>
+
+<p style="margin-top: -1.5em; margin-left: .5em; margin-right: .5em">
+With the docheader control macros, you can change the family,
+colour, leading and quad direction of the entire docheader.  You can
+also set the style parameters for each part individually.  Style
+parameters include family, font, size, colour, lead, space before,
+caps, smallcaps and underscoring.
+</p>
+
+<ul class="macro-list" style="margin-top: -.5em">
+  <li><a href="#change-whole-docheader">1. Changes to the whole docheader</a>
+  <ul style="list-style-type: disc">
+    <li><a href="#change-start">Change the starting position of the docheader</a></li>
+    <li><a href="#docheader-family">Change the family of the whole docheader</a></li>
+    <li><a href="#docheader-color">Change the colour of the whole docheader</a></li>
+    <li><a href="#docheader-lead">Change the leading of the whole docheader</a></li>
+    <li><a href="#docheader-quad">Change the quad direction whole the docheader</a></li>
+  </ul>
+  </li>
+  <li><a href="#part-by-part">2. Part by part changes</a>
+  <ul style="list-style-type: disc">
+    <li><a href="#list-of-params">List of parameters and arguments</a></li>
+    <li><a href="#grouping">Grouping part/parameter changes</a> &ndash; very handy</li>
+  </ul>
+  </li>
+  <li><a href="#change-attribute">3. Changing or removing the attribution string (&#8220;by&#8221;)</a></li>
+</ul>
 </div>
 
-<h4 id="change-start" class="docs">1. Change the starting position of the docheader</h4>
+<h4 id="change-whole-docheader" class="docs" style="font-size: 100%">1. Changes to the whole docheader</h4>
+
+<h5 id="change-start" class="docs">Change the starting position of the docheader</h5>
 
 <p>
 By default, a docheader starts on the same
@@ -2707,7 +2621,7 @@ to place them where you want.
 </p>
 </div>
 
-<h4 id="docheader-quad" class="docs">2. Change the quad direction of the docheader</h4>
+<h5 id="docheader-quad" class="docs">Change the quad direction of the docheader</h5>
 
 <p>
 By default, mom centers the docheader.  If you&#8217;d prefer to
@@ -2718,7 +2632,7 @@ quad direction you want, either <kbd>LEFT</kbd> (or <kbd>L</kbd>),
 <kbd>C</kbd>).
 </p>
 
-<h4 id="docheader-family" class="docs">3. Change the family of the entire docheader</h4>
+<h5 id="docheader-family" class="docs">Change the family of the entire docheader</h5>
 
 <p>
 By default, mom sets the docheader in the same
@@ -2743,186 +2657,199 @@ is how you&#8217;d do it.
 
 <p>
 Please note that if you use DOCHEADER_FAMILY, you can still alter
-the family of individual parts of the docheader with the macros
-listed
-<a href="#change-family">here</a>.
+the family of individual parts of the docheader.
 </p>
 
-<h4 id="change-family" class="docs">4. Change the family of individual docheader elements</h4>
+<h5 id="docheader-color" class="docs">Change the color of the entire docheader</h5>
 
 <p>
-The following macros let you change the
-<a href="definitions.html#family">family</a>
-of each docheader element separately:
-</p>
-<ul style="list-style-type: none; margin: -.5em;">
-  <li>Macro: <b>TITLE_FAMILY</b> <kbd class="macro-args">&lt;family&gt;</kbd></li>
-  <li>Macro: <b>CHAPTER_TITLE_FAMILY</b> <kbd class="macro-args">&lt;family&gt;</kbd></li>
-  <li>Macro: <b>SUBTITLE_FAMILY</b> <kbd class="macro-args">&lt;family&gt;</kbd></li>
-  <li>Macro: <b>AUTHOR_FAMILY</b> <kbd class="macro-args">&lt;family&gt;</kbd></li>
-  <li>Macro: <b>DOCTYPE_FAMILY</b> <kbd class="macro-args">&lt;family&gt;</kbd>
-      (if <a href="#doctype">DOCTYPE</a> is <kbd>NAMED</kbd>)
-  </li>
-</ul>
-
-<p>
-Simply pass the appropriate macro the family you want, just as you
-would with
-<a href="typesetting.html#family">FAMILY</a>.
+The default color for docheaders is black, as you&#8217;d expect.
+If you wish to change it, use
+<kbd>.DOCHEADER_COLOR&nbsp;&lt;color&gt;</kbd>, where
+<kbd>&nbsp;&lt;color&gt;</kbd> is a color pre-initialized with
+<a href="color.html#xcolor">XCOLOR</a>
+or
+<a href="color.html#newcolor">NEWCOLOR</a>.
 </p>
 
-<h4 id="change-font" class="docs">5. Change the font of individual docheader elements</h4>
+<h5 id="docheader-lead" class="docs">Change the leading of the entire docheader</h5>
 
 <p>
-The following macros let you change the
-<a href="definitions.html#font">font</a>
-of each docheader element separately:
-</p>
-<ul style="list-style-type: none; margin: -.5em;">
-  <li>Macro: <b>TITLE_FONT</b> <kbd class="macro-args">R | B | I | BI</kbd></li>
-  <li>Macro: <b>CHAPTER_TITLE_FONT</b> <kbd class="macro-args">R | B | I | BI</kbd></li>
-  <li>Macro: <b>SUBTITLE_FONT</b> <kbd class="macro-args">R | B | I | BI</kbd></li>
-  <li>Macro: <b>AUTHOR_FONT</b> <kbd class="macro-args">R | B | I | BI</kbd></li>
-  <li>Macro: <b>DOCTYPE_FONT</b> <kbd class="macro-args">R | B | I | BI</kbd>
-      (if <a href="#doctype">DOCTYPE</a> is <kbd>NAMED</kbd>)
-  </li>
-</ul>
-
-<p>
-Simply pass the appropriate macro the font you want. <kbd>R, B,
-I</kbd> and <kbd>BI</kbd> have the same meaning as they do for
-<a href="typesetting.html#font">FT</a>.  You may also use any of the
-<a href="appendices.html#style-extensions">style extensions</a>
-provided by mom.
+By default, mom uses the leading in effect for
+<a href="definitions.html#running">running text</a>
+for docheaders.  If you want to increase or
+decrease the overall docheader leading, use
+<kbd>.DOCHEADER_LEAD&nbsp;+|-&lt;amount&gt;</kbd>, where
+<kbd>&lt;amount&gt;</kbd> is the number of
+<a href="definitions.html#picaspoints">points</a>
+by which to make the adjustment.  
 </p>
 
-<h4 id="change-size" class="docs">6. Adjust the size of individual docheader elements</h4>
+<h4 id="part-by-part" class="docs" style="font-size: 100%">2. Part by part changes</h4>
 
 <p>
-The following macros let you adjust the point size of each docheader
-element separately.
-</p>
-
-<p>
-Mom calculates the point size of docheader elements from the point
-size of paragraphs in running text, so you must prepend a + or -
-sign to the argument.  Points is assumed as the
-<a href="definitions.html#unitofmeasure">unit of measure</a>,
-so there&#8217;s no need to append a unit to the argument.
-Fractional point sizes are allowed.
-</p>
-
-<ul style="list-style-type: none; margin: -.5em;">
-  <li>Macro: <b>TITLE_SIZE</b> <kbd class="macro-args">&lt;+/-points&gt;</kbd>
-      <br/>
-      &nbsp;&nbsp;&nbsp;default = +3.5 (+4 if docheader title is &quot;Chapter &lt;n&gt;&quot;)
-  </li>
-  <li>Macro: <b>CHAPTER_TITLE_SIZE</b> <kbd class="macro-args">&lt;+/-points&gt;</kbd>
-      <br/>
-      &nbsp;&nbsp;&nbsp;default = +4
-  </li>
-  <li>Macro: <b>SUBTITLE_SIZE</b> <kbd class="macro-args">&lt;+/-points&gt;</kbd>
-      <br/>
-      &nbsp;&nbsp;&nbsp;default = +0
-  </li>
-  <li>Macro: <b>AUTHOR_SIZE</b> <kbd class="macro-args">&lt;+/-points&gt;</kbd>
-      <br/>
-      &nbsp;&nbsp;&nbsp;default = +0
-  </li>
-  <li>Macro: <b>DOCTYPE_SIZE</b> <kbd class="macro-args">&lt;+/-points&gt;</kbd>
-      (if <a href="#doctype">DOCTYPE</a> is <kbd>NAMED</kbd>)
-      <br/>
-      &nbsp;&nbsp;&nbsp;default = +3
-  </li>
-</ul>
-
-<p>
-Simply pass the appropriate macro the size adjustment you want.
-</p>
-
-<h4 id="adjust-leading" class="docs">7. Adjust the docheader leading</h4>
-
-<p>
-The
-<a href="definitions.html#leading">leading</a>
-of docheaders is the same as running text.  If you&#8217;d like your
-docheaders to have a different leading, say, 2 points more than the
-lead of running text, use:
+Whenever you want to change the style parameters for any part of
+the docheader, simply join the name of the part to the parameter
+you wish to change using an underscore, then supply any necessary
+arguments.  The subitle double-underlined?  No problem.
 <br/>
 <span class="pre-in-pp">
-  .DOCHEADER_LEAD +2
+  .SUBTITLE_UNDERLINE DOUBLE
 </span>
-Since the leading of docheaders is calculated from the lead of running
-text, a + or - sign is required before the argument (how much to add
-or subtract from the lead of running text).  No 
-<a href="definitions.html#unitofmeasure">unit of measure</a>
-is required; points is assumed.
-</p>
-
-<h4 id="docheader-color" class="docs">8. Change the colour of the entire docheader</h4>
-
-<p>
-If you want to colourize the entire docheader:
+Author in red?
 <br/>
 <span class="pre-in-pp">
-  .DOCHEADER_COLOR <kbd class="macro-args">&lt;color name&gt;</kbd>
+  .AUTHOR_COLOR red
 </span>
-You must pre-define (or &#8220;initialize&#8221;) the colour with
-<a href="color.html#newcolor">NEWCOLOR</a>
-or
-<a href="color.html#xcolor">XCOLOR</a>.
+Title in smallcaps?
+<span class="pre-in-pp">
+  .TITLE_SMALLCAPS
+</span>
 </p>
 
+<div class="box-tip" style="margin-top: -1em;">
+<p class="tip">
+<span class="note">Note:</span>
+Use <kbd>ATTRIBUTE</kbd> as the part name for the attribution string
+(&#8220;by&#8221;) that precedes the author, and <kbd>DOCTYPE</kbd>
+as the name for the string passed to <kbd>DOCTYPE NAMED&nbsp;"string"</kbd>.
+</p>
+</div>
 
-<h4 id="change-color" class="docs">9. Change the colour of the docheader elements individually</h4>
+<h5 id="list-of-params" class="docs">List of parameters with arguments</h5>
+
+<dl>
+  <dt class="params">_FAMILY</dt>
+    <dd>
+      Takes the same argument as <a href="typesetting.html#family">FAMILY</a>.
+    </dd>
+  <dt class="params">_FONT</dt>
+    <dd>
+      Takes the same argument as <a href="typesetting.html#font">FT</a>.
+    </dd>
+  <dt class="params">_SIZE</dt>
+    <dd>
+      Takes a <kbd>+</kbd> or <kbd>-</kbd> value relative to the size of
+      <a href="definitions.html#running">running text</a>.
+    </dd>
+  <dt class="params">_COLOR</dt>
+    <dd>
+      Takes the same argument as <a href="color.html#color">COLOR</a>.
+      Colors should be pre-initialized with
+      <a href="color.html#xcolor">XCOLOR</a>
+      or
+      <a href="color.html#newcolor">NEWCOLOR</a>.
+    </dd>
+  <dt class="params">_LEAD</dt>
+    <dd>
+      Takes an absolute leading value, i.e. not relative to the
+      overall leading of the docheader.  The leading applies to
+      multiple lines of type within the same docheader part, e.g.
+      several authors or a long title that must be split over two
+      lines.  No
+      <a href="definitions.html#unitofmeasure">unit of measure</a>
+      is required;
+      <a href="definitions.html#picaspoints">points</a>
+      is assumed.
+    </dd>
+  <dt id="space-before" class="params">_SPACE_BEFORE</dt>
+    <dd>
+      Takes a numeric value with a
+      <a href="definitions.html#unitofmeasure">unit of measure</a>
+      appended to it.  The value may be negative.  This allows you
+      to adjust the whitespace before a docheader part, for example
+      if you want more whitespace between the title and the author.
+      <span style="display: block; margin-top: .5em">
+      Note that <kbd>TITLE</kbd> does not have a <kbd>_SPACE_BEFORE</kbd>
+      parameter; use
+      <a href="#change-start">DOCHEADER_ADVANCE</a>
+      to move the title further down on the page.
+      </span>
+    </dd>
+  <dt class="params">_CAPS</dt>
+    <dd>
+      Capitalizes the entire docheader part.  No argument is
+      required.
+    </dd>
+  <dt class="params">_NO_CAPS</dt>
+    <dd>
+      Only used if you need to reverse the sense of <kbd>_CAPS</kbd>, as
+      can sometimes happen when
+      <a href="rectoverso.html#collate">collating</a>
+      documents that have differing docheader style requirements.
+    </dd>
+  <dt class="params">_SMALLCAPS</dt>
+    <dd>
+      Set the entire docheader part in smallcaps.  No argument is
+      required.
+    </dd>
+  <dt class="params">_NO_SMALLCAPS</dt>
+    <dd>
+      Only used if you need to reverse the sense of
+      <kbd>_SMALLCAPS</kbd>, as can sometimes happen when
+      <a href="rectoverso.html#collate">collating</a>
+      documents that have differing docheader style requirements.
+    </dd>
+  <dt class="params">_UNDERSCORE</dt>
+    <dd>
+      With no argument, underscores the docheader part.  With a
+      single, possibly decimal numeric argument, sets the weight of
+      the underscore.  A second numeric argument to which a
+      <a href="definitions.html#unitofmeasure">unit of measure</a>
+      is appended (most likely <kbd>p</kbd>) sets the distance
+      between the baseline and the underscore.
+      <span style="display: block; margin-top: .5em">
+      If the argument <kbd>DOUBLE</kbd> is given, double underscores
+      the docheader part.  With a single, possibly decimal numeric
+      argument afterwards, sets the weight of the underscore rules.
+      A third numeric argument to which a
+      <a href="definitions.html#unitofmeasure">unit of measure</a>
+      is appended (most likely <kbd>p</kbd>) sets the distance
+      between the baseline and the first underscore rule.  A fourth
+      numeric argument to which a unit of measure is appended sets
+      the distance between the two underscore rules.
+      </span>
+      <span style="display: block; margin-top: .5em">
+      You may give <kbd>_UNDERLINE</kbd> as the parameter instead of
+      <kbd>_UNDERSCORE</kbd> if you prefer.
+      </span>
+    </dd>
+  <dt class="params">NO_UNDERSCORE</dt>
+    <dd>
+      Only used if you need to reverse the sense of
+      <kbd>_UNDERSCORE</kbd>, as can sometimes happen when
+      <a href="rectoverso.html#collate">collating</a>
+      documents that have differing docheader style requirements.
+    </dd>
+</dl>
+
+<h5 id="grouping" class="docs">Grouping part/parameter changes</h5>
 
 <p>
-The following macros let you change the colour of each
-docheader element separately.  You must pre-define (or
-&#8220;initialize&#8221;) the colour with
-<a href="color.html#newcolor">NEWCOLOR</a>
-or
-<a href="color.html#xcolor">XCOLOR</a>.
-</p>
-<ul style="list-style-type: none; margin: -.5em;">
-  <li>Macro: <b>TITLE_COLOR</b> <kbd class="macro-args">&lt;colorname&gt;</kbd></li>
-  <li>Macro: <b>CHAPTER_TITLE_COLOR</b> <kbd class="macro-args">&lt;colorname&gt;</kbd>
-  <ul style="list-style-type: disc; margin-left: -.5em;">
-    <li>Note: <b>CHAPTER_TITLE_COLOR</b> is needed only if you supply both a
-        <a href="#chapter">CHAPTER</a>
-        reference macro and a
-        <a href="#chapter-title">CHAPTER_TITLE</a>
-        macro.  Otherwise, TITLE_COLOR takes care of colorizing the
-        chapter header.
-    </li>
-  </ul></li>
-  <li>Macro: <b>SUBTITLE_COLOR</b> <kbd class="macro-args">&lt;colorname&gt;</kbd></li>
-  <li>Macro: <b>ATTRIBUTE_COLOR</b> <kbd class="macro-args">&lt;colorname&gt;</kbd>
-      (the &#8220;by&#8221; string preceding author[s] name[s])
-  </li>
-  <li>Macro: <b>AUTHOR_COLOR</b> <kbd class="macro-args">&lt;colorname&gt;</kbd></li>
-  <li>Macro: <b>DOCTYPE_COLOR</b> <kbd class="macro-args"> &lt;colorname&gt;</kbd>
-      (if <a href="#doctype">DOCTYPE</a> is <kbd>NAMED</kbd>)
-  </li>
-</ul>
-
-<p>
-It is not recommended that you embed colour (with the
-<a href="definitions.html#inlines">inline escape</a>,
-<a href="color.html#color-inline"><kbd>\*[&lt;colorname&gt;]</kbd></a>)
-in the strings passed to TITLE, CHAPTER_TITLE, SUBTITLE, AUTHOR or
-the name you give DOCTYPE <kbd>NAMED</kbd>.  The strings passed to
-these macros are used to generate page
-<a href="definitions.html#header">headers</a>
-and
-<a href="definitions.html#footer">footers</a>,
-with the result that an embedded colour will cause the string to be
-colourized in headers and/or footers as well.  (If you want headers
-or footers colourized, or parts thereof, use the header/footer
-control macros.)
+If you want to change several parameters for a particular docheader
+part, you may group the changes together in a single macro by
+joining the name of the part to <kbd>STYLE</kbd> with an underscore,
+for example <kbd>TITLE_STYLE</kbd> or <kbd>AUTHOR_STYLE</kbd>.
+The following demonstrates:
+<span class="pre-in-pp">
+  .CHAPTER_TITLE_STYLE \
+  FAMILY T \
+  SIZE +4 \
+  UNDERSCORE 2 \
+  SMALLCAPS
+</span>
+Notice the use of the backslash character, which is required after
+the macro name and all parameters except the last.  Grouping reduces
+clutter and the finger fatigue caused by entering
+<span class="pre-in-pp">
+   .CHAPTER_TITLE_FAMILY T
+   .CHAPTER_TITLE_SIZE +4
+   .CHAPTER_TITLE_UNDERSCORE 2
+   .CHAPTER_TITLE_SMALLCAPS
+</span>
 </p>
 
-<h4 id="change-attribute" class="docs">10. Change the attribution string (&#8220;by&#8221;)</h4>
+<h4 id="change-attribute" class="docs" style="font-size: 100%">3. Changing or removing the attribution string (&#8220;by&#8221;)</h4>
 
 <p>
 If you&#8217;re not writing in English, you can change what mom
@@ -2933,7 +2860,7 @@ prints where &#8220;by&#8221; appears in docheaders.  For example,
 </span>
 changes &#8220;by&#8221; to &#8220;par&#8221;.  ATTRIBUTE_STRING
 can also be used, for example, to make the attribution read
-&quot;Edited by&quot;.
+&#8220;Edited by&#8221;.
 </p>
 
 <p>
@@ -2977,24 +2904,6 @@ doc cover pages, cover pages, or the first-page docheader,
 <kbd>.ATTRIBUTE_STRING</kbd>, without either of the optional first
 arguments, is sufficient.
 </p>
-
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-The type specs for the attribution line in docheaders are the
-same as for the author line.  Although it&#8217;s highly unlikely
-you&#8217;ll want the attribution line in a different family, font,
-or point size, you can make such changes using
-<a href="definitions.html#inlines">inline escapes</a>
-in the argument to ATTRIBUTE_STRING.  For example,
-<br/>
-<span class="pre-in-pp">
-  .ATTRIBUTE_STRING "\f[HBI]\*[SIZE -2p] by \*[SIZE +2p]\*[PREV]"
-</span>
-would set &#8220;by&#8221; in Helvetica bold italic, 2 points
-smaller than normal.
-</p>
-</div>
 
 <div class="rule-short"><hr/></div>
 
@@ -3151,7 +3060,7 @@ Macro: <b>COL_NEXT</b>
 it left (assuming the type is justified or quad left), and moves over
 to the top of the next column.  If the column happens to be the last
 (rightmost) one on the page, mom starts a new page
-at the &quot;column 1&quot; position.  This is the macro to use when
+at the &#8220;column 1&#8221; position.  This is the macro to use when
 you want to start a new column after the end of a paragraph.
 </p>
 
@@ -3313,12 +3222,12 @@ the tops of pages after the first.)
                element tag is entered, the font reverts
                to the current default for the new tag.
 
-               N.B. &mdash; \&bull;[SLANT] and \&bull;[BOLDER] affect
+               N.B. &mdash; \*[SLANT] and \*[BOLDER] affect
                paragraph text, and remain in effect for all
                paragraphs until turned off.  If you want to
                use them in a macro that takes a string
                argument, include the escape in the string.
-               \&bull;[COND] and \&bull;[EXT] behave similarly.
+               \*[COND] and \*[EXT] behave similarly.
 
   PT_SIZE     &bull;Changes point size for the duration of the
                current tag only.  As soon as another document
@@ -3340,9 +3249,7 @@ the tops of pages after the first.)
                track when you&#8217;re ready to return to the
                document&#8217;s default leading.
 
-
-<a id="autolead"></a>
-  AUTOLEAD   &bull;Invoked before START, sets the overall document
+  <a id="autolead" style="margin-top: -1em">AUTOLEAD</a>   &bull;Invoked before START, sets the overall document
               leading as a function of the overall document
               point size (ie the point size used in paragraphs);
               subsequently disabled after START, except for calls
@@ -3821,9 +3728,6 @@ cannot be used as a replacement for <kbd>.EL</kbd> when terminating
 a document.
 </p>
 </div>
-
-
-<div class="rule-long"><hr/></div>
 
 <!-- Navigation links -->
 <table style="width: 100%; margin-top: 12px;">
