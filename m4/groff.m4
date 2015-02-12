@@ -177,13 +177,13 @@ AC_DEFUN([GROFF_MAKEINFO],
        infofile=doc/groff.info
        test -f ${infofile} || infofile=${srcdir}/${infofile}
        if test ! -f ${infofile} \
-	|| test ${srcdir}/doc/groff.texinfo -nt ${infofile}; then
+	|| test ${srcdir}/doc/groff.texi -nt ${infofile}; then
 	 AC_MSG_ERROR($missing
 [Get the `texinfo' package version 4.8 or newer.])
        else
 	 AC_MSG_WARN($missing
 [Get the `texinfo' package version 4.8 or newer if you want to convert
-`groff.texinfo' into a PDF or HTML document.])
+`groff.texi' into a PDF or HTML document.])
        fi
      fi
 

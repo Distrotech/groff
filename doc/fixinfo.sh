@@ -3,7 +3,7 @@
 # Fix a problem with HTML output produced by makeinfo
 #   (tested with versions 4.8 and 4.13).
 #
-# groff.texinfo uses (after macro expansion) something like
+# groff.texi uses (after macro expansion) something like
 #
 #   @deffn ...
 #   @XXindex ...
@@ -19,7 +19,7 @@
 # @deffn and @deffnx.
 #
 # Note that this script is a quick hack and tightly bound to the current
-# groff.texinfo macro code.  Hopefully, a new texinfo version makes it
+# groff.texi macro code.  Hopefully, a new texinfo version makes it
 # unnecessary.
 #
 # 09-2014: no more problem with texinfo 5.0 or higher
