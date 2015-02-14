@@ -5605,9 +5605,6 @@ SMALLCAPS takes precedence.
 .       if \\n[#PAGE_NUM_HYPHENS]=1 .PAGENUM_HYPHENS
 .    \}
 .    el .PAGENUM_HYPHENS
-.    if !r #HDRFTR_RIGHT_CAPS .nr #HDRFTR_RIGHT_CAPS 1
-.    if \\n[#HDRFTR_RIGHT_CAPS]=0 \
-.       if !d $HDRFTR_RIGHT_SIZE_CHANGE .HDRFTR_RIGHT_SIZE +0
 .    if !d $FN_FAM     .FOOTNOTE_FAMILY \\*[$DOC_FAM]
 .    if !d $FN_FT      .FOOTNOTE_FONT R
 .    if !d $FN_QUAD    .FOOTNOTE_QUAD \\*[$DOC_QUAD]
@@ -5727,6 +5724,11 @@ SMALLCAPS takes precedence.
 .       SS DEFAULT
 .       if \\n[#UNDERLINE_QUOTES]=1 .UNDERLINE_QUOTES
 .       if \\n[#UNDERLINE_QUOTES]=0 .UNDERLINE_QUOTES OFF
+.       if !\\n[#HDRFTR_PLAIN] \{\
+.       if !r #HDRFTR_RIGHT_CAPS .nr #HDRFTR_RIGHT_CAPS 1
+.          if \\n[#HDRFTR_RIGHT_CAPS]=0 .ab
+.          if !d $HDRFTR_RIGHT_SIZE_CHANGE .HDRFTR_RIGHT_SIZE +0
+.       \}
 .\" +Doctype underlining (if NAMED)
 .       if !r #DOCTYPE_UNDERLINE .nr #DOCTYPE_UNDERLINE 1
 .\" +Quotes and blockquotes
@@ -5980,31 +5982,50 @@ SMALLCAPS takes precedence.
 .       if !d $DOCTYPE_FT          .DOCTYPE_FONT BI
 .       if !d $DOCTYPE_SIZE_CHANGE .DOCTYPE_SIZE +3
 .\" +Headers and footers
-.       if !d $HDRFTR_LEFT_FAM              .HDRFTR_LEFT_FAMILY \\*[$DOC_FAM]
-.       if !d $HDRFTR_LEFT_FT               .HDRFTR_LEFT_FONT R
-.       if \\n[#HDRFTR_LEFT_CAPS] \
-.          if !d $HDRFTR_LEFT_SIZE_CHANGE   .HDRFTR_LEFT_SIZE -2
-.       if !d $HDRFTR_LEFT_SIZE_CHANGE      .HDRFTR_LEFT_SIZE -.5
-.       if !d $HDRFTR_CENTER_FAM            .HDRFTR_CENTER_FAMILY \\*[$DOC_FAM]
-.       if !d $HDRFTR_CENTER_FT             .HDRFTR_CENTER_FONT I
-.       if \\n[#HDRFTR_CENTER_CAPS] \
-.          if !d $HDRFTR_CENTER_SIZE_CHANGE .HDRFTR_CENTER_SIZE -2
-.       if !d $HDRFTR_CENTER_SIZE_CHANGE    .HDRFTR_CENTER_SIZE -.5
-.       if !d $HDRFTR_RIGHT_FAM             .HDRFTR_RIGHT_FAMILY \\*[$DOC_FAM]
-.       if !d $HDRFTR_RIGHT_FT              .HDRFTR_RIGHT_FONT R
-.       ie !\\n[#HDRFTR_RIGHT_SMALLCAPS] \{\
-.          if \\n[#HDRFTR_RIGHT_CAPS] \
-.             if !d $HDRFTR_RIGHT_SIZE_CHANGE .HDRFTR_RIGHT_SIZE -2
-.       \}
-.       el \{\
-.          nr #SKIP_CAPS_SMALLCAPS_WARNING 1
-.          if \\n[#HDRFTR_RIGHT_CAPS] .HDRFTR_RIGHT_CAPS OFF
-.       \}
-.       if !d $HDRFTR_RIGHT_SIZE_CHANGE     .HDRFTR_RIGHT_SIZE -.5
+.       if !\\n[#HDRFTR_PLAIN] \{\
+.          if !d $HDRFTR_LEFT_FAM \
+.             HDRFTR_LEFT_FAMILY \\*[$DOC_FAM]
+.          if !d $HDRFTR_LEFT_FT \
+.              HDRFTR_LEFT_FONT R
+.          if \\n[#HDRFTR_LEFT_CAPS] \
+.             if !d $HDRFTR_LEFT_SIZE_CHANGE \
+.                HDRFTR_LEFT_SIZE -2
+.          if !d $HDRFTR_LEFT_SIZE_CHANGE \
+.              HDRFTR_LEFT_SIZE -.5
+.          if !d $HDRFTR_CENTER_FAM \
+.              HDRFTR_CENTER_FAMILY \\*[$DOC_FAM]
+.          if !d $HDRFTR_CENTER_FT .HDRFTR_CENTER_FONT I
+.          if \\n[#HDRFTR_CENTER_CAPS] \
+.             if !d $HDRFTR_CENTER_SIZE_CHANGE \
+.                HDRFTR_CENTER_SIZE -2
+.          if !d $HDRFTR_CENTER_SIZE_CHANGE \
+.              HDRFTR_CENTER_SIZE -.5
+.          if !d $HDRFTR_RIGHT_FAM \
+.             HDRFTR_RIGHT_FAMILY \\*[$DOC_FAM]
+.          if !d $HDRFTR_RIGHT_FT .HDRFTR_RIGHT_FONT R
+.          if !r #HDRFTR_RIGHT_CAPS \{\
+.             nr #HDRFTR_RIGHT_CAPS 1
+.             if !d $HDRFTR_RIGHT_SIZE_CHANGE \
+.                HDRFTR_RIGHT_SIZE -2
+.          \}
+.          if \\n[#HDRFTR_RIGHT_CAPS]=0 \
+.             if !d $HDRFTR_RIGHT_SIZE_CHANGE \
+.                HDRFTR_RIGHT_SIZE -.5
+.          ie !\\n[#HDRFTR_RIGHT_SMALLCAPS] \{\
+.             if \\n[#HDRFTR_RIGHT_CAPS] \
+.                if !d $HDRFTR_RIGHT_SIZE_CHANGE \
+.                   HDRFTR_RIGHT_SIZE -2
+.          \}
+.          el \{\
+.             nr #SKIP_CAPS_SMALLCAPS_WARNING 1
+.             if \\n[#HDRFTR_RIGHT_CAPS] .HDRFTR_RIGHT_CAPS OFF
+.          \}
+.          if !d $HDRFTR_RIGHT_SIZE_CHANGE .HDRFTR_RIGHT_SIZE -.5
+.          \}
 .\" +Quotes
 .       if !d $QUOTE_FAM         .QUOTE_FAMILY \\*[$DOC_FAM]
 .       if !d $QUOTE_FT          .QUOTE_FONT I
-.       if !d $QUOTE_SIZE_CHANGE .QUOTE_SIZE+0
+.       if !d $QUOTE_SIZE_CHANGE .QUOTE_SIZE +0
 .       if !r #Q_OFFSET_VALUE \
 .          if '\\*[$Q_OFFSET_VALUE]'' .QUOTE_INDENT 3
 .       if !d $Q_QUAD .QUOTE_LEFT
@@ -8833,6 +8854,7 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 \#   text.  Font for the header/footer becomes roman throughout.
 \#
 .MAC HDRFTR_PLAIN END
+.    nr #HDRFTR_PLAIN 1
 .    rm $HDRFTR_FAMILY
 .    rm #HDRFTR_PT_SIZE
 .    rm $HDRFTR_COLOR
