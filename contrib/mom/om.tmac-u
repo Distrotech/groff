@@ -5223,6 +5223,19 @@ y\R'#DESCENDER \\n[.cdp]'
 .MAC _STYLE END
 .    ds $STYLE_TYPE \\$0
 .    substring $STYLE_TYPE 0 -7
+.    ds $HDR_FTR \\*[$STYLE_TYPE]
+.    substring $HDR_FTR 0 5 \" HEADER or FOOTER
+.    if '\\*[$HDR_FTR]'HEADER' .ds $HDR_FTR HEADER
+.    if '\\*[$HDR_FTR]'FOOTER' .ds $HDR_FTR FOOTER
+.    ds $POS \\$0
+.    substring $POS 7 7
+.    if '\\*[$POS]'L' .ds $POS LEFT
+.    if '\\*[$POS]'C' .ds $POS CENTER
+.    if '\\*[$POS]'R' .ds $POS RIGHT
+.    if '\\*[$STYLE_TYPE]'\\*[$HDR_FTR]_\\*[$POS]' \{\
+.       ds $\\*[$HDR_FTR]_\\*[$POS] \\*[$HDR_FTR]_\\*[$POS]
+.       ds $STYLE_TYPE HDRFTR_\\*[$POS]
+.    \}
 .    if '\\*[$STYLE_TYPE]'ENDNOTES_HEADER' \
 .       ds $BIB-EN-TOC EN_STRING
 .    if '\\*[$STYLE_TYPE]'ENDNOTE_STRING' \
@@ -5231,6 +5244,8 @@ y\R'#DESCENDER \\n[.cdp]'
 .       ds $BIB-EN-TOC BIB_STRING
 .    if '\\*[$STYLE_TYPE]'TOC_HEADER' \
 .       ds $BIB-EN-TOC TOC_STRING
+.    if '\\*[$STYLE_TYPE]'PAGENUMBER' \
+.       ds $STYLE_TYPE PAGENUM
 .    nr #LOOP 0 1
 .    nr #STYLE_PARAMS \\n[#NUM_ARGS]
 .    while \\n+[#LOOP]<=\\n[#STYLE_PARAMS] \{\ 
@@ -5262,10 +5277,14 @@ CAPS takes precedence.
 .             rr #\\*[$STYLE_TYPE]_SMALLCAPS
 .          \}
 .          \\*[$STYLE_TYPE]_CAPS
+.          if d $\\*[$HDR_FTR]_LEFT   .HEADER_LEFT_CAPS
+.          if d $\\*[$HDR_FTR]_CENTER .HEADER_CENTER_CAPS
+.          if d $\\*[$HDR_FTR]_CENTRE .HEADER_CENTER_CAPS
+.          if d $\\*[$HDR_FTR]_RIGHT  .HEADER_RIGHT_CAPS
 .          shift
 .       \}
 .       if '\\$1'NO_CAPS' \{\
-.          rr #\\*[$STYLE_TYPE]_CAPS
+.          nr #\\*[$STYLE_TYPE]_CAPS 0
 .          if !'\\*[$BIB-EN-TOC]'' \
 .             rr #\\*[$BIB-EN-TOC]_CAPS
 .          shift
@@ -5367,6 +5386,11 @@ SMALLCAPS takes precedence.
 .    \}
 .    br
 .    rm $STYLE_TYPE
+.    rm $HDR_FTR
+.    rm $POS
+.    rm $HEADER_LEFT
+.    rm $HEADER_CENTER
+.    rm $HEADER_RIGHT
 .    rm $BIB-EN-TOC
 .    rm ul-args
 .END
@@ -5391,16 +5415,26 @@ SMALLCAPS takes precedence.
 .ds STYLE_TYPE_18 ENDNOTE_STRING
 .ds STYLE_TYPE_19 EPIGRAPH
 .ds STYLE_TYPE_20 FINIS
-.ds STYLE_TYPE_21 LEAD
-.ds STYLE_TYPE_22 LINENUMBER
-.ds STYLE_TYPE_23 MISC
-.ds STYLE_TYPE_24 QUOTE
-.ds STYLE_TYPE_25 SUBTITLE
-.ds STYLE_TYPE_26 TITLE
-.ds STYLE_TYPE_27 TOC_HEADER
+.ds STYLE_TYPE_21 FOOTER_LEFT
+.ds STYLE_TYPE_22 FOOTER_CENTER
+.ds STYLE_TYPE_23 FOOTER_CENTRE
+.ds STYLE_TYPE_24 FOOTER_RIGHT
+.ds STYLE_TYPE_25 HEADER_LEFT
+.ds STYLE_TYPE_26 HEADER_CENTER
+.ds STYLE_TYPE_27 HEADER_CENTRE
+.ds STYLE_TYPE_28 HEADER_RIGHT
+.ds STYLE_TYPE_29 LEAD
+.ds STYLE_TYPE_30 LINENUMBER
+.ds STYLE_TYPE_31 MISC
+.ds STYLE_TYPE_32 QUOTE
+.ds STYLE_TYPE_33 PAGENUMBER
+.ds STYLE_TYPE_34 SUBTITLE
+.ds STYLE_TYPE_35 TITLE
+.ds STYLE_TYPE_36 TOC_HEADER
+.
 .
 .nr #LOOP 0 1
-.while \n+[#LOOP]<=27 \{\
+.while \n+[#LOOP]<=36 \{\
 . ALIAS \*[STYLE_TYPE_\n[#LOOP]]_STYLE           _STYLE
 . ALIAS COVER_\*[STYLE_TYPE_\n[#LOOP]]_STYLE     _STYLE
 . ALIAS DOC_COVER_\*[STYLE_TYPE_\n[#LOOP]]_STYLE _STYLE
@@ -5724,9 +5758,9 @@ SMALLCAPS takes precedence.
 .       if \\n[#UNDERLINE_QUOTES]=1 .UNDERLINE_QUOTES
 .       if \\n[#UNDERLINE_QUOTES]=0 .UNDERLINE_QUOTES OFF
 .       if !\\n[#HDRFTR_PLAIN] \{\
-.       if !r #HDRFTR_RIGHT_CAPS .nr #HDRFTR_RIGHT_CAPS 1
-.          if \\n[#HDRFTR_RIGHT_CAPS]=0 .ab
-.          if !d $HDRFTR_RIGHT_SIZE_CHANGE .HDRFTR_RIGHT_SIZE +0
+.          if !r #HDRFTR_RIGHT_CAPS .nr #HDRFTR_RIGHT_CAPS 1
+.          if \\n[#HDRFTR_RIGHT_CAPS]=0 \
+.             if !d $HDRFTR_RIGHT_SIZE_CHANGE .HDRFTR_RIGHT_SIZE +0
 .       \}
 .\" +Doctype underlining (if NAMED)
 .       if !r #DOCTYPE_UNDERLINE .nr #DOCTYPE_UNDERLINE 1
@@ -6002,14 +6036,16 @@ SMALLCAPS takes precedence.
 .          if !d $HDRFTR_RIGHT_FAM \
 .             HDRFTR_RIGHT_FAMILY \\*[$DOC_FAM]
 .          if !d $HDRFTR_RIGHT_FT .HDRFTR_RIGHT_FONT R
-.          if !r #HDRFTR_RIGHT_CAPS \{\
+.          ie !r #HDRFTR_RIGHT_CAPS \{\
 .             nr #HDRFTR_RIGHT_CAPS 1
 .             if !d $HDRFTR_RIGHT_SIZE_CHANGE \
 .                HDRFTR_RIGHT_SIZE -2
 .          \}
-.          if \\n[#HDRFTR_RIGHT_CAPS]=0 \
-.             if !d $HDRFTR_RIGHT_SIZE_CHANGE \
-.                HDRFTR_RIGHT_SIZE -.5
+.          el \{\
+.             if \\n[#HDRFTR_RIGHT_CAPS]=0 \
+.                if !d $HDRFTR_RIGHT_SIZE_CHANGE \
+.                   HDRFTR_RIGHT_SIZE -.5
+.          \}
 .          ie !\\n[#HDRFTR_RIGHT_SMALLCAPS] \{\
 .             if \\n[#HDRFTR_RIGHT_CAPS] \
 .                if !d $HDRFTR_RIGHT_SIZE_CHANGE \
@@ -6020,7 +6056,7 @@ SMALLCAPS takes precedence.
 .             if \\n[#HDRFTR_RIGHT_CAPS] .HDRFTR_RIGHT_CAPS OFF
 .          \}
 .          if !d $HDRFTR_RIGHT_SIZE_CHANGE .HDRFTR_RIGHT_SIZE -.5
-.          \}
+.       \}
 .\" +Quotes
 .       if !d $QUOTE_FAM         .QUOTE_FAMILY \\*[$DOC_FAM]
 .       if !d $QUOTE_FT          .QUOTE_FONT I
@@ -8560,10 +8596,13 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .END
 .
 .MAC _HDRFTR_CAPS END
-.    if '\\$0'HEADER_LEFT_CAPS'   .ds POSITION LEFT
-.    if '\\$0'HEADER_CENTER_CAPS' .ds POSITION CENTER
-.    if '\\$0'HEADER_CENTRE_CAPS' .ds POSITION CENTER
-.    if '\\$0'HEADER_RIGHT_CAPS'  .ds POSITION RIGHT
+.    ds $HDR_FTR \\$0
+.    substring $HDR_FTR 0 5 \" HEADER or FOOTER
+.    ds POSITION \\$0
+.    substring POSITION 7 7
+.    if '\\*[POSITION]'L' .ds POSITION LEFT
+.    if '\\*[POSITION]'C' .ds POSITION CENTER
+.    if '\\*[POSITION]'R' .ds POSITION RIGHT
 .    if \\n[#HDRFTR_\\*[POSITION]_SMALLCAPS]=1 \
 .       CAPS_SMALLCAPS_WARNING \\*[POSITION]
 .    ie '\\$1'' .nr #HDRFTR_\\*[POSITION]_CAPS 1
@@ -8574,10 +8613,13 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .END
 .
 .MAC _HDRFTR_SMALLCAPS END
-.    if '\\$0'HEADER_LEFT_SMALLCAPS'   .ds POSITION LEFT
-.    if '\\$0'HEADER_CENTER_SMALLCAPS' .ds POSITION CENTER
-.    if '\\$0'HEADER_CENTRE_SMALLCAPS' .ds POSITION CENTER
-.    if '\\$0'HEADER_RIGHT_SMALLCAPS'  .ds POSITION RIGHT
+.    ds $HDR_FTR \\$0
+.    substring $HDR_FTR 0 5 \" HEADER or FOOTER
+.    ds POSITION \\$0
+.    substring POSITION 7 7
+.    if '\\*[POSITION]'L' .ds POSITION LEFT
+.    if '\\*[POSITION]'C' .ds POSITION CENTER
+.    if '\\*[POSITION]'R' .ds POSITION RIGHT
 .    if \\n[#HDRFTR_\\*[POSITION]_CAPS]=1 \{\
 .       CAPS_SMALLCAPS_WARNING \\*[POSITION]
 .    \}
@@ -16750,11 +16792,11 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .END
 \#
 .MAC FOOTER_CENTRE_COLOR END
-.    HDRFTR_CENTRE_COLOR \\$1
+.    HDRFTR_CENTER_COLOR \\$1
 .END
 \#
 .MAC FOOTER_CENTRE_COLOUR END
-.    HDRFTR_CENTRE_COLOR \\$1
+.    HDRFTR_CENTER_COLOR \\$1
 .END
 \#
 .MAC FOOTER_CENTRE_FAM END
@@ -16902,11 +16944,11 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .END
 \#
 .MAC HEADER_CENTRE_COLOR END
-.    HDRFTR_CENTRE_COLOR \\$1
+.    HDRFTR_CENTER_COLOR \\$1
 .END
 \#
 .MAC HEADER_CENTRE_COLOUR END
-.    HDRFTR_CENTRE_COLOR \\$1
+.    HDRFTR_CENTER_COLOR \\$1
 .END
 \#
 .MAC HEADER_CENTRE_FAM END
