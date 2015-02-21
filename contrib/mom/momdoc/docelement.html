@@ -404,8 +404,8 @@ as is the argument to _RULE_WEIGHT macros.
 
 <p>
 As of version 2.1, it is possible to group control macros for a
-particular tag into a single <kbd>_STYLE</kbd> macro.  For example,
-rather than setting the family, size, and indent of 
+particular tag into a single <kbd>&lt;element&gt;_STYLE</kbd> macro.
+For example, rather than setting the family, size, and indent of
 <a href="#blockquote-intro">BLOCKQUOTES</a>
 with
 <br/>
@@ -422,26 +422,40 @@ you can enter the same style parameter changes with
   SIZE -2 \
   INDENT 4P
 </span>
-<kbd>_STYLE</kbd> macros use &#8220;keyword/value&#8221; pairs
-(<kbd>FAMILY</kbd> is a keyword, <kbd>H</kbd> is a value), and may
-be entered entirely on one line, or, as the example shows, broken
-into several readable lines using the backslash.  The macro itself
-and all but the last keyword/value pair require the backslash if
-using this style.
+<kbd>&lt;element&gt;_STYLE</kbd> macros use
+&#8220;keyword/value&#8221; pairs (<kbd>FAMILY</kbd> is a keyword,
+<kbd>H</kbd> is a value), and may be entered entirely on one line,
+or, as the example shows, broken into several readable lines using
+the backslash.  The macro itself and all but the last keyword/value
+pair require the backslash when this style is used.
 </p>
 
 <p>
 Not all the control macros for a particular tag may be available
-with a <kbd>_STYLE</kbd> macro.  Generally speaking, though, if a
-tag has control macros for
+with an <kbd>&lt;element&gt;_STYLE</kbd> macro.  Generally speaking,
+though, if a tag has control macros for
 <br/>
 <span class="pre-in-pp">
-  FAMILY FONT SIZE LEAD AUTOLEAD
+  FAMILY FONT SIZE
+  LEAD AUTOLEAD
   QUAD INDENT
-  COLOR CAPS SMALLCAPS UNDERLINE/UNDERSCORE
+  COLOR
+  CAPS SMALLCAPS
+  UNDERLINE/UNDERSCORE
 </span>
-those parameters may be used within a <kbd>_STYLE</kbd> macro.
+those parameters may be used within an
+<kbd>&lt;element&gt;_STYLE</kbd> macro.
 </p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+If you need to reverse the sense of <kbd>CAPS</kbd>,
+<kbd>SMALLCAPS</kbd> or <kbd>UNDERSCORE/UNDERLINE</kbd>, which
+do not take a value after the keyword, use <kbd>NO_CAPS</kbd>,
+<kbd>NO_SMALLCAPS</kbd> and <kbd>NO_UNDERSCORE/NO_UNDERLINE</kbd>.
+</p>
+</div>
 
 <div class="rule-short"><hr/></div>
 
@@ -3001,9 +3015,6 @@ is created like this:
   Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
   sed diam nonumy eirmod tempor invidunt ut labore.
 </span>
-</p>
-
-<p>
 Alternatively, you may use the single-purpose macro,
 <kbd>.QUIT_LISTS</kbd>, to get yourself out of a list structure.  In
 the example above, the two <kbd>.LIST&nbsp;OFF</kbd> lines could be

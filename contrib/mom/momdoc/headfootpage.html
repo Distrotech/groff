@@ -204,7 +204,7 @@ type selected with
 You can, however, supply whatever strings you like&mdash;including
 page numbers&mdash;to go in any part of headers.  What&#8217;s more,
 you can set the family, font, size, colour and capitalization style
-(caps or caps/lower-case) for each header part individually.
+(caps, caps/lower-case, or smallcaps) for each header part individually.
 </p>
 
 <p>
@@ -242,7 +242,7 @@ All caps     no                  no                  yes
 Size*        -.5 (points)        -.5 (points)        -2 (points)
             (-2 if all caps)    (-2 if all caps)    (-.5 if not all caps)
 
-*Relative to the point size of type in paragraphs
+*Relative to the point size of <a href="definitions.html#running">running text</a>
 </span>
 </div>
 
@@ -251,10 +251,10 @@ You can, of course, change any of the defaults using the appropriate
 control macros.  And should you wish to design headers from the
 ground up, mom has a special macro,
 <a href="#hdrftr-plain">HEADER_PLAIN</a>,
-that removes all type adjustments to headers.  The straightforward
-type specs for paragraphs are used instead, providing a simple
+that removes all type adjustments to headers.  The
+type specs for running text are used instead, providing a simple
 reference point for any alterations you want to make to the family,
-font, size and capitalization style of any header part.
+font, size, and capitalization style of any header part.
 </p>
 
 <h3 id="vertical-spacing" class="docs">Vertical placement and spacing of headers/footers</h3>
@@ -547,9 +547,9 @@ to headers/footers) can be designed to your own specifications.
   <ul style="margin-left: -.5em;">
     <li><a href="#hdrftr-style-global">Global changes</a>
     <ul style="margin-left: -.5em;">
+      <li><a href="#hdrftr-plain">HEADER_PLAIN</a> &ndash; disable default adjustments to header parts</li>
       <li><a href="#hdrftr-global-family">HEADER_FAMILY</a> &ndash; family for entire header</li>
       <li><a href="#hdrftr-global-size">HEADER_SIZE</a> &ndash; size for entire header</li>
-      <li><a href="#hdrftr-plain">HEADER_PLAIN</a> &ndash; disable default adjustments to header parts</li>
       <li><a href="#hdrftr-color">HEADER_COLOR</a> &ndash; colourize the header</li>
     </ul></li>
     <li><a href="#hdrftr-style-part">Part-by-part changes</a>
@@ -558,6 +558,7 @@ to headers/footers) can be designed to your own specifications.
       <li><a href="#_font">_FONT</a> &ndash; left, centre or right font</li>
       <li><a href="#_size">_SIZE</a> &ndash; left, centre or right size</li>
       <li><a href="#_caps">_CAPS</a> &ndash; left, centre or right all caps</li>
+      <li><a href="#_smallcaps">_SMALLCAPS</a> &ndash; left, centre or right smallcaps</li>
       <li><a href="#_color">_COLOR</a> &ndash; left, centre or right colour</li>
     </ul></li>
   </ul></li>
@@ -837,12 +838,33 @@ of the header at once.
 
 <div class="macro-list-container">
 <ul style="padding-top: 6px; padding-bottom: 6px; margin-left: -.5em;">
+  <li><a href="#hdrftr-plain">HEADER_PLAIN</a></li>
   <li><a href="#hdrftr-global-family">HEADER_FAMILY</a></li>
   <li><a href="#hdrftr-global-size">HEADER_SIZE</a></li>
-  <li><a href="#hdrftr-plain">HEADER_PLAIN</a></li>
   <li><a href="#hdrftr-color">HEADER_COLOR</a></li>
 </ul>
 </div>
+
+<div id="hdrftr-plain" class="box-macro-args">
+Macro: <b>HEADER_PLAIN</b>
+</div>
+
+<p>
+By default, mom makes adjustments to the font, size, and
+capitalization style of each part of headers to achieve an
+aesthetically pleasing look.  Should you wish to design your own
+headers from the ground up without worrying how changes to the
+various elements of header style interact with mom&#8217;s defaults,
+invoke <kbd>.HEADER_PLAIN</kbd> by itself, with no argument. Mom
+will disable her default behaviour for headers, and reset all
+elements of header style to the same family, font, point size and
+colour as she uses in paragraphs.
+</p>
+
+<p>
+Replace HEADER_, above, with FOOTER_ to disable mom&#8217;s default
+behaviour for the various elements of footer style.
+</p>
 
 <div id="hdrftr-global-family" class="box-macro-args">
 Macro: <b>HEADER_FAMILY</b> <kbd class="macro-args">&lt;family&gt;</kbd>
@@ -937,27 +959,6 @@ to change the colour of the header rule.
 Replace HEADER_, above, with FOOTER_ to colourize footers.
 </p>
 
-<div id="hdrftr-plain" class="box-macro-args">
-Macro: <b>HEADER_PLAIN</b>
-</div>
-
-<p>
-By default, mom makes adjustments to the font, size, and
-capitalization style of each part of headers to achieve an
-aesthetically pleasing look.  Should you wish to design your own
-headers from the ground up without worrying how changes to the
-various elements of header style interact with mom&#8217;s defaults,
-invoke <kbd>.HEADER_PLAIN</kbd> by itself, with no argument. Mom
-will disable her default behaviour for headers, and reset all
-elements of header style to the same family, font, point size and
-colour as she uses in paragraphs.
-</p>
-
-<p>
-Replace HEADER_, above, with FOOTER_ to disable mom&#8217;s default
-behaviour for the various elements of footer style.
-</p>
-
 <h4 id="hdrftr-style-part" class="docs">3. Part by part changes</h4>
 
 <p>
@@ -972,7 +973,9 @@ appropriate.
   <li><a href="#_font">HEADER_&lt;POSITION&gt;_FONT</a></li>
   <li><a href="#_size">HEADER_&lt;POSITION&gt;_SIZE</a></li>
   <li><a href="#_caps">HEADER_&lt;POSITION&gt;_CAPS</a></li>
+  <li><a href="#_smallcaps">HEADER_&lt;POSITION&gt;_SMALLCAPS</a></li>
   <li><a href="#_color">HEADER_&lt;POSITION&gt;_COLOR</a></li>
+  <li><a href="#grouping">Grouping style parameters for the individual header/footer parts</a></li>
 </ul>
 </div>
 
@@ -1046,6 +1049,24 @@ Replace HEADER_, above, with FOOTER_ to change a footer part&#8217;s
 capitalization style.
 </p>
 
+<div id="_smallcaps" class="box-macro-args">
+Macro: <b>HEADER_&lt;POSITION&gt;_SMALLCAPS</b> <kbd class="macro-args">toggle</kbd>
+</div>
+
+<p>
+HEADER_&lt;POSITION&gt;_SMALLCAPS is a
+<a href="definitions.html#toggle">toggle macro</a>.
+If you want any part of headers to be set in smallcaps, simply
+invoke this macro (using the appropriate position) with no argument.
+If you wish to turn the smallcaps off, invoke the macro with any
+argument (eg <kbd>OFF, QUIT, END, X</kbd>...).
+</p>
+
+<p>
+Replace HEADER,_ above, with FOOTER_ to invoke smallcaps for footer
+parts.
+</p>
+
 <div id="_color" class="box-macro-args">
 Macro: <b>HEADER_&lt;POSITION&gt;_COLOR</b> <kbd class="macro-args">&lt;colorname&gt;</kbd>
 </div>
@@ -1090,6 +1111,45 @@ HEADER_VERSO with the
 <p>
 Replace HEADER_, above, with FOOTER_ to set the colours for the
 various elements of footers.
+</p>
+
+<h5 id="grouping" class="docs">Grouping style parameters for the individual header parts</h5>
+
+<p>
+Instead of using control macros for the style parameters
+of an individual header part, the parameters may be
+<a href="docelement.html#grouping">grouped</a>
+by invoking <kbd>HEADER_&lt;POSITION&gt;_STYLE</kbd> with a list of
+keyword/value pairs.  Acceptable keywords are
+<kbd>FAMILY FONT SIZE COLOR CAPS</kbd> and <kbd>SMALLCAPS</kbd>.
+Keyword/value pairs may appear on the same line as the macro, or
+separated into several lines using the backslash character
+(<kbd>\</kbd>).  If you use the latter style, all but the final
+parameter must be terminated with the backslash.
+</p>
+
+<p>
+Thus, to set the header-left part in Helvetica bold, red, 1 point larger
+than
+<a href="definitions.html#running">running text</a>
+and all caps, you could do either
+<br/>
+<span class="pre-in-pp">
+  .HEADER_LEFT_STYLE FAMILY H FONT B SIZE +1 COLOR red CAPS
+</span>
+or
+<br/>
+<span class="pre-in-pp">
+  .HEADER_LEFT_STYLE \
+   FAMILY H \
+   FONT B \
+   SIZE +1 \
+   COLOR red \
+   CAPS
+</span>
+If you need to reverse the sense of <kbd>CAPS</kbd>
+or <kbd>SMALLCAPS</kbd>, use <kbd>NO_CAPS</kbd> or
+<kbd>NO_SMALLCAPS</kbd>.
 </p>
 
 <!-- -HDRFTR_VERTICAL- -->
@@ -2071,16 +2131,25 @@ draft-style copy.
 <p class="defaults" style="padding-top: 6px;">
 See
 <a href="docelement.html#control-macro-args">Arguments to the control macros</a>.
+<br/>
+The following control macros may also be
+<a href="docelement.html#grouping">grouped</a>
+using PAGENUMBER_STYLE.*
 </p>
 <span class="pre defaults">
-.PAGENUM_FAMILY default = prevailing document family; default is Times Roman
+.PAGENUM_FAMILY default = prevailing document family
 .PAGENUM_FONT   default = roman
-.PAGENUM_SIZE   default = 0 (ie same size as paragraph text)
+.PAGENUM_SIZE   default = +0 (ie same size as paragraph text)
 .PAGENUM_COLOR  default = black
 </span>
 </div>
 
-<h4 id="pagenum-pos" class="docs" style="margin-top: -1em;">2. Page number position</h4>
+<p style="margin-top: -2em">
+*Note: Do not confuse PAGENUMBER_STYLE with
+<a href="#pagenum-style">PAGENUM_STYLE</a>.
+</p>
+
+<h4 id="pagenum-pos" class="docs" style="margin-top: 0em;">2. Page number position</h4>
 
 <div class="box-macro-args" style="margin-top: 1em;">
 Macro: <b>PAGENUM_POS</b> <kbd class="macro-args">TOP | BOTTOM&nbsp;&nbsp;LEFT | CENTER | RIGHT</kbd>
