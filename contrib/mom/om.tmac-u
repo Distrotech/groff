@@ -7484,8 +7484,8 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .    if !r#EN_Q_AUTOLEAD  .nr #EN_Q_LEAD \\n[#EN_LEAD]
 .    if !r#EN_BQ_AUTOLEAD .nr #EN_BQ_LEAD \\n[#EN_LEAD]
 .\"  TOC/recto-verso stuff
-.    if !r@L_MARGIN .nr @L_MARGIN \\n[#DOC_L_MARGIN]
-.    if !r@R_MARGIN .nr @R_MARGIN \\n[#DOC_R_MARGIN]
+.    nr @L_MARGIN \\n[#DOC_L_MARGIN]
+.    nr @R_MARGIN \\n[#DOC_R_MARGIN]
 .\" Covers and doc covers
 .    if \\n[#DOC_COVERS]=1 \{\
 .       if \\n[#DOC_COVER]=1 .DO_DOC_COVER
@@ -11325,6 +11325,10 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .       nr #NEXT_LN \\n[ln]
 .       nm
 .    \}
+.    if '\\$1'ADJUST' \{\
+.       ds $Q_SPACE_ADJUST \\$2
+.       shift 2
+.    \}
 .    ie '\\$1'' \{\
 .       ev QUOTE
 .       evc 0
@@ -11503,6 +11507,10 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .       nr #NEXT_LN \\n[ln]
 .       nm
 .    \}
+.    if '\\$1'ADJUST' \{\
+.       ds $BQ_SPACE_ADJUST \\$2
+.       shift 2
+.    \}
 .    if \\n[in-cutaround] .nr #PP_INDENT \\n[restore-pp-ind]/2
 .    ie '\\$1'' \{\
 .       ev BLOCKQUOTE
@@ -11674,7 +11682,7 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .          nr #CURRENT_V_POS \\n[nl]+\\n[#Q_DEPTH]
 .          SHIM
 .          rr #CALCULATE_ONLY
-.          nr #Q_SPACE_ADJ (\\n[#SHIM]/2)
+.          nr #Q_SPACE_EQ (\\n[#SHIM]/2)
 .          nr #TRAP \\n[.t]-1
 .       \}
 .    \}
@@ -11748,23 +11756,31 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .       el .in +\\*[$\\*[BQ]_OFFSET_VALUE]
 .    \}
 .    ie \\n[#START]=1 \{\
-.       ie !\\n[#Q_LEAD_DIFF]<0 .ALD \\n[#Q_SPACE_ADJ]u
+.       ie !\\n[#Q_LEAD_DIFF]<0 .ALD \\n[#Q_SPACE_EQ]u
 .       el .RLD 0-\\n[#Q_LEAD_DIFF]u
 .    \}
 .    el \{\
 .       if \\n[#PRINT_STYLE]=2 \{\
-.          if !\\n[.v]=\\n[#Q_LEAD_REAL] .ALD \\n[#Q_SPACE_ADJ]u
+.          if !\\n[.v]=\\n[#Q_LEAD_REAL] .ALD \\n[#Q_SPACE_EQ]u
 .       \}
 .    \}
 .    if \\n[#QUOTE]=1 \{\
+.       if !'\\*[$Q_SPACE_ADJUST]'' .sp +\\*[$Q_SPACE_ADJUST]
 .       nf
 .       P_QUOTE
-.       br
+.       if !'\\*[$Q_SPACE_ADJUST]'' \{\
+.          sp -\\*[$Q_SPACE_ADJUST]
+.          rm $Q_SPACE_ADJUST
+.       \}
 .    \}
 .    if \\n[#QUOTE]=2 \{\
+.       if !'\\*[$BQ_SPACE_ADJUST]'' .sp +\\*[$BQ_SPACE_ADJUST]
 .       nf
 .       B_QUOTE
-.       br
+.       if !'\\*[$BQ_SPACE_ADJUST]'' \{\
+.          sp -\\*[$BQ_SPACE_ADJUST]
+.          rm $BQ_SPACE_ADJUST
+.       \}
 .    \}
 .    if !\\n[#START] .rr #QUOTE
 .    if \\n[in-cutaround] .nr #PP_INDENT \\n[pp-ind-tmp]
@@ -11827,7 +11843,7 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .       \}
 .    \}
 .    if \\n[#RESTORE_NO_SHIM] .nr #NO_SHIM 1
-.    rr #Q_SPACE_ADJ
+.    rr #Q_SPACE_EQ
 .    if \\n[#LINENUMBERS]=2 \{\
 .       nr #LINENUMBERS 1
 .       if !\\n[#ENDNOTE] \{\
@@ -11944,9 +11960,9 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .
 .       \}
 .       nr #Q_PARTIAL_DEPTH -\\n[#Q_LEAD_REAL]
-.       nr #Q_SPACE_ADJ \
+.       nr #Q_SPACE_EQ \
 (\\n[#TRAP_DISTANCE]-1)-\\n[#Q_PARTIAL_DEPTH]+\\n[#Q_LEAD_DIFF]u
-.       if \\n[#FN_COUNT]>0 .nr #Q_SPACE_ADJ (\\n[#Q_SPACE_ADJ] / 2u)
+.       if \\n[#FN_COUNT]>0 .nr #Q_SPACE_EQ (\\n[#Q_SPACE_EQ] / 2u)
 .\" Hack to deal with the fact that even though the above routine
 .\" makes the bottom line of the quote fall exactly on the bottom
 .\" margin when traps are disabled, it refuses to do so when traps
@@ -15281,7 +15297,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    if '\\*[$ENUMERATOR_TYPE\\n[#DEPTH]]'register' \{\
 .       nr #LIST_INDENT\\n[#DEPTH] \
 \w'\\*[$PREFIX\\n[#DEPTH]]m\\*[$SEPARATOR\\n[#DEPTH]]\ '
-.       if '\\*[$LIST_ARG_1]'ALPHA' nr #LIST_INDENT\\n[#DEPTH] \
+.       if '\\*[$LIST_ARG_1]'ALPHA' .nr #LIST_INDENT\\n[#DEPTH] \
 \w'\\*[$PREFIX\\n[#DEPTH]]M\\*[$SEPARATOR\\n[#DEPTH]]\ '
 .    \}
 .    if '\\*[$ENUMERATOR_TYPE\\n[#DEPTH]]'roman' \
@@ -16453,7 +16469,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          nr no-adjust 1
 .          rr @TOP
 .       \}
-.       nf
 .       if \\n[float*tbl] \{\
 .          if (\\n[#MLA]=1)&(\\n[tbl@source]=0) \
 .             chop FLOAT*DIV
@@ -16467,7 +16482,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             \}
 .          \}
 .       \}
+.       ev FLOAT
+.       nf
 .       FLOAT*DIV
+.       ev
 .       if \\n[float*tbl] \{\
 .          ie \\n[tbl*boxed] \{\
 .             if \\n[dn]=\\n[bx-tbl-depth] .sp .35v
@@ -21242,7 +21260,8 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .MAC PDF_TARGET END
 .    ds ARG_1 \\$1
 .    shift
-.    pdfhref M -N\\*[ARG_1] -E -- \\$*
+.    ie '\\$*'' .pdfhref M -N \\*[ARG_1] -- \\$*
+.    el .pdfhref M -N \\*[ARG_1] -E -- \\$*
 .    if '\\*[.T]'ps' .if !dpdf:href.map .tm gropdf-info:href \\*[ARG_1] \\$*
 .END
 \#
@@ -21529,10 +21548,8 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .    rm pdf-img:adj
 .    rm pdf-img*caption
 .    rm pdf-img*caption-short
-.    rm pdf-img*caption-space
 .    rm pdf-img:file
 .    rm pdf-img*label
-.    rm pdf-img*label-space
 .    rm pdf-img:pos
 .    rm short
 .    rr ind-pre-img

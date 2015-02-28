@@ -2016,31 +2016,9 @@ This behaviour can be changed with the control macro
 </p>
 
 <div class="box-tip">
-<p class="tip">
-<span class="tip">Tips on vertical spacing around quotes:</span>
-If you wish to adjust the spacing before or after a quote or blockquote
-manually (with
-<a href="typesetting.html#space">SPACE</a>/
-<a href="typesetting.html#ald">ALD</a>/
-<a href="typesetting.html#rld">RLD</a>),
-do so <i>outside</i> the <kbd>.QUOTE</kbd> or <kbd>.BLOCKQUOTE</kbd>,
-like this:
-<br/>
-<span class="pre-in-pp">
-  .SP -3p
-  .QUOTE
-  Candy is dandy
-  But liquor is quicker.
-  .QUOTE OFF
-  .SP -3p
-</span>
-</p>
-</div>
+<h3 id="quote-spacing-notes" class="docs" style="padding-top: 9px; font-size: 95%;">Notes on quote spacing</h3>
 
-<div class="box-tip">
-<h2 id="quote-spacing-notes" class="docs" style="padding-top: 9px; font-size: 100%;">Further notes on quote spacing</h2>
-
-<p clas"defaults">
+<p style="margin-top: .5em">
 If your quote (or blockquote) leading differs from the document
 leading, mom attempts to observe the same rules for vertical
 whitespace outlined above; however, she will also insert a small,
@@ -2056,7 +2034,7 @@ equalized whitespace at marked places is a limitation of groff,
 which, by and large, processes text on a line-per-line basis.)
 </p>
 
-<h3 id="no-shim" class="docs">Disable shimming of quotes and blockquotes</h3>
+<h4 id="no-shim" class="docs">Disable shimming of quotes and blockquotes</h4>
 
 <p>
 If you don&#8217;t want the behaviour described above (ie you
@@ -2137,8 +2115,12 @@ the <kbd>FORCE</kbd> argument.
 </div>
 
 <div class="box-macro-args">
-Macro: <b>QUOTE</b> <kbd class="macro-args">toggle</kbd>
+Macro: <b>QUOTE</b> <kbd class="macro-args">[ ADJUST +|-&lt;space&gt; ] | &lt;anything&gt;</kbd>
 </div>
+<p class="requires">
+&bull;&nbsp;The argument to <kbd style="font-style: normal">ADJUST</kbd> requires a
+<a href="definitions.html#unitofmeasure">unit of measure</a>
+</p>
 
 <p>
 QUOTE is a toggle macro.  To begin a section of quoted text, invoke
@@ -2154,6 +2136,24 @@ END, X, Q</kbd>...) to turn it off.  Example:
   In North Carolina
   And bits of her tits in Brazil.
   .QUOTE END
+</span>
+Mom does her best to equalize whitespace around quotes and make
+sure the line following it falls on a valid baseline.  On occasion,
+you may need to tweak the quote placement slightly, which is done
+by passing <kbd>ADJUST</kbd> to QUOTE with a plus or minus value.
+The quote will be lowered (<kbd>+</kbd>) or raised (<kbd>-</kbd>)
+<i>within the space allotted for it</i> by the given amount.  For
+example, to lower a quote slightly within the space allotted for it,
+you&#8217;d do
+<br/>
+<span class="pre-in-pp">
+  .QUOTE ADJUST +3p
+  There was a soprano named Golda
+  Whose lovers grew colda and colda
+  For during love-making
+  She'd sing the earth-shaking
+  Love theme from Tristan und Isolde.
+  .QUOTE off
 </span>
 </p>
 
@@ -2242,7 +2242,7 @@ below quotes, invoke
 </span>
 with no argument.  If you wish to restore mom&#8217;s
 default behaviour regarding the spacing of quotes (see
-<a href="#quote-spacing">above</a>),
+<a href="#quote-spacing">Quote spacing</a>),
 invoke the macro with any argument (<kbd>OFF, QUIT, END, X</kbd>...)
 </p>
 
@@ -2309,7 +2309,7 @@ left.
 Besides indenting blockquotes, mom further sets them off from
 running text with a small amount of vertical whitespace top and
 bottom.  (See
-<a href="#quote-spacing">above</a>
+<a href="#quote-spacing">Quote spacing</a>
 for a complete explanation of how this is managed, and how
 to control it.)
 </p>
@@ -2321,11 +2321,16 @@ to control it.)
 </div>
 
 <div class="box-macro-args">
-Macro: <b>BLOCKQUOTE</b> <kbd class="macro-args">&lt;toggle&gt;</kbd>
+Macro: <b>BLOCKQUOTE</b>  <kbd class="macro-args">[ ADJUST +|-&lt;space&gt; ] | &lt;anything&gt;</kbd>
 </div>
 
 <p class="alias" style="margin-bottom: 0;">
 <i>Aliases: </i> <b>CITE, CITATION</b>
+</p>
+
+<p class="requires">
+&bull;&nbsp;The argument to <kbd style="font-style: normal">ADJUST</kbd> requires a
+<a href="definitions.html#unitofmeasure">unit of measure</a>
 </p>
 
 <p>
@@ -2347,6 +2352,27 @@ Example:
 If the cited passage runs to more than one paragraph, you must
 introduce each paragraph&mdash;including the first&mdash;with
 <kbd><a href="#pp">.PP</a></kbd>.
+</p>
+
+<p>
+Mom does her best to equalize whitespace around blockquotes and make
+sure the line following it falls on a valid baseline.  On occasion,
+you may need to tweak the blockquote placement slightly, which is
+done by passing <kbd>ADJUST</kbd> to BLOCKQUOTE with a plus or minus
+value.  The blockquote will be lowered (<kbd>+</kbd>) or raised
+(<kbd>-</kbd>) <i>within the space allotted for it</i> by the given
+amount.  For example, to raise a blockquote slightly within the
+space allotted for it, you&#8217;d do
+<br/>
+<span class="pre-in-pp">
+  .BLOCKQUOTE ADJUST -3p
+  True! - nervous - very, very dreadfully nervous I had been and
+  am; but why will you say that I am mad?  The disease had sharpened
+  my senses - not destroyed - not dulled them.
+  .RIGHT
+  \[em]Edgar Allen Poe, The Tell-Tale Heart
+  .QUOTE off
+</span>
 </p>
 
 <div class="box-tip">
@@ -2436,7 +2462,7 @@ below blockquotes, invoke
 </span>
 with no argument.  If you wish to restore mom&#8217;s default
 behaviour regarding the spacing of blockquotes (see
-<a href="#quote-spacing">above</a>),
+<a href="#quote-spacing">Quote spacing</a>),
 invoke the macro with any argument (<b>OFF, QUIT, END,
 X</b>...).
 </p>
