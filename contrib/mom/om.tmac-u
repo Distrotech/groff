@@ -1778,7 +1778,14 @@ end
 .       rm $ST\\n[#LOOP]_FILL
 .    \}
 .    rr #LOOP
-.    po \\n[#L_MARGIN]u
+.    ie '\\n[.z]'FLOAT*DIV' \{\
+\!.     po \\n[#L_MARGIN]u
+\!.     ll \\n[#L_LENGTH]u
+.    \}
+.    el \{\
+.       po \\n[#L_MARGIN]u
+.       ll \\n[#L_LENGTH]u
+.    \}
 .    ll \\n[#L_LENGTH]u
 .    ta \\n[.l]u
 .    ie \\n[#QUAD] \{\
@@ -1865,10 +1872,11 @@ end
 \#
 \# Pre-define xcolors black and white
 \#
-.ds black \m[black]
-.ds BLACK \m[black]
-.ds white \m[white]
-.ds WHITE \m[WHITE]
+.ds black   \m[black]
+.ds BLACK   \m[black]
+.ds white   \m[white]
+.ds WHITE   \m[white]
+.ds default \m[black]
 \#
 \# =====================================================================
 \#
@@ -2369,6 +2377,11 @@ end
 \\f[\\*[$FONT_FOR_PAD]]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
 .    br
 .    di
+.    if \\n[#INDENT_ACTIVE] \{\
+.       if \\n[#INDENT_LEFT_ACTIVE]  .ll -\\n[#L_INDENT]u
+.       if \\n[#INDENT_RIGHT_ACTIVE] .ll -\\n[#R_INDENT]u
+.       if \\n[#INDENT_BOTH_ACTIVE]  .ll -\\n[#BR_INDENT]u
+.    \}
 .    char \\*[$PAD_MARKER] \
 \R'#SPACE_TO_END \En[.l]-\En[p]'\R'#PAD_SPACE \En[#SPACE_TO_END]/\En[#PAD_COUNT]'
 .    di PAD_STRING
@@ -2376,6 +2389,8 @@ end
 \\f[\\*[$FONT_FOR_PAD]]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
 .    br
 .    di
+.    if \\n[#INDENT_ACTIVE] \
+.       if (\\n[#INDENT_LEFT_ACTIVE]=1):(\\n[#INDENT_BOTH_ACTIVE]) .ll
 .    char \\*[$PAD_MARKER] \h'\En[#PAD_SPACE]u'
 .    if \\n[#SILENT] .SILENT
 .    fam \\*[$FAMILY_FOR_PAD]
@@ -2396,7 +2411,7 @@ end
 .    rr #PAD_SPACE
 .    rm $PAD_STRING
 .    rm PAD_STRING
-.    rchar #
+.    rchar \\*[$PAD_MARKER]
 .    if '\\$2'NOBREAK' \{\
 .       TRAP OFF
 .       EOL
@@ -2614,7 +2629,7 @@ end
 .       \}
 .       el .PRINT \
 \\*[DOWN \\n[#DC_LINES]v]\
-\m[\\*[$DC_COLOR]]\\*[$DROPCAP]\m[]\\*[UP \\n[#DC_LINES]v]
+\\*[$DROPCAP]\\*[UP \\n[#DC_LINES]v]
 .    \}
 .    if '\\$3'COND' \E*[COND]
 .    if '\\$3'EXT' \E*[EXT]
@@ -2684,6 +2699,10 @@ end
 \#   RULE_WEIGHT.
 \#
 .MAC DRH END
+.    rr #FILLED
+.    rr #FILL_MODE
+.    rr #NOFILL
+.    rr #NOFILL_MODE
 .    if \\n[.vpt]=1 \{\
 .       vpt 0
 .       nr #RESTORE_TRAP 1
@@ -2709,7 +2728,7 @@ end
 .    ds $RL_INDENT \\$2
 .    ds $RL_LENGTH \\$3
 .    ie !'\\$4'' .ds $RL_COLOR  \\$4
-.    el          .ds $RL_COLOR default
+.    el          .ds $RL_COLOR \\*[default]
 .    nr #SAVED_WEIGHT     \\n[#RULE_WEIGHT]
 .    nr #SAVED_WEIGHT_ADJ \\n[#RULE_WEIGHT_ADJ]
 .    di NULL
@@ -2746,6 +2765,7 @@ end
 \D'l \\*[$RL_LENGTH] 0'\
 \v'-\\n[#RULE_WEIGHT_ADJ]u'\
 \D't \\n[#SAVED_RULE_WEIGHT]'
+.          rr #RESTORE_L_LENGTH
 .    \}
 .    if \\n[#FILLED]=1 \{\
 .       if \\n[#FILL_MODE]=0 .QUAD LEFT
@@ -2826,6 +2846,10 @@ end
 \#   .gcolor.
 \#
 .MAC DRV END
+.    rr #FILLED
+.    rr #FILL_MODE
+.    rr #NOFILL
+.    rr #NOFILL_MODE
 .    if \\n[.vpt]=1 \{\
 .       vpt 0
 .       nr #RESTORE_TRAP 1
@@ -2853,7 +2877,7 @@ end
 .    ie !'\\$4'' \{\
 .       ds $RL_COLOR  \\$4
 .    \}
-.    el .ds $RL_COLOR default
+.    el .ds $RL_COLOR \\*[default]
 .    nr #SAVED_WEIGHT     \\n[#RULE_WEIGHT]
 .    nr #SAVED_WEIGHT_ADJ \\n[#RULE_WEIGHT_ADJ]
 .    RULE_WEIGHT \\*[$RL_WEIGHT]
@@ -2881,9 +2905,8 @@ end
 .       vpt 1
 .       rr #RESTORE_TRAP
 .    \}
-.    if '\\n[.z]'FLOAT*DIV' \{\
+.    if '\\n[.z]'FLOAT*DIV' \
 .       if !(\\n[.d]+\\*[$RL_DEPTH])<\\n[D-float] .nr D-float \\n[.d]+\\*[$RL_DEPTH]
-.    \}
 .END
 \#
 \# BOXES - DBX
@@ -2900,6 +2923,10 @@ end
 \#   arg given, the rule weight is the one set by RULE_WEIGHT.
 \#
 .MAC DBX END
+.    rr #FILLED
+.    rr #FILL_MODE
+.    rr #NOFILL
+.    rr #NOFILL_MODE
 .    if \\n[.vpt]=1 \{\
 .       vpt 0
 .       nr #RESTORE_TRAP 1
@@ -2930,7 +2957,7 @@ end
 .       ie d$\\$5_FILL .ds $BX_COLOR \\*[$\\$5_FILL]
 .       el             .ds $BX_COLOR \\$5
 .    \}
-.    el .ds $BX_COLOR default
+.    el .ds $BX_COLOR \\*[default]
 .    nr #SAVED_WEIGHT     \\n[#RULE_WEIGHT]
 .    nr #SAVED_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
 .    if !'\\$1'SOLID' .RULE_WEIGHT \\*[$BX_WEIGHT]
@@ -2958,7 +2985,6 @@ end
 .       if \\n[#FILL_MODE]=1 .JUSTIFY
 .       if \\n[#FILL_MODE]=3 .QUAD CENTER
 .       if \\n[#FILL_MODE]=5 .QUAD RIGHT
-.       rr #FILLED
 .    \}
 .    if \\n[#NOFILL]=1 \{\
 .       if \\n[#NOFILL_MODE]=3 .CENTER
@@ -2991,6 +3017,10 @@ end
 \#   RULE_WEIGHT.
 \#
 .MAC DCL END
+.    rr #FILLED
+.    rr #FILL_MODE
+.    rr #NOFILL
+.    rr #NOFILL_MODE
 .    if \\n[.vpt]=1 \{\
 .       vpt 0
 .       nr #RESTORE_TRAP 1
@@ -3021,7 +3051,7 @@ end
 .       ie d$\\$5_FILL .ds $CL_COLOR \\*[$\\$5_FILL]
 .       el             .ds $CL_COLOR \\$5
 .    \}
-.    el .ds $CL_COLOR default
+.    el .ds $CL_COLOR \\*[default]
 .    nr #SAVED_WEIGHT     \\n[#RULE_WEIGHT]
 .    nr #SAVED_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
 .    if !'\\$1'SOLID' .RULE_WEIGHT \\*[$CL_WEIGHT]
@@ -5567,13 +5597,6 @@ SMALLCAPS takes precedence.
 .    if !r #FOOTER_MARGIN     .FOOTER_MARGIN 3P
 .    if !r #FOOTER_GAP        .FOOTER_GAP 3P
 .    if !r #B_MARGIN          .B_MARGIN \\n[#FOOTER_MARGIN]u+\\n[#FOOTER_GAP]u
-.    if (\\n[#FOOTER_MARGIN]+\\n[.v]>=\\n[#B_MARGIN]) \{\
-.       tm1 "[mom]: Your chosen bottom margin for running text is too close to the footer margin.
-.       tm1 "       No footers or bottom-of-page page numbers will be printed.
-.       tm1 "       Please reset B_MARGIN or FOOTER_MARGIN to allow enough space.
-.       tm1 "       If no footers or bottom-of-page page numbers are required,
-.       tm1 "       invoke .FOOTER_MARGIN 0 before .START
-.    \}
 .    if !r #HEADER_RULE_GAP .HEADER_RULE_GAP 4p
 .    if !r #FOOTER_RULE_GAP .FOOTER_RULE_GAP 4p
 .    if !r #HDRFTR_RULE     .HDRFTR_RULE
@@ -6164,6 +6187,14 @@ SMALLCAPS takes precedence.
 .\" DOC_LEAD adjusted (or not) here
 .       TRAPS
 .       if \\n[#REMOVE_ADJ] .DOC_LEAD \\n[#DOC_LEAD]u-\\n[#DOC_LEAD_ADJ]u
+.       if (\\n[#FOOTER_MARGIN]+\\n[.v]>=\\n[#B_MARGIN]) \{\
+.          tm1 "[mom]: Your chosen bottom margin for running text is too close to the footer margin.
+.          tm1 "       No footers or bottom-of-page page numbers will be printed.
+.          tm1 "       Please reset B_MARGIN or FOOTER_MARGIN to allow enough space.
+.          tm1 "       If no footers or bottom-of-page page numbers are required,
+.          tm1 "       invoke .FOOTER_MARGIN 0 before .START
+.          nr #SKIP_FOOTER 1
+.       \}
 .\" Endnote, bibliography and toc leading
 .       nr #OK_PROCESS_LEAD 1
 .       nr #RESTORE_DOC_LEAD \\n[.v]
@@ -9890,7 +9921,7 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .    \}
 .    if !'\\n[.ev]'0' .ev
 .    rr ref*last
-.    po \" Ensure reset to last value
+.    po \" Ensure it's reset to previous value
 .END
 \#
 .MAC PRINT_FOOTER END
@@ -9901,15 +9932,12 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .    rr #SAVED_FOOTER_POS
 .    vpt 0
 .    sp -1
-.    ie (\\n[#FOOTER_MARGIN]+\\n[.v]>\\n[#B_MARGIN]) .nr #SKIP_FOOTER 1
-.    el \{\
-.       ev FOOTER
-.       ie n \
-.          sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u
-.       el \
-.          sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u-\\n[#FOOTER_ADJ]u
-.       mk y
-.    \}
+.    ev FOOTER
+.    ie n \
+.       sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u
+.    el \
+.       sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u-\\n[#FOOTER_ADJ]u
+.    mk y
 .    UNDERLINE OFF
 .    po \\n[#DOC_L_MARGIN]u
 .    ll \\n[#DOC_L_LENGTH]u
@@ -11735,12 +11763,14 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .    ie !'\\*[$\\*[BQ]_OFFSET_VALUE]'' \
 .       nr #\\*[BQ]_OFFSET \\n[#L_MARGIN]+\\*[$\\*[BQ]_OFFSET_VALUE]
 .    el \
-.       nr #\\*[BQ]_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#\\*[BQ]_OFFSET_VALUE])
+.       nr #\\*[BQ]_OFFSET \
+\\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#\\*[BQ]_OFFSET_VALUE])
 .    if \\n[#COLUMNS] \{\
 .       ie r#\\*[BQ]_OFFSET_VALUE \
 .          nr #\\*[BQ]_OFFSET \
 \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#\\*[BQ]_OFFSET_VALUE])
-.       el .nr #\\*[BQ]_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+\\*[$\\*[BQ]_OFFSET_VALUE]
+.       el .nr #\\*[BQ]_OFFSET \
+\\n[#COL_\\n[#COL_NUM]_L_MARGIN]+\\*[$\\*[BQ]_OFFSET_VALUE]
 .    \}
 .    if !\\n[#ENDNOTE] \{\
 .       ie '\\*[BQ]'Q' \{\
@@ -11752,7 +11782,8 @@ $\\*[DOC_]COVERTITLE_\\n+[#\\*[DOC_]COVERTITLE_NUM] \\$\\n[#\\*[DOC_]COVERTITLE_
 .       if '\\n[.z]'FLOAT*DIV' \!.po \\n[#\\*[BQ]_OFFSET]u
 .    \}
 .    if \\n[#ENDNOTE] \{\
-.       ie \\n[#\\*[BQ]_OFFSET_VALUE] .in +\\n[#EN_PP_INDENT]u*\\n[#\\*[BQ]_OFFSET_VALUE]u
+.       ie \\n[#\\*[BQ]_OFFSET_VALUE] \
+.          in +\\n[#EN_PP_INDENT]u*\\n[#\\*[BQ]_OFFSET_VALUE]u
 .       el .in +\\*[$\\*[BQ]_OFFSET_VALUE]
 .    \}
 .    ie \\n[#START]=1 \{\
@@ -16482,10 +16513,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             \}
 .          \}
 .       \}
-.       ev FLOAT
+.       evc FLOAT
 .       nf
 .       FLOAT*DIV
-.       ev
+.       evc 0
 .       if \\n[float*tbl] \{\
 .          ie \\n[tbl*boxed] \{\
 .             if \\n[dn]=\\n[bx-tbl-depth] .sp .35v
@@ -16691,12 +16722,13 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       el \{\
 .          br
 .          ch FN_OVERFLOW_TRAP
-.          DO_FOOTER
+.          FOOTER
 .       \}
 .    \}
 .    el \{\
+.       br
 .       ch FN_OVERFLOW_TRAP
-.       DO_FOOTER
+.       FOOTER
 .    \}
 .END
 \#
@@ -20783,14 +20815,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# otherwise define a right margin note.
 \#
 .de MN
-.ds MN-dir \\$1
-.if !'\\$1'LEFT' \{\
-.  if !'\\$1'RIGHT' \{\
-.    MN_QUIT
-.    return
-.  \}
-.\}
-.if \\n[#COLUMNS]=1 \{\
+. ds MN-dir \\$1
+. if !'\\$1'LEFT' \{\
+.   if !'\\$1'RIGHT' \{\
+.     MN_QUIT
+.     return
+.   \}
+. \}
+. if \\n[#COLUMNS]=1 \{\
 .  if \\n[#NUM_COLS]>2 \{\
 .    tm [mom]: Macro MN: More than two columns.  Ignoring margin notes.
 .    return
@@ -20799,7 +20831,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    ie \\n[#COL_NUM]=1 .ds MN-dir LEFT
 .    el .ds MN-dir RIGHT
 .  \}
-.\}
+. \}
 .  if !\\n[#MNinit]=1 \{\
 .    tm1 "[mom]: Macro MN: You must set parameters with MN_INIT before using MN.
 .    ab   [mom]: Aborting '\\n[.F]' at MN, line \\n[.c].
@@ -20852,102 +20884,64 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .  ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
 ..
 \#
-\# MNbottom-left
-\# -------------
-\# The "left" half of Werner's original MNbottom.
+\# MNbottom
+\# --------
+\# Executed in FOOTER.
 \#
-.de MNbottom-left
-.  nr MN-curr 0
-.  nr MN-last-pos 0
-.  nr MN-lead-adj \\n[#DOC_LEAD]-\\n[MN-spacing]
-.  vpt 0
-.  mk MN-curr-pos
-.  if \\n[MN-active] \{\
-.    di
-.    tm [mom]: Macro MN: Margin note finished by new page.  Ignored.
-.  \}
-.  po \\n[MN-left-start]u
-.  ev MNbottom-left-env
-.  nr #P \\n%+\\n[#PAGE_NUM_ADJ]
-.  while (\\n[MN-curr] < \\n[MN-left]) \{\
-.    nr MN-curr +1
-.    ie (\\n[MN-last-pos] < \\n[MN-mk-l-\\n[MN-curr]]) \
-.      sp |\\n[MN-mk-l-\\n[MN-curr]]u+\\n[MN-lead-adj]u
-.    el \{\
-.      nr MN-shifted 1
-.      sp 1v
-.      SHIM
-.      if \\n[#SHIM]>\\n[MN-spacing] .sp -(1v+\\n[MN-lead-adj]u)
-.      tm \
-[mom]: Macro MN: Warning: Left margin note #\\n[MN-curr] on page \\n[#P] shifted down.
-.    \}
-.\" If last margin note doesn't fit
-.    if ( (\\n[nl]+\\n[MN-div-l-\\n[MN-curr]-depth]) > (\\n[.p]+\\n[#VARIABLE_FOOTER_POS]-1) ) \{\
-.      if \\n[MN-shifted]=1 \{\
-.        sp -(1v+\\n[#SHIM]u)
-.        rm MN-div-l-\\n[MN-curr]
-.        tm1 "[mom]: No room to start left margin note #\\n[MN-curr] on page \\n[#P].
-.        tm1 "       Ignoring margin note.
-.        rr MN-shifted
-.      \}
-.      nr #no-repeat-MN-left 1
-.      nr #OVERFLOW_LEFT 1
-.      ie \\n[#FN_COUNT]=0 \{\
-.        ch FOOTER \\n[.p]u
-.        wh \\n[#VARIABLE_FOOTER_POS]u+\\n[MN-lead-adj]u+1u MN_OVERFLOW_TRAP
-.      \}
-.      el \
-.        wh \\n[.p]u+\\n[#VARIABLE_FOOTER_POS]u-1u MN_OVERFLOW_TRAP
-.      vpt 1
-.    \}
-.    nf
-.    MN-div-l-\\n[MN-curr]
-.    fi
-.    br
-.    nr MN-last-pos \\n[nl]
-.  \}
-.  ev
-.  po
-.  if !\\n[#no-repeat-MN-left]=1 \
-.     if \\n[MN-right]=0 .vpt 1
-..
-\#
-\# MNbottom-right
-\# --------------
-\# The "right" half of Werner's original MNbottom.
-\#
-.de MNbottom-right
+.de MNbottom
+.   if '\\$0'MNbottom-left' \{\
+.      ds MN-pos left
+.      ds l-r l
+.      ds Left-Right Left
+.   \}
+.   if '\\$0'MNbottom-right' \{\
+.      ds MN-pos right
+.      ds l-r r
+.      ds Left-Right Right
+.   \}
 .   nr MN-curr 0
 .   nr MN-last-pos 0
 .   nr MN-lead-adj \\n[#DOC_LEAD]-\\n[MN-spacing]
 .   vpt 0
-.   po \\n[MN-right-start]u
-.   ev MNbottom-right-env
+.   if \\n[MN-active] \{\
+.     di
+.     tm [mom]: Macro MN: Margin note finished by new page.  Ignored.
+.   \}
+.   if \\n[#RECTO_VERSO] \{\
+.      if e \{\
+.         if '\\*[MN-pos]'right' \
+.            nr MN-\\*[MN-pos]-start (\\n[.o]+\\n[.l]+\\n[MN-sep])
+.         if '\\*[MN-pos]'left' \
+.            nr MN-\\*[MN-pos]-start (\\n[.o]-\\n[MN-sep]-\\n[MN-left-width])
+.      \}
+.   \}
+.   po \\n[MN-\\*[MN-pos]-start]u
+.   ev MNbottom-\\*[MN-pos]-env
 .   nr #P \\n%+\\n[#PAGE_NUM_ADJ]
-.   while (\\n[MN-curr] < \\n[MN-right]) \{\
+.   while (\\n[MN-curr] < \\n[MN-\\*[MN-pos]]) \{\
 .      nr MN-curr +1
-.      ie (\\n[MN-last-pos] < \\n[MN-mk-r-\\n[MN-curr]]) \
-.         sp |\\n[MN-mk-r-\\n[MN-curr]]u+\\n[MN-lead-adj]u
+.      ie (\\n[MN-last-pos] < \\n[MN-mk-\\*[l-r]-\\n[MN-curr]]) \
+.         sp |\\n[MN-mk-\\*[l-r]-\\n[MN-curr]]u+\\n[MN-lead-adj]u
 .      el \{\
 .         nr MN-shifted 1
 .         sp 1v
 .         SHIM
 .         if \\n[#SHIM]>\\n[MN-spacing] .sp -(1v+\\n[MN-lead-adj]u)
-.         tm [mom]: \
-Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
+.         tm [mom]: Macro MN: Warning: \\*[Left-Right] margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .      \}
 .\" If last margin note doesn't fit
-.      if ( (\\n[nl]+\\n[MN-div-r-\\n[MN-curr]-depth]) > (\\n[.p]+\\n[#VARIABLE_FOOTER_POS]-1) ) \{\
+.      if ( (\\n[nl]+\\n[MN-div-\\*[l-r]-\\n[MN-curr]-depth]) > (\\n[.p]+\\n[#VARIABLE_FOOTER_POS]-1) ) \{\
 .         if \\n[MN-shifted]=1 \{\
 .            sp -(1v+\\n[#SHIM]u)
-.            rm MN-div-r-\\n[MN-curr]
-.            tm1 \
-[mom]: No room to start right margin note #\\n[MN-curr] on page \\n[#P] on page \\n[#P].
-.            tm1 "       Ignoring margin note.
+.            rm MN-div-\\*[l-r]-\\n[MN-curr]
+.            tm1 "[mom]: \
+No room to start \\*[MN-pos] margin note #\\n[MN-curr] on page \\n[#P] on page \\n[#P].
+.            tm1 "      Ignoring margin note.
 .            rr MN-shifted
 .         \}
-.         nr #no-repeat-MN-right 1
-.         nr #OVERFLOW_RIGHT 1
+.         nr #no-repeat-MN-\\*[MN-pos] 1
+.         if '\\*[MN-pos]'left'  .nr #OVERFLOW_LEFT 1
+.         if '\\*[MN-pos]'right' .nr #OVERFLOW_RIGHT 1
 .         ie \\n[#FN_COUNT]=0 \{\
 .            ch FOOTER \\n[.p]u
 .            wh \\n[#VARIABLE_FOOTER_POS]u+\\n[MN-lead-adj]u+1u MN_OVERFLOW_TRAP
@@ -20957,15 +20951,18 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .         vpt 1
 .      \}
 .      nf
-.      MN-div-r-\\n[MN-curr]
+.      MN-div-\\*[l-r]-\\n[MN-curr]
 .      fi
 .      br
 .      nr MN-last-pos \\n[nl]
 .   \}
 .   ev
 .   po
-.   if !\\n[#no-repeat-MN-right]=1 .vpt 1
+.   if !\\n[#no-repeat-MN-\\*[MN-pos]]=1 .vpt 1
 ..
+.
+.ALIAS MNbottom-right MNbottom
+.ALIAS MNbottom-left  MNbottom
 \#
 \# PDF SUPPORT
 \# ===========
@@ -21279,7 +21276,10 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 \#
 .MAC PDF_IMAGE END
 .    rr float*img
-.    if !'\\n[.z]'FLOAT*DIV' .FLOAT
+.    if !'\\n[.z]'FLOAT*DIV' \{\
+.       nr pdf-img:float 1
+.       FLOAT
+.    \}
 .    nr float*img 1
 .    ds ev-current \\n[.ev]
 .    ev IMG
@@ -21483,8 +21483,10 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .       if !\\n[@TOP] \!.sp -\\*[pdf-img:adj]
 .    vpt
 .    ev
-.    FLOAT off
-.    nr dl \\n[pdf-img:width]
+.    if \\n[pdf-img:float] \{\
+.       FLOAT off
+.       nr dl \\n[pdf-img:width]
+.    \}
 .    if !'\\*[pdf-img*caption-short]'' .ds short -short
 .    ie !'\\*[pdf-img*label]'' \
 .       TO_FIGURES "\\*[pdf-img*label]" "\\*[pdf-img*caption\\*[short]]"
@@ -21554,6 +21556,7 @@ Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .    rm short
 .    rr ind-pre-img
 .    rr pdf-img:depth
+.    rr pdf-img:float
 .    rr pdf-img:float
 .    rr pdf-img:frame
 .    rr pdf-img:ind
