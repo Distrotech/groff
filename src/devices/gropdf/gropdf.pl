@@ -2124,14 +2124,31 @@ sub LoadFont
 			{'Type' => '/Font',
 			'Subtype' => '/Type1',
 			'BaseFont' => '/'.$fnt{internalname},
+			'Widths' => $fnt{WID},
+			'FirstChar' => 0,
+			'LastChar' => $lastchr,
 			'Encoding' => BuildObj($objct+1,
 				    {'Type' => '/Encoding',
 				    'Differences' => $fnt{GNO}
 				    }
-				    )
+				    ),
+			'FontDescriptor' => BuildObj($objct+2,
+					{'Type' => '/FontDescriptor',
+					'FontName' => '/'.$fnt{internalname},
+					'Flags' => $t1flags,
+					'FontBBox' => \@fntbbox,
+					'ItalicAngle' => $slant,
+					'Ascent' => $ascent,
+					'Descent' => $fntbbox[1],
+					'CapHeight' => $capheight,
+					'StemV' => 0,
+					'CharSet' => "($charset)",
+					}
+					)
 			}
 			);
-	$objct+=1;
+
+	$objct+=2;
 	$fontlst{$fontno}->{NM}='/F'.$fontno;
 	$pages->{'Resources'}->{'Font'}->{'F'.$fontno}=$fontlst{$fontno}->{OBJ};
 	$fontlst{$fontno}->{FNT}=\%fnt;
