@@ -3227,7 +3227,7 @@ sub RemapChr
     {
 	$fnt->{GNM}->{$chnm}=$unused++;
 	$fnt->{GNO}->[$unused]=$fnt->{GNO}->[$ch+1];
-	$fnt->{WID}->[$unused]=$fnt->{WID}->[$ch+1];
+	$fnt->{WID}->[$unused]=$fnt->{WID}->[$ch];
 	$ch=$unused-1;
 	return($ch);
     }
