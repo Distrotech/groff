@@ -749,7 +749,7 @@ sub where_is_prog {
     my @baseargs = ($n);
     while (@base) {
       my $base = join(' ', @base);
-      foreach my $d (@maon::Path) {
+      foreach my $d (@main::Path) {
 	my $file = File::Spec->catfile($d, $base);
 	if (-f $file && -x $file) {
 	  my $baseargs = join(' ', @baseargs);
