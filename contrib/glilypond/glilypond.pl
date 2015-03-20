@@ -546,7 +546,7 @@ our $Read =
        $ly = new FH_FILE($path_ly);
 
        my $include = new FH_READ_FILE($file);
-       my $res = $include->read-all(); # is a refernce to an array
+       my $res = $include->read_all(); # is a reference to an array
        foreach ( @$res ) {
 	 chomp;
 	 $ly->print($_);
