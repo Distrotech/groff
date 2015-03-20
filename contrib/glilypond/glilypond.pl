@@ -13,7 +13,7 @@ package main;
 # use diagnostics;
 
 use Carp;
-$SIG[__DIE__] = sub { &Carp::croak; };
+$SIG{__DIE__} = sub { &Carp::croak; };
 
 use Data::Dumper;
 
@@ -406,7 +406,7 @@ our $Temp =
 	  $Temp->{'eps_dir'} = $dir;
 	  $make_dir = TRUE;
 	} else { # could not remove
-	  stderr->print(  "Could not use EPS dir `" . $dir .
+	  $stderr->print( "Could not use EPS dir `" . $dir .
 			  "', use temp dir." );
 	} # end of unlink
       } # end test of -d $dir
