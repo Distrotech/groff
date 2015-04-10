@@ -1,3 +1,16 @@
+2015-04-10  Daiki Ueno  <ueno@gnu.org>
+
+	Fix link error on NetBSD 6.
+
+	Reported by carsten.kunze@arcor.de in:
+	<https://lists.gnu.org/archive/html/groff/2015-04/msg00000.html>.
+	The problem can also be reproduced if gl_cv_func_wcwidth_works=no
+	is passed to configure.
+
+	* src/preproc/grn/grn.am (grn_LDADD): Change the link order of
+	libgroff.a and lib/libgnu.a according to dependency.
+	* src/roff/troff/troff.am (troff_LDADD): Likewise.
+
 2015-04-08  Werner LEMBERG  <wl@gnu.org>
 
 	Fix Savannah bug #44767.
