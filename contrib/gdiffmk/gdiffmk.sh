@@ -19,7 +19,7 @@
 # This file is part of GNU gdiffmk.
 
 
-cmd=$( basename $0 )
+cmd=`basename $0`
 
 Usage () {
 	if test "$#" -gt 0
@@ -109,7 +109,7 @@ FileCreate () {
 		if test ! -e "$2"
 		then
 			Exit $1 "File \`$2' not created; " \
-			  "Cannot write directory \`$( dirname "$2" )'."
+			  "Cannot write directory \``dirname "$2"`'."
 		fi
 		Exit $1 "File \`$2' not writeable."
 	fi
@@ -163,22 +163,22 @@ for OPTION
 do
 	case "${OPTION}" in
 	-a*)
-		ADDMARK=$( RequiresArgument "${OPTION}" $2 )		&&
+		ADDMARK=`RequiresArgument "${OPTION}" $2`		&&
 			shift
 		;;
 	-c*)
-		CHANGEMARK=$( RequiresArgument "${OPTION}" $2 )		&&
+		CHANGEMARK=`RequiresArgument "${OPTION}" $2`		&&
 			shift
 		;;
 	-d*)
-		DELETEMARK=$( RequiresArgument "${OPTION}" $2 )		&&
+		DELETEMARK=`RequiresArgument "${OPTION}" $2`		&&
 			shift
 		;;
 	-D )
 		D_option=D_option
 		;;
 	-M* )
-		MARK1=$( RequiresArgument "${OPTION}" $2 )		&&
+		MARK1=`RequiresArgument "${OPTION}" $2`			&&
 			shift
 		if [ $# -lt 2 ]
 		then
@@ -191,7 +191,7 @@ do
 		br=.
 		;;
 	-x* )
-		DIFFCMD=$( RequiresArgument "${OPTION}" $2 )		&&
+		DIFFCMD=`RequiresArgument "${OPTION}" $2`		&&
 			shift
 		;;
 	--version)
