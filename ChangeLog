@@ -1,3 +1,16 @@
+2015-03-07  Ingo Schwarze  <schwarze@openbsd.org>
+
+	[mdoc] Fix Savannah bug #44733.
+
+	Prevent mdoc(7) Bl with trailing -width or -offset from picking up
+	old args.
+
+	* tmac/doc.tmac-u (doc-do-Bl-args): When checking whether there is
+	another argument to a Bl macro, do not inspect the argument list
+	because it is never cleaned and may contain arguments from previous
+	macro invocations.  Instead, inspect the argument count which is
+	always up to date.
+
 2015-04-10  Daiki Ueno  <ueno@gnu.org>
 
 	Fix link error on NetBSD 6.
