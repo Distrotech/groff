@@ -108,7 +108,8 @@ SUFFIXES += .roff .in .ps
 	         -mhdtbl $< >$@
 .in.roff:
 	@$(MKDIR_P) `dirname $@`
-	sed -e "s|[@]fontdir[@]|$(fontdir)|" $< >$@
+	sed -e "s|[@]fontdir[@]|$(fontdir)|" \
+	    -e "s|[@]EGREP[@]|$(EGREP)|" $< >$@
 
 
 $(HDTBLPROCESSEDEXAMPLEFILES): gnu.eps groff troff pic tbl \
