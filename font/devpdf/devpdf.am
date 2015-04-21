@@ -20,9 +20,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 devpdf_srcdir = $(top_srcdir)/font/devpdf
-GROFF_FONT_FILES=`cd $(top_builddir)/font/devpdf \
-                  && find * -maxdepth 0 -type f ! -name 'devpdf.am' \
-                            -exec grep -l internalname {} \;`
+GROFF_FONT_FILES=`cd $(top_builddir)/font/devpdf && grep -l internalname * | grep -v devpdf.am`
 ENC_FILES=`cd $(top_builddir)/font/devpdf; ls enc/*`
 MAP_FILES=`cd $(top_builddir)/font/devpdf; ls map/*`
 
@@ -117,7 +115,7 @@ font/devpdf/build_font_files: afmtodit font/devpdf/DESC $(devpdffontenc_DATA) $(
 	@$(RM) $@
 	@$(MKDIR_P) $(top_builddir)/font/devpdf
 	@echo "# foundry	ps name	psfile" > $(top_builddir)/font/devpdf/download
-	PATH="$(abs_top_builddir)$(GROFF_PATH_SEPARATOR)$(PATH)" \
+	PATH="$(abs_top_builddir)$(GROFF_PATH_SEPARATOR)$(abs_top_builddir)/build-aux$(GROFF_PATH_SEPARATOR)$(PATH)" \
 	  $(abs_top_builddir)/font/devpdf/util/BuildFoundries $(abs_top_builddir)/font/devpdf \
 	    '$(abs_top_srcdir)/font/devps : $(abs_top_builddir)/font/devps' \
 	   >> $(top_builddir)/font/devpdf/download
