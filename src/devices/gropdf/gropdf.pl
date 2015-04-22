@@ -2,8 +2,8 @@
 #
 #	gropdf		: PDF post processor for groff
 #
-# Copyright (C) 2011-2014  Free Software Foundation, Inc.
-#      Written by Deri James <deri@chuzzlewit.demon.co.uk>
+# Copyright (C) 2011-2015 Free Software Foundation, Inc.
+#      Written by Deri James <deri@chuzzlewit.myzen.co.uk>
 #
 # This file is part of groff.
 #
@@ -22,7 +22,24 @@
 
 use strict;
 use Getopt::Long qw(:config bundling);
-use Compress::Zlib;
+
+my $gotzlib=0;
+
+my $rc = eval
+{
+  require Compress::Zlib;
+  Compress::Zlib->import();
+  1;
+};
+
+if($rc)
+{
+  $gotzlib=1;
+}
+else
+{
+    Msg(0,"Perl module Compress::Zlib not available - cannot compress this pdf");
+}
 
 my %cfg;
 
@@ -1407,7 +1424,7 @@ sub LoadPDF
 	    sysseek(PD,$o->{STREAMPOS}->[0],0);
 	    Msg(0,'Failed to read all the stream') if $l != sysread(PD,$o->{STREAM},$l);
 
-	    if (exists($o->{OBJ}->{'Filter'}) and $o->{OBJ}->{'Filter'} eq '/FlateDecode')
+	    if ($gotzlib and exists($o->{OBJ}->{'Filter'}) and $o->{OBJ}->{'Filter'} eq '/FlateDecode')
 	    {
 		$o->{STREAM}=Compress::Zlib::uncompress($o->{STREAM});
 		delete($o->{OBJ }->{'Filter'});
@@ -1892,7 +1909,7 @@ sub PutObj
     $obj[$ono]->{XREF}=$fct;
     if (exists($obj[$ono]->{STREAM}))
     {
-	if (!$debug && !exists($obj[$ono]->{DATA}->{'Filter'}))
+	if ($gotzlib && !$debug && !exists($obj[$ono]->{DATA}->{'Filter'}))
 	{
 	    $obj[$ono]->{STREAM}=Compress::Zlib::compress($obj[$ono]->{STREAM});
 	    $obj[$ono]->{DATA}->{'Filter'}=['/FlateDecode'];
