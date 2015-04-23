@@ -1,3 +1,38 @@
+2015-04-13  Mike Bianchi <MBianchi@Foveal.com>
+	More fixes to Savannah bug #44768.
+
+	* gdiffmk.sh:
+		replace
+			for OPTION   with  while [ $# -gt 0 ]
+
+			test -e ...  with  test -f
+
+			use  ${DIFFCMD}  for the last  diff
+		add	
+			-s SEDCMD  option
+			OPTION="$1"
+	
+		many other cosmetic changes documented in the bug Discussion.
+		especially:
+			capitalize variables  e.g.  CMD=`basename $0`
+ 
+	fix  make check  tests within gdiffmk
+	* tests/gdiffmk_tests.sh
+		add  set -e
+			fails if ${abs_top_builddir} not set or incorrect
+
+	* tests/runtests.sh
+		add test 6a
+			# Different values for addmark, changemark, deletemark
+			# Alternate format of -a -c and -d flag arguments
+
+		add test 9a
+			# Test -D  and  -M  options
+			# Alternate format of -M argument.
+
+		add printout of failure count
+		add exit with failure exit_code if any test fails
+
 2015-04-10  Werner LEMBERG  <wl@gnu.org>
 
 	Fix Savannah bug #44768.

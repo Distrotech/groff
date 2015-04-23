@@ -1,6 +1,7 @@
 #! /bin/sh
 # Copyright (C) 2004-2014 Free Software Foundation, Inc.
 # Written by Mike Bianchi <MBianchi@Foveal.com <mailto:MBianchi@Foveal.com>>
+# Thanks to Peter Bray for debugging.
 
 # This file is part of the gdiffmk utility, which is part of groff.
 
@@ -19,16 +20,16 @@
 # This file is part of GNU gdiffmk.
 
 
-cmd=`basename $0`
+CMD=`basename $0`
 
 Usage () {
-	if test "$#" -gt 0
+	if test $# -gt 0
 	then
-		echo >&2 "${cmd}:  $@"
+		echo >&2 "${CMD}:  $@"
 	fi
 	echo >&2 "\
 
-Usage:  ${cmd} [ OPTIONS ] FILE1 FILE2 [ OUTPUT ]
+Usage:  ${CMD} [ OPTIONS ] FILE1 FILE2 [ OUTPUT ]
 Place difference marks into the new version of a groff/nroff/troff document.
 FILE1 and FILE2 are compared, using \`diff', and FILE2 is output with
 groff \`.mc' requests added to indicate how it is different from FILE1.
@@ -53,6 +54,8 @@ OPTIONS:
 
   -x DIFFCMD     Use a different diff(1) command;
                   one that accepts the \`-Dname' option, such as GNU diff.
+  -s SEDCMD      Use a different sed(1) command;
+                  one that accepts ????????????????????, such as GNU sed.
   --version      Print version information on the standard output and exit.
   --help         Print this message on the standard error.
 "
@@ -65,7 +68,7 @@ Exit () {
 	shift
 	for arg
 	do
-		echo >&2 "${cmd}:  $1"
+		echo >&2 "${CMD}:  $1"
 		shift
 	done
 	exit ${exitcode}
@@ -82,7 +85,7 @@ FileRead () {
 		;;
 	esac
 
-	if test ! -e "$2"
+	if test ! -f "$2"
 	then
 		Exit $1 "File \`$2' not found."
 	fi
@@ -104,9 +107,10 @@ FileCreate () {
 		;;
 	esac
 
-	if ! touch "$2" 2>/dev/null
+	touch "$2" 2>/dev/null
+	if test $? -ne 0
 	then
-		if test ! -e "$2"
+		if test ! -f "$2"
 		then
 			Exit $1 "File \`$2' not created; " \
 			  "Cannot write directory \``dirname "$2"`'."
@@ -146,7 +150,7 @@ RequiresArgument () {
 		;;
 	esac
 
-	if test "$#" -lt 2
+	if test $# -lt 2
 	then
 		Exit 255 "Option \`$1' requires a value."
 	fi
@@ -155,47 +159,53 @@ RequiresArgument () {
 	return 0
 }
 
-badoption=
+BADOPTION=
 DIFFCMD=diff
+SEDCMD=sed
 D_option=
 br=.br
-for OPTION
+while [ $# -gt 0 ]
 do
+	OPTION="$1"
 	case "${OPTION}" in
 	-a*)
-		ADDMARK=`RequiresArgument "${OPTION}" $2`		&&
+		ADDMARK=`RequiresArgument "${OPTION}" "$2"`		&&
 			shift
 		;;
 	-c*)
-		CHANGEMARK=`RequiresArgument "${OPTION}" $2`		&&
+		CHANGEMARK=`RequiresArgument "${OPTION}" "$2"`		&&
 			shift
 		;;
 	-d*)
-		DELETEMARK=`RequiresArgument "${OPTION}" $2`		&&
+		DELETEMARK=`RequiresArgument "${OPTION}" "$2"`		&&
 			shift
 		;;
 	-D )
 		D_option=D_option
 		;;
 	-M* )
-		MARK1=`RequiresArgument "${OPTION}" $2`			&&
+		MARK1=`RequiresArgument "${OPTION}" "$2"`		&&
 			shift
 		if [ $# -lt 2 ]
 		then
 			Usage "Option \`-M' is missing the MARK2 value."
 		fi
-		MARK2=$2
+		MARK2="$2"
 		shift
 		;;
 	-B )
 		br=.
 		;;
+	-s* )
+		SEDCMD=`RequiresArgument "${OPTION}" "$2"`		&&
+			shift
+		;;
 	-x* )
-		DIFFCMD=`RequiresArgument "${OPTION}" $2`		&&
+		DIFFCMD=`RequiresArgument "${OPTION}" "$2"`		&&
 			shift
 		;;
 	--version)
-		echo "GNU ${cmd} (groff) version @VERSION@"
+		echo "GNU ${CMD} (groff) version @VERSION@"
 		exit 0
 		;;
 	--help)
@@ -210,7 +220,7 @@ do
 		break
 		;;
 	-*)
-		badoption="${cmd}:  invalid option \`$1'"
+		BADOPTION="${CMD}:  invalid option \`$1'"
 		;;
 	*)
 		break
@@ -224,28 +234,28 @@ ${DIFFCMD} -Dx /dev/null /dev/null >/dev/null 2>&1  ||
 		"the required \`-Dname' option.
 Use GNU diff instead.  See the \`-x DIFFCMD' option."
 
-if test -n "${badoption}"
+if test -n "${BADOPTION}"
 then
-	Usage "${badoption}"
+	Usage "${BADOPTION}"
 fi
 
-if test "$#" -lt 2  -o  "$#" -gt 3
+if test $# -lt 2  -o  $# -gt 3
 then
 	Usage "Incorrect number of arguments."
 fi
 
-if test "1$1" = 1-  -a  "2$2" = 2-
+if test "1$1" = "1-"  -a  "2$2" = "2-"
 then
 	Usage "Both FILE1 and FILE2 are \`-'."
 fi
 
-FILE1=$1
-FILE2=$2
+FILE1="$1"
+FILE2="$2"
 
 FileRead 1 "${FILE1}"
 FileRead 2 "${FILE2}"
 
-if test "$#" = 3
+if test $# = 3
 then
 	case "$3" in
 	-)
@@ -262,24 +272,24 @@ then
 	esac
 fi
 
-#	To make a very unlikely label even more unlikely ...
-label=__diffmk_$$__
+#	To make a very unlikely LABEL even more unlikely ...
+LABEL=__diffmk_$$__
 
-sed_script='
-		/^#ifdef '"${label}"'/,/^#endif \/\* '"${label}"'/ {
-		  /^#ifdef '"${label}"'/          s/.*/.mc '"${ADDMARK}"'/
-		  /^#endif \/\* '"${label}"'/     s/.*/.mc/
+SED_SCRIPT='
+		/^#ifdef '"${LABEL}"'/,/^#endif \/\* '"${LABEL}"'/ {
+		  /^#ifdef '"${LABEL}"'/          s/.*/.mc '"${ADDMARK}"'/
+		  /^#endif \/\* '"${LABEL}"'/     s/.*/.mc/
 		  p
 		  d
 		}
-		/^#ifndef '"${label}"'/,/^#endif \/\* [!not ]*'"${label}"'/ {
-		  /^#else \/\* '"${label}"'/,/^#endif \/\* '"${label}"'/ {
-		    /^#else \/\* '"${label}"'/    s/.*/.mc '"${CHANGEMARK}"'/
-		    /^#endif \/\* '"${label}"'/   s/.*/.mc/
+		/^#ifndef '"${LABEL}"'/,/^#endif \/\* [!not ]*'"${LABEL}"'/ {
+		  /^#else \/\* '"${LABEL}"'/,/^#endif \/\* '"${LABEL}"'/ {
+		    /^#else \/\* '"${LABEL}"'/    s/.*/.mc '"${CHANGEMARK}"'/
+		    /^#endif \/\* '"${LABEL}"'/   s/.*/.mc/
 		    p
 		    d
 		  }
-		  /^#endif \/\* \(not\|!\) '"${label}"'/ {
+		  /^#endif \/\* \(not\|!\) '"${LABEL}"'/ {
 		   s/.*/.mc '"${DELETEMARK}"'/p
 		   a\
 .mc
@@ -291,27 +301,27 @@ sed_script='
 
 if [ ${D_option} ]
 then
-	sed_script='
-		/^#ifdef '"${label}"'/,/^#endif \/\* '"${label}"'/ {
-		  /^#ifdef '"${label}"'/          s/.*/.mc '"${ADDMARK}"'/
-		  /^#endif \/\* '"${label}"'/     s/.*/.mc/
+	SED_SCRIPT='
+		/^#ifdef '"${LABEL}"'/,/^#endif \/\* '"${LABEL}"'/ {
+		  /^#ifdef '"${LABEL}"'/          s/.*/.mc '"${ADDMARK}"'/
+		  /^#endif \/\* '"${LABEL}"'/     s/.*/.mc/
 		  p
 		  d
 		}
-		/^#ifndef '"${label}"'/,/^#endif \/\* [!not ]*'"${label}"'/ {
-		  /^#ifndef '"${label}"'/ {
+		/^#ifndef '"${LABEL}"'/,/^#endif \/\* [!not ]*'"${LABEL}"'/ {
+		  /^#ifndef '"${LABEL}"'/ {
 		   i\
 '"${MARK1}"'
 		   d
 		  }
-		  /^#else \/\* '"${label}"'/ ! {
-		   /^#endif \/\* [!not ]*'"${label}"'/ ! {
+		  /^#else \/\* '"${LABEL}"'/ ! {
+		   /^#endif \/\* [!not ]*'"${LABEL}"'/ ! {
 		    p
 		    d
 		   }
 		  }
-		  /^#else \/\* '"${label}"'/,/^#endif \/\* '"${label}"'/ {
-		    /^#else \/\* '"${label}"'/ {
+		  /^#else \/\* '"${LABEL}"'/,/^#endif \/\* '"${LABEL}"'/ {
+		    /^#else \/\* '"${LABEL}"'/ {
 		     i\
 '"${MARK2}"'\
 '"${br}"'
@@ -320,11 +330,11 @@ then
 .mc '"${CHANGEMARK}"'
 		     d
 		    }
-		    /^#endif \/\* '"${label}"'/   s/.*/.mc/
+		    /^#endif \/\* '"${LABEL}"'/   s/.*/.mc/
 		    p
 		    d
 		  }
-		  /^#endif \/\* \(not\|!\) '"${label}"'/ {
+		  /^#endif \/\* \(not\|!\) '"${LABEL}"'/ {
 		   i\
 '"${MARK2}"'\
 '"${br}"'
@@ -338,15 +348,7 @@ then
 	'
 fi
 
-diff -D"${label}" -- ${FILE1} ${FILE2}  |
-	sed -n "${sed_script}"
+${DIFFCMD} -D"${LABEL}" -- "${FILE1}" "${FILE2}"  |
+	${SEDCMD} -n "${SED_SCRIPT}"
 
 # EOF
-
-
-########################################################################
-# Emacs settings
-#
-# Local Variables:
-# mode: text
-# End:

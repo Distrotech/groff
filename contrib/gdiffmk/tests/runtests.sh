@@ -29,7 +29,7 @@ srcdir=${abs_top_srcdir}/contrib/gdiffmk/tests
 command=${abs_top_builddir}/gdiffmk
 
 #	Test the number of arguments and the first argument.
-case $#-$1 in
+case "$#-$1" in
 1-clean )
 	rm -fv result* tmp_file*
 	exit 0
@@ -47,6 +47,8 @@ run	Run the tests.
 	;;
 esac
 
+exit_code=0	#  Success
+failure_count=0
 TestResult () {
 	if cmp -s $1 $2
 	then
@@ -56,6 +58,8 @@ TestResult () {
 		echo $2 TEST FAILED
 		diff $1 $2
 		echo ''
+		exit_code=1	#  Failure
+		failure_count=`expr ${failure_count} + 1`
 	fi
 }
 
@@ -70,30 +74,43 @@ ${command}  ${srcdir}/file1  ${srcdir}/file2 ${ResultFile} 2>${tmpfile}
 cat ${tmpfile} >>${ResultFile}
 TestResult ${srcdir}/baseline ${ResultFile}
 
+
 #	OUTPUT to stdout by default
 ResultFile=result.2
 ${command}  ${srcdir}/file1  ${srcdir}/file2  >${ResultFile} 2>&1
 TestResult ${srcdir}/baseline ${ResultFile}
+
 
 #	OUTPUT to stdout via  -  argument
 ResultFile=result.3
 ${command}  ${srcdir}/file1  ${srcdir}/file2 - >${ResultFile} 2>&1
 TestResult ${srcdir}/baseline ${ResultFile}
 
+
 #	FILE1 from standard input via  -  argument
 ResultFile=result.4
 ${command}  - ${srcdir}/file2 <${srcdir}/file1  >${ResultFile} 2>&1
 TestResult ${srcdir}/baseline ${ResultFile}
+
 
 #	FILE2 from standard input via  -  argument
 ResultFile=result.5
 ${command}  ${srcdir}/file1 - <${srcdir}/file2  >${ResultFile} 2>&1
 TestResult ${srcdir}/baseline ${ResultFile}
 
+
 #	Different values for addmark, changemark, deletemark
 ResultFile=result.6
 ${command}  -aA -cC -dD  ${srcdir}/file1 ${srcdir}/file2  >${ResultFile} 2>&1
 TestResult ${srcdir}/baseline.6 ${ResultFile}
+
+
+#	Different values for addmark, changemark, deletemark
+#	Alternate format of -a -c and -d flag arguments
+ResultFile=result.6a
+${command}  -a A -c C -d D  ${srcdir}/file1 ${srcdir}/file2  >${ResultFile} 2>&1
+TestResult ${srcdir}/baseline.6a ${ResultFile}
+
 
 #	Test for accidental file overwrite.
 ResultFile=result.7
@@ -102,10 +119,12 @@ ${command}  -aA -dD -cC  ${srcdir}/file1 tmp_file.7  tmp_file.7	\
 							>${ResultFile} 2>&1
 TestResult ${srcdir}/baseline.7 ${ResultFile}
 
+
 #	Test -D option
 ResultFile=result.8
 ${command}  -D  ${srcdir}/file1 ${srcdir}/file2 >${ResultFile} 2>&1
 TestResult ${srcdir}/baseline.8 ${ResultFile}
+
 
 #	Test -D  and  -M  options
 ResultFile=result.9
@@ -113,9 +132,23 @@ ${command}  -D  -M '<<<<' '>>>>'				\
 			${srcdir}/file1 ${srcdir}/file2 >${ResultFile} 2>&1
 TestResult ${srcdir}/baseline.9 ${ResultFile}
 
+
+#	Test -D  and  -M  options
+#	Alternate format of -M argument.
+ResultFile=result.9a
+${command}  -D  -M'<<<<' '>>>>'				\
+			${srcdir}/file1 ${srcdir}/file2 >${ResultFile} 2>&1
+TestResult ${srcdir}/baseline.9a ${ResultFile}
+
+
 #	Test -D  and  -B  options
 ResultFile=result.10
 ${command}  -D  -B  ${srcdir}/file1 ${srcdir}/file2 >${ResultFile} 2>&1
 TestResult ${srcdir}/baseline.10 ${ResultFile}
+
+
+echo failure_count ${failure_count}
+
+exit ${exit_code}
 
 #	EOF
