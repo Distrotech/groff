@@ -400,12 +400,9 @@ or
 <a href="images.html#ts">TS</a>.
 </p>
 
-<div class="box-tip">
-<p class="tip">
-<span class="note">Note:</span>
-<kbd>.NO_SHIM</kbd> also disables the SHIM macro itself.
+<p>
+Note that <kbd>.NO_SHIM</kbd> also disables the SHIM macro itself.
 </p>
-</div>
 
 <p>To re-enable automatic shimming and the SHIM macro itself, use
 <kbd>.NO_SHIM OFF</kbd> (or <kbd>QUIT, END, X</kbd>, etc).
@@ -2486,6 +2483,23 @@ the last macro before the first item of your document (for
 example, <kbd>.PP</kbd> or <kbd>.HEADING 1</kbd>.  PP...)
 </p>
 
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+You may have tried <kbd>DOCHEAHER&nbsp;OFF</kbd> with a distance argument
+and discovered that mom will not budge the starting position of the document
+from its default location.  This is byproduct of
+<a href="#shim">shimming</a>,
+which is enabled by default.  If you encounter the problem and you
+want shimming to remain the default, simply disable it (with
+<a href="#disable-shim">NO_SHIM</a>
+immediately prior to
+<a href="#start">START</a>
+and re-enable it immediately afterwards with
+<a href="#disable-shim">NO_SHIM OFF</a>.
+</p>
+</div>
+
 <!-- DOCHEADER CONTROL -->
 
 <h3 id="docheader-control" class="docs">Docheader control: How to change the look of docheaders</h3>
@@ -2752,7 +2766,7 @@ as the name for the string passed to <kbd>DOCTYPE NAMED&nbsp;"string"</kbd>.
       <a href="definitions.html#picaspoints">points</a>
       is assumed.
     </dd>
-  <dt id="space-before" class="params">_SPACE_BEFORE</dt>
+  <dt id="space-before" class="params">_SPACE</dt>
     <dd>
       Takes a numeric value with a
       <a href="definitions.html#unitofmeasure">unit of measure</a>
@@ -2760,7 +2774,7 @@ as the name for the string passed to <kbd>DOCTYPE NAMED&nbsp;"string"</kbd>.
       to adjust the whitespace before a docheader part, for example
       if you want more whitespace between the title and the author.
       <span style="display: block; margin-top: .5em">
-      Note that <kbd>TITLE</kbd> does not have a <kbd>_SPACE_BEFORE</kbd>
+      Note that <kbd>TITLE</kbd> does not have a <kbd>_SPACE</kbd>
       parameter; use
       <a href="#change-start">DOCHEADER_ADVANCE</a>
       to move the title further down on the page.

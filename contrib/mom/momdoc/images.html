@@ -58,6 +58,11 @@ FDL in the main directory of the groff source package.
   <li><a href="#floats-intro">Floats</a>
   <ul>
     <li><a href="#float">The FLOAT macro</a></li>
+    <li><a href="#float-label-caption">Labelling and captioning floats</a>
+		<ul style="margin-left: -1.25em">
+		<li><a href="#label">LABEL</a></li>
+		<li><a href="#caption">CAPTION</a></li>
+		</ul></li>
   </ul></li>
   <li><a href="#preprocessor-support">Preprocessor support</a>
   <ul>
@@ -373,7 +378,7 @@ but this is now no longer required, and should, in fact, be avoided.
 </p>
 </div>
 
-<!---PDF_IMAGE_FRAME--->
+<!-- -PDF_IMAGE_FRAME- -->
 
 <div class="macro-id-overline">
 <h3 id="pdf-image-frame" class= "macro-id">PDF_IMAGE_FRAME</h3>
@@ -397,6 +402,7 @@ PDF_IMAGE_FRAME establishes the parameters for subsequent invocations of
 when the <kbd>FRAME</kbd> argument is given.  Arguments must appear
 in order, and any you wish left at the current value should be
 entered as two adjacent double-quotes.  So, for example,
+<br/>
 <span class="pre-in-pp">
   .PDF_IMAGE_FRAME "" "" blue
 </span>
@@ -460,6 +466,7 @@ and <kbd>&lt;height&gt;</kbd> arguments unless you are scaling
 the image, in which case you will most likely need the original
 dimensions of the EPS image&#8217;s bounding box.  These can be
 found with
+<br/>
 <span class="pre-in-pp">
  gs -q -dBATCH -dNOPAUSE -sDEVICE=bbox &lt;image file&gt;.pdf 2&gt;&amp;1 \
  | grep "%%BoundingBox" | cut -d " " -f4,5
@@ -705,6 +712,330 @@ you must specify
 or
 <a href="typesetting.html#justify"><kbd>.JUSTIFY</kbd></a>&mdash;again,
 within the float.
+</p>
+</div>
+
+<h2 id="float-label-caption" class="docs">Labelling and captioning floats</h2>
+
+<p>
+Labelling and captioning of tables (<b>tbl</b>), equations
+(<b>eq</b>), diagrams (<b>pic</b>) and pdf images
+(<a href="#pdf-image">PDF_IMAGE</a>)
+are handled by the macros that initiate them, regardless of whether
+they&#8217;re wrapped inside a float.  However, since a float may
+contain any valid input, it is sometimes necessary to add a label
+and/or caption to the float itself when it is not being used to
+contain preprocessor input.
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="important">Important:</span>
+Always use the native labelling/captioning facilities for
+preprocessor output and pdf images rather than labelling the
+containing float, if any.
+</p>
+</div>
+
+<p>
+The macros to label and caption floats are
+<a href="#label">LABEL</a>
+and
+<a href="#caption">CAPTION</a>.
+If a label or caption is to appear above the float, the appropriate
+macro is entered immediately after
+<a href="#float">FLOAT</a>.
+If a label or caption is to appear beneath the float, the appropriate
+macro is entered immediately before ending the float with
+<kbd>FLOAT&nbsp;OFF</kbd>.
+</p>
+
+<p>
+If a label and caption are to be joined, the <b>LABEL</b> macro is
+used to enter both by passing the <kbd>CAPTION</kbd> argument to
+<kbd>LABEL</kbd>.
+</p>
+
+<p>
+It is impossible for mom to know the contents of a float, so
+floats cannot be autolabelled.  Each label must be entered
+explicitly.  Mom does, however, provide a way to enter both
+chapter numbers and incrementing label numbers
+<a href="#reserved-label-strings">symbolically</a>,
+easing the burden of keeping the numbering scheme intact as
+labelled floats are added to or subtracted from a document.
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Tip:</span>
+<a href="docelement.html#blockquote">QUOTE</a>
+and
+<a href="docelement.html#blockquote">BLOCKQUOTE</a>
+may also be labelled and captioned using <b>LABEL</b> and
+<b>CAPTION</b>.
+</p>
+</div>
+
+<h4 class="docs">Spacing</h4>
+
+<p>
+If a float has a caption at the top, the caption is whitespaced
+1/4 linespace from running text and the float itself begins
+an additional 1/4 linespace below the caption.  If the float has
+no corresponding label at the bottom, the float observes the
+bottom-spacing rules for all floats, namely that no extra space is
+added except whatever
+<a href="docprocessing.html#shim">shimming</a>
+is necessary to restore proper baseline alignment.
+</p>
+
+<p>
+If a float has a label at the bottom but no caption at the top, the
+float begins exactly where started, i.e. with no extra whitespace
+between running text and the float.  The label (and attached
+caption, if any) are whitespaced 1/4 linespace below the float, with
+an additional 1/4 linespace underneath <i>plus</i> whatever shimming is
+needed to restore proper baseline alignment.
+</p>
+
+<p>
+Labelled/captioned quotes and blockquotes inside floats treat the
+labels/captions as part of the quote so the spacing above and
+below the whole float block is what you&#8217;d expect from quotes
+normally, while the spacing between the label/caption and the quote
+is 1/4 linespace.
+</p>
+
+<div class="macro-id-overline">
+<h3 id="label" class="macro-id">LABEL</h3>
+</div>
+
+<div class="box-macro-args">
+Macro: <b>LABEL</b></a>
+<kbd class="macro-args">"&lt;label&gt;" [ CAPTION "&lt;caption&gt;" ] [ SHORT_CAPTION ] \
+<br/>
+[ TO_LIST FIGURES | TABLES | EQUATIONS ]</kbd>
+</div>
+
+<p>
+The placement of a float&#8217;s label depends on where you put it
+inside the float.
+</p>
+
+<p>
+If you want a label at the top, put <kbd>LABEL</kbd> immediately
+underneath
+<a href="#float">FLOAT</a>
+and follow it with the text of the label surrounded by double-quotes:
+<br/>
+<span class="pre-in-pp">
+  .FLOAT
+  .LABEL "Fig. 1"
+</span>
+If you want a label at the bottom, put <kbd>LABEL</kbd> immediately
+before ending the float:
+<br/>
+<span class="pre-in-pp">
+  .FLOAT
+  &lt;contents of float&gt;
+  .LABEL "Fig. 1"
+  .FLOAT OFF
+</span>
+</p>
+
+<h3  id="reserved-label-strings" class="docs" style="text-transform: none">Reserved variables for labels</h3>
+
+<p>
+Mom reserves two variables you may use when entering label text
+after the <kbd>LABEL</kbd> argument.
+<kbd>\*[chapter]</kbd> holds the current chapter or major section
+number.  <kbd>\*[label]</kbd> increments the label number by one
+and is initially set to zero after each invocation of
+<a href="docprocessing.html#start">START</a>
+when the
+<a href="docprocessing.html#doctype">DOCTYPE</a>
+is <kbd>CHAPTER</kbd>.  Thus, in every chapter requiring numbered
+float labels, you can enter
+<br/>
+<span class="pre-in-pp">
+  .LABEL "Fig. \*[chapter].\*[label].
+</span>
+which, assuming the third labelled float of Chapter 2 will produce
+<kbd>Fig. 2.3.</kbd>
+</p>
+
+<p>
+If your <b>DOCTYPE</b> is <kbd>DEFAULT</kbd> or <kbd>NAMED</kbd>,
+you must reset <kbd>\*[label]</kbd> by entering
+<br/>
+<span class="pre-in-pp">
+  .AUTOLABEL &lt;list type&gt;
+</span>
+before <kbd>.START</kbd>.
+</p>
+
+<p>
+If
+<a href="#autolabel">autolabelling</a>
+is enabled, e.g. <kbd>.AUTOLABEL_IMAGES</kbd> (List
+of Figures) or <kbd>.AUTOLABEL_PIC</kbd> (also List of Figures),
+the prefix is stripped from the label when it appears in
+the List.  Thus, if you have invoked <kbd>.AUTOLABEL_PIC</kbd>,
+<br/>
+<span class="pre-in-pp">
+  .LABEL "Fig. 1.1."
+   CAPTION "Caption for label \
+   TO_LIST FIGURES
+</span>
+or
+<br/>
+<span class="pre-in-pp">
+  .LABEL "Fig. \*[chapter].\*[label]." \
+   CAPTION "Caption for label \
+   TO_LIST FIGURES
+</span>
+will appear in the List of Figures as &#8220;1.1.&nbsp;&nbsp;Caption for
+label&#8221;.
+</p>
+
+<h3 class="docs">CAPTION</h3>
+
+<p>
+If you&#8217;d like a caption attached to the label, pass
+<kbd>LABEL</kbd> the optional argument <kbd>CAPTION</kbd> followed
+by the text of the caption as a single string surrounded by
+double-quotes: <br/>
+<br/>
+<span class="pre-in-pp">
+  .FLOAT
+  &lt;contents of float&gt;
+  .LABEL "Fig. 1" CAPTION "Caption for Fig. 1"
+  .FLOAT OFF
+</span>
+Note that the
+<a href="#caption">CAPTION</a>
+macro by itself permits entering several strings, each output on
+a line by itself, whereas the <kbd>CAPTION</kbd> argument to
+<kbd>LABEL</kbd> accepts only a single string.
+</p>
+
+<h3 class="docs">SHORT_CAPTION</h3>
+
+<p>
+If your caption runs long and you&#8217;re including the
+float in a &#8220;List of ...&#8221;, (see
+<a href="#list-of">TO_LIST</a>, below)
+<kbd>SHORT_CAPTION</kbd> tells
+mom how you&#8217;d like the caption to appear in the List.
+</p>
+
+<h3 class="docs">TO_LIST</h3>
+
+<p>
+The optional argument <kbd>TO_LIST</kbd> tells mom to add the
+float&#8217;s label and attached caption, if present, to the specified
+<a href="#lists-of">list</a>,
+which may be one of <kbd>FIGURES</kbd>, <kbd>TABLES</kbd>, or
+<kbd>EQUATIONS</kbd>.
+</p>
+
+<p>
+If, for some reason, you want only the caption appended to the List,
+give <kbd>\&</kbd> as the first argument to LABEL, followed by
+<kbd>CAPTION&nbsp;&#8220;caption&#8221;</kbd>:
+<br/>
+<span class="pre-in-pp">
+  .LABEL \& \
+   CAPTION "caption"
+</p>
+
+<div class="box-tip">
+<p class="tip-top">
+<span class="note">Tip:</span>
+<kbd>TO_LIST</kbd> can be used to handle situations where labelled
+floats need to go to a uniquely named &#8220;List of ...&#8221;.
+</p>
+
+<p class="tip-bottom">
+Suppose, for example, your document contains figures (e.g.
+<b>pic</b> output or pdf-images) and tables, and you need a
+&#8220;List of Examples&#8221; for floats labelled &#8220;Example
+n.n&#8221;.  By changing the default title string for
+<a href="#lists-macros">LIST_OF_EQUATIONS</a>
+to &#8220;List of Examples&#8221;, you may include the float in your
+List of Examples with
+<br/>
+<span class="pre-in-pp">
+  .TO_FIGURES EQUATIONS
+</p>
+</div>
+
+<div class="macro-id-overline">
+<h3 id="caption" class="macro-id">CAPTION</h3>
+</div>
+
+<div class="box-macro-args">
+Macro: <b>CAPTION</b></a>
+<kbd class="macro-args">"&lt;caption&gt;" \
+<br/>
+[ "&lt;additional line&gt;" [ "&lt;additional line&gt;"... ] ] \
+<br/>
+[ TO_LIST FIGURES | TABLES | EQUATIONS ]</kbd>
+</div>
+
+<p>
+The placement of a float&#8217;s caption depends on where you put it
+inside the float.
+</p>
+
+<p>
+If you want a caption at the top, put <kbd>CAPTIO</kbd> immediately
+underneath
+<a href="#float">FLOAT</a>
+and follow it with the text of the caption surrounded by double-quotes:
+<br/>
+<span class="pre-in-pp">
+  .FLOAT
+  .CAPTION "Caption at top of float"
+</span>
+<b>CAPTION</b> can take multiple string arguments, allowing for
+captions that run to several lines.  There is a caveat: the strings
+are not automatically broken into individual lines.  You must
+provide strings that include literal breaks or spaces:
+<br/>
+<span class="pre-in-pp">
+  .FLOAT
+  .CAPTION "Caption" ".BR" "at top" ".BR" "of float"
+</span>
+or, easier to read:
+<br/>
+<span class="pre-in-pp">
+  .FLOAT
+  .CAPTION "Caption" \
+  ".BR" \
+  "at top" \
+  ".BR" \
+  "of float"
+</span>
+If you want a caption at the bottom, put <kbd>CAPTION</kbd> immediately
+before ending the float:
+<br/>
+<span class="pre-in-pp">
+  .FLOAT
+  &lt;contents of float&gt;
+  .CAPTION "Caption at bottom of float"
+  .FLOAT OFF
+</span>
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+If you want a caption attached to a label, do not use
+<b>CAPTION</b> by itself.  Rather, invoke
+<a href="#label"><kbd>.LABEL</kbd></a>
+with the <kbd>CAPTION</kbd> argument.
 </p>
 </div>
 
@@ -1642,33 +1973,64 @@ Macro: <b>AUTOLABEL_TABLES</b>
 <b>AUTOLABEL_&lt;type&gt;</b> takes care of labelling &lt;type&gt; by
 identifying each with a separate, incrementing numeric scheme, which
 is also collected for output in Lists of Figures, Equations, and
-Tables.  By default, the label numbers are prefixed, and, in the
-case of equations, suffixed, with strings such that they appear for
-tables as &#8220;Table &lt;n&gt;&#8221;, for <b>pic</b> diagrams and
-pdf images as &#8220;Fig. &lt;n&gt;&#8221;, and for equations as
-&#8220;(&lt;n&gt;)&#8221;.
+Tables.
 </p>
 
 <p>
-Use <kbd>PREFIX&nbsp;&lt;"string"&gt;</kbd> to change what comes
-before the automatic numbering.  For example, if you are including
-musical excerpts in your document, MLA style requires that they be
-labelled &#8220;Ex.&nbsp;&lt;n&gt;&#8221;.  Since musical excerpts
-are likely to be scanned images (in pdf format, don&#8217;t forget),
-you have to change the prefix string for pdf images:
+Autolabelling may be disabled on-the-fly by giving any argument
+other than <kbd>PREFIX</kbd>, <kbd>SUFFIX</kbd>, or
+<kbd>PREFIX_CHAPTER</kbd> to the appropriate macro.  For example,
+</br>
+<span class="pre-in-pp">
+  .AUTOLABEL_IMAGES NO
+</span>
+would disable autolabelling of images.
+</p>
+
+<h4 class="docs" style="margin-top: -.5em">Prefixes and suffixes</h4>
+
+<p>
+By default, when <b>AUTOLABEL</b> is enabled, the label numbers are
+prefixed, and, in the case of equations, suffixed, with strings such
+that they appear for tables as &#8220;Table &lt;n&gt;&#8221;, for
+<b>pic</b> diagrams and pdf images as &#8220;Fig. &lt;n&gt;&#8221;,
+and for equations as &#8220;(&lt;n&gt;)&#8221;.
+</p>
+
+<p>
+You can use <kbd>PREFIX&nbsp;&lt;"string"&gt;</kbd> to change what
+comes before the automatic numbering.  For example, if you are
+including musical excerpts in your document, MLA style requires that
+they be labelled &#8220;Ex.&nbsp;&lt;n&gt;&#8221;.  Since musical
+excerpts are likely to be scanned images (in pdf format, don&#8217;t
+forget), you have to change the prefix string for pdf images:
 <br/>
 <span class="pre-in-pp">
-  .AUTOLABEL_IMAGES PREFIX "Ex. "
+  .AUTOLABEL_IMAGES \
+   PREFIX "Ex. " \
+   SUFFIX ""
 </span>
 If you need a suffix after the automatic numbering, use
 <kbd>SUFFIX&nbsp;&lt;"string"&gt;</kbd>, like this:
 <br/>
 <span class="pre-in-pp">
-  .AUTOLABEL_IMAGES PREFIX "(Fig. " SUFFIX ")"
+  .AUTOLABEL_IMAGES \
+   PREFIX "(Fig. " \
+   SUFFIX ")"
 </span>
-Note that the double-quotes around the single-character SUFFIX
-string are optional.
+Note from the above that both arguments, <kbd>PREFIX</kbd> and
+<kbd>SUFFIX</kbd>, are required should you want either.  Two
+adjacent double-quotes leaves the string blank.
 </p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+In automatically formatted
+<a href="#lists-macros">&#8220;Lists of ...&#8221;</a>,
+label number prefixes are stripped when autolabelling is enabled.
+</p>
+</div>
 
 <h4 class="docs" style="margin-top: -.5em">Prefixing chapter numbers</h4>
 
@@ -1679,13 +2041,30 @@ pass <kbd>AUTOLABEL_&lt;type&gt;</kbd> the argument
 </p>
 
 <p>
-If you have not given mom a <kbd>CHAPTER&nbsp;&lt;n&gt;</kbd> prior
-to invoking <kbd>AUTOLABEL_&lt;type&gt;&nbsp;PREFIX_CHAPTER</kbd>,
-you must give the chapter number after <kbd>PREFIX_CHAPTER</kbd>.
-Once done, all subsequent chapters or collated document sections
-will increment the chapter number by one automatically.  Failure to
-provide a chapter number after <kbd>PREFIX_CHAPTER</kbd> when it is
-required will result in mom aborting with a reminder to do so.
+If for some reason you need to specify the chapter number,
+you may do so by passing the number as an argument to
+<kbd>PREFIX_CHAPTER</kbd>.  Subsequent chapters or major sections
+will increment by one as expected.
+</p>
+
+<div class="box-tip">
+<p class="tip">
+<span class="note">Note:</span>
+For the purposes of labelling, mom
+treats
+<a href="docprocessing.html#doctype">DOCTYPE&nbsp;DEFAULT</a>
+as if it were <b>DOCTYPE&nbsp;CHAPTER</b>, hence, with
+<kbd>PREFIX_CHAPTER</kbd>, each collated <b>DEFAULT</b>
+doctype's prefixed &#8220;chapter&#8221; number is incremented
+and the label number itself reset to &#8220;1&#8221;.  If
+you do not give <kbd>PREFIX_CHAPTER</kbd>, the label number
+is <i>not</i> reset automatically.  To reset it, invoke
+<kbd>.AUTOLABEL_&lt;type&gt;</kbd> after each
+<a href="docprocessing.html#collate">COLLATE</a>.
+</div>
+
+<p>
+Prefixed chapter numbers 
 </p>
 
 <div class="macro-id-overline">
@@ -1776,9 +2155,9 @@ anything you like (<kbd>X</kbd>, <kbd>NO</kbd>, etc).
 </div>
 
 <div class="box-macro-args" style="margin-top: .5em">
-Macro: <b>CAPTIONS</b> <kbd class="macro-args">EQN | IMG | PIC | TBL | ALL</kbd>
+Macro: <b>CAPTIONS</b> <kbd class="macro-args">EQN | IMG | PIC | TBL | FLOATING | ALL</kbd>
 <br/>
-Macro: <b>LABELS</b> <kbd class="macro-args">EQN | IMG | PIC | TBL | ALL</kbd>
+Macro: <b>LABELS</b> <kbd class="macro-args">EQN | IMG | PIC | TBL | FLOATING | ALL</kbd>
 <br/>
 Macro: <b>SOURCES</b> <kbd class="macro-args">TBL</kbd>
 <br/>
@@ -1788,13 +2167,15 @@ Macro: <b>SOURCES</b> <kbd class="macro-args">TBL</kbd>
 <br/>
 &nbsp;&nbsp;FONT &lt;font&gt; \
 <br/>
-&nbsp;&nbsp;SIZE "+|-&lt;size&gt;" \
+&nbsp;&nbsp;SIZE +|-&lt;size&gt; \
 <br/>
-&nbsp;&nbsp;AUTOLEAD "&lt;value&gt;" \
+&nbsp;&nbsp;AUTOLEAD &lt;value&gt; \
 <br/>
-&nbsp;&nbsp;COLOR "&lt;color&gt;" \
+&nbsp;&nbsp;COLOR &lt;color&gt; \
 <br/>
 &nbsp;&nbsp;QUAD LEFT | CENTER | RIGHT [ ON_LL ] \
+<br/>
+&nbsp;&nbsp;INDENT &lt;indent&gt; \
 <br/>
 &nbsp;&nbsp;ADJUST +|-&lt;vertical adjustment&gt;
 </kbd>
@@ -1830,27 +2211,45 @@ for tables) behave identically to the
 
 <p>
 The first, required argument after <kbd>CAPTIONS</kbd>,
-<kbd>LABELS</kbd>, and <kbd>SOURCES</kbd> indicates the preprocessor
+<kbd>LABELS</kbd>, or <kbd>SOURCES</kbd> indicates the preprocessor
 type for which you are setting the parameters.  (For convenience
 PDF_IMAGE&mdash;argument <kbd>IMG</kbd>&mdash;is here treated as a
-preprocessor.)  An argument of <kbd>ALL</kbd> sets a unified
-style for every preprocessor.  If the <kbd>ALL</kbd> argument is
-given, arguments to subsequent invocations of <kbd>CAPTIONS</kbd>,
-<kbd>LABELS</kbd>, or <kbd>SOURCES</kbd> overwrite only the
-explicitly named style parameters.
+preprocessor.)  <kbd>FLOATING</kbd> sets the style for the macros
+<a href="#caption">CAPTION</a>
+and
+<a href="#label">LABEL</a>,
+which are used to label floats, quotes, and blockquotes.
+</p>
+
+<p>
+An argument of <kbd>ALL</kbd> sets a unified style for all
+preprocessors, floats, quotes, and blockquotes.  If the
+<kbd>ALL</kbd> argument is given, arguments to subsequent
+invocations of <kbd>CAPTIONS</kbd>, <kbd>LABELS</kbd>, or
+<kbd>SOURCES</kbd> overwrite only the explicitly named style
+parameters.
 </p>
 
 <h4 class="docs">QUAD &mdash; quadding of labels, captions, and sources</h4>
 
+<h5 class="docs" style="text-transform: none">&bull;&nbsp;pic, tbl, pdf images</h5>
+
 <p>
 By default, figures (<b>pic</b> output and pdf images) and tables
-have their captions and labels set quad left.  Sources (for tables)
-are also set quad left.  Equations have their labels set quad right,
-and their captions centered.  Regardless of the quad direction,
-captions, labels, and sources are quadded over the width of figures
-and tables unless you pass the optional <kbd>ON_LL</kbd> argument to
-<kbd>QUAD&nbsp;&lt;direction&gt;</kbd>.
+have their captions and labels set quad left.  Sources (for
+tables) are also set quad left.  Equations have their labels
+set quad right, and their captions centered.
 </p>
+
+<p>
+Regardless of the quad direction, captions, labels and sources
+are set on the width of the figure, table, or pdf image
+unless you pass the optional <kbd>ON_LL</kbd> argument to
+<kbd>QUAD&nbsp;&lt;direction&gt;</kbd>, in which case the prevailing
+document line length is used instead.
+</p>
+
+<h5 class="docs" style="text-transform: none">&bull;&nbsp;eqn</h5>
 
 <p>
 Equations behave differently.  By default, equation labels are
@@ -1860,9 +2259,65 @@ equation is positioned left, the label will appear at the right
 margin regardless of the direction you give to <kbd>QUAD</kbd>.  If
 the equation is indented with the <kbd>-I&nbsp;&lt;indent&gt;</kbd>
 option, a quad direction of <kbd>LEFT</kbd> is observed, but may
-overprint the last line of the equation.  Note that there is no
-<kbd>CENTER</kbd> option for equation labels, and that captions are
-always quadded over the full line length.
+overprint the last line of the equation.
+</p>
+
+<p>
+Note that there is no <kbd>CENTER</kbd> option for equation labels,
+and that captions are always quadded over the prevailing document
+line length.
+</p>
+
+<h5 class="docs" style="text-transform: none">&bull;&nbsp;quotes and blockquotes</h5>
+
+<p>
+Floating labels attached to <b>QUOTE</b>s are quadded on the
+prevailing document line length, and require the <kbd>INDENT</kbd>
+argument if you want to align them with the left and/or right edges
+the quote.
+</p>
+
+<p>
+Floating labels attached to <b>BLOCKQUOTE</b>s are always quadded on
+the indent and line length of the blockquote.
+</p>
+
+<h5 class="docs" style="text-transform: none">&bull;&nbsp;floats</h5>
+
+<p>
+Floating labels and captions attached to <b>FLOAT</b>s are always
+quadded over the prevailing document line length, and require the
+<kbd>INDENT</kbd> argument if you want to align them with the left
+and/or right edges the the float&#8217;s contents.
+</p>
+
+<h4 class="docs">INDENT</h4>
+
+<p>
+The <kbd>INDENT</kbd> argument may only be used if the label
+or caption type is <kbd>FLOATING</kbd>, and only applies to
+<b>FLOAT</b>s and <b>QUOTE</b>s, not <b>BLOCKQUOTE</b>s.
+</p>
+
+<p>
+It is not possible for mom to know the width of a float before
+setting a label or caption attached to a float.  She therefore sets
+it on the prevailing document line length.  While this isn&#8217;t
+much of an issue when the label or caption quad is <b>CENTER</b>,
+you may want to adjust the horizontal positioning when the quad is
+<b>LEFT</b> or <b>RIGHT</b>.
+</p>
+
+<p>
+<kbd>INDENT</kbd>, with a numeric value to which a
+<a href="definitions.html#unitofmeasure">unit of measure</a>
+is appended, allows you to indent a floating label or caption so
+it lines up with the left edge of a <b>FLOAT</b> or <b>QUOTE</b>.
+<kbd>INDENT&nbsp;RIGHT</kbd> (with a value) allows you to shorten the
+line length to the appropriate width.  If you need both a left and
+right indent, invoke <kbd>LABELS</kbd> or <kbd>CAPTIONS</kbd> twice,
+one instance containing <kbd>INDENT&nbsp;&lt;indent&gt;</kbd> and
+the other <kbd>INDENT&nbsp;RIGHT&nbsp;&lt;indent&gt;</kbd>.
 </p>
 
 <h4 class="docs">ADJUST</h4>
@@ -1871,9 +2326,9 @@ always quadded over the full line length.
 The <kbd>ADJUST</kbd> argument allows you to add(<kbd>+</kbd>) or
 subtract (<kbd>-</kbd>) vertical space between labels and captions
 and the output to which they are attached.  The argument requires a
-<a href="definitions.html#unitofmeasure">unit of measure</a>.  For
-example, if you find that table labels are a bit too close to the
-table itself,
+<a href="definitions.html#unitofmeasure">unit of measure</a>.
+For example, if you find that table labels are a bit too close to
+the table itself,
 <br/>
 <span class="pre-in-pp">
   .LABELS TBL ADJUST +3p

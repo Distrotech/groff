@@ -276,7 +276,7 @@ output to a new file.
 </div>
 
 <div class="box-macro-args">
-Macro: <b>TOC</b>
+Macro: <b>TOC</b> <kbd class="macro-args">[ INCLUDE_TITLE ]</kbd>
 </div>
 
 <p>
@@ -284,9 +284,18 @@ If you want a table of contents, just place <kbd>.TOC</kbd> at the
 very end of your document.  Mom takes care of the rest.
 </p>
 
+<p>
+The optional argument, <kbd>INCLUDE_TITLE</kbd>, is needed only
+if your document is standalone, i.e. is not collated, for example
+an essay.  By default, mom does not include the title (and page
+number) of standalone documents in the Table of Contents since it
+is largely redundant.  If you would like her to include the title,
+invoke <kbd>.TOC</kbd> with <kbd>INCLUDE_TITLE</kbd>.
+</p>
+
 <div class="box-tip">
 <p class="tip">
-<span class="tip">Tip:</span>
+<span class="note">Note:</span>
 If the last line of text in a document, before <kbd>.TOC</kbd>,
 falls too close to the bottom margin, or if the line is followed
 by a macro likely to cause a linebreak (eg <kbd>.LIST OFF</kbd> or
@@ -296,7 +305,7 @@ Table of Contents.
 
 <p class="tip-bottom">
 In order to avoid this, insert
-<a href="docprocessing.html#EL"><kbd>.EL</kbd></a>
+<a href="typesetting.html#el"><kbd>.EL</kbd></a>
 after the last line of text, before <kbd>.TOC</kbd> and/or any
 concluding macros.  For example,
 <br/>
@@ -354,7 +363,14 @@ themselves (overall family, headers/footers, pagination, etc).
     <li><a href="#toc-pn">Reference page numbers style control</a></li>
     <li><a href="#toc-title-style">Title entry style control</a></li>
     <li><a href="#toc-entry-style">Heading entry style control</a></li>
-    <li><a href="#toc-entry-numbers">Controlling the numbering of entries</a></li>
+    <li>Numbering table of contents items
+    <ul style="margin-left: -.75em; list-style: disc">
+      <li><a href="#toc-prefix-ch-number">Prefix chapter/section numbers</a>
+      <ul style="margin-left: -.75em;">
+        <li><a href="#toc-pad-ch-numbers">Pad chapter/section numbers</a></li>
+      </ul></li>
+      <li><a href="#toc-entry-numbers">Numbering heading entries</a></li>
+    </ul></li>
   </ul></li>
   <li><a href="#toc-additional">Additional table of contents control macros</a>
   <ul style="margin-left: -.5em;">
@@ -802,6 +818,75 @@ or
 </span>
 </p>
 
+<!-- -PREFIX_CHAPTER_NUMBERS- -->
+
+<div id="toc-prefix-ch-number" class="box-macro-args">
+Macro: <b>TOC_PREFIX_CHAPTER_NUMBER</b> <kbd class="macro-args">&lt;none&gt; &lt;anything&gt;</kbd>
+</div>
+<p class="alias" style="margin-bottom: 0;">
+<i>Alias:</i> <b>TOC_PREFIX_SECTION_NUMBER</b>
+</p>
+
+<p>
+By default, mom does not prefix a chapter number to chapters or
+section titles in the table of contents.  If you would like her to
+do so, invoke <kbd>TOC_PREFIX_CHAPTER_NUMBER</kbd> without an
+argument before
+<a href="docprocessing.html#start">START</a>.
+</p>
+
+<p>
+You may subsequently disable the prefixing of chapter numbers by
+supplying the macro with any argument (<b>OFF, QUIT, Q, X</b>...)
+prior to the <kbd>START</kbd> that comes after
+<a href="rectoverso.html#collate">COLLATE</a>.
+</p>
+
+<p>
+This macro is useful you want chapters numbered in the table of
+contents but the chapters themselves are identified by title only.
+It can be used with both
+<a href="docprocessing.html#doctype">DOCTYPE CHAPTER</a>
+and
+<a href="docprocessing.html#doctype">DOCTYPE DEFAULT</a>.
+The alias <b>TOC_PREFIX_SECTION_NUMBER</b> may be preferable
+in the latter case.
+</p>
+
+<!-- -PAD_TOC_CHAPTER_NUMBERS- -->
+
+<div id="toc-pad-ch-numbers" class="box-macro-args">
+Macro: <b>PAD_TOC_CHAPTER_NUMBERS</b> <kbd class="macro-args">&lt;number of chapters&gt;</kbd>
+</div>
+<p class="alias" style="margin-bottom: 0;">
+<i>Alias:</i> <b>PAD_TOC_SECTION_NUMBERS</b>
+</p>
+
+
+<p>
+If the number of chapters or major sections
+(<a href="docprocessing.html#doctype">DOCTYPE DEFAULT</a>)
+exceeds 9, you can have mom pad the numbers so the rightmost
+numerals of the chapter numbers align.  Simply invoke
+<kbd>PAD_TOC_CHAPTER_NUMBERS</kbd> with the number of chapters in
+the document.
+</p>
+
+<p>
+Without padding:
+<br/>
+<span class="pre-in-pp">
+  9. Chapter Title.....................100
+  10. Chapter Title....................123
+</span>
+With padding:
+<br/>
+<span class="pre-in-pp">
+   9. Chapter Title....................100
+  10. Chapter Title....................123
+</span>
+</p>
+
 <!-- -TOC_ENTRY_NUMBERS- -->
 
 <div id="toc-entry-numbers" class="box-macro-args">
@@ -859,10 +944,13 @@ completely.
 <div class="box-tip">
 <p class="tip">
 <span class="note">Note:</span>
-<kbd>.TOC_ENTRY_NUMBER TRUNCATE</kbd> removes the numbering
-associated with title entries if
+<kbd>.TOC_ENTRY_NUMBERS TRUNCATE</kbd> removes the numbering
+associated with table of contents chapter or section titles
+when
 <a href="docelement.html#prefix-chapter-number">PREFIX_CHAPTER_NUMBER</a>
-is enabled.
+is enabled.  To enable the numbering of chapter or section titles
+in this circumstance, use
+<a href="#toc-prefix-ch-number"><kbd>TOC_PREFIX_CHAPTER_NUMBER</kbd></a>.
 </p>
 </div>
 
