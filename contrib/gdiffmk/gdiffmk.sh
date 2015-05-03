@@ -1,4 +1,4 @@
-#! /bin/sh
+#!@BASH_PROG@
 # Copyright (C) 2004-2014 Free Software Foundation, Inc.
 # Written by Mike Bianchi <MBianchi@Foveal.com <mailto:MBianchi@Foveal.com>>
 # Thanks to Peter Bray for debugging.
@@ -39,6 +39,8 @@ groff \`.mc' requests added to indicate how it is different from FILE1.
           Either FILE1 or FILE2 can be standard input, but not both.
   OUTPUT  Copy of FILE2 with \`.mc' commands added.
           \`-' means standard output (the default).
+          If the shell's 'test' does not support option -ef, OUTPUT
+          can only be the standard output.
 
 OPTIONS:
   -a ADDMARK     Mark for added groff source lines.    Default: \`+'.
@@ -55,7 +57,7 @@ OPTIONS:
   -x DIFFCMD     Use a different diff(1) command;
                   one that accepts the \`-Dname' option, such as GNU diff.
   -s SEDCMD      Use a different sed(1) command;
-                  one that accepts ????????????????????, such as GNU sed.
+                  such as GNU sed.
   --version      Print version information on the standard output and exit.
   --help         Print this message on the standard error.
 "
@@ -126,11 +128,19 @@ WouldClobber () {
 		;;
 	esac
 
-	if test "$1" -ef "$3"
+	# BASH_PROG is set to /bin/sh if bash was not found
+	if test "$HAVE_TEST_EF_OPTION" = "no" -a "$BASH_PROG" = "/bin/sh"
 	then
 		Exit 3 \
-		  "The $2 and OUTPUT arguments both point to the same file," \
-		  "\`$1', and it would be overwritten."
+		"Your shell does support test -ef, [OUTPUT] can only be the" \
+		"standard  output."
+	else
+		if test "$1" -ef "$3"
+		then
+			Exit 3 \
+			"The $2 and OUTPUT arguments both point to the same file," \
+			"\`$1', and it would be overwritten."
+		fi
 	fi
 }
 
@@ -159,8 +169,10 @@ RequiresArgument () {
 	return 0
 }
 
+HAVE_TEST_EF_OPTION=@HAVE_TEST_EF_OPTION@
+BASH_PROG=@BASH_PROG@
 BADOPTION=
-DIFFCMD=diff
+DIFFCMD=@DIFF_PROG@
 SEDCMD=sed
 D_option=
 br=.br
@@ -232,7 +244,8 @@ done
 ${DIFFCMD} -Dx /dev/null /dev/null >/dev/null 2>&1  ||
 	Usage "The \`${DIFFCMD}' program does not accept"	\
 		"the required \`-Dname' option.
-Use GNU diff instead.  See the \`-x DIFFCMD' option."
+Use GNU diff instead.  See the \`-x DIFFCMD' option.  You can also
+install GNU diff as gdiff on your system"
 
 if test -n "${BADOPTION}"
 then
@@ -289,7 +302,7 @@ SED_SCRIPT='
 		    p
 		    d
 		  }
-		  /^#endif \/\* \(not\|!\) '"${LABEL}"'/ {
+		  /^#endif \/\* [!not ]*'"${LABEL}"'/ {
 		   s/.*/.mc '"${DELETEMARK}"'/p
 		   a\
 .mc
@@ -314,8 +327,8 @@ then
 '"${MARK1}"'
 		   d
 		  }
-		  /^#else \/\* '"${LABEL}"'/ ! {
-		   /^#endif \/\* [!not ]*'"${LABEL}"'/ ! {
+		  /^#else \/\* '"${LABEL}"'/ !{
+		   /^#endif \/\* [!not ]*'"${LABEL}"'/ !{
 		    p
 		    d
 		   }
@@ -334,7 +347,7 @@ then
 		    p
 		    d
 		  }
-		  /^#endif \/\* \(not\|!\) '"${LABEL}"'/ {
+		  /^#endif \/\* [!not ]*'"${LABEL}"'/ {
 		   i\
 '"${MARK2}"'\
 '"${br}"'

@@ -1372,3 +1372,42 @@ EOF
   groff_is_rm_defined=`make -sf test_make_rm.mk`
   AC_MSG_RESULT([$groff_is_rm_defined])
   rm -f test_make_rm.mk])
+
+# Check if diff has option -D, for gdiffmk. If not, check if gdiff is
+# available on the system and make the same test. If either diff or
+# gdiff is working, it is set to DIFF_PROG.  If -D option is not
+# available, DIFF_PROG is left to diff (gdiffmk will report a
+# problem).
+AC_DEFUN([GROFF_DIFF_D],
+  [AC_MSG_CHECKING(for a diff program that supports option -D)
+  groff_has_diff_d_option=no
+  DIFF_PROG=diff
+  diff -Dx /dev/null /dev/null >/dev/null 2>&1 && groff_has_diff_d_option=yes
+  if test "$groff_has_diff_d_option" = no; then
+    AC_CHECK_PROGS([GDIFF], [gdiff])
+    if test -n "$GDIFF"; then
+      "$GDIFF" -Dx /dev/null /dev/null >/dev/null 2>&1 && groff_has_diff_d_option=yes
+      if test "$groff_has_diff_d_option" = yes; then
+        DIFF_PROG="$GDIFF"
+      fi
+    fi
+  fi
+  AC_MSG_RESULT([$groff_has_diff_d_option])
+  AC_SUBST([DIFF_PROG])])
+
+# Check if `test' supports the option -ef.
+AC_DEFUN([GROFF_HAVE_TEST_EF_OPTION],
+  [AC_MSG_CHECKING(whether test supports option -ef)
+  HAVE_TEST_EF_OPTION=no
+  test /dev/null -ef /dev/null > /dev/null 2>&1 && HAVE_TEST_EF_OPTION=yes
+  AC_MSG_RESULT([$HAVE_TEST_EF_OPTION])
+  AC_SUBST([HAVE_TEST_EF_OPTION])])
+
+# gdiffmk will attempt to use bash (for option -ef of 'test'). If bash
+# is not available it will use /bin/sh.
+AC_DEFUN([GROFF_BASH],
+  [AC_PATH_PROGS([BASH_PROG], [bash], [no])
+  if test x$BASH_PROG = xno; then
+     BASH_PROG=/bin/sh
+  fi
+  AC_SUBST([BASH_PROG])])
