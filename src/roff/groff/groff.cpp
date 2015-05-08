@@ -34,6 +34,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>. */
 #include "device.h"
 #include "pipeline.h"
 #include "nonposix.h"
+#include "relocate.h"
 #include "defs.h"
 
 #define GXDITVIEW "gxditview"
@@ -469,8 +470,10 @@ int main(int argc, char **argv)
     f += '=';
     if (binpath && *binpath)
       f += binpath;
-    else
-      f += BINPATH;
+    else {
+      binpath = relocatep(BINPATH);
+      f += binpath;
+    }
     if (path && *path) {
       f += PATH_SEP_CHAR;
       f += path;
