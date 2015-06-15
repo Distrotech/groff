@@ -29,8 +29,9 @@ my @cmd;
 my $dev='pdf';
 my $preconv='';
 my $readstdin=1;
+my $RT_SEP='@RT_SEP@';
 
-$ENV{PATH}=$ENV{GROFF_BIN_PATH}.':'.$ENV{PATH} if exists($ENV{GROFF_BIN_PATH});
+$ENV{PATH}=$ENV{GROFF_BIN_PATH}.$RT_SEP.$ENV{PATH} if exists($ENV{GROFF_BIN_PATH});
 $ENV{TMPDIR}=$ENV{GROFF_TMPDIR} if exists($ENV{GROFF_TMPDIR});
 
 while (my $c=shift)
@@ -122,7 +123,7 @@ if ($readstdin)
 
 if ($dev eq 'pdf')
 {
-    system("groff -Tpdf -dPDF.EXPORT=1 -mom -z $cmdstring 2>&1 | grep '^\.ds' | groff -Tpdf -mom - $preconv $cmdstring");
+    system("groff -Tpdf -dPDF.EXPORT=1 -mom -z $cmdstring 2>&1 | grep \"^\\.ds\" | groff -Tpdf -mom - $preconv $cmdstring");
 }
 elsif ($dev eq 'ps')
 {
