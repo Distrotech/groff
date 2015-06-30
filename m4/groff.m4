@@ -919,6 +919,160 @@ AC_DEFUN([GROFF_G],
    fi
    AC_SUBST([g])])
 
+# Controllable groff compatibility wrappers for vendor-provided macro sets
+#
+#   Background
+#
+#     groff's configure script checks for a non-GNU system troff implementation
+#     in GROFF_G above, and uses this to rename programs that would conflict
+#     with the system *roff implementation. On such systems, groff's version of
+#     troff is installed as gtroff, groff's version of nroff is installed as
+#     gnroff, and so forth. See the ENVIRONMENT section of groff(1)'s manual
+#     page for the entry on GROFF_COMMAND_PREFIX, and the SEE ALSO section for
+#     details. The implementation of this can be found in "We use Automake's
+#     Uniform Naming Scheme" in Makefile.am, and its use of NAMEPREFIX.
+#
+#     groff's configure script also checks for vendor-provided macro sets in
+#     GROFF_TMAC above, which sets 'sys_tmac_prefix' to the location of any
+#     vendor-provided macro sets. The script then determines if any of these
+#     vendor-provided macro sets are non-GNU implementations. A space-separated
+#     list of macro sets requiring compatibility wrappers is stored in
+#     'tmac_wrap'.
+#
+#     If 'tmac_wrap' is a non-empty list, the make infrastructure will build
+#     groff compatibility wrappers in the 'tmac' directory for each mentioned
+#     macro set. These wrappers enable compatibility mode (.cp 1) and include
+#     (.so <filepath>) the vendor implementation of that macro set. The 'an'
+#     wrapper gets special treatment, by including the 'andoc.tmac' macro set,
+#     before loading the vendor implementation.
+#
+#     In groff version 1.22.3 and prior, if 'tmac_wrap' is a non-empty list at
+#     installation time (make install), the groff compatibility wrappers are
+#     installed in '<prefix>/lib/groff/site-tmac' directory (technically
+#     'systemtmacdir' in Makefile.am) as the base macro set name (example:
+#     an.tmac), and the groff implementation of these macro sets are installed
+#     with a 'g' prefix in the '<prefix>/share/groff/<version>/tmac' directory
+#     (example: gan.tmac).
+#
+#     If your system has these compatibility wrappers installed, then the
+#     command 'groff -man ...' (as an example) uses your vendor's 'an' macro
+#     set in compatibility mode, while the command 'groff -mgan ...' uses the
+#     groff implementation of the 'an' macro set.
+#
+#     With groff being the principal (but not the only) full-featured *roff
+#     implementation in use today, and most FLOSS UNIX-like Operating Systems
+#     using groff as their *roff implementation, the automatic implementation
+#     of compatibility wrappers on systems having their own macro sets needs to
+#     be revisited. Most FLOSS software is now developed on systems having no
+#     other *roff implementation, so manual pages (for example) are developed
+#     and proofread on systems using groff's implementation of the 'an' macro
+#     set.
+#
+#     On systems with their own macro sets (especially 'an'), documents can be
+#     rendered incorrectly from the document author's point of view, when
+#     these compatibility mode wrappers are used. groff's own manual pages are
+#     the perfect case in point, with most not showing the principal usage line
+#     of a command, due to the use of .SY/.OP/.YS macros to display such lines.
+#
+#   Updating groff's use of compatibility mode wrappers
+#
+#     Given the above, on systems with their own (non-GNU) macro sets, groff's
+#     AUTOMATIC installation of these generated vendor compatibility wrappers
+#     as the principal implementation of a macro set for groff(1) users may not
+#     be desirable, especially if the users are principally using groff(1) to
+#     format FLOSS manual pages.
+#
+#     The '--with-compatibility-wrappers=<value>' option to 'configure' gives
+#     these systems control over the default macro set implementation in use
+#     when using the groff family of tools.
+#
+#     The supported values of the '--with-compatibility-wrappers=<value>'
+#     option are:
+#       'check'  [default] Check if system has vendor-provided non-GNU
+#                implementation of any *roff macro set. Based on that use the
+#                'yes' or 'no' value for '--with-compatibility-wrappers'. This
+#                effectively emulates prior groff releases' implementation.
+#       'yes'    Install the vendor compatibility wrappers as groff's default
+#                implementation of these macro sets. This is compatible with
+#                groff implementations up to and including version 1.22.3.
+#                Direct use of the 'yes' option is discouraged, as it will
+#                abort the configure process if no vendor-provided non-GNU
+#                macro set implementations exists.
+#       'no'     Do not install any vendor compatibility wrappers. Use the
+#                groff implementation of all macro sets as the default.
+#       'manual' Install the vendor compatibility wrappers as '<macro>-os.tmac'
+#                in the same directory as 'yes' option ('systemtmacdir').
+#                groff users can access the vendor-provided macro set via the
+#                '-m<macro>-os' option on the command line of a tool from the
+#                groff family. The naming of the option value reflects that now
+#                a manual step must be taken to use the vendor-provided
+#                implementation of the macro set. This option can safely be
+#                used on systems without vendor-provided non-GNU macro set
+#                implementations to allow for cross-platform build
+#                instructions.
+#
+
+AC_DEFUN([GROFF_WITH_COMPATIBILITY_WRAPPERS],
+  [AC_ARG_WITH([compatibility-wrappers],
+    [AS_HELP_STRING([--with-compatibility-wrappers[[=VALUE]]],
+      [choose whether and how groff compatibility wrappers for \
+       vendor-provided non-GNU macro sets are installed. VALUE can be \
+       `check', `yes', `no' or `manual'. \
+       `check' (the default) checks for the existence of vendor-provided \
+       non-GNU macro sets, and implements the `yes' or `no' option \
+       accordingly. \
+       `yes' generates compatibility wrappers for vendor-provided non-GNU \
+       macro sets to allow their use with groff-based tools. The \
+       compatibility wrappers are installed with the original macro set name, \
+       while groff implementation of these macro sets are installed with a \
+       `g' prefix. Thus use of the groff implementation of these macro sets \
+       requires use of the `-mg<macro>' option (example: -mgan). \
+       `no' only installs the groff implementation of macro sets. \
+       `manual' generates compatibility wrappers for vendor-provided non-GNU \
+       macro sets as `<macro>-os'. Use of these groff compatibility wrappers \
+       (for vendor-provided non-GNU macro sets) requires the use of the \
+       `-m<macro>-os' option (example: -man-os).])],
+    [compatibility_wrappers="$withval"],
+    [compatibility_wrappers="check"])
+
+    if test "x$compatibility_wrappers" != "xcheck"  -a \
+            "x$compatibility_wrappers" != "xyes"    -a \
+            "x$compatibility_wrappers" != "xno"     -a \
+            "x$compatibility_wrappers" != "xmanual"
+    then
+         AC_MSG_WARN([Invalid `--with-compatibility-wrappers' argument: `$compatibility_wrappers' - assuming `check' requested.])
+         compatibility_wrappers="check"
+    fi
+
+    if test "x$tmac_wrap" = "x"
+    then
+        # No Operating System Macro Sets Present
+        if   test "x$compatibility_wrappers" = "xcheck"
+        then
+            compatibility_wrappers="no"
+        elif test "x$compatibility_wrappers" = "xyes"
+        then
+            AC_MSG_ERROR([No non-GNU macro sets found - cannot create and install compatibility wrappers])
+        elif test "x$compatibility_wrappers" = "xno"
+        then
+            : # No action required
+        elif test "x$compatibility_wrappers" = "xmanual"
+        then
+            # `manual' allows quiet conversion to `no' to support
+            # cross-platform build instructions
+            compatibility_wrappers="no"
+        fi
+    else
+        # One or more Operating System Macro Sets Present
+        if   test "x$compatibility_wrappers" = "xcheck"
+        then
+            compatibility_wrappers="yes"
+        fi
+    fi
+
+    # Now compatibility_wrappers can only be yes, no or manual
+    AC_SUBST([compatibility_wrappers])
+  ])
 
 # We need the path to install-sh to be absolute.
 

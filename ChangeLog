@@ -1,3 +1,39 @@
+2015-07-01 Peter Bray <pdb_ml@yahoo.com.au>
+
+	Fix Savannah bug #44784
+
+	Compatibility Mode rendering of groff manual pages
+
+	* m4/groff.m4 (GROFF_WITH_COMPATIBILITY_WRAPPERS): New macro to
+	implement 'configure' option
+	'--with-compatibility-wrappers=<value>'.  With this option the
+	user can control how groff compatibility wrappers for
+	vendor-provided non-GNU macro sets are installed.
+
+	* configure.ac: Use new macro GROFF_WITH_COMPATIBILITY_WRAPPERS.
+
+	* Makefile.am: Define tmac_*_prefix if 'compatibility_wrappers' is
+	set to 'yes'.
+
+	* tmac/tmac.am: Use 'compatibility_wrappers' to control the
+	installation:
+
+	- If set to `no', the groff-provided macro set are installed in
+	<prefix>/share/groff/<version>/tmac/ with the original macro set
+	name.
+
+	- If set to `yes', the groff-provided macro set are installed in
+	<prefix>/share/groff/<version>/tmac/ with a prefix of
+	$(tmac_prefix) (which is usually `g') and the generated
+	compatibility wrappers are installed in
+	<prefix>/lib/groff/site-tmac, with the original macro set name.
+
+	- If set to `manual', the groff-provided macro set are installed
+	in <prefix>/share/groff/<version>/tmac/ with the original macro
+	set name and the generated compatibility wrappers are installed in
+	<prefix>/lib/groff/site-tmac, with a name of
+	<macro><wrapper_suffix> (which is usually `-os').
+
 2015-06-17  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/tty.tmac: Fix mapping of \[bu] character for -Tutf8.

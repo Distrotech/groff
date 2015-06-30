@@ -228,20 +228,57 @@ tmacpath=$(systemtmacdir)$(RT_SEP)$(localtmacdir)$(RT_SEP)$(tmacdir)
 # in the groff macro directory that references the system macro
 # package.
 
-# If there is a groff version of a macro package listed in $(tmac_wrap),
-# then the groff version will be installed with a prefix of this.
+# compatibility_wrappers
+# (groff compatibility wrappers for vendor-provided non-GNU macro sets)
+#
+# `compatibility_wrappers' controls the creation and installation of
+# compatibility wrappers for the macro sets named in `tmac_wrap'.
+# Its value must be one of:
+#   `yes'    install compatibility wrappers as the original macro set name
+#            (that is, the default implementation of that macro set), and
+#            install the groff implementation with a prefix (usually g).
+#   `no'     do not install compatibility wrappers; only install the groff
+#            implementation of each macro set.
+#   `manual' install the compatibility wrappers as `<macro>-os' and install
+#            the groff implementation of each macro set as the default
+#            implementation of that macro set.
+
+# Don't make this empty.
+wrapper_suffix_default="-os"
+
+wrapper_suffix=`if test $(compatibility_wrappers) = manual; then echo $(wrapper_suffix_default); fi`
+
+# When `compatibility_wrappers' is `yes', if there is a groff implementation
+# of a macro set listed in $(tmac_wrap), then the groff implementation will be
+# installed with a prefix of $(tmac_prefix) via the collision detection
+# variables $(tmac_m_prefix), $(tmac_s_prefix), and $(tmac_an_prefix).
+
 # Don't make this empty.
 tmac_prefix=g
 
 # The groff -mm macros will be available as -m$(tmac_m_prefix)m.
 tmac_m_prefix=\
- `for i in $(tmac_wrap) ""; do case "$$i" in m) echo $(tmac_prefix);; esac; done`
+ `if test $(compatibility_wrappers) = yes; then \
+    for i in $(tmac_wrap) ""; do \
+      case "$$i" in m) echo $(tmac_prefix);; esac; \
+    done; \
+  fi`
+
 # The groff -ms macros will be available as -m$(tmac_s_prefix)s.
 tmac_s_prefix=\
- `for i in $(tmac_wrap) ""; do case "$$i" in s) echo $(tmac_prefix);; esac; done`
+ `if test $(compatibility_wrappers) = yes; then \
+    for i in $(tmac_wrap) ""; do \
+      case "$$i" in s) echo $(tmac_prefix);; esac; \
+    done; \
+  fi`
+
 # The groff -man macros will be available as -m$(tmac_an_prefix)an.
 tmac_an_prefix=\
- `for i in $(tmac_wrap) ""; do case "$$i" in an) echo $(tmac_prefix);; esac; done`
+ `if test $(compatibility_wrappers) = yes; then \
+    for i in $(tmac_wrap) ""; do \
+      case "$$i" in an) echo $(tmac_prefix);; esac; \
+    done; \
+  fi`
 
 # Extension to be used for refer index files.  Index files are not
 # sharable between different architectures, so you might want to use

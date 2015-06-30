@@ -142,19 +142,45 @@ tmac-dist-hook:
 	  cp -f $(top_srcdir)/$$f-u $(distdir)/tmac; \
 	done
 
-
-# If the system comes with its own tmac macro installation (/usr/lib/tmac
-# contains tmac.an, tmac.m, tmac.s), ms and man macros are installed as
-# gs.tmac and gan.tmac, instead of s.tmac and an.tmac.  Also, an.tmac,
-# m.tmac and s.tmac files are installed in <prefix>/lib/groff/site-tmac.
-all: tmac/stamp-wrap
-
 $(TMACMDOCFILES) $(TMACSTRIPFILES): 
 	$(MKDIR_P) $(top_builddir)/tmac
 	for f in $(TMACMDOCFILES) $(TMACSTRIPFILES); do \
 	   sed -f $(tmac_srcdir)/strip.sed $(top_srcdir)/$$f-u > $(top_builddir)/$$f; \
 	done
 
+tmac/www.tmac: tmac/www.tmac.in
+	$(MKDIR_P) $(top_builddir)/tmac
+	sed -e "s;[@]PNMTOPS_NOSETPAGE[@];$(pnmtops_nosetpage);g" \
+	  $(tmac_srcdir)/www.tmac.in > $(top_builddir)/tmac/www.tmac
+
+# The installation of groff compatibility wrappers for vendor-provided non-GNU
+# macro sets is controlled by `compatibility_wrappers' (see the commentary
+# surrounding m4/groff.m4's GROFF_WITH_COMPATIBILITY_WRAPPERS).  Collision
+# detection variables of the form `tmac_<macro>_prefix' are defined in
+# Makefile.am, to assist in the installation of groff-provided macro sets.
+#
+# When `compatibility_wrappers' is `no', one step is performed:
+#   - the groff-provided macro set implementations are installed in
+#     <prefix>/share/groff/<version>/tmac/ with the original macro set name
+#
+# When `compatibility_wrappers' is `yes', two steps are performed:
+#   - the groff-provided macro set implementations are installed in
+#     <prefix>/share/groff/<version>/tmac/ with a prefix of $(tmac_prefix)
+#     (which is usually `g', via the appropriate collision detection variable)
+#   - the generated compatibility wrappers are installed in
+#     <prefix>/lib/groff/site-tmac, with the original macro set name
+#
+# When `compatibility_wrappers' is `manual', two steps are performed:
+#   - the groff-provided macro set implementations are installed in
+#     <prefix>/share/groff/<version>/tmac/ with the original macro set name
+#   - the generated compatibility wrappers are installed in
+#     <prefix>/lib/groff/site-tmac, with a name of <macro><wrapper_suffix>,
+#     (which is usually `-os', see `wrapper_suffix_default' in Makefile.am)
+
+
+all: tmac/stamp-wrap
+
+# Generate groff compatibility wrappers for all non-GNU OS provided macro sets
 tmac/stamp-wrap:
 	$(MKDIR_P) $(top_builddir)/tmac;
 	if test -n "$(tmac_wrap)"; then \
@@ -169,40 +195,47 @@ tmac/stamp-wrap:
 	fi
 	touch $@
 
-tmac/www.tmac: tmac/www.tmac.in
-	$(MKDIR_P) $(top_builddir)/tmac
-	sed -e "s;[@]PNMTOPS_NOSETPAGE[@];$(pnmtops_nosetpage);g" \
-	  $(tmac_srcdir)/www.tmac.in > $(top_builddir)/tmac/www.tmac
-
+# Install groff compatibility wrappers into <prefix>/lib/groff/site-tmac
 install-data-local: install_tmac_wrap
 install_tmac_wrap:
 	$(MKDIR_P) $(DESTDIR)$(systemtmacdir);
-	if test -n "$(tmac_wrap)"; then \
-	  for m in ""$(tmac_wrap); do \
-	    $(INSTALL_DATA) $(tmac_builddir)/$$m-wrap \
-              $(DESTDIR)$(systemtmacdir)/$$m.tmac; \
-	  done; \
+	if test "$(compatibility_wrappers)" != "no"; then \
+	  if test -n "$(tmac_wrap)"; then \
+	    for m in ""$(tmac_wrap); do \
+	      $(INSTALL_DATA) $(tmac_builddir)/$$m-wrap \
+                $(DESTDIR)$(systemtmacdir)/$$m$(wrapper_suffix).tmac; \
+	    done; \
+	  fi; \
 	fi
 
+# Rename the groff implementations of colliding macro sets to have a prefix
 install-data-hook: install_tmac_wrap_hook
 install_tmac_wrap_hook:
-	if test -n "$(tmac_wrap)"; then \
-	  if test -f $(DESTDIR)$(tmacdir)/s.tmac; then \
-	    mv $(DESTDIR)$(tmacdir)/s.tmac \
-	      $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac; \
-	  fi; \
-	  if test -f $(DESTDIR)$(tmacdir)/an.tmac; then \
-	    mv $(DESTDIR)$(tmacdir)/an.tmac \
-	      $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac; \
+	if test "$(compatibility_wrappers)" = "yes"; then \
+	  if test -n "$(tmac_wrap)"; then \
+	    if test -f $(DESTDIR)$(tmacdir)/s.tmac -a -n "$(tmac_s_prefix)"; \
+	    then \
+	      mv $(DESTDIR)$(tmacdir)/s.tmac \
+	         $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac; \
+	    fi; \
+	    if test -f $(DESTDIR)$(tmacdir)/an.tmac -a -n "$(tmac_an_prefix)"; \
+	    then \
+	      mv $(DESTDIR)$(tmacdir)/an.tmac \
+	         $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac; \
+	    fi; \
 	  fi; \
 	fi
 
+# Uninstall groff compatibility wrappers & renamed groff implementation
+# macro sets
 uninstall_groffdirs: uninstall_tmac_hook
 uninstall_tmac_hook:
 	if test -n "$(tmac_wrap)"; then \
-	  for m in ""$(tmac_wrap); do \
-	    $(RM) $(DESTDIR)$(systemtmacdir)/$$m.tmac; \
-	  done; \
+	  if test "$(compatibility_wrappers)" != "no"; then \
+	    for m in ""$(tmac_wrap); do \
+	      $(RM) $(DESTDIR)$(systemtmacdir)/$$m$(wrapper_suffix).tmac; \
+	    done; \
+	  fi; \
 	  $(RM) -f $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac; \
 	  $(RM) -f $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac; \
 	fi
